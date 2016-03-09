@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/thardin/projects/spacehackers/kicad/DCV1_PWR/PC104_connector/PC104_connector.sch)
-    (date "Wed 09 Mar 2016 07:49:15 PM CET")
+    (date "Wed 09 Mar 2016 08:03:56 PM CET")
     (tool "Eeschema 4.0.0~rc1a-stable")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -17,7 +17,7 @@
   (components
     (comp (ref P104)
       (value PC104)
-      (footprint pc104:PC104)
+      (footprint PC104:PC104)
       (libsource (lib pc104) (part PC104))
       (sheetpath (names /) (tstamps /))
       (tstamp 56DF6470)))
