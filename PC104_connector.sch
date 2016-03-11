@@ -28,14 +28,12 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:pwr
 LIBS:pc104
-LIBS:DCV1_PWR-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 3 3
+Sheet 1 1
 Title ""
 Date ""
 Rev ""
@@ -221,4 +219,26 @@ Wire Wire Line
 Connection ~ 4950 3700
 Text Notes 4050 4050 2    60   ~ 0
 Analog ground-
+$Comp
+L GND #PWR?
+U 1 1 56E2EB8F
+P 2050 3900
+F 0 "#PWR?" H 2050 3650 50  0001 C CNN
+F 1 "GND" H 2050 3750 50  0000 C CNN
+F 2 "" H 2050 3900 60  0000 C CNN
+F 3 "" H 2050 3900 60  0000 C CNN
+	1    2050 3900
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	2050 3900 1900 3900
+Wire Wire Line
+	1950 3900 1950 3950
+Wire Wire Line
+	1950 3950 1400 3950
+Wire Wire Line
+	1400 3950 1400 3900
+Connection ~ 1950 3900
+Text Notes 2250 3950 0    60   ~ 0
+-For GND copper pour
 $EndSCHEMATC
