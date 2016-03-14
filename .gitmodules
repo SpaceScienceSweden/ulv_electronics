@@ -1,0 +1,6 @@
+[submodule "ulv_battery"]
+	path = ulv_battery
+	url = git@github.com:SpaceScienceSweden/ulv_battery.git
+[submodule "ulv_power"]
+	path = ulv_power
+	url = git@github.com:SpaceScienceSweden/ulv_power.git
