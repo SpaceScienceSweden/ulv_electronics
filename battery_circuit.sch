@@ -30,11 +30,12 @@ LIBS:contrib
 LIBS:valves
 LIBS:pc104
 LIBS:ulv_photovoltaic
+LIBS:ulv_battery-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 9
+Sheet 4 9
 Title ""
 Date ""
 Rev ""
@@ -52,7 +53,7 @@ AR Path="/56E5DF65/56E5C3BE" Ref="BT1"  Part="1"
 AR Path="/56E5E7C1/56E5C3BE" Ref="BT2"  Part="1" 
 AR Path="/56E5E9EC/56E5C3BE" Ref="BT3"  Part="1" 
 AR Path="/56E5EE46/56E5C3BE" Ref="BT4"  Part="1" 
-F 0 "BT1" H 2500 4600 50  0000 L CNN
+F 0 "BT3" H 2500 4600 50  0000 L CNN
 F 1 "Battery" H 2500 4500 50  0000 L CNN
 F 2 "JST:JST-PH-02" V 2400 4590 50  0001 C CNN
 F 3 "http://www.jst-mfg.com/product/pdf/eng/ePH.pdf" V 2400 4590 50  0001 C CNN
@@ -63,7 +64,7 @@ F 7 "http://www.digikey.com/product-detail/en/jst-sales-america-inc/S2B-PH-K-S(L
 	1    2400 4550
 	1    0    0    -1  
 $EndComp
-Text HLabel 3000 4000 2    60   Output ~ 0
+Text HLabel 3000 4000 2    60   BiDi ~ 0
 VBAT
 $Comp
 L GND #PWR06
@@ -73,7 +74,7 @@ AR Path="/56E5DF65/56E5E3D0" Ref="#PWR06"  Part="1"
 AR Path="/56E5E7C1/56E5E3D0" Ref="#PWR07"  Part="1" 
 AR Path="/56E5E9EC/56E5E3D0" Ref="#PWR08"  Part="1" 
 AR Path="/56E5EE46/56E5E3D0" Ref="#PWR09"  Part="1" 
-F 0 "#PWR06" H 2400 4450 50  0001 C CNN
+F 0 "#PWR09" H 2400 4450 50  0001 C CNN
 F 1 "GND" H 2400 4550 50  0000 C CNN
 F 2 "" H 2400 4700 50  0000 C CNN
 F 3 "" H 2400 4700 50  0000 C CNN
@@ -92,7 +93,7 @@ AR Path="/56E5DF65/56E5EF28" Ref="D1"  Part="1"
 AR Path="/56E5E7C1/56E5EF28" Ref="D2"  Part="1" 
 AR Path="/56E5E9EC/56E5EF28" Ref="D3"  Part="1" 
 AR Path="/56E5EE46/56E5EF28" Ref="D4"  Part="1" 
-F 0 "D1" H 2650 4330 50  0000 L CNN
+F 0 "D3" H 2650 4330 50  0000 L CNN
 F 1 "Schottky" H 2700 4150 50  0000 C CNN
 F 2 "Diodes_SMD:SMA_Standard" V 2700 4250 50  0001 C CNN
 F 3 "" V 2700 4250 50  0000 C CNN

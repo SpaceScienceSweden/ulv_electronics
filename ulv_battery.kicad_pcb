@@ -3,7 +3,7 @@
   (general
     (links 41)
     (no_connects 4)
-    (area 49.724999 49.724999 130.275001 130.275001)
+    (area 0 0 0 0)
     (thickness 1.6)
     (drawings 0)
     (tracks 95)
@@ -39,7 +39,7 @@
   )
 
   (setup
-    (last_trace_width 0.5)
+    (last_trace_width 0.25)
     (user_trace_width 0.5)
     (trace_clearance 0.2)
     (zone_clearance 0.508)

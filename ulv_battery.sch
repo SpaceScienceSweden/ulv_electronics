@@ -30,6 +30,7 @@ LIBS:contrib
 LIBS:valves
 LIBS:pc104
 LIBS:ulv_photovoltaic
+LIBS:ulv_battery-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -44,20 +45,6 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text HLabel 4700 3900 0    60   Input ~ 0
-VBAT1
-Text HLabel 4700 4000 0    60   Input ~ 0
-VBAT2
-Text HLabel 4700 4100 0    60   Input ~ 0
-VBAT3
-Text HLabel 4700 4200 0    60   Input ~ 0
-VBAT4
-Text HLabel 4700 3600 0    60   Output ~ 0
-VSOLAR
-Text HLabel 4700 3300 0    60   Input ~ 0
-VCHRG
-Text HLabel 4700 3000 0    60   Input ~ 0
-VSYS
 Text Notes 5900 3200 0    60   ~ 0
 VSYS:\nVCHRG:\nVSOLAR:\nVBAT[1-8]:
 $Comp
@@ -133,17 +120,15 @@ S 1050 2100 1100 300
 U 56E5DF65
 F0 "Battery 1" 60
 F1 "battery_circuit.sch" 60
-F2 "VBAT" O R 2150 2200 60 
+F2 "VBAT" B R 2150 2200 60 
 F3 "VSYS" O R 2150 2300 60 
 $EndSheet
-Text HLabel 2350 2200 2    60   Output ~ 0
-VBAT1
 $Sheet
 S 1050 2600 1100 300 
 U 56E5E7C1
 F0 "Battery 2" 60
 F1 "battery_circuit.sch" 60
-F2 "VBAT" O R 2150 2700 60 
+F2 "VBAT" B R 2150 2700 60 
 F3 "VSYS" O R 2150 2800 60 
 $EndSheet
 $Sheet
@@ -151,13 +136,9 @@ S 1050 3100 1100 300
 U 56E5E9EC
 F0 "Battery 3" 60
 F1 "battery_circuit.sch" 60
-F2 "VBAT" O R 2150 3200 60 
+F2 "VBAT" B R 2150 3200 60 
 F3 "VSYS" O R 2150 3300 60 
 $EndSheet
-Text HLabel 2350 2700 2    60   Output ~ 0
-VBAT2
-Text HLabel 2350 3200 2    60   Output ~ 0
-VBAT3
 $Sheet
 S 1050 3600 1100 300 
 U 56E5EE46
@@ -166,10 +147,6 @@ F1 "battery_circuit.sch" 60
 F2 "VBAT" O R 2150 3700 60 
 F3 "VSYS" O R 2150 3800 60 
 $EndSheet
-Text HLabel 2350 3700 2    60   Output ~ 0
-VBAT4
-Text HLabel 3650 3800 2    60   Output ~ 0
-VSYS
 $Comp
 L CONN_02X01 P2
 U 1 1 56E60992
@@ -186,19 +163,19 @@ S 1050 4250 1100 400
 U 56E6AFA2
 F0 "Solar 1" 60
 F1 "solar_circuit.sch" 60
-F2 "VPV" I R 2150 4350 60 
-F3 "VSYS" I R 2150 4450 60 
+F2 "VPV" O R 2150 4350 60 
+F3 "VSYS" O R 2150 4450 60 
 F4 "VNEG" I R 2150 4550 60 
 $EndSheet
 $Comp
 L CONN_02X01 P3
 U 1 1 56E6B3AE
-P 3200 4550
-F 0 "P3" H 3200 4650 50  0000 C CNN
-F 1 "deployment switch" H 3200 4450 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_2x01" H 3200 3350 50  0001 C CNN
-F 3 "" H 3200 3350 50  0000 C CNN
-	1    3200 4550
+P 3200 6350
+F 0 "P3" H 3200 6450 50  0000 C CNN
+F 1 "deployment switch" H 3200 6250 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_2x01" H 3200 5150 50  0001 C CNN
+F 3 "" H 3200 5150 50  0000 C CNN
+	1    3200 6350
 	1    0    0    -1  
 $EndComp
 $Sheet
@@ -206,8 +183,8 @@ S 1050 4850 1100 400
 U 56E6B7CE
 F0 "Solar 2" 60
 F1 "solar_circuit.sch" 60
-F2 "VPV" I R 2150 4950 60 
-F3 "VSYS" I R 2150 5050 60 
+F2 "VPV" O R 2150 4950 60 
+F3 "VSYS" O R 2150 5050 60 
 F4 "VNEG" I R 2150 5150 60 
 $EndSheet
 $Sheet
@@ -215,8 +192,8 @@ S 1050 5450 1100 400
 U 56E6DEA5
 F0 "Solar 3" 60
 F1 "solar_circuit.sch" 60
-F2 "VPV" I R 2150 5550 60 
-F3 "VSYS" I R 2150 5650 60 
+F2 "VPV" O R 2150 5550 60 
+F3 "VSYS" O R 2150 5650 60 
 F4 "VNEG" I R 2150 5750 60 
 $EndSheet
 $Sheet
@@ -224,8 +201,8 @@ S 1050 6050 1100 400
 U 56E6DEAA
 F0 "Solar 4" 60
 F1 "solar_circuit.sch" 60
-F2 "VPV" I R 2150 6150 60 
-F3 "VSYS" I R 2150 6250 60 
+F2 "VPV" O R 2150 6150 60 
+F3 "VSYS" O R 2150 6250 60 
 F4 "VNEG" I R 2150 6350 60 
 $EndSheet
 Wire Wire Line
@@ -247,20 +224,14 @@ Connection ~ 3200 2100
 Connection ~ 3200 1800
 Connection ~ 3200 1500
 Wire Wire Line
-	4900 3000 4700 3000
+	4100 3000 4900 3000
 Wire Wire Line
 	4900 3000 4900 3100
 Connection ~ 4900 3000
 Wire Wire Line
 	4900 3400 4900 3300
 Wire Wire Line
-	4900 3300 4700 3300
-Connection ~ 4900 3300
-Wire Wire Line
-	4700 3600 4900 3600
-Wire Wire Line
 	4900 3600 4900 3700
-Connection ~ 4900 3600
 Wire Wire Line
 	4700 3900 4900 3900
 Wire Wire Line
@@ -288,7 +259,7 @@ Wire Wire Line
 Wire Wire Line
 	2150 2300 2750 2300
 Wire Wire Line
-	2750 2300 2750 3800
+	2750 2300 2750 6250
 Wire Wire Line
 	2150 3800 2950 3800
 Wire Wire Line
@@ -299,46 +270,42 @@ Wire Wire Line
 Connection ~ 2750 2800
 Connection ~ 2750 3800
 Wire Wire Line
-	3450 3800 3650 3800
+	3450 3800 4100 3800
 Wire Wire Line
-	2950 4550 2150 4550
+	2150 4550 2600 4550
 Wire Wire Line
-	2150 4450 2800 4450
+	2750 4450 2150 4450
 Wire Wire Line
-	2800 3800 2800 6250
-Connection ~ 2800 3800
+	2750 5050 2150 5050
+Connection ~ 2750 4450
 Wire Wire Line
-	2800 5050 2150 5050
-Connection ~ 2800 4450
+	2750 5650 2150 5650
+Connection ~ 2750 5050
 Wire Wire Line
-	2800 5650 2150 5650
-Connection ~ 2800 5050
-Wire Wire Line
-	2800 6250 2150 6250
-Connection ~ 2800 5650
+	2750 6250 2150 6250
+Connection ~ 2750 5650
 $Comp
 L GND #PWR05
 U 1 1 56E6E535
-P 3650 4550
-F 0 "#PWR05" H 3650 4300 50  0001 C CNN
-F 1 "GND" H 3650 4400 50  0000 C CNN
-F 2 "" H 3650 4550 50  0000 C CNN
-F 3 "" H 3650 4550 50  0000 C CNN
-	1    3650 4550
-	0    -1   -1   0   
+P 3700 6350
+F 0 "#PWR05" H 3700 6100 50  0001 C CNN
+F 1 "GND" H 3700 6200 50  0000 C CNN
+F 2 "" H 3700 6350 50  0000 C CNN
+F 3 "" H 3700 6350 50  0000 C CNN
+	1    3700 6350
+	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3650 4550 3450 4550
+	3700 6350 3450 6350
 Wire Wire Line
 	2150 5150 2600 5150
 Wire Wire Line
 	2600 4550 2600 6350
-Connection ~ 2600 4550
 Wire Wire Line
 	2600 5750 2150 5750
 Connection ~ 2600 5150
 Wire Wire Line
-	2600 6350 2150 6350
+	2150 6350 2950 6350
 Connection ~ 2600 5750
 Text Label 4700 4400 2    60   ~ 0
 PV1
@@ -364,4 +331,25 @@ Text Label 2350 5550 0    60   ~ 0
 PV3
 Text Label 2400 6150 0    60   ~ 0
 PV4
+Text Label 2350 2200 0    60   ~ 0
+VBAT1
+Text Label 2350 2700 0    60   ~ 0
+VBAT2
+Text Label 2350 3200 0    60   ~ 0
+VBAT3
+Text Label 2350 3700 0    60   ~ 0
+VBAT4
+Text Label 4700 3900 2    60   ~ 0
+VBAT1
+Text Label 4700 4000 2    60   ~ 0
+VBAT2
+Text Label 4700 4100 2    60   ~ 0
+VBAT3
+Text Label 4700 4200 2    60   ~ 0
+VBAT4
+Wire Wire Line
+	4100 3800 4100 3000
+Text Label 4100 3000 0    60   ~ 0
+VSYS
+Connection ~ 2600 6350
 $EndSCHEMATC
