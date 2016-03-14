@@ -29,12 +29,12 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:pc104
-LIBS:ulv_battery-cache
+LIBS:ulv_photovoltaic
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 5 5
+Sheet 2 9
 Title ""
 Date ""
 Rev ""
@@ -66,14 +66,14 @@ $EndComp
 Text HLabel 3000 4000 2    60   Output ~ 0
 VBAT
 $Comp
-L GND #PWR05
+L GND #PWR06
 U 1 1 56E5E3D0
 P 2400 4700
-AR Path="/56E5DF65/56E5E3D0" Ref="#PWR05"  Part="1" 
-AR Path="/56E5E7C1/56E5E3D0" Ref="#PWR06"  Part="1" 
-AR Path="/56E5E9EC/56E5E3D0" Ref="#PWR07"  Part="1" 
-AR Path="/56E5EE46/56E5E3D0" Ref="#PWR08"  Part="1" 
-F 0 "#PWR08" H 2400 4450 50  0001 C CNN
+AR Path="/56E5DF65/56E5E3D0" Ref="#PWR06"  Part="1" 
+AR Path="/56E5E7C1/56E5E3D0" Ref="#PWR07"  Part="1" 
+AR Path="/56E5E9EC/56E5E3D0" Ref="#PWR08"  Part="1" 
+AR Path="/56E5EE46/56E5E3D0" Ref="#PWR09"  Part="1" 
+F 0 "#PWR06" H 2400 4450 50  0001 C CNN
 F 1 "GND" H 2400 4550 50  0000 C CNN
 F 2 "" H 2400 4700 50  0000 C CNN
 F 3 "" H 2400 4700 50  0000 C CNN
