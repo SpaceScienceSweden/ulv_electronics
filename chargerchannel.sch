@@ -30,7 +30,6 @@ LIBS:contrib
 LIBS:valves
 LIBS:ulv_linear
 LIBS:pc104
-LIBS:ulv_power-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -45,29 +44,10 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text HLabel 8350 3750 2    60   Output ~ 0
+Text HLabel 8350 3200 2    60   Output ~ 0
 VSYS
 Text HLabel 8350 2350 2    60   Input ~ 0
 RUN
-$Comp
-L LTC4121-4.2 U1
-U 1 1 56DC5B05
-P 5300 3650
-AR Path="/56DC5239/56DC5B05" Ref="U1"  Part="1" 
-AR Path="/56DC97B6/56DC5B05" Ref="U2"  Part="1" 
-AR Path="/56DC9DE8/56DC5B05" Ref="U3"  Part="1" 
-AR Path="/56DC9DEE/56DC5B05" Ref="U4"  Part="1" 
-F 0 "U1" H 5300 3550 60  0000 C CNN
-F 1 "LTC4121-4.2" H 5350 3700 60  0000 C CNN
-F 2 "Housings_DFN_QFN:QFN-16-1EP_3x3mm_Pitch0.5mm" H 5300 3650 60  0001 C CNN
-F 3 "" H 5300 3650 60  0000 C CNN
-F 4 "Linear Technologies" H 5300 3650 60  0001 C CNN "Mfg. Name"
-F 5 "LTC4121EUD-4.2#PBF" H 5300 3650 60  0001 C CNN "Mfg. Part Number"
-F 6 "LTC4121EUD-4.2#PBF-ND" H 5300 3650 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://www.digikey.se/product-detail/en/linear-technology/LTC4121EUD-4.2%23PBF/LTC4121EUD-4.2%23PBF-ND/5125447" H 5300 3650 60  0001 C CNN "1st Distrib. Link"
-	1    5300 3650
-	1    0    0    -1  
-$EndComp
 $Comp
 L C_Small C1
 U 1 1 56DC5F55
@@ -224,25 +204,6 @@ F 7 "http://www.digikey.se/product-detail/en/bourns-inc/SDE0805A-120M/SDE0805A-1
 	1    4900 4450
 	0    -1   -1   0   
 $EndComp
-$Comp
-L D_Schottky_Small D1
-U 1 1 56DC6E34
-P 3600 2350
-AR Path="/56DC5239/56DC6E34" Ref="D1"  Part="1" 
-AR Path="/56DC97B6/56DC6E34" Ref="D3"  Part="1" 
-AR Path="/56DC9DE8/56DC6E34" Ref="D5"  Part="1" 
-AR Path="/56DC9DEE/56DC6E34" Ref="D7"  Part="1" 
-F 0 "D1" H 3550 2430 50  0000 L CNN
-F 1 "D_Schottky_Small" H 3320 2270 50  0001 L CNN
-F 2 "Diodes_SMD:SMA_Standard" V 3600 2350 60  0001 C CNN
-F 3 "http://www.st.com/web/en/resource/technical/document/datasheet/CD00001323.pdf" V 3600 2350 60  0001 C CNN
-F 4 "ST" H 3600 2350 60  0001 C CNN "Mfg. Name"
-F 5 "STPS1L30A" H 3600 2350 60  0001 C CNN "Mfg. Part Number"
-F 6 "497-6577-1-ND" H 3600 2350 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://www.digikey.se/product-detail/en/stmicroelectronics/STPS1L30A/497-6577-1-ND/1865323" H 3600 2350 60  0001 C CNN "1st Distrib. Link"
-	1    3600 2350
-	-1   0    0    1   
-$EndComp
 Text Notes 5350 4550 0    60   ~ 0
 1.5 MHz switching frequency
 Text Notes 2550 5300 0    60   ~ 0
@@ -294,6 +255,211 @@ F 3 "" H 6450 3700 60  0000 C CNN
 	1    6450 3700
 	0    -1   1    0   
 $EndComp
+$Comp
+L R_Small R8
+U 1 1 56DC7F9A
+P 6700 3200
+AR Path="/56DC5239/56DC7F9A" Ref="R8"  Part="1" 
+AR Path="/56DC97B6/56DC7F9A" Ref="R16"  Part="1" 
+AR Path="/56DC9DE8/56DC7F9A" Ref="R24"  Part="1" 
+AR Path="/56DC9DEE/56DC7F9A" Ref="R32"  Part="1" 
+F 0 "R8" V 6800 3150 50  0000 L CNN
+F 1 "49.9k" V 6600 3150 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603" H 6700 3200 60  0001 C CNN
+F 3 "" H 6700 3200 60  0000 C CNN
+	1    6700 3200
+	0    1    1    0   
+$EndComp
+$Comp
+L R_Small R6
+U 1 1 56DC81E3
+P 6450 4000
+AR Path="/56DC5239/56DC81E3" Ref="R6"  Part="1" 
+AR Path="/56DC97B6/56DC81E3" Ref="R14"  Part="1" 
+AR Path="/56DC9DE8/56DC81E3" Ref="R22"  Part="1" 
+AR Path="/56DC9DEE/56DC81E3" Ref="R30"  Part="1" 
+F 0 "R6" H 6480 4020 50  0000 L CNN
+F 1 "470k" H 6480 3960 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603" H 6450 4000 60  0001 C CNN
+F 3 "" H 6450 4000 60  0000 C CNN
+	1    6450 4000
+	0    1    1    0   
+$EndComp
+$Comp
+L C_Small C4
+U 1 1 56DC84CE
+P 6200 4200
+AR Path="/56DC5239/56DC84CE" Ref="C4"  Part="1" 
+AR Path="/56DC97B6/56DC84CE" Ref="C9"  Part="1" 
+AR Path="/56DC9DE8/56DC84CE" Ref="C14"  Part="1" 
+AR Path="/56DC9DEE/56DC84CE" Ref="C19"  Part="1" 
+F 0 "C4" H 6210 4270 50  0000 L CNN
+F 1 "4.7uF" H 6210 4120 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0603" H 6200 4200 60  0001 C CNN
+F 3 "" H 6200 4200 60  0000 C CNN
+	1    6200 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR07
+U 1 1 56DC8573
+P 6200 4300
+AR Path="/56DC5239/56DC8573" Ref="#PWR07"  Part="1" 
+AR Path="/56DC97B6/56DC8573" Ref="#PWR018"  Part="1" 
+AR Path="/56DC9DE8/56DC8573" Ref="#PWR028"  Part="1" 
+AR Path="/56DC9DEE/56DC8573" Ref="#PWR038"  Part="1" 
+F 0 "#PWR07" H 6200 4050 50  0001 C CNN
+F 1 "GND" H 6200 4150 50  0000 C CNN
+F 2 "" H 6200 4300 60  0000 C CNN
+F 3 "" H 6200 4300 60  0000 C CNN
+	1    6200 4300
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R5
+U 1 1 56DC881A
+P 5600 2850
+AR Path="/56DC5239/56DC881A" Ref="R5"  Part="1" 
+AR Path="/56DC97B6/56DC881A" Ref="R13"  Part="1" 
+AR Path="/56DC9DE8/56DC881A" Ref="R21"  Part="1" 
+AR Path="/56DC9DEE/56DC881A" Ref="R29"  Part="1" 
+F 0 "R5" H 5630 2870 50  0000 L CNN
+F 1 "3.01k" H 5630 2810 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603" H 5600 2850 60  0001 C CNN
+F 3 "" H 5600 2850 60  0000 C CNN
+	1    5600 2850
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR08
+U 1 1 56DC88BE
+P 5800 2900
+AR Path="/56DC5239/56DC88BE" Ref="#PWR08"  Part="1" 
+AR Path="/56DC97B6/56DC88BE" Ref="#PWR019"  Part="1" 
+AR Path="/56DC9DE8/56DC88BE" Ref="#PWR029"  Part="1" 
+AR Path="/56DC9DEE/56DC88BE" Ref="#PWR039"  Part="1" 
+F 0 "#PWR08" H 5800 2650 50  0001 C CNN
+F 1 "GND" H 5800 2750 50  0000 C CNN
+F 2 "" H 5800 2900 60  0000 C CNN
+F 3 "" H 5800 2900 60  0000 C CNN
+	1    5800 2900
+	1    0    0    -1  
+$EndComp
+Text Notes 5500 2700 0    60   ~ 0
+3.01 k -> 400 mA
+$Comp
+L R_Small R7
+U 1 1 56DC8BF3
+P 6700 2450
+AR Path="/56DC5239/56DC8BF3" Ref="R7"  Part="1" 
+AR Path="/56DC97B6/56DC8BF3" Ref="R15"  Part="1" 
+AR Path="/56DC9DE8/56DC8BF3" Ref="R23"  Part="1" 
+AR Path="/56DC9DEE/56DC8BF3" Ref="R31"  Part="1" 
+F 0 "R7" V 6900 2400 50  0000 L CNN
+F 1 "49.9k" V 6800 2400 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603" H 6700 2450 60  0001 C CNN
+F 3 "" H 6700 2450 60  0000 C CNN
+	1    6700 2450
+	0    1    1    0   
+$EndComp
+Text HLabel 8350 2900 2    60   Output ~ 0
+/CHRG
+Text HLabel 8350 2700 2    60   Output ~ 0
+/FAULT
+$Comp
+L R_Small R1
+U 1 1 56DCB209
+P 4500 2350
+AR Path="/56DC5239/56DCB209" Ref="R1"  Part="1" 
+AR Path="/56DC97B6/56DCB209" Ref="R9"  Part="1" 
+AR Path="/56DC9DE8/56DCB209" Ref="R17"  Part="1" 
+AR Path="/56DC9DEE/56DCB209" Ref="R25"  Part="1" 
+F 0 "R1" H 4530 2370 50  0000 L CNN
+F 1 "25.5k" H 4530 2310 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603" H 4500 2350 60  0001 C CNN
+F 3 "" H 4500 2350 60  0000 C CNN
+	1    4500 2350
+	0    1    1    0   
+$EndComp
+$Comp
+L R_Small R2
+U 1 1 56DCB252
+P 4700 2550
+AR Path="/56DC5239/56DCB252" Ref="R2"  Part="1" 
+AR Path="/56DC97B6/56DCB252" Ref="R10"  Part="1" 
+AR Path="/56DC9DE8/56DCB252" Ref="R18"  Part="1" 
+AR Path="/56DC9DEE/56DCB252" Ref="R26"  Part="1" 
+F 0 "R2" H 4730 2570 50  0000 L CNN
+F 1 "24.5k" H 4730 2510 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603" H 4700 2550 60  0001 C CNN
+F 3 "" H 4700 2550 60  0000 C CNN
+	1    4700 2550
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR09
+U 1 1 56DCB472
+P 4700 2650
+AR Path="/56DC5239/56DCB472" Ref="#PWR09"  Part="1" 
+AR Path="/56DC97B6/56DCB472" Ref="#PWR020"  Part="1" 
+AR Path="/56DC9DE8/56DCB472" Ref="#PWR030"  Part="1" 
+AR Path="/56DC9DEE/56DCB472" Ref="#PWR040"  Part="1" 
+F 0 "#PWR09" H 4700 2400 50  0001 C CNN
+F 1 "GND" H 4700 2500 50  0000 C CNN
+F 2 "" H 4700 2650 60  0000 C CNN
+F 3 "" H 4700 2650 60  0000 C CNN
+	1    4700 2650
+	1    0    0    -1  
+$EndComp
+Text Notes 4300 2250 0    60   ~ 0
+Turn charger on when solar panel reaches 5 V\nTurn off when below 5*(2.25/2.45) = 4.6 V\nEnter low-power mode when input voltage < 0.7/2.45*5 = 1.4 V
+Text HLabel 8350 3750 2    60   Output ~ 0
+VBAT
+Text HLabel 3300 2350 0    60   Input ~ 0
+PV_IN
+Text HLabel 8350 3400 2    60   Input ~ 0
+NTC
+$Comp
+L LTC4121-4.2 U1
+U 1 1 56DC5B05
+P 5300 3650
+AR Path="/56DC5239/56DC5B05" Ref="U1"  Part="1" 
+AR Path="/56DC97B6/56DC5B05" Ref="U2"  Part="1" 
+AR Path="/56DC9DE8/56DC5B05" Ref="U3"  Part="1" 
+AR Path="/56DC9DEE/56DC5B05" Ref="U4"  Part="1" 
+F 0 "U1" H 5300 3550 60  0000 C CNN
+F 1 "LTC4121-4.2" H 5350 3700 60  0000 C CNN
+F 2 "Housings_DFN_QFN:QFN-16-1EP_3x3mm_Pitch0.5mm" H 5300 3650 60  0001 C CNN
+F 3 "" H 5300 3650 60  0000 C CNN
+F 4 "Linear Technologies" H 5300 3650 60  0001 C CNN "Mfg. Name"
+F 5 "LTC4121EUD-4.2#PBF" H 5300 3650 60  0001 C CNN "Mfg. Part Number"
+F 6 "LTC4121EUD-4.2#PBF-ND" H 5300 3650 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://www.digikey.se/product-detail/en/linear-technology/LTC4121EUD-4.2%23PBF/LTC4121EUD-4.2%23PBF-ND/5125447" H 5300 3650 60  0001 C CNN "1st Distrib. Link"
+	1    5300 3650
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R9
+U 1 1 56E70141
+P 7850 3600
+F 0 "R9" H 7880 3620 50  0000 L CNN
+F 1 "8173" V 7750 3500 50  0000 L CNN
+F 2 "" H 7850 3600 50  0000 C CNN
+F 3 "" H 7850 3600 50  0000 C CNN
+	1    7850 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R10
+U 1 1 56E7019B
+P 8100 3400
+F 0 "R10" V 8200 3400 50  0000 L CNN
+F 1 "618.55" V 8000 3300 50  0000 L CNN
+F 2 "" H 8100 3400 50  0000 C CNN
+F 3 "" H 8100 3400 50  0000 C CNN
+	1    8100 3400
+	0    1    1    0   
+$EndComp
 Wire Wire Line
 	5150 2350 5150 2950
 Wire Wire Line
@@ -328,7 +494,7 @@ Connection ~ 4450 3700
 Wire Wire Line
 	5350 4350 5350 4550
 Wire Wire Line
-	5350 4550 3800 4550
+	3800 4550 7850 4550
 Wire Wire Line
 	3800 4550 3800 3500
 Connection ~ 3800 3500
@@ -349,7 +515,7 @@ Wire Wire Line
 	4150 4450 4150 3800
 Connection ~ 4150 3800
 Wire Wire Line
-	3300 2350 3500 2350
+	3300 2350 4400 2350
 Wire Wire Line
 	4200 2350 4200 3700
 Wire Wire Line
@@ -358,10 +524,6 @@ Connection ~ 7150 3800
 Wire Wire Line
 	7150 4200 7150 4100
 Connection ~ 7150 3750
-Wire Wire Line
-	7150 3750 7850 3750
-Wire Wire Line
-	8350 3750 8050 3750
 Wire Wire Line
 	6250 3800 6150 3800
 Wire Wire Line
@@ -376,41 +538,11 @@ Wire Wire Line
 	5350 2750 6450 2750
 Wire Wire Line
 	6450 2750 6450 3500
-$Comp
-L R_Small R8
-U 1 1 56DC7F9A
-P 6700 3200
-AR Path="/56DC5239/56DC7F9A" Ref="R8"  Part="1" 
-AR Path="/56DC97B6/56DC7F9A" Ref="R16"  Part="1" 
-AR Path="/56DC9DE8/56DC7F9A" Ref="R24"  Part="1" 
-AR Path="/56DC9DEE/56DC7F9A" Ref="R32"  Part="1" 
-F 0 "R8" H 6730 3220 50  0000 L CNN
-F 1 "49.9k" H 6730 3160 50  0000 L CNN
-F 2 "Resistors_SMD:R_0603" H 6700 3200 60  0001 C CNN
-F 3 "" H 6700 3200 60  0000 C CNN
-	1    6700 3200
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	6600 3200 6450 3200
 Connection ~ 6450 3200
 Wire Wire Line
-	6800 3200 8250 3200
-$Comp
-L R_Small R6
-U 1 1 56DC81E3
-P 6450 4000
-AR Path="/56DC5239/56DC81E3" Ref="R6"  Part="1" 
-AR Path="/56DC97B6/56DC81E3" Ref="R14"  Part="1" 
-AR Path="/56DC9DE8/56DC81E3" Ref="R22"  Part="1" 
-AR Path="/56DC9DEE/56DC81E3" Ref="R30"  Part="1" 
-F 0 "R6" H 6480 4020 50  0000 L CNN
-F 1 "470k" H 6480 3960 50  0000 L CNN
-F 2 "Resistors_SMD:R_0603" H 6450 4000 60  0001 C CNN
-F 3 "" H 6450 4000 60  0000 C CNN
-	1    6450 4000
-	0    1    1    0   
-$EndComp
+	6800 3200 8350 3200
 Wire Wire Line
 	6350 4000 6200 4000
 Wire Wire Line
@@ -421,70 +553,7 @@ Wire Wire Line
 Wire Wire Line
 	6700 4000 6700 3800
 Connection ~ 6700 3800
-$Comp
-L C_Small C4
-U 1 1 56DC84CE
-P 6200 4200
-AR Path="/56DC5239/56DC84CE" Ref="C4"  Part="1" 
-AR Path="/56DC97B6/56DC84CE" Ref="C9"  Part="1" 
-AR Path="/56DC9DE8/56DC84CE" Ref="C14"  Part="1" 
-AR Path="/56DC9DEE/56DC84CE" Ref="C19"  Part="1" 
-F 0 "C4" H 6210 4270 50  0000 L CNN
-F 1 "4.7uF" H 6210 4120 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0603" H 6200 4200 60  0001 C CNN
-F 3 "" H 6200 4200 60  0000 C CNN
-	1    6200 4200
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR07
-U 1 1 56DC8573
-P 6200 4300
-AR Path="/56DC5239/56DC8573" Ref="#PWR07"  Part="1" 
-AR Path="/56DC97B6/56DC8573" Ref="#PWR018"  Part="1" 
-AR Path="/56DC9DE8/56DC8573" Ref="#PWR028"  Part="1" 
-AR Path="/56DC9DEE/56DC8573" Ref="#PWR038"  Part="1" 
-F 0 "#PWR07" H 6200 4050 50  0001 C CNN
-F 1 "GND" H 6200 4150 50  0000 C CNN
-F 2 "" H 6200 4300 60  0000 C CNN
-F 3 "" H 6200 4300 60  0000 C CNN
-	1    6200 4300
-	1    0    0    -1  
-$EndComp
 Connection ~ 6200 4000
-NoConn ~ 6150 3500
-Text Notes 6150 3400 1    60   ~ 0
-TODO: NTC
-$Comp
-L R_Small R5
-U 1 1 56DC881A
-P 5600 2850
-AR Path="/56DC5239/56DC881A" Ref="R5"  Part="1" 
-AR Path="/56DC97B6/56DC881A" Ref="R13"  Part="1" 
-AR Path="/56DC9DE8/56DC881A" Ref="R21"  Part="1" 
-AR Path="/56DC9DEE/56DC881A" Ref="R29"  Part="1" 
-F 0 "R5" H 5630 2870 50  0000 L CNN
-F 1 "3.01k" H 5630 2810 50  0000 L CNN
-F 2 "Resistors_SMD:R_0603" H 5600 2850 60  0001 C CNN
-F 3 "" H 5600 2850 60  0000 C CNN
-	1    5600 2850
-	0    1    1    0   
-$EndComp
-$Comp
-L GND #PWR08
-U 1 1 56DC88BE
-P 5800 2900
-AR Path="/56DC5239/56DC88BE" Ref="#PWR08"  Part="1" 
-AR Path="/56DC97B6/56DC88BE" Ref="#PWR019"  Part="1" 
-AR Path="/56DC9DE8/56DC88BE" Ref="#PWR029"  Part="1" 
-AR Path="/56DC9DEE/56DC88BE" Ref="#PWR039"  Part="1" 
-F 0 "#PWR08" H 5800 2650 50  0001 C CNN
-F 1 "GND" H 5800 2750 50  0000 C CNN
-F 2 "" H 5800 2900 60  0000 C CNN
-F 3 "" H 5800 2900 60  0000 C CNN
-	1    5800 2900
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	5800 2900 5800 2850
 Wire Wire Line
@@ -493,23 +562,6 @@ Wire Wire Line
 	5500 2850 5450 2850
 Wire Wire Line
 	5450 2850 5450 2950
-Text Notes 5500 2700 0    60   ~ 0
-3.01 k -> 400 mA
-$Comp
-L R_Small R7
-U 1 1 56DC8BF3
-P 6700 2450
-AR Path="/56DC5239/56DC8BF3" Ref="R7"  Part="1" 
-AR Path="/56DC97B6/56DC8BF3" Ref="R15"  Part="1" 
-AR Path="/56DC9DE8/56DC8BF3" Ref="R23"  Part="1" 
-AR Path="/56DC9DEE/56DC8BF3" Ref="R31"  Part="1" 
-F 0 "R7" H 6730 2470 50  0000 L CNN
-F 1 "49.9k" H 6730 2410 50  0000 L CNN
-F 2 "Resistors_SMD:R_0603" H 6700 2450 60  0001 C CNN
-F 3 "" H 6700 2450 60  0000 C CNN
-	1    6700 2450
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	7150 2450 6800 2450
 Connection ~ 7150 3200
@@ -517,10 +569,6 @@ Wire Wire Line
 	6600 2450 5250 2450
 Wire Wire Line
 	5250 2450 5250 2950
-Text HLabel 8350 2900 2    60   Output ~ 0
-/CHRG
-Text HLabel 8350 2700 2    60   Output ~ 0
-/FAULT
 Wire Wire Line
 	8350 2700 6550 2700
 Wire Wire Line
@@ -530,126 +578,32 @@ Wire Wire Line
 	8350 2900 6450 2900
 Connection ~ 6450 2900
 Wire Wire Line
-	3700 2350 4400 2350
-$Comp
-L R_Small R1
-U 1 1 56DCB209
-P 4500 2350
-AR Path="/56DC5239/56DCB209" Ref="R1"  Part="1" 
-AR Path="/56DC97B6/56DCB209" Ref="R9"  Part="1" 
-AR Path="/56DC9DE8/56DCB209" Ref="R17"  Part="1" 
-AR Path="/56DC9DEE/56DCB209" Ref="R25"  Part="1" 
-F 0 "R1" H 4530 2370 50  0000 L CNN
-F 1 "25.5k" H 4530 2310 50  0000 L CNN
-F 2 "Resistors_SMD:R_0603" H 4500 2350 60  0001 C CNN
-F 3 "" H 4500 2350 60  0000 C CNN
-	1    4500 2350
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Small R2
-U 1 1 56DCB252
-P 4700 2550
-AR Path="/56DC5239/56DCB252" Ref="R2"  Part="1" 
-AR Path="/56DC97B6/56DCB252" Ref="R10"  Part="1" 
-AR Path="/56DC9DE8/56DCB252" Ref="R18"  Part="1" 
-AR Path="/56DC9DEE/56DCB252" Ref="R26"  Part="1" 
-F 0 "R2" H 4730 2570 50  0000 L CNN
-F 1 "24.5k" H 4730 2510 50  0000 L CNN
-F 2 "Resistors_SMD:R_0603" H 4700 2550 60  0001 C CNN
-F 3 "" H 4700 2550 60  0000 C CNN
-	1    4700 2550
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
 	4600 2350 8350 2350
 Connection ~ 4200 2350
-$Comp
-L GND #PWR09
-U 1 1 56DCB472
-P 4700 2650
-AR Path="/56DC5239/56DCB472" Ref="#PWR09"  Part="1" 
-AR Path="/56DC97B6/56DCB472" Ref="#PWR020"  Part="1" 
-AR Path="/56DC9DE8/56DCB472" Ref="#PWR030"  Part="1" 
-AR Path="/56DC9DEE/56DCB472" Ref="#PWR040"  Part="1" 
-F 0 "#PWR09" H 4700 2400 50  0001 C CNN
-F 1 "GND" H 4700 2500 50  0000 C CNN
-F 2 "" H 4700 2650 60  0000 C CNN
-F 3 "" H 4700 2650 60  0000 C CNN
-	1    4700 2650
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	4700 2450 4700 2350
 Connection ~ 4700 2350
-Text Notes 4300 2250 0    60   ~ 0
-Turn charger on when solar panel reaches 5 V\nTurn off when below 5*(2.25/2.45) = 4.6 V\nEnter low-power mode when input voltage < 0.7/2.45*5 = 1.4 V
 Connection ~ 5150 2350
-Text HLabel 8350 3500 2    60   Output ~ 0
-VBAT
 Wire Wire Line
-	8350 3500 7650 3500
-Connection ~ 7650 3750
-Text Notes 3500 2300 0    60   ~ 0
-1A max
-$Comp
-L D_Schottky_Small D2
-U 1 1 56E5A09D
-P 7950 3750
-F 0 "D2" H 7900 3830 50  0000 L CNN
-F 1 "D_Schottky_Small" H 7670 3670 50  0001 L CNN
-F 2 "Diodes_SMD:SMA_Standard" V 7950 3750 60  0001 C CNN
-F 3 "http://www.st.com/web/en/resource/technical/document/datasheet/CD00001323.pdf" V 7950 3750 60  0001 C CNN
-F 4 "ST" H 7950 3750 60  0001 C CNN "Mfg. Name"
-F 5 "STPS1L30A" H 7950 3750 60  0001 C CNN "Mfg. Part Number"
-F 6 "497-6577-1-ND" H 7950 3750 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://www.digikey.se/product-detail/en/stmicroelectronics/STPS1L30A/497-6577-1-ND/1865323" H 7950 3750 60  0001 C CNN "1st Distrib. Link"
-	1    7950 3750
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	7650 3500 7650 3750
-Text HLabel 3300 2350 0    60   Input ~ 0
-PV_IN
-Text Notes 7850 3650 0    60   ~ 0
-1A max
-Text HLabel 8350 1800 2    60   Input ~ 0
-PV_RECT
-Wire Wire Line
-	8350 1800 4150 1800
-Wire Wire Line
-	4150 1800 4150 2350
-Connection ~ 4150 2350
+	7150 3750 8350 3750
 Wire Wire Line
 	7150 3900 7150 3450
 Wire Wire Line
 	7150 3200 7150 2450
 Wire Wire Line
-	8250 3200 8250 3750
-Connection ~ 8250 3750
-$Comp
-L D_Schottky_Small D3
-U 1 1 56E5BAE8
-P 5900 1450
-F 0 "D3" H 5850 1530 50  0000 L CNN
-F 1 "D_Schottky_Small" H 5620 1370 50  0001 L CNN
-F 2 "Diodes_SMD:SMA_Standard" V 5900 1450 60  0001 C CNN
-F 3 "http://www.st.com/web/en/resource/technical/document/datasheet/CD00001323.pdf" V 5900 1450 60  0001 C CNN
-F 4 "ST" H 5900 1450 60  0001 C CNN "Mfg. Name"
-F 5 "STPS1L30A" H 5900 1450 60  0001 C CNN "Mfg. Part Number"
-F 6 "497-6577-1-ND" H 5900 1450 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://www.digikey.se/product-detail/en/stmicroelectronics/STPS1L30A/497-6577-1-ND/1865323" H 5900 1450 60  0001 C CNN "1st Distrib. Link"
-	1    5900 1450
-	-1   0    0    1   
-$EndComp
+	6150 3500 6150 3400
 Wire Wire Line
-	3400 2350 3400 1450
+	8200 3400 8350 3400
 Wire Wire Line
-	3400 1450 5800 1450
-Connection ~ 3400 2350
+	6150 3400 8000 3400
 Wire Wire Line
-	6000 1450 8050 1450
+	7850 4550 7850 3700
+Connection ~ 5350 4550
 Wire Wire Line
-	8050 1450 8050 3200
-Connection ~ 8050 3200
+	7850 3500 7850 3400
+Connection ~ 7850 3400
+Text Notes 8650 3550 0    60   ~ 0
+B25/85 = 3490, 10 kOhm\nExample: Vishay NTCS0402E3103*LT\nTemperature range set to +5..+50°C
+Text Notes 4750 5550 0    60   ~ 0
+TODO: Set VOC manually? For instance via a small voltage reference\nSources say VOC isn't terribly dependent on insolation
 $EndSCHEMATC
