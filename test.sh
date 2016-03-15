@@ -1,5 +1,5 @@
 set -e  # Stop on errors
-LIBRARIES="adf067572c300bc0388f4bf47d6bdf4ec7839862"
+LIBRARIES="e79e12ca4beb3d82dcab3d3b0e4ad8ec3a15147d"
 
 for d in ulv_*
 do
