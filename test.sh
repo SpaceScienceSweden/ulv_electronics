@@ -1,5 +1,5 @@
 set -e  # Stop on errors
-LIBRARIES="e79e12ca4beb3d82dcab3d3b0e4ad8ec3a15147d"
+LIBRARIES="c4f8ab79a81315e859af9297f28c5d6179aee187"
 
 for d in ulv_*
 do
@@ -21,3 +21,4 @@ do
     )
 done
 
+(cd ulv_beacon && ./test.sh)
