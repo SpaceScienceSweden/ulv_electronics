@@ -325,4 +325,6 @@ F 3 "" H 7600 3050 60  0000 C CNN
 	2    7600 3250
 	1    0    0    -1  
 $EndComp
+Text Notes 850  1350 0    394  ~ 0
+TODO: 3.0V cutoff!
 $EndSCHEMATC
