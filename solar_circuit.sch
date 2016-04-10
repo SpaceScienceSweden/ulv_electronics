@@ -28,7 +28,7 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:pc104
+LIBS:scube
 LIBS:ulv_photovoltaic
 EELAYER 25 0
 EELAYER END
