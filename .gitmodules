@@ -1,9 +1,12 @@
 [submodule "ulv_battery"]
 	path = ulv_battery
-	url = https://github.com/SpaceScienceSweden/ulv_battery.git
+	url = ../ulv_battery.git
 [submodule "ulv_power"]
 	path = ulv_power
-	url = https://github.com/SpaceScienceSweden/ulv_power.git
+	url = ../ulv_power.git
 [submodule "ulv_beacon"]
 	path = ulv_beacon
-	url = https://github.com/SpaceScienceSweden/ulv_beacon.git
+	url = ../ulv_beacon.git
+[submodule "ulv_libraries"]
+	path = ulv_libraries
+	url = ../ulv_libraries.git
