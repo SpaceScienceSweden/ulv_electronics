@@ -60,5 +60,5 @@ LibName26=opto
 LibName27=atmel
 LibName28=contrib
 LibName29=valves
-LibName30=ulv_libraries/ulv_linear
-LibName31=ulv_libraries/pc104
+LibName30=../ulv_libraries/ulv_linear
+LibName31=../ulv_libraries/pc104

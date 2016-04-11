@@ -1,4 +1,4 @@
 (fp_lib_table
-  (lib (name PC104)(type KiCad)(uri ${KIPRJMOD}/ulv_libraries/pc104.pretty)(options "")(descr ""))
-  (lib (name Bourns)(type KiCad)(uri ${KIPRJMOD}/ulv_libraries/ulv_bourns.pretty)(options "")(descr ""))
+  (lib (name PC104)(type KiCad)(uri ${KIPRJMOD}/../ulv_libraries/pc104.pretty)(options "")(descr ""))
+  (lib (name Bourns)(type KiCad)(uri ${KIPRJMOD}/../ulv_libraries/ulv_bourns.pretty)(options "")(descr ""))
 )
