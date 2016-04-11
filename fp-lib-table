@@ -1,4 +1,4 @@
 (fp_lib_table
-  (lib (name PC104)(type KiCad)(uri ${KIPRJMOD}/ulv_libraries/pc104.pretty)(options "")(descr ""))
-  (lib (name XTC7005)(type KiCad)(uri ${KIPRJMOD}/ulv_libraries/xtc7005.pretty)(options "")(descr ""))
+  (lib (name PC104)(type KiCad)(uri ${KIPRJMOD}/../ulv_libraries/pc104.pretty)(options "")(descr ""))
+  (lib (name XTC7005)(type KiCad)(uri ${KIPRJMOD}/../ulv_libraries/xtc7005.pretty)(options "")(descr ""))
 )
