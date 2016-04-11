@@ -331,7 +331,7 @@
       (net 8 /VBAT2))
     (pad 2 thru_hole circle (at 1 0) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask F.SilkS)
       (net 3 GND))
-    (model "${KIPRJMOD}/ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
+    (model "${KIPRJMOD}/../ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
       (at (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -355,7 +355,7 @@
       (net 9 /VBAT1))
     (pad 2 thru_hole circle (at 1 0) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask F.SilkS)
       (net 3 GND))
-    (model "${KIPRJMOD}/ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
+    (model "${KIPRJMOD}/../ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
       (at (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -379,7 +379,7 @@
       (net 7 /VBAT3))
     (pad 2 thru_hole circle (at 1 0) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask F.SilkS)
       (net 3 GND))
-    (model "${KIPRJMOD}/ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
+    (model "${KIPRJMOD}/../ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
       (at (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -403,7 +403,7 @@
       (net 6 /VBAT4))
     (pad 2 thru_hole circle (at 1 0) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask F.SilkS)
       (net 3 GND))
-    (model "${KIPRJMOD}/ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
+    (model "${KIPRJMOD}/../ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
       (at (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -819,7 +819,7 @@
       (net 11 /PV1))
     (pad 2 thru_hole circle (at 1 0) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask F.SilkS)
       (net 15 "/Solar 1/VNEG"))
-    (model "${KIPRJMOD}/ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
+    (model "${KIPRJMOD}/../ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
       (at (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -843,7 +843,7 @@
       (net 12 /PV2))
     (pad 2 thru_hole circle (at 1 0) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask F.SilkS)
       (net 15 "/Solar 1/VNEG"))
-    (model "${KIPRJMOD}/ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
+    (model "${KIPRJMOD}/../ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
       (at (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -867,7 +867,7 @@
       (net 13 /PV3))
     (pad 2 thru_hole circle (at 1 0) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask F.SilkS)
       (net 15 "/Solar 1/VNEG"))
-    (model "${KIPRJMOD}/ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
+    (model "${KIPRJMOD}/../ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
       (at (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -891,7 +891,7 @@
       (net 14 /PV4))
     (pad 2 thru_hole circle (at 1 0) (size 1.2 1.2) (drill 0.7) (layers *.Cu *.Mask F.SilkS)
       (net 15 "/Solar 1/VNEG"))
-    (model "${KIPRJMOD}/ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
+    (model "${KIPRJMOD}/../ulv_libraries/packages3d/JST SxB-PH-K-S.wrl"
       (at (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
