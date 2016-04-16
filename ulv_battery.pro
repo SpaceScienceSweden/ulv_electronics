@@ -1,4 +1,4 @@
-update=Mon 14 Mar 2016 01:00:37 PM CET
+update=Sat 16 Apr 2016 02:38:48 PM CEST
 version=1
 last_client=kicad
 [cvpcb]
@@ -60,3 +60,4 @@ LibName28=contrib
 LibName29=valves
 LibName30=../ulv_libraries/scube
 LibName31=../ulv_libraries/ulv_photovoltaic
+LibName32=../ulv_libraries/ulv_ti
