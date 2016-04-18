@@ -59,8 +59,8 @@ F 1 "Battery" H 6450 4750 50  0000 L CNN
 F 2 "JST:JST-PH-02" V 6350 4840 50  0001 C CNN
 F 3 "http://www.jst-mfg.com/product/pdf/eng/ePH.pdf" V 6350 4840 50  0001 C CNN
 F 4 "JST" H 6350 4800 60  0001 C CNN "Mfg. Name"
-F 5 "455-1719-ND" H 6350 4800 60  0001 C CNN "Mfg. Part Number"
-F 6 "S2B-PH-K-S(LF)(SN)" H 6350 4800 60  0001 C CNN "1st Distrib. PN"
+F 5 "S2B-PH-K-S(LF)(SN)" H 6350 4800 60  0001 C CNN "Mfg. Part Number"
+F 6 "455-1719-ND" H 6350 4800 60  0001 C CNN "1st Distrib. PN"
 F 7 "http://www.digikey.com/product-detail/en/jst-sales-america-inc/S2B-PH-K-S(LF)(SN)/455-1719-ND/926626" H 6350 4800 60  0001 C CNN "1st Distrib. Link"
 	1    6350 4800
 	1    0    0    -1  
@@ -125,16 +125,20 @@ $EndComp
 $Comp
 L R_Small R1
 U 1 1 57123C36
-P 3800 4850
+P 3800 4700
 AR Path="/56E5DF65/57123C36" Ref="R1"  Part="1" 
 AR Path="/56E5E7C1/57123C36" Ref="R3"  Part="1" 
 AR Path="/56E5E9EC/57123C36" Ref="R5"  Part="1" 
 AR Path="/56E5EE46/57123C36" Ref="R7"  Part="1" 
-F 0 "R1" H 3830 4870 50  0000 L CNN
-F 1 "2k2" H 3830 4810 50  0000 L CNN
-F 2 "Resistors_SMD:R_0603_HandSoldering" H 3800 4850 50  0001 C CNN
-F 3 "" H 3800 4850 50  0000 C CNN
-	1    3800 4850
+F 0 "R1" H 3830 4720 50  0000 L CNN
+F 1 "2k2" H 3830 4660 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603_HandSoldering" H 3800 4700 50  0001 C CNN
+F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 3800 4700 50  0001 C CNN
+F 4 "MULTICOMP" H 3800 4700 60  0001 C CNN "Mfg. Name"
+F 5 "MC0063W060312K2" H 3800 4700 60  0001 C CNN "Mfg. Part Number"
+F 6 "9330810" H 3800 4700 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/multicomp/mc0063w060312k2/motst-tjockfilm-2k2-1-0-063w-0603/dp/9330810" H 3800 4700 60  0001 C CNN "1st Distrib. Link"
+	1    3800 4700
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -148,7 +152,11 @@ AR Path="/56E5EE46/57123C81" Ref="R8"  Part="1"
 F 0 "R2" H 5930 4720 50  0000 L CNN
 F 1 "330" H 5930 4660 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 5900 4700 50  0001 C CNN
-F 3 "" H 5900 4700 50  0000 C CNN
+F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 5900 4700 50  0001 C CNN
+F 4 "MULTICOMP" H 5900 4700 60  0001 C CNN "Mfg. Name"
+F 5 "MC0063W06031330R" H 5900 4700 60  0001 C CNN "Mfg. Part Number"
+F 6 "9331018" H 5900 4700 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/multicomp/mc0063w06031330r/motst-tjockfilm-330r-1-0-063w/dp/9331018" H 5900 4700 60  0001 C CNN "1st Distrib. Link"
 	1    5900 4700
 	1    0    0    -1  
 $EndComp
@@ -163,7 +171,11 @@ AR Path="/56E5EE46/57123CD4" Ref="C4"  Part="1"
 F 0 "C1" H 5910 5070 50  0000 L CNN
 F 1 "100n" H 5910 4920 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0603_HandSoldering" H 5900 5000 50  0001 C CNN
-F 3 "" H 5900 5000 50  0000 C CNN
+F 3 "http://www.farnell.com/datasheets/1833282.pdf" H 5900 5000 50  0001 C CNN
+F 4 "TDK" H 5900 5000 60  0001 C CNN "Mfg. Name"
+F 5 "C1608X8R1E104K080AA" H 5900 5000 60  0001 C CNN "Mfg. Part Number"
+F 6 "2346915" H 5900 5000 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/tdk/c1608x8r1e104k080aa/cap-mlcc-x8r-100nf-25v-0603/dp/2346915" H 5900 5000 60  0001 C CNN "1st Distrib. Link"
 	1    5900 5000
 	1    0    0    -1  
 $EndComp
@@ -175,7 +187,7 @@ Connection ~ 5900 4850
 Wire Wire Line
 	6350 4650 6350 4300
 Wire Wire Line
-	4650 4950 4600 4950
+	4350 4950 4650 4950
 Wire Wire Line
 	4600 4950 4600 5000
 Wire Wire Line
@@ -185,11 +197,9 @@ Wire Wire Line
 Wire Wire Line
 	4100 4850 4100 5000
 Wire Wire Line
-	3800 4950 3800 5400
+	3800 4800 3800 5400
 Wire Wire Line
 	3800 5300 3900 5300
-Wire Wire Line
-	3800 4750 3800 4450
 Wire Wire Line
 	3800 4450 5600 4450
 Wire Wire Line
@@ -258,5 +268,61 @@ F 6 "1758077" H 4600 5200 60  0001 C CNN "1st Distrib. PN"
 F 7 "http://se.farnell.com/nxp/bsp030-115/mosfet-n-kan-30v-10a-sot223/dp/1758077" H 4600 5200 60  0001 C CNN "1st Distrib. Link"
 	1    4600 5200
 	0    -1   1    0   
+$EndComp
+Text Notes 3750 6200 0    60   ~ 0
+Rds(on) = 50-70 mOhm for Ids = 1 A and Vgs = 3-4 V\nVocd = 100 mV for bq29700\nThis means bq2970 OCD should trigger at around 0.7-1.0 Ampere\ndown to around 0.5 A at 100°C
+$Comp
+L R_Small R11
+U 1 1 57156907
+P 3850 5100
+AR Path="/56E5E7C1/57156907" Ref="R11"  Part="1" 
+AR Path="/56E5DF65/57156907" Ref="R9"  Part="1" 
+AR Path="/56E5E9EC/57156907" Ref="R13"  Part="1" 
+AR Path="/56E5EE46/57156907" Ref="R15"  Part="1" 
+F 0 "R9" H 3880 5120 50  0000 L CNN
+F 1 "4M7" H 3880 5060 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603_HandSoldering" H 3850 5100 50  0001 C CNN
+F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 3850 5100 50  0001 C CNN
+F 4 "MULTICOMP" H 3850 5100 60  0001 C CNN "Mfg. Name"
+F 5 "MC0063W060314M70" H 3850 5100 60  0001 C CNN "Mfg. Part Number"
+F 6 "2141613" H 3850 5100 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/multicomp/mc0063w060314m70/motst-tjockfilm-4m7-1-0-063w-0603/dp/2141613" H 3850 5100 60  0001 C CNN "1st Distrib. Link"
+	1    3850 5100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3850 5000 3850 4950
+Wire Wire Line
+	3850 4950 4100 4950
+Connection ~ 4100 4950
+Wire Wire Line
+	3850 5200 3850 5300
+Connection ~ 3850 5300
+Wire Wire Line
+	4350 5300 4350 5200
+Connection ~ 4350 5300
+Wire Wire Line
+	4350 5000 4350 4950
+Connection ~ 4600 4950
+Wire Wire Line
+	3800 4600 3800 4450
+$Comp
+L R_Small R10
+U 1 1 57156CB3
+P 4350 5100
+AR Path="/56E5DF65/57156CB3" Ref="R10"  Part="1" 
+AR Path="/56E5E7C1/57156CB3" Ref="R12"  Part="1" 
+AR Path="/56E5E9EC/57156CB3" Ref="R14"  Part="1" 
+AR Path="/56E5EE46/57156CB3" Ref="R16"  Part="1" 
+F 0 "R10" H 4380 5120 50  0000 L CNN
+F 1 "4M7" H 4380 5060 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603_HandSoldering" H 4350 5100 50  0001 C CNN
+F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 4350 5100 50  0001 C CNN
+F 4 "MULTICOMP" H 4350 5100 60  0001 C CNN "Mfg. Name"
+F 5 "MC0063W060314M70" H 4350 5100 60  0001 C CNN "Mfg. Part Number"
+F 6 "2141613" H 4350 5100 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/multicomp/mc0063w060314m70/motst-tjockfilm-4m7-1-0-063w-0603/dp/2141613" H 4350 5100 60  0001 C CNN "1st Distrib. Link"
+	1    4350 5100
+	1    0    0    -1  
 $EndComp
 $EndSCHEMATC

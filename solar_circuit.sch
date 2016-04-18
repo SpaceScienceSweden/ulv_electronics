@@ -54,10 +54,14 @@ AR Path="/56E6AFA2/56E6AFCC" Ref="P4"  Part="1"
 AR Path="/56E6B7CE/56E6AFCC" Ref="P5"  Part="1" 
 AR Path="/56E6DEA5/56E6AFCC" Ref="P6"  Part="1" 
 AR Path="/56E6DEAA/56E6AFCC" Ref="P7"  Part="1" 
-F 0 "P4" V 3450 4500 60  0000 C CNN
+F 0 "P7" V 3450 4500 60  0000 C CNN
 F 1 "PHOTOVOLTAIC" V 3375 4500 60  0000 C CNN
 F 2 "JST:JST-PH-02" H 3650 4500 60  0001 C CNN
-F 3 "" H 3650 4500 60  0000 C CNN
+F 3 "http://www.jst-mfg.com/product/pdf/eng/ePH.pdf" H 3650 4500 60  0001 C CNN
+F 4 "JST" H 3650 4500 60  0001 C CNN "Mfg. Name"
+F 5 "S2B-PH-K-S(LF)(SN)" H 3650 4500 60  0001 C CNN "Mfg. Part Number"
+F 6 "455-1719-ND" H 3650 4500 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://www.digikey.com/product-detail/en/jst-sales-america-inc/S2B-PH-K-S(LF)(SN)/455-1719-ND/926626" H 3650 4500 60  0001 C CNN "1st Distrib. Link"
 	1    3650 4500
 	1    0    0    -1  
 $EndComp
@@ -88,7 +92,7 @@ AR Path="/56E6AFA2/56E6B119" Ref="D5"  Part="1"
 AR Path="/56E6B7CE/56E6B119" Ref="D6"  Part="1" 
 AR Path="/56E6DEA5/56E6B119" Ref="D7"  Part="1" 
 AR Path="/56E6DEAA/56E6B119" Ref="D8"  Part="1" 
-F 0 "D5" H 3950 4080 50  0000 L CNN
+F 0 "D8" H 3950 4080 50  0000 L CNN
 F 1 "Schottky" H 3850 3900 50  0000 L CNN
 F 2 "Diodes_SMD:DO-214AB_Handsoldering" V 4000 4000 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1912229.pdf" V 4000 4000 50  0001 C CNN
