@@ -113,17 +113,6 @@ F1 "battery_circuit.sch" 60
 F2 "VBAT" O R 2150 3700 60 
 F3 "VSYS" O R 2150 3800 60 
 $EndSheet
-$Comp
-L CONN_02X01 P2
-U 1 1 56E60992
-P 3200 3800
-F 0 "P2" H 3200 3900 50  0000 C CNN
-F 1 "deployment switch" H 3200 3700 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_2x01" H 3200 2600 50  0001 C CNN
-F 3 "" H 3200 2600 50  0000 C CNN
-	1    3200 3800
-	1    0    0    -1  
-$EndComp
 $Sheet
 S 1050 4250 1100 400 
 U 56E6AFA2
@@ -133,17 +122,6 @@ F2 "VPV" O R 2150 4350 60
 F3 "VSYS" O R 2150 4450 60 
 F4 "VNEG" I R 2150 4550 60 
 $EndSheet
-$Comp
-L CONN_02X01 P3
-U 1 1 56E6B3AE
-P 3200 6350
-F 0 "P3" H 3200 6450 50  0000 C CNN
-F 1 "deployment switch" H 3200 6250 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_2x01" H 3200 5150 50  0001 C CNN
-F 3 "" H 3200 5150 50  0000 C CNN
-	1    3200 6350
-	1    0    0    -1  
-$EndComp
 $Sheet
 S 1050 4850 1100 400 
 U 56E6B7CE
@@ -174,12 +152,12 @@ $EndSheet
 $Comp
 L GND #PWR04
 U 1 1 56E6E535
-P 3700 6350
-F 0 "#PWR04" H 3700 6100 50  0001 C CNN
-F 1 "GND" H 3700 6200 50  0000 C CNN
-F 2 "" H 3700 6350 50  0000 C CNN
-F 3 "" H 3700 6350 50  0000 C CNN
-	1    3700 6350
+P 3700 6400
+F 0 "#PWR04" H 3700 6150 50  0001 C CNN
+F 1 "GND" H 3700 6250 50  0000 C CNN
+F 2 "" H 3700 6400 50  0000 C CNN
+F 3 "" H 3700 6400 50  0000 C CNN
+	1    3700 6400
 	1    0    0    -1  
 $EndComp
 Text Label 4900 5800 2    60   ~ 0
@@ -291,7 +269,7 @@ Wire Wire Line
 Wire Wire Line
 	2750 2300 2750 6250
 Wire Wire Line
-	2150 3800 2950 3800
+	2150 3800 3150 3800
 Wire Wire Line
 	2150 2800 2750 2800
 Connection ~ 2750 3300
@@ -300,7 +278,7 @@ Wire Wire Line
 Connection ~ 2750 2800
 Connection ~ 2750 3800
 Wire Wire Line
-	3450 3800 3600 3800
+	3250 3800 3600 3800
 Wire Wire Line
 	2150 4550 2600 4550
 Wire Wire Line
@@ -315,7 +293,7 @@ Wire Wire Line
 	2750 6250 2150 6250
 Connection ~ 2750 5650
 Wire Wire Line
-	3700 6350 3450 6350
+	2150 6350 3700 6350
 Wire Wire Line
 	2150 5150 2600 5150
 Wire Wire Line
@@ -323,8 +301,6 @@ Wire Wire Line
 Wire Wire Line
 	2600 5750 2150 5750
 Connection ~ 2600 5150
-Wire Wire Line
-	2150 6350 2950 6350
 Connection ~ 2600 5750
 Wire Wire Line
 	2150 4350 2450 4350
@@ -344,7 +320,7 @@ Wire Bus Line
 Wire Bus Line
 	2550 6650 2550 2100
 Wire Wire Line
-	3700 6350 3700 3600
+	3700 3600 3700 6400
 Text Notes 5900 3200 0    60   ~ 0
 VSYS:\nVBAT[1-8]:
 Wire Wire Line
@@ -378,4 +354,64 @@ F 3 "" H 5400 5000 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	4900 2700 4900 2800
+$Comp
+L Led_Small D25
+U 1 1 57196FC0
+P 4050 2850
+F 0 "D25" H 4000 2975 50  0000 L CNN
+F 1 "GREEN" H 3900 2750 50  0000 L CNN
+F 2 "LEDs:LED_0603" V 4050 2850 50  0001 C CNN
+F 3 "" V 4050 2850 50  0000 C CNN
+	1    4050 2850
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R_Small R33
+U 1 1 57196FCB
+P 4050 3150
+F 0 "R33" H 4080 3170 50  0000 L CNN
+F 1 "2k2" H 4080 3110 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603_HandSoldering" H 4050 3150 50  0001 C CNN
+F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 4050 3150 50  0001 C CNN
+F 4 "MULTICOMP" H 4050 3150 60  0001 C CNN "Mfg. Name"
+F 5 "MC0063W060312K2" H 4050 3150 60  0001 C CNN "Mfg. Part Number"
+F 6 "9330810" H 4050 3150 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/multicomp/mc0063w060312k2/motst-tjockfilm-2k2-1-0-063w-0603/dp/9330810" H 4050 3150 60  0001 C CNN "1st Distrib. Link"
+	1    4050 3150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4050 2950 4050 3050
+$Comp
+L GND #PWR05
+U 1 1 5719705E
+P 4050 3350
+F 0 "#PWR05" H 4050 3100 50  0001 C CNN
+F 1 "GND" H 4050 3200 50  0000 C CNN
+F 2 "" H 4050 3350 50  0000 C CNN
+F 3 "" H 4050 3350 50  0000 C CNN
+	1    4050 3350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4050 3350 4050 3250
+Wire Wire Line
+	4050 2750 4050 2700
+Connection ~ 4050 2700
+Connection ~ 3700 6350
+$Comp
+L CONN_01X02 P2
+U 1 1 57198D3C
+P 3200 3550
+F 0 "P2" H 3200 3700 50  0000 C CNN
+F 1 "CONN_01X02" V 3300 3550 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 3200 3550 50  0001 C CNN
+F 3 "" H 3200 3550 50  0000 C CNN
+	1    3200 3550
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3150 3800 3150 3750
+Wire Wire Line
+	3250 3750 3250 3800
 $EndSCHEMATC
