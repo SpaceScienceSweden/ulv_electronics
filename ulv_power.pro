@@ -1,6 +1,6 @@
-update=Sun 13 Mar 2016 04:06:14 PM CET
+update=Fri 22 Apr 2016 10:21:21 PM CEST
 version=1
-last_client=eeschema
+last_client=kicad
 [general]
 version=1
 RootSch=
@@ -62,3 +62,4 @@ LibName28=contrib
 LibName29=valves
 LibName30=../ulv_libraries/ulv_linear
 LibName31=../ulv_libraries/pc104
+LibName32=../ulv_libraries/scube
