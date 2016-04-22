@@ -36,7 +36,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 9
+Sheet 2 9
 Title ""
 Date ""
 Rev ""
@@ -54,28 +54,24 @@ AR Path="/56E5DF65/56E5C3BE" Ref="BT1"  Part="1"
 AR Path="/56E5E7C1/56E5C3BE" Ref="BT2"  Part="1" 
 AR Path="/56E5E9EC/56E5C3BE" Ref="BT3"  Part="1" 
 AR Path="/56E5EE46/56E5C3BE" Ref="BT4"  Part="1" 
-F 0 "BT1" H 6450 5300 50  0000 L CNN
+F 0 "BT4" H 6450 5300 50  0000 L CNN
 F 1 "Battery" H 6450 5200 50  0000 L CNN
 F 2 "Pin_Headers:Pin_Header_Straight_1x02" V 6350 5290 50  0001 C CNN
-F 3 "http://www.jst-mfg.com/product/pdf/eng/ePH.pdf" V 6350 5290 50  0001 C CNN
-F 4 "JST" H 6350 5250 60  0001 C CNN "Mfg. Name"
-F 5 "S2B-PH-K-S(LF)(SN)" H 6350 5250 60  0001 C CNN "Mfg. Part Number"
-F 6 "455-1719-ND" H 6350 5250 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://www.digikey.com/product-detail/en/jst-sales-america-inc/S2B-PH-K-S(LF)(SN)/455-1719-ND/926626" H 6350 5250 60  0001 C CNN "1st Distrib. Link"
+F 3 "" V 6350 5290 50  0001 C CNN
 	1    6350 5250
 	1    0    0    -1  
 $EndComp
 Text HLabel 5900 4000 1    60   BiDi ~ 0
 VBAT
 $Comp
-L GND #PWR06
+L GND #PWR6
 U 1 1 56E5E3D0
 P 2450 5700
-AR Path="/56E5DF65/56E5E3D0" Ref="#PWR06"  Part="1" 
-AR Path="/56E5E7C1/56E5E3D0" Ref="#PWR07"  Part="1" 
-AR Path="/56E5E9EC/56E5E3D0" Ref="#PWR08"  Part="1" 
-AR Path="/56E5EE46/56E5E3D0" Ref="#PWR09"  Part="1" 
-F 0 "#PWR06" H 2450 5450 50  0001 C CNN
+AR Path="/56E5DF65/56E5E3D0" Ref="#PWR6"  Part="1" 
+AR Path="/56E5E7C1/56E5E3D0" Ref="#PWR7"  Part="1" 
+AR Path="/56E5E9EC/56E5E3D0" Ref="#PWR8"  Part="1" 
+AR Path="/56E5EE46/56E5E3D0" Ref="#PWR9"  Part="1" 
+F 0 "#PWR9" H 2450 5450 50  0001 C CNN
 F 1 "GND" H 2450 5550 50  0000 C CNN
 F 2 "" H 2450 5700 50  0000 C CNN
 F 3 "" H 2450 5700 50  0000 C CNN
@@ -90,7 +86,7 @@ AR Path="/56E5DF65/56E5EF28" Ref="D1"  Part="1"
 AR Path="/56E5E7C1/56E5EF28" Ref="D2"  Part="1" 
 AR Path="/56E5E9EC/56E5EF28" Ref="D3"  Part="1" 
 AR Path="/56E5EE46/56E5EF28" Ref="D4"  Part="1" 
-F 0 "D1" H 7100 4380 50  0000 L CNN
+F 0 "D4" H 7100 4380 50  0000 L CNN
 F 1 "Schottky" H 7150 4200 50  0000 C CNN
 F 2 "Diodes_SMD:DO-214AB_Handsoldering" V 7150 4300 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1912229.pdf" V 5950 4150 50  0001 C CNN
@@ -111,7 +107,7 @@ AR Path="/56E5DF65/5712393D" Ref="U1"  Part="1"
 AR Path="/56E5E7C1/5712393D" Ref="U2"  Part="1" 
 AR Path="/56E5E9EC/5712393D" Ref="U3"  Part="1" 
 AR Path="/56E5EE46/5712393D" Ref="U4"  Part="1" 
-F 0 "U1" H 5100 5100 60  0000 C CNN
+F 0 "U4" H 5100 5100 60  0000 C CNN
 F 1 "bq2970" H 5100 4600 60  0000 C CNN
 F 2 "bq2970:bq2970" H 5100 4850 60  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/2024256.pdf" H 5100 4850 60  0001 C CNN
@@ -130,7 +126,7 @@ AR Path="/56E5DF65/57123C36" Ref="R1"  Part="1"
 AR Path="/56E5E7C1/57123C36" Ref="R3"  Part="1" 
 AR Path="/56E5E9EC/57123C36" Ref="R5"  Part="1" 
 AR Path="/56E5EE46/57123C36" Ref="R7"  Part="1" 
-F 0 "R1" H 2480 4720 50  0000 L CNN
+F 0 "R7" H 2480 4720 50  0000 L CNN
 F 1 "2k2" H 2480 4660 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 2450 4700 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 2450 4700 50  0001 C CNN
@@ -149,7 +145,7 @@ AR Path="/56E5DF65/57123C81" Ref="R2"  Part="1"
 AR Path="/56E5E7C1/57123C81" Ref="R4"  Part="1" 
 AR Path="/56E5E9EC/57123C81" Ref="R6"  Part="1" 
 AR Path="/56E5EE46/57123C81" Ref="R8"  Part="1" 
-F 0 "R2" H 5930 4720 50  0000 L CNN
+F 0 "R8" H 5930 4720 50  0000 L CNN
 F 1 "330" H 5930 4660 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 5900 4700 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 5900 4700 50  0001 C CNN
@@ -168,7 +164,7 @@ AR Path="/56E5DF65/57123CD4" Ref="C1"  Part="1"
 AR Path="/56E5E7C1/57123CD4" Ref="C2"  Part="1" 
 AR Path="/56E5E9EC/57123CD4" Ref="C3"  Part="1" 
 AR Path="/56E5EE46/57123CD4" Ref="C4"  Part="1" 
-F 0 "C1" H 5910 5070 50  0000 L CNN
+F 0 "C4" H 5910 5070 50  0000 L CNN
 F 1 "100n" H 5910 4920 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0603_HandSoldering" H 5900 5000 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1833282.pdf" H 5900 5000 50  0001 C CNN
@@ -191,7 +187,7 @@ AR Path="/56E5E7C1/57156907" Ref="R11"  Part="1"
 AR Path="/56E5DF65/57156907" Ref="R9"  Part="1" 
 AR Path="/56E5E9EC/57156907" Ref="R13"  Part="1" 
 AR Path="/56E5EE46/57156907" Ref="R15"  Part="1" 
-F 0 "R9" H 2730 5370 50  0000 L CNN
+F 0 "R15" H 2730 5370 50  0000 L CNN
 F 1 "4M7" H 2730 5310 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 2700 5350 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 2700 5350 50  0001 C CNN
@@ -210,7 +206,7 @@ AR Path="/56E5DF65/57156CB3" Ref="R10"  Part="1"
 AR Path="/56E5E7C1/57156CB3" Ref="R12"  Part="1" 
 AR Path="/56E5E9EC/57156CB3" Ref="R14"  Part="1" 
 AR Path="/56E5EE46/57156CB3" Ref="R16"  Part="1" 
-F 0 "R10" H 3730 5370 50  0000 L CNN
+F 0 "R16" H 3730 5370 50  0000 L CNN
 F 1 "4M7" H 3730 5310 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 3700 5350 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 3700 5350 50  0001 C CNN
@@ -229,7 +225,7 @@ AR Path="/56E5DF65/57138A88" Ref="Q2"  Part="1"
 AR Path="/56E5E7C1/57138A88" Ref="Q4"  Part="1" 
 AR Path="/56E5E9EC/57138A88" Ref="Q6"  Part="1" 
 AR Path="/56E5EE46/57138A88" Ref="Q8"  Part="1" 
-F 0 "Q2" H 3750 5600 50  0000 R CNN
+F 0 "Q8" H 3750 5600 50  0000 R CNN
 F 1 "Q_NMOS_GDSD" H 4150 5500 50  0000 R CNN
 F 2 "TO_SOT_Packages_SMD:SOT-223" H 3650 5650 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/454169.pdf" H 3450 5550 50  0001 C CNN
@@ -248,7 +244,7 @@ AR Path="/56E5DF65/571388C2" Ref="Q1"  Part="1"
 AR Path="/56E5E7C1/571388C2" Ref="Q3"  Part="1" 
 AR Path="/56E5E9EC/571388C2" Ref="Q5"  Part="1" 
 AR Path="/56E5EE46/571388C2" Ref="Q7"  Part="1" 
-F 0 "Q1" H 3250 5600 50  0000 R CNN
+F 0 "Q7" H 3250 5600 50  0000 R CNN
 F 1 "Q_NMOS_GDSD" H 3650 5500 50  0000 R CNN
 F 2 "TO_SOT_Packages_SMD:SOT-223" H 3150 5650 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/454169.pdf" H 2950 5550 50  0001 C CNN
@@ -267,10 +263,14 @@ AR Path="/56E5DF65/571953BE" Ref="D9"  Part="1"
 AR Path="/56E5E7C1/571953BE" Ref="D12"  Part="1" 
 AR Path="/56E5E9EC/571953BE" Ref="D15"  Part="1" 
 AR Path="/56E5EE46/571953BE" Ref="D18"  Part="1" 
-F 0 "D9" H 4050 5275 50  0000 L CNN
+F 0 "D18" H 4050 5275 50  0000 L CNN
 F 1 "GREEN" H 3950 5050 50  0000 L CNN
 F 2 "LEDs:LED_0603" V 4100 5150 50  0001 C CNN
-F 3 "" V 4100 5150 50  0000 C CNN
+F 3 "http://www.farnell.com/datasheets/485053.pdf" V 4100 5150 50  0001 C CNN
+F 4 "VISHAY" H 4100 5150 60  0001 C CNN "Mfg. Name"
+F 5 "TLMP1100-GS08" H 4100 5150 60  0001 C CNN "Mfg. Part Number"
+F 6 "1328306" H 4100 5150 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/vishay/tlmp1100-gs08/led-0603-green/dp/1328306" H 4100 5150 60  0001 C CNN "1st Distrib. Link"
 	1    4100 5150
 	0    -1   -1   0   
 $EndComp
@@ -282,10 +282,14 @@ AR Path="/56E5DF65/5719541F" Ref="D10"  Part="1"
 AR Path="/56E5E7C1/5719541F" Ref="D13"  Part="1" 
 AR Path="/56E5E9EC/5719541F" Ref="D16"  Part="1" 
 AR Path="/56E5EE46/5719541F" Ref="D19"  Part="1" 
-F 0 "D10" H 4400 5275 50  0000 L CNN
+F 0 "D19" H 4400 5275 50  0000 L CNN
 F 1 "RED" H 4400 5050 50  0000 L CNN
 F 2 "LEDs:LED_0603" V 4450 5150 50  0001 C CNN
-F 3 "" V 4450 5150 50  0000 C CNN
+F 3 "http://www.farnell.com/datasheets/1698881.pdf" V 4450 5150 50  0001 C CNN
+F 4 "VISHAY" H 4450 5150 60  0001 C CNN "Mfg. Name"
+F 5 "TLMS1000-GS08" H 4450 5150 60  0001 C CNN "Mfg. Part Number"
+F 6 "1328308" H 4450 5150 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/vishay/tlms1000-gs08/led-0603-red-4mcd-628nm/dp/1328308" H 4450 5150 60  0001 C CNN "1st Distrib. Link"
 	1    4450 5150
 	0    -1   -1   0   
 $EndComp
@@ -297,7 +301,7 @@ AR Path="/56E5DF65/571954D6" Ref="R17"  Part="1"
 AR Path="/56E5E7C1/571954D6" Ref="R20"  Part="1" 
 AR Path="/56E5E9EC/571954D6" Ref="R23"  Part="1" 
 AR Path="/56E5EE46/571954D6" Ref="R26"  Part="1" 
-F 0 "R17" H 4130 5470 50  0000 L CNN
+F 0 "R26" H 4130 5470 50  0000 L CNN
 F 1 "2k2" H 4130 5410 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 4100 5450 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 4100 5450 50  0001 C CNN
@@ -316,7 +320,7 @@ AR Path="/56E5DF65/5719556D" Ref="R18"  Part="1"
 AR Path="/56E5E7C1/5719556D" Ref="R21"  Part="1" 
 AR Path="/56E5E9EC/5719556D" Ref="R24"  Part="1" 
 AR Path="/56E5EE46/5719556D" Ref="R27"  Part="1" 
-F 0 "R18" H 4480 5470 50  0000 L CNN
+F 0 "R27" H 4480 5470 50  0000 L CNN
 F 1 "2k2" H 4480 5410 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 4450 5450 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 4450 5450 50  0001 C CNN
@@ -335,10 +339,14 @@ AR Path="/56E5DF65/57195FD3" Ref="D11"  Part="1"
 AR Path="/56E5E7C1/57195FD3" Ref="D14"  Part="1" 
 AR Path="/56E5E9EC/57195FD3" Ref="D17"  Part="1" 
 AR Path="/56E5EE46/57195FD3" Ref="D20"  Part="1" 
-F 0 "D11" H 6850 4925 50  0000 L CNN
+F 0 "D20" H 6850 4925 50  0000 L CNN
 F 1 "ORANGE" H 6750 4700 50  0000 L CNN
 F 2 "LEDs:LED_0603" V 6900 4800 50  0001 C CNN
-F 3 "" V 6900 4800 50  0000 C CNN
+F 3 "http://www.farnell.com/datasheets/485055.pdf" V 6900 4800 50  0001 C CNN
+F 4 "VISHAY" H 6900 4800 60  0001 C CNN "Mfg. Name"
+F 5 "TLMO1000-GS08" H 6900 4800 60  0001 C CNN "Mfg. Part Number"
+F 6 "1328307" H 6900 4800 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/vishay/tlmo1000-gs08/led-0603-orange/dp/1328307" H 6900 4800 60  0001 C CNN "1st Distrib. Link"
 	1    6900 4800
 	0    -1   -1   0   
 $EndComp
@@ -350,7 +358,7 @@ AR Path="/56E5DF65/57196042" Ref="R19"  Part="1"
 AR Path="/56E5E7C1/57196042" Ref="R22"  Part="1" 
 AR Path="/56E5E9EC/57196042" Ref="R25"  Part="1" 
 AR Path="/56E5EE46/57196042" Ref="R28"  Part="1" 
-F 0 "R19" H 6930 5120 50  0000 L CNN
+F 0 "R28" H 6930 5120 50  0000 L CNN
 F 1 "2k2" H 6930 5060 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 6900 5100 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 6900 5100 50  0001 C CNN
@@ -369,7 +377,7 @@ AR Path="/56E5DF65/57196338" Ref="P8"  Part="1"
 AR Path="/56E5E7C1/57196338" Ref="P9"  Part="1" 
 AR Path="/56E5E9EC/57196338" Ref="P10"  Part="1" 
 AR Path="/56E5EE46/57196338" Ref="P11"  Part="1" 
-F 0 "P8" H 6550 4850 50  0000 C CNN
+F 0 "P11" H 6550 4850 50  0000 C CNN
 F 1 "CONN_01X02" V 6650 4700 50  0000 C CNN
 F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 6550 4700 50  0001 C CNN
 F 3 "" H 6550 4700 50  0000 C CNN
