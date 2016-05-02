@@ -54,7 +54,7 @@ AR Path="/56E6AFA2/56E6AFCC" Ref="P4"  Part="1"
 AR Path="/56E6B7CE/56E6AFCC" Ref="P5"  Part="1" 
 AR Path="/56E6DEA5/56E6AFCC" Ref="P6"  Part="1" 
 AR Path="/56E6DEAA/56E6AFCC" Ref="P7"  Part="1" 
-F 0 "P7" V 3450 4500 60  0000 C CNN
+F 0 "P4" V 3450 4500 60  0000 C CNN
 F 1 "PHOTOVOLTAIC" V 3375 4500 60  0000 C CNN
 F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 3650 4500 60  0001 C CNN
 F 3 "" H 3650 4500 60  0001 C CNN
@@ -80,25 +80,6 @@ Wire Wire Line
 	3100 4950 4350 4950
 Wire Wire Line
 	3650 4950 3650 4850
-$Comp
-L D_Schottky_Small D5
-U 1 1 56E6B119
-P 4000 3650
-AR Path="/56E6AFA2/56E6B119" Ref="D5"  Part="1" 
-AR Path="/56E6B7CE/56E6B119" Ref="D6"  Part="1" 
-AR Path="/56E6DEA5/56E6B119" Ref="D7"  Part="1" 
-AR Path="/56E6DEAA/56E6B119" Ref="D8"  Part="1" 
-F 0 "D8" H 3950 3730 50  0000 L CNN
-F 1 "Schottky" H 3850 3550 50  0000 L CNN
-F 2 "Diodes_SMD:DO-214AB_Handsoldering" V 4000 3650 50  0001 C CNN
-F 3 "http://www.farnell.com/datasheets/1912229.pdf" V 4000 3650 50  0001 C CNN
-F 4 "Vishay" H 4000 3650 60  0001 C CNN "Mfg. Name"
-F 5 "VS-30BQ015TRPBF" H 4000 3650 60  0001 C CNN "Mfg. Part Number"
-F 6 "9101250" H 4000 3650 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/vishay-semiconductor/vs-30bq015trpbf/diode-schottky-3a-15v/dp/9101250" H 4000 3650 60  0001 C CNN "1st Distrib. Link"
-	1    4000 3650
-	-1   0    0    1   
-$EndComp
 Text Notes 4700 5000 0    60   ~ 0
 Common cathode (negative) to deployment switch
 $Comp
@@ -109,7 +90,7 @@ AR Path="/56E6AFA2/57196A0C" Ref="R29"  Part="1"
 AR Path="/56E6B7CE/57196A0C" Ref="R30"  Part="1" 
 AR Path="/56E6DEA5/57196A0C" Ref="R31"  Part="1" 
 AR Path="/56E6DEAA/57196A0C" Ref="R32"  Part="1" 
-F 0 "R32" H 3130 4620 50  0000 L CNN
+F 0 "R29" H 3130 4620 50  0000 L CNN
 F 1 "2k2" H 3130 4560 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 3100 4600 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1788326.pdf" H 3100 4600 50  0001 C CNN
@@ -138,7 +119,7 @@ AR Path="/56E6AFA2/57197754" Ref="P12"  Part="1"
 AR Path="/56E6B7CE/57197754" Ref="P13"  Part="1" 
 AR Path="/56E6DEA5/57197754" Ref="P14"  Part="1" 
 AR Path="/56E6DEAA/57197754" Ref="P15"  Part="1" 
-F 0 "P15" H 4050 4150 50  0000 C CNN
+F 0 "P12" H 4050 4150 50  0000 C CNN
 F 1 "CONN_01X02" V 4150 4000 50  0000 C CNN
 F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 4050 4000 50  0001 C CNN
 F 3 "" H 4050 4000 50  0000 C CNN
@@ -159,7 +140,7 @@ AR Path="/56E6AFA2/5719E9F3" Ref="D21"  Part="1"
 AR Path="/56E6B7CE/5719E9F3" Ref="D22"  Part="1" 
 AR Path="/56E6DEA5/5719E9F3" Ref="D23"  Part="1" 
 AR Path="/56E6DEAA/5719E9F3" Ref="D24"  Part="1" 
-F 0 "D24" H 3050 4425 50  0000 L CNN
+F 0 "D21" H 3050 4425 50  0000 L CNN
 F 1 "ORANGE" H 2950 4200 50  0000 L CNN
 F 2 "LEDs:LED_0603" V 3100 4300 50  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/485055.pdf" V 3100 4300 50  0001 C CNN
@@ -169,5 +150,24 @@ F 6 "1328307" H 3100 4300 60  0001 C CNN "1st Distrib. PN"
 F 7 "http://se.farnell.com/vishay/tlmo1000-gs08/led-0603-orange/dp/1328307" H 3100 4300 60  0001 C CNN "1st Distrib. Link"
 	1    3100 4300
 	0    -1   -1   0   
+$EndComp
+$Comp
+L D_Schottky_Small D5
+U 1 1 572768BF
+P 4000 3650
+AR Path="/56E6AFA2/572768BF" Ref="D5"  Part="1" 
+AR Path="/56E6B7CE/572768BF" Ref="D6"  Part="1" 
+AR Path="/56E6DEA5/572768BF" Ref="D7"  Part="1" 
+AR Path="/56E6DEAA/572768BF" Ref="D8"  Part="1" 
+F 0 "D5" H 3950 3730 50  0000 L CNN
+F 1 "Schottky" H 4000 3550 50  0000 C CNN
+F 2 "Diodes_SMD:DO-214AB_Handsoldering" V 4000 3650 50  0001 C CNN
+F 3 "http://www.farnell.com/datasheets/188344.pdf" V 2800 3500 50  0001 C CNN
+F 4 "ON Semi" H 4000 3650 60  0001 C CNN "Mfg. Name"
+F 5 "MBRS410LT3G" H 4000 3650 60  0001 C CNN "Mfg. Part Number"
+F 6 "1702812" H 4000 3650 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/on-semiconductor/mbrs410lt3g/schottky-likriktare/dp/1702812" H 4000 3650 60  0001 C CNN "1st Distrib. Link"
+	1    4000 3650
+	-1   0    0    1   
 $EndComp
 $EndSCHEMATC

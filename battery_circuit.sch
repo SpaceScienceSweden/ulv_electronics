@@ -64,14 +64,14 @@ $EndComp
 Text HLabel 5900 4000 1    60   BiDi ~ 0
 VBAT
 $Comp
-L GND #PWR6
+L GND #PWR06
 U 1 1 56E5E3D0
 P 2450 5700
-AR Path="/56E5DF65/56E5E3D0" Ref="#PWR6"  Part="1" 
-AR Path="/56E5E7C1/56E5E3D0" Ref="#PWR7"  Part="1" 
-AR Path="/56E5E9EC/56E5E3D0" Ref="#PWR8"  Part="1" 
-AR Path="/56E5EE46/56E5E3D0" Ref="#PWR9"  Part="1" 
-F 0 "#PWR9" H 2450 5450 50  0001 C CNN
+AR Path="/56E5DF65/56E5E3D0" Ref="#PWR06"  Part="1" 
+AR Path="/56E5E7C1/56E5E3D0" Ref="#PWR07"  Part="1" 
+AR Path="/56E5E9EC/56E5E3D0" Ref="#PWR08"  Part="1" 
+AR Path="/56E5EE46/56E5E3D0" Ref="#PWR09"  Part="1" 
+F 0 "#PWR09" H 2450 5450 50  0001 C CNN
 F 1 "GND" H 2450 5550 50  0000 C CNN
 F 2 "" H 2450 5700 50  0000 C CNN
 F 3 "" H 2450 5700 50  0000 C CNN
@@ -89,11 +89,11 @@ AR Path="/56E5EE46/56E5EF28" Ref="D4"  Part="1"
 F 0 "D4" H 7100 4380 50  0000 L CNN
 F 1 "Schottky" H 7150 4200 50  0000 C CNN
 F 2 "Diodes_SMD:DO-214AB_Handsoldering" V 7150 4300 50  0001 C CNN
-F 3 "http://www.farnell.com/datasheets/1912229.pdf" V 5950 4150 50  0001 C CNN
-F 4 "Vishay" H 7150 4300 60  0001 C CNN "Mfg. Name"
-F 5 "VS-30BQ015TRPBF" H 7150 4300 60  0001 C CNN "Mfg. Part Number"
-F 6 "9101250" H 7150 4300 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/vishay-semiconductor/vs-30bq015trpbf/diode-schottky-3a-15v/dp/9101250" H 7150 4300 60  0001 C CNN "1st Distrib. Link"
+F 3 "http://www.farnell.com/datasheets/188344.pdf" V 5950 4150 50  0001 C CNN
+F 4 "ON Semi" H 7150 4300 60  0001 C CNN "Mfg. Name"
+F 5 "MBRS410LT3G" H 7150 4300 60  0001 C CNN "Mfg. Part Number"
+F 6 "1702812" H 7150 4300 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/on-semiconductor/mbrs410lt3g/schottky-likriktare/dp/1702812" H 7150 4300 60  0001 C CNN "1st Distrib. Link"
 	1    7150 4300
 	-1   0    0    1   
 $EndComp
