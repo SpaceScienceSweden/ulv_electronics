@@ -1,11 +1,9 @@
-update=Sat 16 Apr 2016 02:38:48 PM CEST
+update=2016 May 05, Thursday 19:42:03
 version=1
 last_client=kicad
 [cvpcb]
 version=1
 NetIExt=net
-[general]
-version=1
 [pcbnew]
 version=1
 PageLayoutDescrFile=
@@ -61,3 +59,5 @@ LibName29=valves
 LibName30=../ulv_libraries/scube
 LibName31=../ulv_libraries/ulv_photovoltaic
 LibName32=../ulv_libraries/ulv_ti
+[general]
+version=1
