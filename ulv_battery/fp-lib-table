@@ -1,0 +1,5 @@
+(fp_lib_table
+  (lib (name JST)(type KiCad)(uri ${KIPRJMOD}/../ulv_libraries/jst.pretty)(options "")(descr ""))
+  (lib (name Scube)(type KiCad)(uri ${KIPRJMOD}/../ulv_libraries/scube.pretty)(options "")(descr ""))
+  (lib (name bq2970)(type KiCad)(uri ${KIPRJMOD}/../ulv_libraries/bq2970.pretty)(options "")(descr ""))
+)
