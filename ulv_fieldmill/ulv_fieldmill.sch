@@ -29,6 +29,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:ulv_microchip
+LIBS:ulv_fieldmill-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -59,7 +60,7 @@ L R_Small R1
 U 1 1 573F02E7
 P 4600 3600
 F 0 "R1" H 4630 3620 50  0000 L CNN
-F 1 "100M" H 4630 3560 50  0000 L CNN
+F 1 "1M" H 4630 3560 50  0000 L CNN
 F 2 "Resistors_ThroughHole:Resistor_Horizontal_RM20mm" H 4600 3600 50  0001 C CNN
 F 3 "" H 4600 3600 50  0000 C CNN
 	1    4600 3600
@@ -70,7 +71,7 @@ L R_Small R2
 U 1 1 573F0365
 P 4900 3600
 F 0 "R2" H 4930 3620 50  0000 L CNN
-F 1 "100M" H 4930 3560 50  0000 L CNN
+F 1 "1M" H 4930 3560 50  0000 L CNN
 F 2 "Resistors_ThroughHole:Resistor_Horizontal_RM20mm" H 4900 3600 50  0001 C CNN
 F 3 "" H 4900 3600 50  0000 C CNN
 	1    4900 3600
