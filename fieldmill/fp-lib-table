@@ -1,3 +1,3 @@
 (fp_lib_table
-  (lib (name SMA)(type KiCad)(uri ${KIPRJMOD}/../ulv_libraries/sma-edge.pretty)(options "")(descr ""))
+  (lib (name SMA)(type KiCad)(uri ${KIPRJMOD}/../libraries/sma-edge.pretty)(options "")(descr ""))
 )
