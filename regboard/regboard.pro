@@ -58,4 +58,4 @@ LibName26=opto
 LibName27=atmel
 LibName28=contrib
 LibName29=valves
-LibName30=/home/thardin/projects/spacehackers/ulv_electronics/libraries/scube
+LibName30=../libraries/scube
