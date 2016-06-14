@@ -1,4 +1,4 @@
-update=Fri 20 May 2016 02:20:09 PM CEST
+update=Tue 14 Jun 2016 11:12:33 PM CEST
 version=1
 last_client=kicad
 [pcbnew]
@@ -59,3 +59,4 @@ LibName27=atmel
 LibName28=contrib
 LibName29=valves
 LibName30=../libraries/ulv_microchip
+LibName31=../libraries/ulv_ti
