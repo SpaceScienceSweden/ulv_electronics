@@ -1,3 +1,4 @@
 (fp_lib_table
   (lib (name SMA)(type KiCad)(uri ${KIPRJMOD}/../libraries/sma-edge.pretty)(options "")(descr ""))
+  (lib (name A3506LU)(type KiCad)(uri ${KIPRJMOD}/../libraries/a3506lu.pretty)(options "")(descr ""))
 )

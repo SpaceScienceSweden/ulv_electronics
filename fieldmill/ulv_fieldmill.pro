@@ -1,4 +1,4 @@
-update=Tue 14 Jun 2016 11:12:33 PM CEST
+update=Thu 16 Jun 2016 02:40:31 PM CEST
 version=1
 last_client=kicad
 [pcbnew]
@@ -60,3 +60,4 @@ LibName28=contrib
 LibName29=valves
 LibName30=../libraries/ulv_microchip
 LibName31=../libraries/ulv_ti
+LibName32=../libraries/ulv_allegro
