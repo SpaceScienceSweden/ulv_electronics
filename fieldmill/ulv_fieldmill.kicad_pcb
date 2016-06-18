@@ -1484,7 +1484,7 @@
     )
   )
 
-  (module A3506LU:3x50mil (layer F.Cu) (tedit 5762A7FF) (tstamp 5762A911)
+  (module SCUBE:3x50mil (layer F.Cu) (tedit 5762A7FF) (tstamp 5762A911)
     (at 100 81)
     (path /5762A06A)
     (fp_text reference U4 (at 0 -1.27) (layer F.SilkS)

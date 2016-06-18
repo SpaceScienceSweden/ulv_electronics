@@ -58,6 +58,4 @@ LibName26=opto
 LibName27=atmel
 LibName28=contrib
 LibName29=valves
-LibName30=../libraries/ulv_microchip
-LibName31=../libraries/ulv_ti
-LibName32=../libraries/ulv_allegro
+LibName30=../libraries/scube
