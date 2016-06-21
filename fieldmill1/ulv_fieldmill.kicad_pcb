@@ -125,7 +125,7 @@
     (add_net VSS)
   )
 
-  (module SMA:SMA-edge (layer F.Cu) (tedit 573F116B) (tstamp 573F14F6)
+  (module SCUBE:SMA-edge (layer F.Cu) (tedit 573F116B) (tstamp 573F14F6)
     (at 112.5 145.5 180)
     (path /573F0C4B)
     (fp_text reference P2 (at 0 5.5 180) (layer F.SilkS)
