@@ -2,11 +2,11 @@
 
   (general
     (links 86)
-    (no_connects 1)
+    (no_connects 0)
     (area 57.424999 57.424999 142.575001 143.308333)
     (thickness 1.6)
     (drawings 23)
-    (tracks 312)
+    (tracks 313)
     (zones 0)
     (modules 39)
     (nets 22)
@@ -39,7 +39,7 @@
   )
 
   (setup
-    (last_trace_width 0.3)
+    (last_trace_width 2)
     (user_trace_width 0.4)
     (user_trace_width 0.5)
     (user_trace_width 2)
@@ -1503,6 +1503,8 @@
   (segment (start 127.906888 122.02992) (end 126.211653 122.484157) (width 0.5) (layer B.Cu) (net 12))
   (segment (start 125.557369 122.106406) (end 124.474837 121.481407) (width 0.5) (layer B.Cu) (net 12))
   (segment (start 126.211653 122.484157) (end 125.557369 122.106406) (width 0.5) (layer B.Cu) (net 12))
+  (segment (start 119.5 135.5) (end 118 137) (width 2) (layer B.Cu) (net 13))
+  (segment (start 120.25 134.75) (end 119.5 135.5) (width 2) (layer B.Cu) (net 13))
   (segment (start 123 137.54) (end 123.46 138) (width 0.5) (layer B.Cu) (net 13))
   (segment (start 104.75 131.5) (end 102.25 131.5) (width 0.5) (layer B.Cu) (net 13))
   (via blind (at 113.5 139) (size 1.5) (drill 0.4) (layers Airwires B.Cu) (net 13))
@@ -1572,7 +1574,6 @@
   (segment (start 69 116.5) (end 81.5 129) (width 0.3) (layer Airwires) (net 13))
   (segment (start 69 115) (end 69 116.5) (width 0.3) (layer Airwires) (net 13))
   (segment (start 71.763139 112.236861) (end 69 115) (width 0.3) (layer Airwires) (net 13))
-  (segment (start 120.25 134.75) (end 118 137) (width 2) (layer B.Cu) (net 13))
   (segment (start 102.5 134) (end 115 134) (width 0.3) (layer Airwires) (net 13))
   (segment (start 115 134) (end 118 137) (width 0.3) (layer Airwires) (net 13))
   (via blind (at 118 137) (size 1.5) (drill 0.4) (layers Airwires B.Cu) (net 13))
