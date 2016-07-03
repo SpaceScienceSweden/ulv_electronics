@@ -3,9 +3,9 @@
   (general
     (links 62)
     (no_connects 0)
-    (area 57.424999 57.424999 142.575001 142.575001)
+    (area 57.424999 57.424999 142.575001 143.258333)
     (thickness 1.6)
-    (drawings 12)
+    (drawings 17)
     (tracks 201)
     (zones 0)
     (modules 30)
@@ -39,7 +39,7 @@
   )
 
   (setup
-    (last_trace_width 0.5)
+    (last_trace_width 0.3)
     (user_trace_width 0.4)
     (user_trace_width 0.5)
     (user_trace_width 2)
@@ -1000,7 +1000,12 @@
       (net 20 +9V))
   )
 
-  (gr_text "Field mill amplifier board\nv4 2016-07-02\nby Tomas Härdin" (at 118.5 64) (layer B.Cu)
+  (target plus (at 135 135) (size 3) (width 0.15) (layer Edge.Cuts))
+  (target plus (at 65 135) (size 3) (width 0.15) (layer Edge.Cuts))
+  (target plus (at 65 65) (size 3) (width 0.15) (layer Edge.Cuts))
+  (target plus (at 135 65) (size 3) (width 0.15) (layer Edge.Cuts))
+  (target plus (at 100 100) (size 5) (width 0.15) (layer Edge.Cuts))
+  (gr_text "Field mill amplifier board\nv4 2016-07-03\nby Tomas Härdin" (at 118.5 64) (layer B.Cu)
     (effects (font (size 1.2 1.2) (thickness 0.3)) (justify mirror))
   )
   (gr_text +9V (at 119 138) (layer B.Cu)

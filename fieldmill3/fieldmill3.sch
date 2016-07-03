@@ -204,8 +204,6 @@ F 3 "" H 4900 1850 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4900 1850 4900 2750
-Wire Wire Line
 	4900 1950 4750 1950
 Connection ~ 4900 1950
 Wire Wire Line
@@ -348,8 +346,6 @@ F 3 "" H 7150 1850 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7150 1850 7150 2750
-Wire Wire Line
 	7150 1950 7000 1950
 Connection ~ 7150 1950
 Wire Wire Line
@@ -489,8 +485,6 @@ F 3 "" H 9400 1850 50  0000 C CNN
 	1    9400 1850
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	9400 1850 9400 2750
 Wire Wire Line
 	9400 1950 9250 1950
 Connection ~ 9400 1950
@@ -632,8 +626,6 @@ F 3 "" H 4950 4400 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4950 4400 4950 5350
-Wire Wire Line
 	4950 4500 4800 4500
 Connection ~ 4950 4500
 Wire Wire Line
@@ -774,8 +766,6 @@ F 3 "" H 7200 4400 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7200 4400 7200 5350
-Wire Wire Line
 	7200 4500 7050 4500
 Connection ~ 7200 4500
 Wire Wire Line
@@ -915,8 +905,6 @@ F 3 "" H 9450 4400 50  0000 C CNN
 	1    9450 4400
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	9450 4400 9450 5300
 Wire Wire Line
 	9450 4500 9300 4500
 Connection ~ 9450 4500
@@ -1180,160 +1168,16 @@ $EndComp
 Wire Wire Line
 	8800 5200 8800 5100
 Connection ~ 8800 5100
-$Comp
-L TEST_1P W1
-U 1 1 577426DB
-P 3800 2750
-F 0 "W1" H 3800 3020 50  0000 C CNN
-F 1 "TEST_1P" H 3800 2950 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 4000 2750 50  0001 C CNN
-F 3 "" H 4000 2750 50  0000 C CNN
-	1    3800 2750
-	-1   0    0    1   
-$EndComp
 Wire Wire Line
-	3800 2750 3800 2550
-Connection ~ 3800 2550
-$Comp
-L TEST_1P W2
-U 1 1 577428B5
-P 4900 2750
-F 0 "W2" H 4900 3020 50  0000 C CNN
-F 1 "TEST_1P" H 4900 2950 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 5100 2750 50  0001 C CNN
-F 3 "" H 5100 2750 50  0000 C CNN
-	1    4900 2750
-	-1   0    0    1   
-$EndComp
-Connection ~ 4900 2550
-$Comp
-L TEST_1P W3
-U 1 1 57742BF1
-P 6050 2750
-F 0 "W3" H 6050 3020 50  0000 C CNN
-F 1 "TEST_1P" H 6050 2950 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 6250 2750 50  0001 C CNN
-F 3 "" H 6250 2750 50  0000 C CNN
-	1    6050 2750
-	-1   0    0    1   
-$EndComp
+	4900 1850 4900 2550
 Wire Wire Line
-	6050 2750 6050 2550
-Connection ~ 6050 2550
-$Comp
-L TEST_1P W4
-U 1 1 57742D2E
-P 7150 2750
-F 0 "W4" H 7150 3020 50  0000 C CNN
-F 1 "TEST_1P" H 7150 2950 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 7350 2750 50  0001 C CNN
-F 3 "" H 7350 2750 50  0000 C CNN
-	1    7150 2750
-	-1   0    0    1   
-$EndComp
-Connection ~ 7150 2550
-$Comp
-L TEST_1P W5
-U 1 1 577432E4
-P 8300 2750
-F 0 "W5" H 8300 3020 50  0000 C CNN
-F 1 "TEST_1P" H 8300 2950 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 8500 2750 50  0001 C CNN
-F 3 "" H 8500 2750 50  0000 C CNN
-	1    8300 2750
-	-1   0    0    1   
-$EndComp
+	7150 2550 7150 1850
 Wire Wire Line
-	8300 2750 8300 2550
-Connection ~ 8300 2550
-$Comp
-L TEST_1P W6
-U 1 1 577434E4
-P 9400 2750
-F 0 "W6" H 9400 3020 50  0000 C CNN
-F 1 "TEST_1P" H 9400 2950 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 9600 2750 50  0001 C CNN
-F 3 "" H 9600 2750 50  0000 C CNN
-	1    9400 2750
-	-1   0    0    1   
-$EndComp
-Connection ~ 9400 2550
-$Comp
-L TEST_1P W7
-U 1 1 57743861
-P 3850 5300
-F 0 "W7" H 3850 5570 50  0000 C CNN
-F 1 "TEST_1P" H 3850 5500 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 4050 5300 50  0001 C CNN
-F 3 "" H 4050 5300 50  0000 C CNN
-	1    3850 5300
-	-1   0    0    1   
-$EndComp
+	9400 2550 9400 1850
 Wire Wire Line
-	3850 5300 3850 5100
-Connection ~ 3850 5100
-$Comp
-L TEST_1P W8
-U 1 1 577439A6
-P 4950 5350
-F 0 "W8" H 4950 5620 50  0000 C CNN
-F 1 "TEST_1P" H 4950 5550 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 5150 5350 50  0001 C CNN
-F 3 "" H 5150 5350 50  0000 C CNN
-	1    4950 5350
-	-1   0    0    1   
-$EndComp
-Connection ~ 4950 5100
-$Comp
-L TEST_1P W9
-U 1 1 57743C4F
-P 6100 5350
-F 0 "W9" H 6100 5620 50  0000 C CNN
-F 1 "TEST_1P" H 6100 5550 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 6300 5350 50  0001 C CNN
-F 3 "" H 6300 5350 50  0000 C CNN
-	1    6100 5350
-	-1   0    0    1   
-$EndComp
+	9450 4400 9450 5100
 Wire Wire Line
-	6100 5350 6100 5100
-Connection ~ 6100 5100
-$Comp
-L TEST_1P W10
-U 1 1 57743D9D
-P 7200 5350
-F 0 "W10" H 7200 5620 50  0000 C CNN
-F 1 "TEST_1P" H 7200 5550 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 7400 5350 50  0001 C CNN
-F 3 "" H 7400 5350 50  0000 C CNN
-	1    7200 5350
-	-1   0    0    1   
-$EndComp
-Connection ~ 7200 5100
-$Comp
-L TEST_1P W11
-U 1 1 57744013
-P 8350 5300
-F 0 "W11" H 8350 5570 50  0000 C CNN
-F 1 "TEST_1P" H 8350 5500 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 8550 5300 50  0001 C CNN
-F 3 "" H 8550 5300 50  0000 C CNN
-	1    8350 5300
-	-1   0    0    1   
-$EndComp
+	7200 4400 7200 5100
 Wire Wire Line
-	8350 5300 8350 5100
-Connection ~ 8350 5100
-$Comp
-L TEST_1P W12
-U 1 1 57744168
-P 9450 5300
-F 0 "W12" H 9450 5570 50  0000 C CNN
-F 1 "TEST_1P" H 9450 5500 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 9650 5300 50  0001 C CNN
-F 3 "" H 9650 5300 50  0000 C CNN
-	1    9450 5300
-	-1   0    0    1   
-$EndComp
-Connection ~ 9450 5100
+	4950 4400 4950 5100
 $EndSCHEMATC
