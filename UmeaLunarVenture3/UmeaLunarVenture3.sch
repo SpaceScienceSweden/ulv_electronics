@@ -1,5 +1,5 @@
 EESchema Schematic File Version 2
-LIBS:UmeaLunarVenture3-rescue
+LIBS:scube
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -29,18 +29,6 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:scube
-LIBS:pc104
-LIBS:ulv_analog
-LIBS:ulv_linear
-LIBS:ulv_microchip
-LIBS:ulv_photovoltaic
-LIBS:ulv_plls
-LIBS:ulv_regulators
-LIBS:ulv_ti
-LIBS:ulv_xtals
-LIBS:myLib
-LIBS:UmeaLunarVenture3-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -964,8 +952,6 @@ Wire Wire Line
 Wire Wire Line
 	7100 4700 7100 4900
 Wire Wire Line
-	7100 5350 7100 5100
-Wire Wire Line
 	7000 4600 7400 4600
 Wire Wire Line
 	8300 4700 8300 6200
@@ -982,4 +968,6 @@ Wire Wire Line
 	2300 4150 2300 6200
 Wire Wire Line
 	2300 6200 8300 6200
+Wire Wire Line
+	7100 5300 7100 5100
 $EndSCHEMATC
