@@ -1,9 +1,3 @@
 (fp_lib_table
-  (lib (name bq2970)(type KiCad)(uri /Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/bq2970.pretty)(options "")(descr ""))
-  (lib (name jst)(type KiCad)(uri /Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/jst.pretty)(options "")(descr ""))
-  (lib (name pc104)(type KiCad)(uri /Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/pc104.pretty)(options "")(descr ""))
-  (lib (name scube)(type KiCad)(uri /Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/scube.pretty)(options "")(descr ""))
-  (lib (name sma-edge)(type KiCad)(uri /Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/sma-edge.pretty)(options "")(descr ""))
-  (lib (name ulv_bourns)(type KiCad)(uri /Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/ulv_bourns.pretty)(options "")(descr ""))
-  (lib (name xtc7005)(type KiCad)(uri /Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/xtc7005.pretty)(options "")(descr ""))
+  (lib (name SCUBE)(type KiCad)(uri ${KIPRJMOD}/../libraries/scube.pretty)(options "")(descr ""))
 )

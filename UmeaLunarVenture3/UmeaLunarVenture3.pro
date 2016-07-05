@@ -20,7 +20,7 @@ version=1
 version=1
 LibDir=../MyLibrary/library
 [eeschema/libraries]
-LibName1=UmeaLunarVenture3-rescue
+LibName1=../libraries/scube
 LibName2=power
 LibName3=device
 LibName4=transistors
@@ -50,17 +50,6 @@ LibName27=opto
 LibName28=atmel
 LibName29=contrib
 LibName30=valves
-LibName31=/Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/scube
-LibName32=/Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/pc104
-LibName33=/Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/ulv_analog
-LibName34=/Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/ulv_linear
-LibName35=/Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/ulv_microchip
-LibName36=/Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/ulv_photovoltaic
-LibName37=/Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/ulv_plls
-LibName38=/Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/ulv_regulators
-LibName39=/Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/ulv_ti
-LibName40=/Users/Bjorn/Desktop/SCubed/KiCadProjects/ulv_electronics-master/libraries/ulv_xtals
-LibName41=/Users/Bjorn/Desktop/SCubed/KiCadProjects/MyLibrary/library/myLib
 [pcbnew]
 version=1
 PageLayoutDescrFile=
