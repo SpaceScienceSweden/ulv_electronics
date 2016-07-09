@@ -1,0 +1,238 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:scube
+LIBS:cpu-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L SCUBE40 P1
+U 1 1 577D5086
+P 2150 3400
+F 0 "P1" H 2200 3850 60  0000 C CNN
+F 1 "SCUBE40" H 2200 3750 60  0000 C CNN
+F 2 "SCUBE:scube40" H 2050 3250 60  0001 C CNN
+F 3 "" H 2050 3250 60  0000 C CNN
+	1    2150 3400
+	-1   0    0    -1  
+$EndComp
+$Comp
+L SCUBE40 P1
+U 2 1 577D50FB
+P 9000 3800
+F 0 "P1" H 9050 4250 60  0000 C CNN
+F 1 "SCUBE40" H 9050 4150 60  0000 C CNN
+F 2 "SCUBE:scube40" H 8900 3650 60  0001 C CNN
+F 3 "" H 8900 3650 60  0000 C CNN
+	2    9000 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L ATMEGA128-A IC1
+U 1 1 577D516F
+P 5350 3950
+F 0 "IC1" H 4200 5850 50  0000 L BNN
+F 1 "ATMEGA128-A" H 6100 2000 50  0000 L BNN
+F 2 "SCUBE:ATmegaS128" H 5350 3950 50  0000 C CIN
+F 3 "" H 5350 3950 50  0000 C CNN
+	1    5350 3950
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR01
+U 1 1 577D63C2
+P 2600 3400
+F 0 "#PWR01" H 2600 3150 50  0001 C CNN
+F 1 "GND" H 2600 3250 50  0000 C CNN
+F 2 "" H 2600 3400 50  0000 C CNN
+F 3 "" H 2600 3400 50  0000 C CNN
+	1    2600 3400
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR02
+U 1 1 577D63F7
+P 5300 6150
+F 0 "#PWR02" H 5300 5900 50  0001 C CNN
+F 1 "GND" H 5300 6000 50  0000 C CNN
+F 2 "" H 5300 6150 50  0000 C CNN
+F 3 "" H 5300 6150 50  0000 C CNN
+	1    5300 6150
+	1    0    0    -1  
+$EndComp
+$Comp
+L ATMEGA128-A IC2
+U 1 1 577F7479
+P 5350 3950
+F 0 "IC2" H 4350 5850 50  0000 L BNN
+F 1 "ATMEGA128-A" H 6100 2000 50  0000 L BNN
+F 2 "Housings_QFP:TQFP-64_14x14mm_Pitch0.8mm" H 5350 3950 50  0000 C CIN
+F 3 "" H 5350 3950 50  0000 C CNN
+	1    5350 3950
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_02X03 P2
+U 1 1 577F7E75
+P 3150 5700
+F 0 "P2" H 3150 5900 50  0000 C CNN
+F 1 "CONN_02X03" H 3150 5500 50  0000 C CNN
+F 2 "SCUBE:ISP-edge" H 3150 4500 50  0001 C CNN
+F 3 "" H 3150 4500 50  0000 C CNN
+	1    3150 5700
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR03
+U 1 1 577F83F5
+P 3450 6000
+F 0 "#PWR03" H 3450 5750 50  0001 C CNN
+F 1 "GND" H 3450 5850 50  0000 C CNN
+F 2 "" H 3450 6000 50  0000 C CNN
+F 3 "" H 3450 6000 50  0000 C CNN
+	1    3450 6000
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR04
+U 1 1 577F8464
+P 3450 5450
+F 0 "#PWR04" H 3450 5300 50  0001 C CNN
+F 1 "+5V" H 3450 5590 50  0000 C CNN
+F 2 "" H 3450 5450 50  0000 C CNN
+F 3 "" H 3450 5450 50  0000 C CNN
+	1    3450 5450
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR05
+U 1 1 577F84CE
+P 3400 1600
+F 0 "#PWR05" H 3400 1450 50  0001 C CNN
+F 1 "+5V" H 3400 1740 50  0000 C CNN
+F 2 "" H 3400 1600 50  0000 C CNN
+F 3 "" H 3400 1600 50  0000 C CNN
+	1    3400 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R1
+U 1 1 577F8670
+P 3600 2250
+F 0 "R1" H 3630 2270 50  0000 L CNN
+F 1 "10k" H 3630 2210 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 3600 2250 50  0001 C CNN
+F 3 "" H 3600 2250 50  0000 C CNN
+	1    3600 2250
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3400 4200 2600 4200
+Wire Wire Line
+	3400 1600 3400 4200
+Wire Wire Line
+	3400 1700 5500 1700
+Wire Wire Line
+	5100 1700 5100 1950
+Wire Wire Line
+	5200 1700 5200 1950
+Connection ~ 5100 1700
+Wire Wire Line
+	5500 1700 5500 1950
+Connection ~ 5200 1700
+Connection ~ 3400 2250
+Wire Wire Line
+	5100 5950 5100 6050
+Wire Wire Line
+	5100 6050 5500 6050
+Wire Wire Line
+	5300 6050 5300 6150
+Wire Wire Line
+	5200 5950 5200 6050
+Connection ~ 5200 6050
+Wire Wire Line
+	5500 6050 5500 5950
+Connection ~ 5300 6050
+Wire Wire Line
+	3400 5700 3700 5700
+Wire Wire Line
+	3700 5700 3700 4950
+Wire Wire Line
+	3700 4950 4050 4950
+Wire Wire Line
+	2900 5600 2850 5600
+Wire Wire Line
+	2850 5600 2850 5050
+Wire Wire Line
+	2850 5050 4050 5050
+Wire Wire Line
+	3450 5450 3450 5600
+Wire Wire Line
+	3450 5600 3400 5600
+Connection ~ 3400 1700
+Wire Wire Line
+	3450 6000 3450 5800
+Wire Wire Line
+	3450 5800 3400 5800
+Wire Wire Line
+	3500 2250 3400 2250
+Wire Wire Line
+	3700 2250 4050 2250
+Text Label 3750 2250 0    60   ~ 0
+/RESET
+Text Label 2550 5800 0    60   ~ 0
+/RESET
+Wire Wire Line
+	2900 5800 2550 5800
+Text Label 6900 3250 0    60   ~ 0
+SCK
+Wire Wire Line
+	6650 3250 6900 3250
+Text Label 2550 5700 0    60   ~ 0
+SCK
+Wire Wire Line
+	2900 5700 2550 5700
+Text Label 3450 5700 0    60   ~ 0
+PDI
+Text Label 2900 5050 0    60   ~ 0
+PDO
+$EndSCHEMATC
