@@ -3,7 +3,7 @@
   (general
     (links 88)
     (no_connects 0)
-    (area 57.424999 57.424999 142.575001 145.975)
+    (area 57.424999 57.424999 142.575001 142.575001)
     (thickness 1.6)
     (drawings 25)
     (tracks 453)
@@ -39,7 +39,7 @@
   )
 
   (setup
-    (last_trace_width 0.5)
+    (last_trace_width 0.3)
     (user_trace_width 0.25)
     (user_trace_width 0.3)
     (user_trace_width 0.4)
@@ -69,8 +69,8 @@
     (mod_text_width 0.15)
     (pad_size 1.524 1.524)
     (pad_drill 0.762)
-    (pad_to_mask_clearance 0.15)
-    (solder_mask_min_width 0.1)
+    (pad_to_mask_clearance 0.062)
+    (solder_mask_min_width 0.125)
     (aux_axis_origin 0 0)
     (grid_origin 100 100)
     (visible_elements FFFFFF7F)
@@ -2588,7 +2588,7 @@
     (connect_pads (clearance 0.508))
     (min_thickness 0.254)
     (keepout (tracks allowed) (vias allowed) (copperpour not_allowed))
-    (fill (arc_segments 16) (thermal_gap 0.508) (thermal_bridge_width 0.508))
+    (fill yes (arc_segments 16) (thermal_gap 0.508) (thermal_bridge_width 0.508))
     (polygon
       (pts
         (xy 87.392305 125.990381) (xy 83.928203 123.990381) (xy 85.928203 120.526279) (xy 84.196153 119.526279) (xy 85.696152 116.928203)
