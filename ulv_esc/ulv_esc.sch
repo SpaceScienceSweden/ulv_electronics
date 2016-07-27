@@ -1,4 +1,5 @@
 EESchema Schematic File Version 2
+LIBS:ulv_esc-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -177,7 +178,7 @@ F 3 "" H 7150 1650 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L SCUBE40 P1
+L SCUBE40-RESCUE-ulv_esc P1
 U 2 1 578CC8D9
 P 10950 4600
 F 0 "P1" H 10900 3600 60  0000 C CNN
@@ -188,7 +189,7 @@ F 3 "" H 10850 4450 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L SCUBE40 P1
+L SCUBE40-RESCUE-ulv_esc P1
 U 1 1 578CC9D1
 P 750 4600
 F 0 "P1" H 700 3600 60  0000 C CNN
