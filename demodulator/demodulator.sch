@@ -271,12 +271,12 @@ $EndComp
 $Comp
 L +9V #PWR010
 U 1 1 57917A3E
-P 2950 5300
-F 0 "#PWR010" H 2950 5150 50  0001 C CNN
-F 1 "+9V" H 2950 5440 50  0000 C CNN
-F 2 "" H 2950 5300 50  0000 C CNN
-F 3 "" H 2950 5300 50  0000 C CNN
-	1    2950 5300
+P 2600 5300
+F 0 "#PWR010" H 2600 5150 50  0001 C CNN
+F 1 "+9V" H 2600 5440 50  0000 C CNN
+F 2 "" H 2600 5300 50  0000 C CNN
+F 3 "" H 2600 5300 50  0000 C CNN
+	1    2600 5300
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -284,7 +284,7 @@ L C_Small C3
 U 1 1 57917AAE
 P 3150 5500
 F 0 "C3" H 3160 5570 50  0000 L CNN
-F 1 "330n" H 3160 5420 50  0000 L CNN
+F 1 "100n" H 3160 5420 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 3150 5500 50  0001 C CNN
 F 3 "" H 3150 5500 50  0000 C CNN
 	1    3150 5500
@@ -317,7 +317,7 @@ L R_Small R1
 U 1 1 579180DC
 P 4700 5450
 F 0 "R1" H 4730 5470 50  0000 L CNN
-F 1 "22k" H 4730 5410 50  0000 L CNN
+F 1 "10k" H 4730 5410 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 4700 5450 50  0001 C CNN
 F 3 "" H 4700 5450 50  0000 C CNN
 	1    4700 5450
@@ -346,7 +346,7 @@ F 3 "" H 5000 5750 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Notes 4500 6300 0    60   ~ 0
-Bias voltage generator\nRoughly 1 V\nAdded during demod, subtracted in ADC
+Bias voltage generator\nRoughly 1.1 V\nAdded during demod, subtracted in ADC
 Text Notes 6950 4700 0    60   ~ 0
 Vref = 2.048 V
 $Comp
@@ -363,12 +363,12 @@ $EndComp
 $Comp
 L +3.3VADC #PWR012
 U 1 1 5791BA44
-P 4500 5200
-F 0 "#PWR012" H 4650 5150 50  0001 C CNN
-F 1 "+3.3VADC" H 4500 5300 50  0000 C CNN
-F 2 "" H 4500 5200 50  0000 C CNN
-F 3 "" H 4500 5200 50  0000 C CNN
-	1    4500 5200
+P 4300 4900
+F 0 "#PWR012" H 4450 4850 50  0001 C CNN
+F 1 "+3.3VADC" H 4300 5000 50  0000 C CNN
+F 2 "" H 4300 4900 50  0000 C CNN
+F 3 "" H 4300 4900 50  0000 C CNN
+	1    4300 4900
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -518,12 +518,12 @@ Wire Wire Line
 Wire Wire Line
 	4250 5600 4250 5950
 Wire Wire Line
-	3150 5800 4250 5800
+	2650 5800 4250 5800
 Connection ~ 3700 5800
 Wire Wire Line
 	3150 5800 3150 5600
 Wire Wire Line
-	2950 5300 3300 5300
+	2600 5300 3300 5300
 Wire Wire Line
 	3150 5400 3150 5300
 Connection ~ 3150 5300
@@ -533,8 +533,6 @@ Wire Wire Line
 	4700 5600 5000 5600
 Wire Wire Line
 	4700 5550 4700 5650
-Wire Wire Line
-	4700 5300 4700 5350
 Connection ~ 4250 5300
 Wire Wire Line
 	4700 5850 4700 5950
@@ -597,8 +595,8 @@ Wire Wire Line
 Wire Wire Line
 	8550 5700 8700 5700
 Wire Wire Line
-	4500 5300 4500 5200
-Connection ~ 4500 5300
+	4300 5300 4300 4900
+Connection ~ 4300 5300
 Wire Wire Line
 	6550 5500 6550 6200
 Wire Wire Line
@@ -606,7 +604,7 @@ Wire Wire Line
 Wire Wire Line
 	4250 5950 5000 5950
 Wire Wire Line
-	4100 5300 4700 5300
+	4100 5300 4400 5300
 Wire Wire Line
 	8600 5200 8600 5600
 Wire Wire Line
@@ -789,4 +787,53 @@ Wire Wire Line
 Wire Wire Line
 	6300 5800 6550 5800
 Connection ~ 6550 5800
+$Comp
+L C_Small C22
+U 1 1 579A482C
+P 2900 5500
+F 0 "C22" H 2910 5570 50  0000 L CNN
+F 1 "100n" H 2910 5420 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 2900 5500 50  0001 C CNN
+F 3 "" H 2900 5500 50  0000 C CNN
+	1    2900 5500
+	1    0    0    -1  
+$EndComp
+$Comp
+L C_Small C21
+U 1 1 579A48C3
+P 2650 5500
+F 0 "C21" H 2660 5570 50  0000 L CNN
+F 1 "100n" H 2660 5420 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 2650 5500 50  0001 C CNN
+F 3 "" H 2650 5500 50  0000 C CNN
+	1    2650 5500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2650 5400 2650 5300
+Connection ~ 2650 5300
+Wire Wire Line
+	2900 5400 2900 5300
+Connection ~ 2900 5300
+Wire Wire Line
+	2650 5600 2650 5800
+Connection ~ 3150 5800
+Wire Wire Line
+	2900 5600 2900 5800
+Connection ~ 2900 5800
+$Comp
+L R_Small R10
+U 1 1 579A55D6
+P 4500 5300
+F 0 "R10" H 4530 5320 50  0000 L CNN
+F 1 "10k" H 4530 5260 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 4500 5300 50  0001 C CNN
+F 3 "" H 4500 5300 50  0000 C CNN
+	1    4500 5300
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4600 5300 4700 5300
+Wire Wire Line
+	4700 5300 4700 5350
 $EndSCHEMATC
