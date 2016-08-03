@@ -1,5 +1,4 @@
 EESchema Schematic File Version 2
-LIBS:ulv_esc-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -36,11 +35,11 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title ""
-Date ""
+Title "ULV ESC Circuit"
+Date "2016-08-03"
 Rev ""
-Comp ""
-Comment1 ""
+Comp "SCUBE"
+Comment1 "By Tomas Härdin, Björn Ordoubadian"
 Comment2 ""
 Comment3 ""
 Comment4 ""
