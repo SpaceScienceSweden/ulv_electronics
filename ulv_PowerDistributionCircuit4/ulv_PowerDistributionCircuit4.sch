@@ -1,4 +1,5 @@
 EESchema Schematic File Version 2
+LIBS:ulv_PowerDistributionCircuit4-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -45,7 +46,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L SCUBE40 P1
+L SCUBE40-RESCUE-ulv_PowerDistributionCircuit4 P1
 U 1 1 579087F3
 P 1900 4150
 F 0 "P1" H 1850 3200 60  0000 C CNN
@@ -102,7 +103,6 @@ F 3 "" H 5150 4350 50  0000 C CNN
 	1    5150 4350
 	1    0    0    -1  
 $EndComp
-NoConn ~ 6250 4850
 $Comp
 L MAX1659 U2
 U 1 1 57909962
@@ -317,12 +317,12 @@ Wire Wire Line
 $Comp
 L R_Small R4
 U 1 1 5790B0AE
-P 8250 4150
-F 0 "R4" H 8280 4170 50  0000 L CNN
-F 1 "140kO" H 8280 4110 50  0000 L CNN
-F 2 "Resistors_SMD:R_0603_HandSoldering" H 8250 4150 50  0001 C CNN
-F 3 "" H 8250 4150 50  0000 C CNN
-	1    8250 4150
+P 8150 4550
+F 0 "R4" H 8180 4570 50  0000 L CNN
+F 1 "140kO" H 8180 4510 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603_HandSoldering" H 8150 4550 50  0001 C CNN
+F 3 "" H 8150 4550 50  0000 C CNN
+	1    8150 4550
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
@@ -336,12 +336,12 @@ Wire Wire Line
 $Comp
 L R_Small R5
 U 1 1 5790B3C3
-P 8150 4550
-F 0 "R5" H 8180 4570 50  0000 L CNN
-F 1 "21.5kO" H 8180 4510 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 8150 4550 50  0001 C CNN
-F 3 "" H 8150 4550 50  0000 C CNN
-	1    8150 4550
+P 8250 4150
+F 0 "R5" H 8280 4170 50  0000 L CNN
+F 1 "21.5kO" H 8280 4110 50  0000 L CNN
+F 2 "Resistors_SMD:R_1206_HandSoldering" H 8250 4150 50  0001 C CNN
+F 3 "" H 8250 4150 50  0000 C CNN
+	1    8250 4150
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
@@ -442,4 +442,9 @@ Wire Wire Line
 Wire Wire Line
 	4000 900  4000 2350
 Connection ~ 4000 2350
+Wire Wire Line
+	6250 4850 4400 4850
+Wire Wire Line
+	4400 4850 4400 2350
+Connection ~ 4400 2350
 $EndSCHEMATC
