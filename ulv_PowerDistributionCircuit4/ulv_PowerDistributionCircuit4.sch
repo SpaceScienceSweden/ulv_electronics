@@ -1,5 +1,4 @@
 EESchema Schematic File Version 2
-LIBS:ulv_PowerDistributionCircuit4-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -30,7 +29,6 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:scube
-LIBS:ulv_PowerDistributionCircuit4-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -46,7 +44,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L SCUBE40-RESCUE-ulv_PowerDistributionCircuit4 P1
+L SCUBE40 P1
 U 1 1 579087F3
 P 1900 4150
 F 0 "P1" H 1850 3200 60  0000 C CNN
