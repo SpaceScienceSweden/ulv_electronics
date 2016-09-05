@@ -1,13 +1,20 @@
 //https://github.com/PaulStoffregen/TimerOne
 #include <TimerOne.h>
 
-#define RPM 6000
-#define MICROS_PER_REV (60 * 1000000 / RPM)
-#define PAIRS            3  //number of sensor pairs
-#define SAMPLES_PER_REV (PAIRS*8)
-#define MICROS_PER_INTERRUPT (MICROS_PER_REV / SAMPLES_PER_REV)
-#define PWMPIN 12
+#define PAIRS             3  //number of sensor pairs
+#define SAMPLES_PER_CYCLE 4
+#define SAMPLES_PER_REV  (PAIRS*SAMPLES_PER_CYCLE)
+#define REVS_PER_PRINT   100
+#define SAMPLES_PER_PRINT (SAMPLES_PER_REV*REVS_PER_PRINT)
+
+#define PWMPIN 11
 #define TACHPIN 2
+#define LO1PIN  3
+#define LO2PIN  4
+
+#if SAMPLES_PER_CYCLE < 4 || SAMPLES_PER_CYCLE % 4
+#error SAMPLES_PER_CYCLE must be greater than 4 and a multiple of 4
+#endif
 
 unsigned char cursample = 0;
 char sintab[256];
@@ -17,20 +24,27 @@ unsigned long dc;
 unsigned long nextpwm = 0;
 char pwmstate = 0;
 
+static void reset_iq() {
+  int x;
+  for (x = 0; x < 3; x++) {
+    I[x] = 0;
+    Q[x] = 0;
+  }
+}
+
 static void interrupt() {
   //disable interrupts
   sei();
   unsigned long u0 = micros();
-  if (got_sample) {
-    cli();
-    return;
-  }
 
   //NOTE: analogRead() is measured as taking 112 µs (9600 Hz)
   //      keep this in mind
   int a = analogRead(0);
   int b = 0;//analogRead(1);
   int c = 0;//analogRead(2);
+
+  digitalWrite(LO1PIN, ( cursample                        / (SAMPLES_PER_CYCLE/2)) & 1);
+  digitalWrite(LO2PIN, ((cursample + SAMPLES_PER_CYCLE/4) / (SAMPLES_PER_CYCLE/2)) & 1);
 
   //re-enable interrupts
   cli();
@@ -47,12 +61,11 @@ static void interrupt() {
   Q[2] += c*sintab[phase2];
 
   cursample++;
-
-  if (cursample >= SAMPLES_PER_REV * 10) {
-    //got_sample = true;
-    cursample = 0;
-  }
   
+  if (cursample >= SAMPLES_PER_PRINT) {
+    Timer1.stop();
+  }
+
   dc = micros() - u0;
 }
 
@@ -64,11 +77,36 @@ const unsigned char PS_128 = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 
 volatile unsigned long last_interrupt;
 volatile unsigned long last_interrupt_length;
+
 static void tach_interrupt() {
-  unsigned long us = micros();
+  unsigned long us = micros();  
   last_interrupt_length = us - last_interrupt;
   last_interrupt = us;
-  //TODO: setup timer interrupt using last_interrupt_length / 6
+  
+  if (cursample == 0 && last_interrupt_length > 1000 && last_interrupt_length < 10000) {
+    reset_iq();
+    cursample = 0;
+    Timer1.initialize(last_interrupt_length / SAMPLES_PER_REV);
+    Timer1.attachInterrupt(interrupt);
+  }
+}
+
+static void setup_timer2() {
+  //PWM should run at around 50-100 Hz (pulse to pulse)
+
+  //use OC2A as PWM output pin, non-inverting
+  //OC2A = PB3 = Digital   11
+  //WGM2[1:0] = 3 (fast PWM)
+  TCCR2A = (2 << 6) + 3;
+  pinMode(PWMPIN, OUTPUT);
+  
+  //7 = 1024 prescaler (15625 Hz base frequency, 61 Hz pulse to pulse)
+  //WGM2[2] = 0 (TOP = 0xFF)
+  //FOC2n irrelevant in PWM mode
+  TCCR2B = (0 << 6) + (0 << 3) + 7;
+
+  //1 ms first, then 1.5 ms)
+  OCR2A = (micros() > 1000000 ? 22 : 15);
 }
 
 void setup() {
@@ -78,11 +116,13 @@ void setup() {
   for (x = 0; x < 256; x++) {
     sintab[x] = x < 128 ? 127 : -127;
   }
-  Timer1.initialize(MICROS_PER_INTERRUPT);
-  Timer1.attachInterrupt(interrupt);
   pinMode(PWMPIN, OUTPUT);
+  pinMode(LO1PIN, OUTPUT);
+  pinMode(LO2PIN, OUTPUT);
   analogReference(INTERNAL);
   
+  last_interrupt_length = 0;
+  cursample = 0;
   attachInterrupt(INT0, tach_interrupt, RISING);
 
   //trimma ADC:n om nödvändigt
@@ -91,35 +131,17 @@ void setup() {
   //ADCSRA |= PS_32;
 }
 
-//int a;
 void loop() {
-  unsigned long us = micros();
-  //a++;
-  if (us >= nextpwm) {
-    digitalWrite(PWMPIN, (us / 1000) & 1);
-    if (pwmstate) {
-      digitalWrite(PWMPIN, LOW);
-      pwmstate = 0;
-      nextpwm = us + 20000;
-    } else {
-      digitalWrite(PWMPIN, HIGH);
-      pwmstate = 1;
-      nextpwm = us + (us > 1000000 ? 1150 : 1000);
-    }
-  }
+  //continuously "set up" TIMER2
+  //this way it'll run with 1 ms pulses for a while, then switch to 1.5 ms
+  setup_timer2();
   
-  //Serial.println("Loop");
-  /*if (got_sample) {
+  if (cursample >= SAMPLES_PER_PRINT) {
     char tmp[256];
-    //snprintf(tmp, 256, "sample: %9li %9li, ISR time: %li vs %i", I[0], Q[0], dc, MICROS_PER_INTERRUPT);
-    //snprintf(tmp, 256, "us = %li\n", us);
-    //Serial.println(tmp);
-    int x;
-    for (x = 0; x < 3; x++) {
-      I[x] = 0;
-      Q[x] = 0;
-    }
-    got_sample = 0;
-  }*/
+    snprintf(tmp, 256, "sample: %9li %9li, ISR time: %li of %li / %i = %li", I[0], Q[0], dc, last_interrupt_length, SAMPLES_PER_REV, last_interrupt_length / SAMPLES_PER_REV);
+    Serial.println(tmp);
+    reset_iq();
+    cursample = 0;
+  }
 }
 
