@@ -16,7 +16,7 @@
 #error SAMPLES_PER_CYCLE must be greater than 4 and a multiple of 4
 #endif
 
-unsigned char cursample = 0;
+int cursample = 0;
 char sintab[256];
 long I[PAIRS] = {0}, Q[PAIRS] = {0};
 boolean got_sample = false;
@@ -106,7 +106,7 @@ static void setup_timer2() {
   TCCR2B = (0 << 6) + (0 << 3) + 7;
 
   //1 ms first, then 1.5 ms)
-  OCR2A = (micros() > 1000000 ? 22 : 15);
+  OCR2A = (micros() > 1000000 ? 18 : 15);
 }
 
 void setup() {
