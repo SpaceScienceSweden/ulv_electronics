@@ -29,6 +29,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:scube
+LIBS:demodulator3-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -263,28 +264,6 @@ SDA
 Text Label 4150 6650 3    60   ~ 0
 SCL
 $Comp
-L C_Small C18
-U 1 1 579219AA
-P 9700 1700
-F 0 "C18" H 9710 1770 50  0000 L CNN
-F 1 "100n" H 9710 1620 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 9700 1700 50  0001 C CNN
-F 3 "" H 9700 1700 50  0000 C CNN
-	1    9700 1700
-	1    0    0    -1  
-$EndComp
-$Comp
-L C_Small C19
-U 1 1 57921A48
-P 9700 2000
-F 0 "C19" H 9710 2070 50  0000 L CNN
-F 1 "100n" H 9710 1920 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 9700 2000 50  0001 C CNN
-F 3 "" H 9700 2000 50  0000 C CNN
-	1    9700 2000
-	1    0    0    -1  
-$EndComp
-$Comp
 L +9V #PWR09
 U 1 1 57922CA4
 P 8800 3300
@@ -463,28 +442,6 @@ F 3 "" H 8800 3650 60  0000 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L C_Small C23
-U 1 1 57A8B721
-P 9950 1700
-F 0 "C23" H 9960 1770 50  0000 L CNN
-F 1 "100n" H 9960 1620 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 9950 1700 50  0001 C CNN
-F 3 "" H 9950 1700 50  0000 C CNN
-	1    9950 1700
-	1    0    0    -1  
-$EndComp
-$Comp
-L C_Small C25
-U 1 1 57A8B8A2
-P 9950 2000
-F 0 "C25" H 9960 2070 50  0000 L CNN
-F 1 "100n" H 9960 1920 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 9950 2000 50  0001 C CNN
-F 3 "" H 9950 2000 50  0000 C CNN
-	1    9950 2000
-	1    0    0    -1  
-$EndComp
-$Comp
 L ISL21010 U10
 U 1 1 57A8E334
 P 9950 3800
@@ -580,25 +537,10 @@ Wire Wire Line
 Connection ~ 4600 5500
 Wire Wire Line
 	4600 5600 4600 5500
-Connection ~ 9450 1550
-Wire Wire Line
-	9700 1550 9700 1600
-Wire Wire Line
-	9450 1550 9950 1550
 Wire Wire Line
 	9450 1500 9450 1600
-Connection ~ 9450 2150
-Wire Wire Line
-	9700 2150 9700 2100
-Wire Wire Line
-	9450 2150 9950 2150
 Wire Wire Line
 	9450 2100 9450 2200
-Connection ~ 9700 1850
-Wire Wire Line
-	9700 1800 9700 1900
-Wire Wire Line
-	9300 1850 9950 1850
 Connection ~ 8050 5000
 Wire Wire Line
 	8050 5000 7750 5000
@@ -694,15 +636,6 @@ Wire Wire Line
 	8250 3050 9350 3050
 Wire Wire Line
 	8250 3650 8250 3050
-Wire Wire Line
-	9950 1800 9950 1900
-Connection ~ 9950 1850
-Connection ~ 9700 1550
-Wire Wire Line
-	9950 1550 9950 1600
-Wire Wire Line
-	9950 2150 9950 2100
-Connection ~ 9700 2150
 Wire Wire Line
 	10450 3700 10450 3950
 Wire Wire Line
@@ -934,4 +867,6 @@ Wire Wire Line
 	3150 6800 2750 6800
 Text GLabel 3000 6700 2    60   Input ~ 0
 LO
+Wire Wire Line
+	9300 1850 9450 1850
 $EndSCHEMATC
