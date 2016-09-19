@@ -534,9 +534,9 @@ Wire Wire Line
 Wire Wire Line
 	1400 6600 1400 6850
 Wire Wire Line
-	1400 6850 2100 6850
+	2100 6850 1400 6850
 Wire Wire Line
-	2100 6850 2100 6050
+	2100 6050 2100 6850
 Wire Wire Line
 	2100 6500 2050 6500
 Wire Wire Line
@@ -544,17 +544,17 @@ Wire Wire Line
 Wire Wire Line
 	3050 6600 3050 6850
 Wire Wire Line
-	3050 6850 3750 6850
+	3750 6850 3050 6850
 Wire Wire Line
 	3750 6500 3700 6500
 Wire Wire Line
 	7600 6000 7550 6000
 Wire Wire Line
-	7550 6000 7550 6250
+	7550 6000 7550 6450
 Wire Wire Line
-	7550 6250 8250 6250
+	7550 6450 8250 6450
 Wire Wire Line
-	8250 6250 8250 5900
+	8250 6450 8250 5900
 Wire Wire Line
 	8250 5900 8200 5900
 Wire Wire Line
@@ -754,7 +754,7 @@ Wire Wire Line
 Wire Wire Line
 	4650 5950 4600 5950
 Wire Wire Line
-	4600 5950 4600 5600
+	4600 5600 4600 5950
 Connection ~ 4600 5600
 Wire Wire Line
 	4950 5950 5100 5950
@@ -799,4 +799,15 @@ Wire Wire Line
 Connection ~ 950  6950
 Text Notes 2550 7150 0    60   ~ 0
 fc = 1/(2*pi*100k*1u) = 1.6 Hz
+$Comp
+L GND #PWR012
+U 1 1 57E015F2
+P 7800 6200
+F 0 "#PWR012" H 7800 5950 50  0001 C CNN
+F 1 "GND" H 7800 6050 50  0000 C CNN
+F 2 "" H 7800 6200 50  0000 C CNN
+F 3 "" H 7800 6200 50  0000 C CNN
+	1    7800 6200
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
