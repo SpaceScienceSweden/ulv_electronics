@@ -797,4 +797,6 @@ Connection ~ 950  5600
 Wire Wire Line
 	600  6500 600  6950
 Connection ~ 950  6950
+Text Notes 2550 7150 0    60   ~ 0
+fc = 1/(2*pi*100k*1u) = 1.6 Hz
 $EndSCHEMATC
