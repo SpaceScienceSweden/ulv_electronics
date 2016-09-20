@@ -1,1 +1,264 @@
 EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:scube
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L SCUBE40 P?
+U 1 1 57E16F68
+P 3100 3900
+F 0 "P?" H 3050 2950 60  0000 C CNN
+F 1 "SCUBE40" H 3050 5250 60  0000 C CNN
+F 2 "" H 3000 3750 60  0000 C CNN
+F 3 "" H 3000 3750 60  0000 C CNN
+	1    3100 3900
+	-1   0    0    -1  
+$EndComp
+$Comp
+L SCUBE40 P?
+U 2 1 57E16FD3
+P 8850 4050
+F 0 "P?" H 8800 3100 60  0000 C CNN
+F 1 "SCUBE40" H 8800 5400 60  0000 C CNN
+F 2 "" H 8750 3900 60  0000 C CNN
+F 3 "" H 8750 3900 60  0000 C CNN
+	2    8850 4050
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_02X10 P?
+U 1 1 57E1708F
+P 6000 2350
+F 0 "P?" H 6000 2900 50  0000 C CNN
+F 1 "CONN_02X10" V 6000 2350 50  0000 C CNN
+F 2 "" H 6000 1150 50  0000 C CNN
+F 3 "" H 6000 1150 50  0000 C CNN
+	1    6000 2350
+	0    1    1    0   
+$EndComp
+$Comp
+L +9V #PWR?
+U 1 1 57E17111
+P 6450 2100
+F 0 "#PWR?" H 6450 1950 50  0001 C CNN
+F 1 "+9V" H 6450 2240 50  0000 C CNN
+F 2 "" H 6450 2100 50  0000 C CNN
+F 3 "" H 6450 2100 50  0000 C CNN
+	1    6450 2100
+	1    0    0    -1  
+$EndComp
+$Comp
+L +9V #PWR?
+U 1 1 57E1712B
+P 6450 2600
+F 0 "#PWR?" H 6450 2450 50  0001 C CNN
+F 1 "+9V" H 6450 2740 50  0000 C CNN
+F 2 "" H 6450 2600 50  0000 C CNN
+F 3 "" H 6450 2600 50  0000 C CNN
+	1    6450 2600
+	-1   0    0    1   
+$EndComp
+$Comp
+L -9VA #PWR?
+U 1 1 57E17145
+P 6250 2100
+F 0 "#PWR?" H 6250 1975 50  0001 C CNN
+F 1 "-9VA" H 6250 2250 50  0000 C CNN
+F 2 "" H 6250 2100 50  0000 C CNN
+F 3 "" H 6250 2100 50  0000 C CNN
+	1    6250 2100
+	1    0    0    -1  
+$EndComp
+$Comp
+L -9VA #PWR?
+U 1 1 57E1715F
+P 6250 2600
+F 0 "#PWR?" H 6250 2475 50  0001 C CNN
+F 1 "-9VA" H 6250 2750 50  0000 C CNN
+F 2 "" H 6250 2600 50  0000 C CNN
+F 3 "" H 6250 2600 50  0000 C CNN
+	1    6250 2600
+	-1   0    0    1   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 57E17179
+P 6350 1950
+F 0 "#PWR?" H 6350 1700 50  0001 C CNN
+F 1 "GND" H 6350 1800 50  0000 C CNN
+F 2 "" H 6350 1950 50  0000 C CNN
+F 3 "" H 6350 1950 50  0000 C CNN
+	1    6350 1950
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	6350 1950 6350 2100
+$Comp
+L GND #PWR?
+U 1 1 57E17198
+P 6350 2750
+F 0 "#PWR?" H 6350 2500 50  0001 C CNN
+F 1 "GND" H 6350 2600 50  0000 C CNN
+F 2 "" H 6350 2750 50  0000 C CNN
+F 3 "" H 6350 2750 50  0000 C CNN
+	1    6350 2750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6350 2750 6350 2600
+Text Label 6150 1800 3    60   ~ 0
+TACHa
+Text Label 6150 2900 1    60   ~ 0
+TACHb
+Text Label 6050 2900 1    60   ~ 0
+OUT1b
+Text Label 5950 2900 1    60   ~ 0
+OUT2b
+Text Label 5850 2900 1    60   ~ 0
+OUT3b
+Text Label 6050 1800 3    60   ~ 0
+OUT1a
+Text Label 5950 1800 3    60   ~ 0
+OUT2a
+Text Label 5850 1800 3    60   ~ 0
+OUT3a
+Text Label 5750 1800 3    60   ~ 0
+A0
+Text Label 5650 1800 3    60   ~ 0
+A1
+Text Label 5650 2900 1    60   ~ 0
+A1
+Text Label 5750 2900 1    60   ~ 0
+A0
+$Comp
+L GND #PWR?
+U 1 1 57E17295
+P 5550 2100
+F 0 "#PWR?" H 5550 1850 50  0001 C CNN
+F 1 "GND" H 5550 1950 50  0000 C CNN
+F 2 "" H 5550 2100 50  0000 C CNN
+F 3 "" H 5550 2100 50  0000 C CNN
+	1    5550 2100
+	-1   0    0    1   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 57E172AF
+P 5550 2600
+F 0 "#PWR?" H 5550 2350 50  0001 C CNN
+F 1 "GND" H 5550 2450 50  0000 C CNN
+F 2 "" H 5550 2600 50  0000 C CNN
+F 3 "" H 5550 2600 50  0000 C CNN
+	1    5550 2600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5650 2900 5650 2600
+Wire Wire Line
+	5750 2900 5750 2600
+Wire Wire Line
+	5850 2900 5850 2600
+Wire Wire Line
+	5950 2900 5950 2600
+Wire Wire Line
+	6050 2900 6050 2600
+Wire Wire Line
+	6150 2600 6150 3600
+Wire Wire Line
+	6150 1500 6150 2100
+Wire Wire Line
+	6050 2100 6050 1800
+Wire Wire Line
+	5950 1800 5950 2100
+Wire Wire Line
+	5850 1800 5850 2100
+Wire Wire Line
+	5750 2100 5750 1800
+Wire Wire Line
+	5650 1800 5650 2100
+Wire Wire Line
+	3550 3500 5200 3500
+Wire Wire Line
+	5200 3500 5200 1500
+Wire Wire Line
+	5200 1500 6150 1500
+Wire Wire Line
+	6150 3600 3550 3600
+$Comp
+L GND #PWR?
+U 1 1 57E17464
+P 3550 3700
+F 0 "#PWR?" H 3550 3450 50  0001 C CNN
+F 1 "GND" H 3550 3550 50  0000 C CNN
+F 2 "" H 3550 3700 50  0000 C CNN
+F 3 "" H 3550 3700 50  0000 C CNN
+	1    3550 3700
+	0    -1   -1   0   
+$EndComp
+$Comp
+L +9V #PWR?
+U 1 1 57E17484
+P 3550 4400
+F 0 "#PWR?" H 3550 4250 50  0001 C CNN
+F 1 "+9V" H 3550 4540 50  0000 C CNN
+F 2 "" H 3550 4400 50  0000 C CNN
+F 3 "" H 3550 4400 50  0000 C CNN
+	1    3550 4400
+	0    1    1    0   
+$EndComp
+$Comp
+L -9VA #PWR?
+U 1 1 57E1749E
+P 3700 4500
+F 0 "#PWR?" H 3700 4375 50  0001 C CNN
+F 1 "-9VA" H 3700 4650 50  0000 C CNN
+F 2 "" H 3700 4500 50  0000 C CNN
+F 3 "" H 3700 4500 50  0000 C CNN
+	1    3700 4500
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3700 4500 3550 4500
+Text Notes 5750 4200 0    60   ~ 0
+TODO: find good ADC\nSimultaneous sampling\n>= 4 kHz\n>= 16-bit
+$EndSCHEMATC
