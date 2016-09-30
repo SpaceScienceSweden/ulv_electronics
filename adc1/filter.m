@@ -2,11 +2,11 @@
 % Kemet's are 2220 (5.6x5.0 mm)
 % TODO: Take the capacitor on the first stage amplifier into account
 R1=33e3;
-C1=0.47e-6;
+C1=220e-9;
 R2=R1;      % unit gain
-C2=100e-12;
+C2=470e-12;
 R3=1e3;     % also protects ADC input
-C3=3.3e-9;
+C3=10e-9;
 
 % filter cutoff frequencies
 f1=1./(2*pi*R1*C1)
@@ -18,18 +18,28 @@ fadc=8e6;
 fmod=fadc/4
 N=256
 srate=fmod/N
-
+%srate * 1.5 rounded to 100 Hz
+alias_max_freq=100*round(srate*1.5/100);
 
 %f=10.^(0:0.001:log10(fmod));
 f=[1:99,100:10:990,1000:100:fmod];
-g1 = ((R1 + (2*pi*f*C1).^-1).*(R2^-1 + 2*pi*f*C2)).^-1;
-%g2 = g1./((2*pi*f*C3).*(R3+(2*pi*f*C3).^-1));
-g2 = g1.*((2*pi*f*C3).^-1)./(R3+(2*pi*f*C3).^-1);
-maxg1 = max(g1)
-maxg2 = max(g2)
+
+I1 = 1  ./ (R1   + 1./(-2i*pi*f*C1));
+g1 = I1 ./ (1/R2 +     -2i*pi*f*C2);
+Z3 = 1  ./ (-2i*pi*f*C3);
+g2 = g1 .* Z3 ./ (R3 + Z3);
+
 sinc3 = abs(sin(N*pi*f/fmod)./(N*sin(pi*f/fmod))).^3;
 final = g2.*sinc3;
 
+g1p = 180/pi*angle(g1);
+g1 = abs(g1);
+g2p = 180/pi*angle(g2);
+g2 = abs(g2);
+finalp = 180/pi*angle(final);
+final = abs(final);
+
+alias_max_dB = 10*log10(final(find(f==alias_max_freq)))
 
 subplot(2,2,1:2);
 semilogx(f,10*log10(g1),'-',f,10*log10(g2),'-',f,10*log10(sinc3),'-',f,10*log10(final),'-');
@@ -39,17 +49,16 @@ xlabel('frequency (Hz)')
 axis([min(f),max(f),-100,0])
 
 subplot(2,2,3);
-semilogx(f,10*log10(g1),'-',f,10*log10(g2),'-',f,10*log10(sinc3),'-',f,10*log10(final),'-');
-title('Closeup, 10-10000 Hz')
-ylabel('Amplitude (dB)')
+ax = plotyy(f,10*log10(final),f,finalp);
+fmin = 100;
+fmax = 1000;
+axis(ax(1), [fmin,fmax,-3,0]);
+axis(ax(2), [fmin,fmax,-30,30]);
+title(sprintf('Closeup, %.0f-%.0f Hz', fmin, fmax))
 xlabel('frequency (Hz)')
-axis([1e1,1e4,-3,0])
-%%%%
-%semilogx(f,g1,'-',f,g2,'-',f,sinc3,'-',f,final,'-');
-%title('Closeup, 1-10000 Hz')
-%ylabel('Amplitude (linear)')
-%xlabel('frequency (Hz)')
-%axis([1,10000,0.5,1])
+ylabel(ax(1), "Amplitude (dB)");
+ylabel(ax(2), "Phase (degrees)");
+%axis([1e1,1e4,-3,0])
 
 subplot(2,2,4);
 semilogx(f,10*log10(g1),'-',f,10*log10(g2),'-',f,10*log10(sinc3),'-',f,10*log10(final),'-');
