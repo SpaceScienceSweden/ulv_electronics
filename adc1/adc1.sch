@@ -29,6 +29,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:scube
+LIBS:adc1-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -293,18 +294,6 @@ Text Label 4100 3550 0    60   ~ 0
 OUT3b
 Text Label 4100 3650 0    60   ~ 0
 /CS_ADCb
-Text Label 7050 2400 0    60   ~ 0
-OUT1a
-Text Label 7050 2500 0    60   ~ 0
-OUT2a
-Text Label 7050 2600 0    60   ~ 0
-OUT3a
-Text Label 7050 3000 0    60   ~ 0
-OUT1b
-Text Label 7050 3100 0    60   ~ 0
-OUT2b
-Text Label 7050 3200 0    60   ~ 0
-OUT3b
 Text Label 1850 2550 2    60   ~ 0
 A1
 Text Label 1850 2450 2    60   ~ 0
@@ -494,18 +483,6 @@ Wire Wire Line
 	4100 3550 4650 3550
 Wire Wire Line
 	4650 3650 4100 3650
-Wire Wire Line
-	7050 3200 7400 3200
-Wire Wire Line
-	7050 3100 7400 3100
-Wire Wire Line
-	7400 3000 7050 3000
-Wire Wire Line
-	7400 2600 7050 2600
-Wire Wire Line
-	7400 2500 7050 2500
-Wire Wire Line
-	7400 2400 7050 2400
 Wire Wire Line
 	2850 900  2600 900 
 Wire Wire Line
@@ -743,4 +720,15 @@ Wire Wire Line
 Connection ~ 2450 4850
 Wire Wire Line
 	2450 4650 2500 4650
+$Comp
+L +3V3 #PWR?
+U 1 1 57F306ED
+P 1650 3250
+F 0 "#PWR?" H 1650 3100 50  0001 C CNN
+F 1 "+3V3" H 1650 3390 50  0000 C CNN
+F 2 "" H 1650 3250 50  0000 C CNN
+F 3 "" H 1650 3250 50  0000 C CNN
+	1    1650 3250
+	0    1    1    0   
+$EndComp
 $EndSCHEMATC
