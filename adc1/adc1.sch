@@ -72,7 +72,7 @@ U 1 1 57E1708F
 P 3200 1500
 F 0 "P1" H 3200 2050 50  0000 C CNN
 F 1 "CONN_02X10" V 3200 1500 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Angled_2x10" H 3200 300 50  0001 C CNN
+F 2 "SCUBE:Pin_Header_Angled_2x10_dualfootprint" H 3200 300 50  0001 C CNN
 F 3 "" H 3200 300 50  0000 C CNN
 	1    3200 1500
 	0    -1   -1   0   
