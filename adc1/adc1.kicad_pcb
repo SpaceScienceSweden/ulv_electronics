@@ -3,9 +3,9 @@
   (general
     (links 266)
     (no_connects 0)
-    (area 0 0 0 0)
+    (area 74.324999 70.894999 126.208334 126.825)
     (thickness 1.6)
-    (drawings 1)
+    (drawings 2)
     (tracks 1134)
     (zones 0)
     (modules 102)
@@ -71,7 +71,7 @@
     (visible_elements FFFFEF7F)
     (pcbplotparams
       (layerselection 0x010c0_80000001)
-      (usegerberextensions false)
+      (usegerberextensions true)
       (excludeedgelayer true)
       (linewidth 0.100000)
       (plotframeref false)
@@ -3728,6 +3728,9 @@
     )
   )
 
+  (gr_text "adc1\n2016-10-04" (at 120.5 81.25 90) (layer F.Cu)
+    (effects (font (size 1 1) (thickness 0.25)))
+  )
   (gr_text +9V (at 115.5 76) (layer F.Cu)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )
