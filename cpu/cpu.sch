@@ -167,17 +167,6 @@ F 3 "" H 3400 1550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5V #PWR05
-U 1 1 577F8464
-P 1800 5450
-F 0 "#PWR05" H 1800 5300 50  0001 C CNN
-F 1 "+5V" H 1800 5590 50  0000 C CNN
-F 2 "" H 1800 5450 50  0000 C CNN
-F 3 "" H 1800 5450 50  0000 C CNN
-	1    1800 5450
-	1    0    0    -1  
-$EndComp
-$Comp
 L +3.3V #PWR06
 U 1 1 57A6D41C
 P 9750 3550
@@ -439,7 +428,7 @@ U 1 1 57F3AD33
 P 2050 1900
 F 0 "P3" H 2050 2050 50  0000 C CNN
 F 1 "PWR" V 2150 1900 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 2050 1900 50  0001 C CNN
+F 2 "Pin_Headers:Pin_Header_Angled_1x02" H 2050 1900 50  0001 C CNN
 F 3 "" H 2050 1900 50  0000 C CNN
 	1    2050 1900
 	-1   0    0    -1  
@@ -1117,5 +1106,18 @@ F 2 "" H 2300 2400 50  0000 C CNN
 F 3 "" H 2300 2400 50  0000 C CNN
 	1    2300 2400
 	0    -1   -1   0   
+$EndComp
+Text Notes 4750 1500 0    60   ~ 0
+We're not really using any analog pins\nright now, but possibly in the future
+$Comp
+L +3.3V #PWR?
+U 1 1 57FA76AD
+P 1800 5450
+F 0 "#PWR?" H 1800 5300 50  0001 C CNN
+F 1 "+3.3V" H 1800 5590 50  0000 C CNN
+F 2 "" H 1800 5450 50  0000 C CNN
+F 3 "" H 1800 5450 50  0000 C CNN
+	1    1800 5450
+	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
