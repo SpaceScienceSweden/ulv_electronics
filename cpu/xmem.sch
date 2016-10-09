@@ -45,21 +45,10 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 Text Notes 1400 2400 0    60   ~ 0
-SRAM manufacturers carried by both Elfa and Farnell:\nBSI, Lyontek, Renesas, IDT, ISSI\nFurthermore, Atmel makes rad-hard 128k x 8 SRAM\nThe 512k chips from Lyontek, Renesas and ISSI are all pin compatible\nOnly Renesas is 3.3V\nThe ATmega128 datasheet also says to use an AHC type 573
-$Comp
-L HM628512BFP-5 U3
-U 1 1 57F80069
-P 3700 3550
-F 0 "U3" H 3400 4600 50  0000 C CNN
-F 1 "R1LV0408CSP-7L" H 3700 2500 50  0000 C CNN
-F 2 "" H 3700 3550 50  0001 C CIN
-F 3 "" H 3700 3550 50  0000 C CNN
-	1    3700 3550
-	1    0    0    -1  
-$EndComp
-Text GLabel 4200 3500 2    60   Input ~ 0
+SRAM manufacturers carried by both Elfa and Farnell:\nBSI, Lyontek, Renesas, IDT, ISSI\nFurthermore, Atmel makes rad-hard 128k x 8 SRAM\nIS63LV1024 is the cheapest SRAM with at least 64k x 8, 3.3V and <= 35 ns access time\nThe ATmega128 datasheet also says to use an AHC type 573
+Text GLabel 3200 4650 0    60   Input ~ 0
 /RD
-Text GLabel 4200 3600 2    60   Input ~ 0
+Text GLabel 3200 4750 0    60   Input ~ 0
 /WR
 $Comp
 L 74LS573 U2
@@ -67,10 +56,10 @@ U 1 1 57F80533
 P 2500 3150
 F 0 "U2" H 2650 3750 50  0000 C CNN
 F 1 "SN74AHC573" H 2500 2550 50  0000 C CNN
-F 2 "" H 2500 3150 50  0001 C CNN
+F 2 "SCUBE:SO-20" H 2500 3150 50  0001 C CNN
 F 3 "" H 2500 3150 50  0000 C CNN
 F 4 "300-22-908" H 2500 3150 60  0001 C CNN "1st Distrib. PN"
-F 5 "https://www.elfa.se/sv/logikkrets-so-20-sn74ahc573-texas-instruments-sn74ahc573dw/p/30022908?q=74AHC573&page=1&origPos=1&origPageSize=50&simi=93.13" H 2500 3150 60  0001 C CNN "1st Distrib. Link"
+F 5 "https://www.elfa.se/sv/logikkrets-so-20-sn74ahc573-texas-instruments-sn74ahc573dw/p/30022908" H 2500 3150 60  0001 C CNN "1st Distrib. Link"
 	1    2500 3150
 	1    0    0    -1  
 $EndComp
@@ -93,10 +82,10 @@ AD7
 Text GLabel 1800 3550 0    60   Input ~ 0
 ALE
 $Comp
-L GND #PWR023
+L GND #PWR027
 U 1 1 57F80B40
 P 1750 3700
-F 0 "#PWR023" H 1750 3450 50  0001 C CNN
+F 0 "#PWR027" H 1750 3450 50  0001 C CNN
 F 1 "GND" H 1750 3550 50  0000 C CNN
 F 2 "" H 1750 3700 50  0000 C CNN
 F 3 "" H 1750 3700 50  0000 C CNN
@@ -107,37 +96,33 @@ Wire Wire Line
 	1750 3700 1750 3650
 Wire Wire Line
 	1750 3650 1800 3650
-Text GLabel 4200 2650 2    60   Input ~ 0
+Text GLabel 4600 2650 2    60   Input ~ 0
 AD0
-Text GLabel 4200 2750 2    60   Input ~ 0
+Text GLabel 4600 2750 2    60   Input ~ 0
 AD1
-Text GLabel 4200 2850 2    60   Input ~ 0
+Text GLabel 4600 2850 2    60   Input ~ 0
 AD2
-Text GLabel 4200 2950 2    60   Input ~ 0
+Text GLabel 4600 2950 2    60   Input ~ 0
 AD3
-Text GLabel 4200 3050 2    60   Input ~ 0
+Text GLabel 4600 3050 2    60   Input ~ 0
 AD4
-Text GLabel 4200 3150 2    60   Input ~ 0
+Text GLabel 4600 3150 2    60   Input ~ 0
 AD5
-Text GLabel 4200 3250 2    60   Input ~ 0
+Text GLabel 4600 3250 2    60   Input ~ 0
 AD6
-Text GLabel 4200 3350 2    60   Input ~ 0
+Text GLabel 4600 3350 2    60   Input ~ 0
 AD7
 $Comp
-L GND #PWR024
+L GND #PWR028
 U 1 1 57F80F06
-P 4250 3800
-F 0 "#PWR024" H 4250 3550 50  0001 C CNN
-F 1 "GND" H 4250 3650 50  0000 C CNN
-F 2 "" H 4250 3800 50  0000 C CNN
-F 3 "" H 4250 3800 50  0000 C CNN
-	1    4250 3800
-	1    0    0    -1  
+P 3200 4450
+F 0 "#PWR028" H 3200 4200 50  0001 C CNN
+F 1 "GND" H 3200 4300 50  0000 C CNN
+F 2 "" H 3200 4450 50  0000 C CNN
+F 3 "" H 3200 4450 50  0000 C CNN
+	1    3200 4450
+	0    1    1    0   
 $EndComp
-Wire Wire Line
-	4250 3800 4250 3750
-Wire Wire Line
-	4250 3750 4200 3750
 Text GLabel 3200 3450 0    60   Input ~ 0
 A8
 Text GLabel 3200 3550 0    60   Input ~ 0
@@ -156,4 +141,45 @@ Text GLabel 3200 4150 0    60   Input ~ 0
 A15
 Text Notes 5850 2000 0    60   ~ 0
 TODO: add Atmel's rad-hard memory as an option
+$Comp
+L IS63LV1024 U3
+U 1 1 57FA43DC
+P 3900 3700
+F 0 "U3" H 3950 3700 50  0000 C CNN
+F 1 "IS63LV1024" H 3900 2500 50  0000 C CNN
+F 2 "SMD_Packages:SOJ-32" H 3900 3700 50  0001 C CNN
+F 3 "" H 3900 3700 50  0000 C CNN
+	1    3900 3700
+	1    0    0    -1  
+$EndComp
+$Comp
+L VCC #PWR029
+U 1 1 57FA4515
+P 5600 4200
+F 0 "#PWR029" H 5600 4050 50  0001 C CNN
+F 1 "VCC" H 5600 4350 50  0000 C CNN
+F 2 "" H 5600 4200 50  0000 C CNN
+F 3 "" H 5600 4200 50  0000 C CNN
+	1    5600 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3.3V #PWR030
+U 1 1 57FA452D
+P 5850 4200
+F 0 "#PWR030" H 5850 4050 50  0001 C CNN
+F 1 "+3.3V" H 5850 4340 50  0000 C CNN
+F 2 "" H 5850 4200 50  0000 C CNN
+F 3 "" H 5850 4200 50  0000 C CNN
+	1    5850 4200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5850 4200 5850 4250
+Wire Wire Line
+	5850 4250 5600 4250
+Wire Wire Line
+	5600 4250 5600 4200
+Text HLabel 3200 4250 0    60   Input ~ 0
+A16
 $EndSCHEMATC
