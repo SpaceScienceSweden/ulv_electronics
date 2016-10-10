@@ -810,4 +810,6 @@ F 3 "" H 7800 6200 50  0000 C CNN
 	1    7800 6200
 	1    0    0    -1  
 $EndComp
+Text Notes 5150 6450 0    39   ~ 0
+10k would\nbe better here
 $EndSCHEMATC
