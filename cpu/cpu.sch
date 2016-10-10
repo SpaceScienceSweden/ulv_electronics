@@ -334,23 +334,23 @@ MISO
 $Comp
 L CONN_01X02 P3
 U 1 1 57F3AD33
-P 1500 1900
-F 0 "P3" H 1500 2050 50  0000 C CNN
-F 1 "PWR" V 1600 1900 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Angled_1x02" H 1500 1900 50  0001 C CNN
-F 3 "" H 1500 1900 50  0000 C CNN
-	1    1500 1900
+P 1700 1750
+F 0 "P3" H 1700 1900 50  0000 C CNN
+F 1 "PWR" V 1800 1750 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Angled_1x02" H 1700 1750 50  0001 C CNN
+F 3 "" H 1700 1750 50  0000 C CNN
+	1    1700 1750
 	-1   0    0    -1  
 $EndComp
 $Comp
 L GND #PWR011
 U 1 1 57F3ADF3
-P 1700 1950
-F 0 "#PWR011" H 1700 1700 50  0001 C CNN
-F 1 "GND" H 1700 1800 50  0000 C CNN
-F 2 "" H 1700 1950 50  0000 C CNN
-F 3 "" H 1700 1950 50  0000 C CNN
-	1    1700 1950
+P 1900 1800
+F 0 "#PWR011" H 1900 1550 50  0001 C CNN
+F 1 "GND" H 1900 1650 50  0000 C CNN
+F 2 "" H 1900 1800 50  0000 C CNN
+F 3 "" H 1900 1800 50  0000 C CNN
+	1    1900 1800
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -1009,9 +1009,7 @@ Wire Wire Line
 Wire Wire Line
 	8550 5950 8950 5950
 Wire Wire Line
-	1700 1850 1950 1850
-Wire Wire Line
-	1950 1850 1950 1700
+	1900 1700 2100 1700
 Connection ~ 2700 1700
 Wire Wire Line
 	1950 4450 4050 4450
@@ -1153,8 +1151,6 @@ Wire Wire Line
 Wire Wire Line
 	8550 5550 8950 5550
 Wire Wire Line
-	1950 1700 5250 1700
-Wire Wire Line
 	5450 1700 5550 1700
 Wire Wire Line
 	5500 1700 5500 1950
@@ -1273,4 +1269,19 @@ Text Notes 7700 5650 0    60   ~ 0
 "Open-source"\n output
 Text Notes 7700 5250 0    60   ~ 0
 1 mA drive
+Wire Wire Line
+	2300 1700 5250 1700
+$Comp
+L D_Schottky_Small D1
+U 1 1 57FBC9C0
+P 2200 1700
+F 0 "D1" H 2150 1780 50  0000 L CNN
+F 1 "SMS240" H 2050 1600 50  0000 L CNN
+F 2 "Diodes_SMD:MELF_Standard" V 2200 1700 50  0001 C CNN
+F 3 "" V 2200 1700 50  0000 C CNN
+F 4 "170-02-496" H 2200 1700 60  0001 C CNN "1st Distrib. PN"
+F 5 "https://www.elfa.se/sv/schottkydiod-40-melf-diotec-sms240/p/17002496" H 2200 1700 60  0001 C CNN "1st Distrib. Link"
+	1    2200 1700
+	-1   0    0    1   
+$EndComp
 $EndSCHEMATC
