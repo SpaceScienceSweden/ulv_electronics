@@ -1,7 +1,7 @@
 PRG            = adc
 OBJ            = adc.o
 MCU_TARGET     = atmega128
-OPTIMIZE       = -O2
+OPTIMIZE       = -O3
 
 DEFS           =-I/usr/local/avr/include
 LIBS           =-L/usr/local/avr/lib -L/usr/local/avr/lib/avr5
