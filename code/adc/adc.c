@@ -52,6 +52,8 @@ static void setup_adc() {
 
   //enable /DRDYx interrupts on PE6..7
   EIMSK |= (1<<6) | (1<<7);
+  //falling edge..
+  EICRB |= (2<<ISC60) | (2<<ISC70);
 
   //setup SPI
   //set MOSI and SCK as output, obviously
@@ -334,8 +336,6 @@ inline void adc_read_channel(int id) {
 
 //ISR for /DRDYa
 ISR(INT6_vect) {
-  //FIXME: both ISRs get triggered  twice for some reason
-  //commenting out the cli() and sei() fixes it, but isn't good practice
   cli();
   adc_read_channel(0);
   sei();
