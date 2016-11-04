@@ -2,10 +2,22 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <math.h>
 
-#define FCPU    7372800LL
-#define BAUD    115200
-#define WORDSZ  32    //ADC word size
+#define FCPU      7372800LL
+#define FADC      (FCPU/2)
+#define BAUD      115200
+#define WORDSZ    32    //ADC word size
+#define CLK_DIV   2
+#define ICLK_DIV  2
+#define OSR       5     //0..15 -> 4096 .. 32, see osrtab below
+#define GAIN      0     //0..4, actual gain = 2^GAIN
+
+static const uint16_t osrtab[16] = {
+  4096, 2048, 1024, 800, 768, 512, 400, 384, 256, 200, 192, 128, 96, 64, 48, 32
+};
+
+#define MAX_SAMPLES_PER_REV 32
 
 //#define UBRR  (((FCPU+8LL*BAUD)/(16LL*BAUD))-1) //lo-speed (U2X=0)
 #define UBRR  (((FCPU+4LL*BAUD)/(8LL*BAUD))-1) //hi-speed (U2X=1)
@@ -15,15 +27,39 @@
 #if WORDSZ < 24
 #error We want WORDSZ >= 24
 #endif
+#if CLK_DIV % 2 != 0 || CLK_DIV < 2 || CLK_DIV > 14
+#error Illegal CLK_DIV
+#endif
+#if ICLK_DIV % 2 != 0 || ICLK_DIV < 2 || ICLK_DIV > 14
+#error Illegal ICLK_DIV
+#endif
+#if OSR < 0 || OSR > 15
+#error Illegal OSR
+#endif
+#if GAIN < 0 || GAIN > 4
+#error Illegal GAIN
+#endif
 
 static volatile struct {
   uint8_t nchan;
-  uint8_t have_sample;
   uint8_t cnt;          //counter
   uint16_t stat_1;
   uint16_t stat_s;
-  int32_t lastsample[3];
-} adc_state[2];
+  uint8_t cursample;
+  //int32_t samples[MAX_SAMPLES_PER_REV*3];
+  int32_t I[3], Q[3];
+  uint8_t fault;        //set if we read too many samples
+} adc_state[2] = {{0},{0}};
+
+char sintab[256];
+
+static void setup_sintab() {
+  int x;
+  for (x = 0; x < 256; x++) {
+    sintab[x] = 127.5 * sin(2*M_PI*x/256);
+    //printf("sintab[%i] = %i\r\n", x, sintab[x]);
+  }
+}
 
 //stuff to make printf() work
 //source: http://efundies.com/avr-and-printf/
@@ -38,7 +74,12 @@ int usart_putchar_printf(char var, FILE *stream) {
 }
 static FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE);
 
-static void setup_adc() {
+inline void busy() {
+  //PF2 low = CPU busy
+  PORTF &= ~(1 << 2);
+}
+
+static void setup_adc_pins() {
   //use Timer2 output for f_ADC, run it as fast as possible (4 MHz)
   //CTC mode (TOP=OCR2), toggle OC2 on match, no prescaling
   //on the real thing we'll use the main oscillator (8 MHz)
@@ -50,8 +91,6 @@ static void setup_adc() {
   PORTD |= (1<<7) | (1<<6);
   DDRD |= (1<<7) | (1<<6);
 
-  //enable /DRDYx interrupts on PE6..7
-  EIMSK |= (1<<6) | (1<<7);
   //falling edge..
   EICRB |= (2<<ISC60) | (2<<ISC70);
 
@@ -61,10 +100,19 @@ static void setup_adc() {
   PORTB |= (1<<0);
   DDRB |= (1<<0) | (1<<1) | (1<<2);
 
-  /* Enable SPI, Master, set clock rate fck/16 */
-  SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
+  //enable spi, run at fck/2 (3.7 Mbps)
+  SPCR = (1<<SPE) | (1<<MSTR);
+  SPSR |= (1<<SPI2X); //double speed (vroom!)
   //CPOL=0, CPHA=1
   SPCR |= 1<<CPHA;
+}
+
+//sets up tachometer interrupts (INT4, INT5)
+static void setup_tach() {
+  //enable INT4 and INT5
+  EIMSK |= (1<<4) | (1<<5);
+  //rising edge
+  EICRB |= (3<<ISC40) | (3<<ISC50);
 }
 
 static void setup_uart0() {
@@ -221,6 +269,27 @@ static uint8_t popcount(uint8_t a) {
   return ret;
 }
 
+static void printit() {
+  float fdata = FADC;
+  int32_t hi, lo;
+  fdata /= CLK_DIV;
+  fdata /= ICLK_DIV;
+  fdata /= osrtab[OSR];
+
+  //can't printf() floats for some reason, so do a bit of hackery
+  hi = fdata;
+  lo = 100*(fdata - hi);
+
+  printf(" f_mod = %li\r\n", (int32_t)(FADC / CLK_DIV / ICLK_DIV));
+  printf("f_data = %li.%02li\r\n", hi, lo);
+  printf("gain = %i\r\n", 1<<GAIN);
+}
+
+static void disable_adc(uint8_t id) {
+  //just disable interrupt for now
+  EIMSK &= ~(1<<(6+id));
+}
+
 static void config_adc(uint8_t id) {
   uint8_t msb, lsb, gain;
   uint32_t word;
@@ -290,21 +359,15 @@ static void config_adc(uint8_t id) {
   //dynamic wod size
   wreg(id, D_SYS_CFG, (3<<4) | (3<<2));
 
+  //setup f_mod and f_data
   //CLKSRC = external
-  //CLK_DIV = 14
-  wreg(id, CLK1, (7<<1));
+  wreg(id, CLK1, CLK_DIV/2);
+  wreg(id, CLK2, ((ICLK_DIV/2)<<5) | OSR);
 
-  //f_mod = f_iclk/2 (1.8432 MHz), f_data = f_mod/512 (3600 Hz)
-  //wreg(id, CLK2, (1<<5) | 3);
-  //printf("CLK2 STAT_1: %02X\r\n", rreg(id, STAT_1));
-  //DIV=14, OSR=4096
-  wreg(id, CLK2, (7<<5));
-
-  gain = 4;
-  printf("gain = %i\r\n", 1<<gain);
-  wreg(id, ADC1, gain);
-  wreg(id, ADC2, gain);
-  wreg(id, ADC3, gain);
+  printit();
+  wreg(id, ADC1, GAIN);
+  wreg(id, ADC2, GAIN);
+  wreg(id, ADC3, GAIN);
   printf("ADCn STAT_1: %02X\r\n", rreg(id, STAT_1));
 
   printf("STAT_1: %02X\r\n", rreg(id, STAT_1));
@@ -327,27 +390,86 @@ static void config_adc(uint8_t id) {
   while ((adc_comm(id, 0) >> (WORDSZ-16)) != 0x0555) {
     printf("Waiting for LOCK\r\n");
   }
+
+  //enable /DRDYx interrupts on PE6..7
+  EIMSK |= (1<<(6+id));
 }
 
 inline void adc_read_channel(int id) {
+  uint8_t x;
+  int32_t samples[3];
   adc_state[id].cnt++;
-  adc_state[id].stat_1 = adc_comm_samples(id, RREG(STAT_1), adc_state[id].lastsample);
+  //&adc_state[id].samples[3*adc_state[id].cursample]
+  adc_state[id].stat_1 = adc_comm_samples(id, RREG(STAT_1), samples);
+
+  for (x = 0; x < 3; x++) {
+    uint8_t phase = adc_state[id].cursample;
+    adc_state[id].I[x] += sintab[phase]*samples[x];
+    phase += 64;
+    adc_state[id].Q[x] += sintab[phase]*samples[x];
+  }
+
+  if (adc_state[id].cursample < MAX_SAMPLES_PER_REV-1) {
+    adc_state[id].cursample++;
+  } else {
+    adc_state[id].fault = 1;
+  }
+}
+
+//ISR for TACHa
+ISR(INT4_vect) {
+  cli();
+  //busy();
+  adc_state[0].cursample = 0;
+  sei();
+}
+
+//ISR for TACHb
+ISR(INT5_vect) {
+  cli();
+  //busy();
+  adc_state[1].cursample = 0;
+  sei();
 }
 
 //ISR for /DRDYa
 ISR(INT6_vect) {
   cli();
+  busy();
   adc_read_channel(0);
   sei();
-  printf("INT6\r\n");
+  //printf("INT6\r\n");
 }
 
 //ISR for /DRDYb
 ISR(INT7_vect) {
   cli();
+  busy();
   adc_read_channel(1);
   sei();
-  printf("INT7\r\n");
+  //printf("INT7\r\n");
+}
+
+ISR(TIMER0_OVF_vect) {
+  cli();
+  //busy();
+  PORTF ^= 3;
+  sei();
+}
+
+static void setup_fake_tach_signals() {
+  //use Timer0. normal mode is good enough (TOP = 0xFF)
+  //prescaler = 1024
+  TCCR0 = 5;
+  //OCR0 = 0xFF;
+  TIMSK |= 1<<TOIE0;
+
+  //use 32.768 kHz crystal
+  //ASSR |= (1<<AS0);
+  
+
+  //tachometer is faked on PF0 and PF1
+  DDRF |= 3;
 }
 
 static void cls() {
@@ -367,28 +489,52 @@ int main(void)
   //setup stdout for printf()
   stdout = &mystdout;
 
-  setup_adc();
   setup_uart0();
   setup_uart1();
+  setup_tach();
+  setup_fake_tach_signals();
 
   cls();
 
   printf("\033[0;0HHello, world!\r\n");
+  setup_adc_pins(); disable_adc(0); disable_adc(1);
   config_adc(0);
-  config_adc(1);
+  //config_adc(1);
+
+  //CPU usage monitor on PF2
+  DDRF |= 1 << 2;
+
+  setup_sintab();
+  printf("ADC state size: %i\r\n", sizeof(adc_state));
   printf("Done setting up\r\n");
   sei();
 
+  //lastcnt = adc_state[0].cnt;
   for (;;) {
-    char temp[128];
-    if (adc_state[0].cnt != lastcnt) {
-      lastcnt = adc_state[0].cnt;
-      snprintf(temp,  128, "%X%X %04X%04X % 8li % 8li % 8li % 8li % 8li % 8li\r\n",
+    uint8_t cnt = adc_state[0].cnt;
+    if (cnt != lastcnt) {
+      /*cli();
+      busy();
+      sei();*/
+      if (cnt != (uint8_t)(lastcnt+1)) {
+        //ignore the first one
+        if (lastcnt != 0) {
+          printf("We missed a sample :(  %i vs %i+1\r\n", cnt, lastcnt);
+        }
+      }
+
+      lastcnt = cnt;
+      /*snprintf(temp,  128, "%X%X %04X%04X % 8li % 8li % 8li % 8li % 8li % 8li\r\n",
         adc_state[0].cnt & 0xF, (adc_state[1].cnt - adc_state[0].cnt) & 0xF, adc_state[0].stat_1, adc_state[1].stat_1,
         adc_state[0].lastsample[0], adc_state[0].lastsample[1], adc_state[0].lastsample[2],
         adc_state[1].lastsample[0], adc_state[1].lastsample[1], adc_state[1].lastsample[2]);
       //printf("Bluh\r\n");
-      printf(temp);
+      printf(temp);*/
+    } else {
+      //we use PORTF in the TIMER0 ISR. disable interrupts temporarily to prevent it from interfering
+      cli();
+      PORTF |= 1 << 2;
+      sei();
     }
   }
   //*/
