@@ -46,17 +46,19 @@ static volatile struct {
   uint16_t stat_1;
   uint16_t stat_s;
   uint8_t cursample;
-  //int32_t samples[MAX_SAMPLES_PER_REV*3];
-  int32_t I[3], Q[3];
+  int64_t I[3], Q[3];
   uint8_t fault;        //set if we read too many samples
 } adc_state[2] = {{0},{0}};
 
+//we might want to put this in PROGMEM, we'll see
 char sintab[256];
 
 static void setup_sintab() {
   int x;
   for (x = 0; x < 256; x++) {
-    sintab[x] = 127.5 * sin(2*M_PI*x/256);
+    //this approximation minimizes harmonic distortion when limited to 8 bits
+    //see optimize_sintab.m
+    sintab[x] = 124.72 * sin(2*M_PI*x/256);
     //printf("sintab[%i] = %i\r\n", x, sintab[x]);
   }
 }
@@ -158,15 +160,20 @@ static void adc_start_frame2(uint8_t id) {
   }
 }
 
+static uint8_t spi_comm_byte(uint8_t in) {
+  //we could write this in asm
+  //16 cy delay between setting and reading SPDR should be enough
+  SPDR = in;
+  while(!(SPSR & (1<<SPIF)));
+  return SPDR;
+}
+
 static uint32_t spi_comm_word(uint32_t in) {
   uint32_t out = 0;
   uint8_t x;
 
   for (x = 0; x < WORDSZ; x += 8) {
-    SPDR = (in >> (WORDSZ-8-x));
-    while(!(SPSR & (1<<SPIF))) {
-    }
-    out |= ((uint32_t)SPDR << (24-x));
+    out |= ((uint32_t)spi_comm_byte(in >> (WORDSZ-8-x)) << (24-x));
   }
 
   return out;
@@ -397,17 +404,85 @@ static void config_adc(uint8_t id) {
 
 inline void adc_read_channel(int id) {
   uint8_t x;
-  int32_t samples[3];
-  adc_state[id].cnt++;
-  //&adc_state[id].samples[3*adc_state[id].cursample]
-  adc_state[id].stat_1 = adc_comm_samples(id, RREG(STAT_1), samples);
+  int32_t samples[3] = {0,0,0};
+  uint8_t iphase, qphase;
 
+  adc_state[id].cnt++;
+  //fake values for now
+  iphase = adc_state[id].cnt;
+  qphase = iphase + 64;
+
+  adc_start_frame2(id);
+
+  //ignore control word
+  spi_comm_byte(0);
+  spi_comm_byte(0);
+  spi_comm_byte(0);
+#if WORDSZ==32
+  spi_comm_byte(0);
+#endif
+
+  //warm-up
+  SPDR = 0;
+  while(!(SPSR & (1<<SPIF)));
+
+  //read and demodulate at the same time
   for (x = 0; x < 3; x++) {
-    uint8_t phase = adc_state[id].cursample;
-    adc_state[id].I[x] += sintab[phase]*samples[x];
-    phase += 64;
-    adc_state[id].Q[x] += sintab[phase]*samples[x];
+    uint8_t b;
+    //use 32-bit integers locally here, both because we don't
+    //need 64 bits and because adc_state is volatile
+    int32_t I, Q;
+
+    //this XOR switches signed to unsigned
+    //in other words, we add a DC offset of Vref (2.4 V or so),
+    //which gets removed by the demodulation
+    //
+    // 0x800000 .. 0xFFFFFF 0x000000 0x000001 ... 0x7FFFFF
+    //
+    //becomes
+    //
+    // 0x000000 .. 0x7FFFFF 0x800000 0x800001 ... 0xFFFFFF
+    //
+    //the demodulation done here fits nicely in 32 bits
+    //
+    // 127*(2^24-1) => +-2130706305
+
+    //we have a byte here because we did the warm-up further up
+    b = SPDR ^ 0x80;
+    SPDR = 0;
+    //uint8_t * int8_t * int32_t
+    I = b * sintab[iphase] * (1L<<16);
+    Q = b * sintab[qphase] * (1L<<16);
+    //above computation is >16 cy  while(!(SPSR & (1<<SPIF)));
+    b = SPDR;
+    SPDR = 0;
+    I += b * sintab[iphase] * (1L<<8);
+    Q += b * sintab[qphase] * (1L<<8);
+    //above computation is >16 cy  while(!(SPSR & (1<<SPIF)));
+    b = SPDR;
+#if WORDSZ == 32
+    SPDR = 0;
+#endif
+    I += b * sintab[iphase];
+    Q += b * sintab[qphase];
+#if WORDSZ == 32
+    while(!(SPSR & (1<<SPIF)));
+    b = SPDR;
+#endif
+
+    //start transfer of first byte of next sample, unless we're done
+    if (x < 2) {
+      SPDR = 0;
+      //computation below is > 16 cy  while(!(SPSR & (1<<SPIF)));
+    }
+
+    //add to 64-bit state
+    //TODO: we need to deal with 
+    adc_state[id].I[x] += I;
+    adc_state[id].Q[x] += Q;
   }
+
+  adc_end_frame2();
 
   if (adc_state[id].cursample < MAX_SAMPLES_PER_REV-1) {
     adc_state[id].cursample++;
