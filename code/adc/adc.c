@@ -58,6 +58,7 @@ static volatile struct {
   uint32_t tachstart;
   uint32_t tachlen;
   uint16_t phi, dphi;   //phase, phase increment
+  uint32_t lastt;
 } adc_state[2] = {{0},{0}};
 
 volatile uint16_t timer1_hi;  //for 32-bit counter
@@ -91,6 +92,10 @@ static FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP
 inline void busy() {
   //PF2 low = CPU busy
   PORTF &= ~(1 << 2);
+}
+
+inline void unbusy() {
+  PORTF |= 1 << 2;
 }
 
 static void setup_adc_pins() {
@@ -416,10 +421,17 @@ static void config_adc(uint8_t id) {
   EIMSK |= (1<<(6+id));
 }
 
+static uint32_t currenttime() {
+  uint32_t ret = ((uint32_t)timer1_hi<<16) | TCNT1;
+  return ret;
+}
+
 inline void adc_read_channel(int id) {
   uint8_t x;
   int32_t samples[3] = {0,0,0};
   uint8_t iphase, qphase;
+
+  adc_state[id].lastt = currenttime();
 
   //fake values for now
   iphase = adc_state[id].phi >> 8;
@@ -505,29 +517,28 @@ inline void adc_read_channel(int id) {
   }
 }
 
-static uint32_t currenttime() {
-  uint32_t ret = ((uint32_t)timer1_hi<<16) | TCNT1;
-  return ret;
-}
-
 static void handle_tach(uint8_t id) {
   uint8_t x;
   uint32_t t = currenttime();
   uint32_t K = 2UL*CLK_DIV*ICLK_DIV*osrtab[OSR];
   uint32_t d;
+  uint32_t tachlen, endphase;
 
-  adc_state[id].tachlen = t - adc_state[id].tachstart;
+  tachlen  = t - adc_state[id].tachstart;
+  endphase = t - adc_state[id].lastt;
   adc_state[id].tachstart = t;
 
   //1 Hz cutoff
-  if (adc_state[id].tachlen < FCPU) {
-    d = adc_state[id].tachlen * TIMER1_N * SIGNAL_D;
+  if (tachlen < FCPU) {
+    d = tachlen * TIMER1_N * SIGNAL_D;
     adc_state[id].dphi = (65536UL * SIGNAL_N * K + d/2) / d;
-    adc_state[id].phi = 0;
+    //derive the starting phase from where we expect the next sample will be taken
+    //this works because currenttime() gives us time in CPU cycles,
+    //and K is the time it takes for the ADC to do one conversion, also in CPU cycles
+    adc_state[id].phi = adc_state[id].dphi * (K - endphase) / K;
   } else {
     adc_state[id].discard = 1;
   }
-
 
   adc_state[id].currev++;
 
@@ -560,6 +571,7 @@ ISR(INT4_vect) {
   cli();
   busy();
   handle_tach(0);
+  unbusy();
   sei();
 }
 
@@ -568,6 +580,7 @@ ISR(INT5_vect) {
   cli();
   busy();
   handle_tach(1);
+  unbusy();
   sei();
 }
 
@@ -576,6 +589,7 @@ ISR(INT6_vect) {
   cli();
   busy();
   adc_read_channel(0);
+  unbusy();
   sei();
   //printf("INT6\r\n");
 }
@@ -585,6 +599,7 @@ ISR(INT7_vect) {
   cli();
   busy();
   adc_read_channel(1);
+  unbusy();
   sei();
   //printf("INT7\r\n");
 }
@@ -597,6 +612,7 @@ ISR(TIMER0_OVF_vect) {
   //generate in-phase and quadrature signals
   PORTF = (PORTF & ~3) | (((c/2)&1)*3);
   PORTB = (PORTB & ~16) | ((((c/2+(c&1)))&1)*16);
+  unbusy();
   sei();
 }
 
@@ -604,6 +620,7 @@ ISR(TIMER1_OVF_vect) {
   cli();
   busy();
   timer1_hi++;
+  unbusy();
   sei();
 }
 
@@ -719,9 +736,9 @@ int main(void)
       adc_state[0].fault = 0;
     } else if (outsamples) {
       uint8_t x;
-      uint32_t tachlen = adc_state[0].tachlen;
+      uint32_t endphase = 0;
 
-      printf("%i,%li,%u", outsamples, tachlen, adc_state[0].dphi);
+      printf("%i,%li,%u", outsamples, endphase, adc_state[0].dphi);
       for (x = 0; x < 3; x++) {
         char tmp[128];
         int64_t i = adc_state[0].Iout[x], q = adc_state[0].Qout[x];
@@ -738,10 +755,6 @@ int main(void)
       printf("\r\n");
       adc_state[0].outsamples = 0;
     } else {
-      //we use PORTF in the TIMER0 ISR. disable interrupts temporarily to prevent it from interfering
-      cli();
-      PORTF |= 1 << 2;
-      sei();
     }
   }
   //*/
