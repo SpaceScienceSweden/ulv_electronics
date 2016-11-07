@@ -45,7 +45,7 @@ static const uint16_t osrtab[16] = {
 #error Illegal GAIN
 #endif
 
-static volatile struct {
+typedef struct {
   uint8_t nchan;
   uint16_t stat_1;
   uint16_t stat_s;
@@ -59,7 +59,9 @@ static volatile struct {
   uint32_t tachlen;
   uint16_t phi, dphi;   //phase, phase increment
   uint32_t lastt;
-} adc_state[2] = {{0},{0}};
+} adc_state_t;
+
+volatile adc_state_t adc_state[2] = {{0},{0}};
 
 volatile uint16_t timer1_hi;  //for 32-bit counter
 
@@ -431,12 +433,16 @@ inline void adc_read_channel(int id) {
   int32_t samples[3] = {0,0,0};
   uint8_t iphase, qphase;
 
-  adc_state[id].lastt = currenttime();
+  //cast away volatile
+  //this is fine since we're cli()d and can't be interrupted
+  adc_state_t *state = (adc_state_t*)&adc_state[id];
+
+  state->lastt = currenttime();
 
   //fake values for now
-  iphase = adc_state[id].phi >> 8;
+  iphase = state->phi >> 8;
   qphase = iphase + 64;
-  adc_state[id].phi += adc_state[id].dphi;
+  state->phi += state->dphi;
 
   adc_start_frame2(id);
 
@@ -504,16 +510,16 @@ inline void adc_read_channel(int id) {
 
     //add to 64-bit state
     //TODO: we need to deal with 
-    adc_state[id].I[x] += I;
-    adc_state[id].Q[x] += Q;
+    state->I[x] += I;
+    state->Q[x] += Q;
   }
 
   adc_end_frame2();
 
-  if (adc_state[id].cursample < MAX_SAMPLES_PER_PRINT-1) {
-    adc_state[id].cursample++;
+  if (state->cursample < MAX_SAMPLES_PER_PRINT-1) {
+    state->cursample++;
   } else {
-    adc_state[id].fault = 1;
+    state->fault = 1;
   }
 }
 
@@ -524,45 +530,49 @@ static void handle_tach(uint8_t id) {
   uint32_t d;
   uint32_t tachlen, endphase;
 
-  tachlen  = t - adc_state[id].tachstart;
-  endphase = t - adc_state[id].lastt;
-  adc_state[id].tachstart = t;
+  //cast away volatile
+  //this is fine since we're cli()d and can't be interrupted
+  adc_state_t *state = (adc_state_t*)&adc_state[id];
+
+  tachlen  = t - state->tachstart;
+  endphase = t - state->lastt;
+  state->tachstart = t;
 
   //1 Hz cutoff
   if (tachlen < FCPU) {
     d = tachlen * TIMER1_N * SIGNAL_D;
-    adc_state[id].dphi = (65536UL * SIGNAL_N * K + d/2) / d;
+    state->dphi = (65536UL * SIGNAL_N * K + d/2) / d;
     //derive the starting phase from where we expect the next sample will be taken
     //this works because currenttime() gives us time in CPU cycles,
     //and K is the time it takes for the ADC to do one conversion, also in CPU cycles
-    adc_state[id].phi = adc_state[id].dphi * (K - endphase) / K;
+    state->phi = state->dphi * (K - endphase) / K;
   } else {
-    adc_state[id].discard = 1;
+    state->discard = 1;
   }
 
-  adc_state[id].currev++;
+  state->currev++;
 
-  if (adc_state[id].currev >= TACHS_PER_PRINT) {
+  if (state->currev >= TACHS_PER_PRINT) {
     for (x = 0; x < 3; x++) {
-      adc_state[id].Iout[x] = adc_state[id].I[x];
-      adc_state[id].Qout[x] = adc_state[id].Q[x];
-      adc_state[id].I[x] = 0;
-      adc_state[id].Q[x] = 0;
+      state->Iout[x] = state->I[x];
+      state->Qout[x] = state->Q[x];
+      state->I[x] = 0;
+      state->Q[x] = 0;
     }
 
-    if (adc_state[id].outsamples) {
-      adc_state[id].fault = 1;
+    if (state->outsamples) {
+      state->fault = 1;
     }
 
-    if (!adc_state[id].discard) {
-      adc_state[id].outsamples = adc_state[id].cursample;
+    if (!state->discard) {
+      state->outsamples = state->cursample;
     } else {
-      adc_state[id].outsamples = 0;
+      state->outsamples = 0;
     }
 
-    adc_state[id].discard = 0;
-    adc_state[id].cursample = 0;
-    adc_state[id].currev = 0;
+    state->discard = 0;
+    state->cursample = 0;
+    state->currev = 0;
   }
 }
 
