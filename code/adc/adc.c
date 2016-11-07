@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 
 #define FCPU      7372800LL
 #define FADC      (FCPU/2)
@@ -10,14 +11,18 @@
 #define WORDSZ    32    //ADC word size
 #define CLK_DIV   2
 #define ICLK_DIV  2
-#define OSR       5     //0..15 -> 4096 .. 32, see osrtab below
+#define OSR       8     //0..15 -> 4096 .. 32, see osrtab below
 #define GAIN      0     //0..4, actual gain = 2^GAIN
+#define TIMER1_N  1     //timer1 prescaler
+#define SIGNAL_N  1     //signal frequency compared to tach, numerator
+#define SIGNAL_D  1     //signal frequency compared to tach, denominator
+#define TACHS_PER_PRINT  10
+#define MAX_SAMPLES_PER_PRINT 1000
 
 static const uint16_t osrtab[16] = {
   4096, 2048, 1024, 800, 768, 512, 400, 384, 256, 200, 192, 128, 96, 64, 48, 32
 };
 
-#define MAX_SAMPLES_PER_REV 32
 
 //#define UBRR  (((FCPU+8LL*BAUD)/(16LL*BAUD))-1) //lo-speed (U2X=0)
 #define UBRR  (((FCPU+4LL*BAUD)/(8LL*BAUD))-1) //hi-speed (U2X=1)
@@ -42,13 +47,20 @@ static const uint16_t osrtab[16] = {
 
 static volatile struct {
   uint8_t nchan;
-  uint8_t cnt;          //counter
   uint16_t stat_1;
   uint16_t stat_s;
-  uint8_t cursample;
+  uint16_t cursample, currev;
   int64_t I[3], Q[3];
-  uint8_t fault;        //set if we read too many samples
+  uint8_t fault;        //set if we read too many samples, if the main loop wasn't able to print fast enough
+  int64_t Iout[3], Qout[3];
+  uint16_t outsamples;
+  uint8_t discard;      //if set, discard data up to the next TACH
+  uint32_t tachstart;
+  uint32_t tachlen;
+  uint16_t phi, dphi;   //phase, phase increment
 } adc_state[2] = {{0},{0}};
+
+volatile uint16_t timer1_hi;  //for 32-bit counter
 
 //we might want to put this in PROGMEM, we'll see
 char sintab[256];
@@ -298,7 +310,7 @@ static void disable_adc(uint8_t id) {
 }
 
 static void config_adc(uint8_t id) {
-  uint8_t msb, lsb, gain;
+  uint8_t msb, lsb, gain, x;
   uint32_t word;
 
   printf("Resetting ADC %i (nchan = %i)\r\n", id, adc_state[id].nchan);
@@ -311,7 +323,9 @@ static void config_adc(uint8_t id) {
   adc_state[id].nchan = popcount(rreg(id, ADC_ENA));
 
   adc_comm(id, RESET);
-  while (((word = adc_comm(id, 0)) >> (WORDSZ-16)) != 0xFF04) {
+  x = 0;
+  while (((word = adc_comm(id, 0)) >> (WORDSZ-16)) != 0xFF04 && x < 10) {
+    x++;
     printf("Waiting for FF04, got %08lX\r\n", word);
     word >>= (WORDSZ-16);
     if ((word >> 8) == 0x22) {
@@ -407,10 +421,10 @@ inline void adc_read_channel(int id) {
   int32_t samples[3] = {0,0,0};
   uint8_t iphase, qphase;
 
-  adc_state[id].cnt++;
   //fake values for now
-  iphase = adc_state[id].cnt;
+  iphase = adc_state[id].phi >> 8;
   qphase = iphase + 64;
+  adc_state[id].phi += adc_state[id].dphi;
 
   adc_start_frame2(id);
 
@@ -484,26 +498,76 @@ inline void adc_read_channel(int id) {
 
   adc_end_frame2();
 
-  if (adc_state[id].cursample < MAX_SAMPLES_PER_REV-1) {
+  if (adc_state[id].cursample < MAX_SAMPLES_PER_PRINT-1) {
     adc_state[id].cursample++;
   } else {
     adc_state[id].fault = 1;
   }
 }
 
+static uint32_t currenttime() {
+  uint32_t ret = ((uint32_t)timer1_hi<<16) | TCNT1;
+  return ret;
+}
+
+static void handle_tach(uint8_t id) {
+  uint8_t x;
+  uint32_t t = currenttime();
+  uint32_t K = 2UL*CLK_DIV*ICLK_DIV*osrtab[OSR];
+  uint32_t d;
+
+  adc_state[id].tachlen = t - adc_state[id].tachstart;
+  adc_state[id].tachstart = t;
+
+  //1 Hz cutoff
+  if (adc_state[id].tachlen < FCPU) {
+    d = adc_state[id].tachlen * TIMER1_N * SIGNAL_D;
+    adc_state[id].dphi = (65536UL * SIGNAL_N * K + d/2) / d;
+    adc_state[id].phi = 0;
+  } else {
+    adc_state[id].discard = 1;
+  }
+
+
+  adc_state[id].currev++;
+
+  if (adc_state[id].currev >= TACHS_PER_PRINT) {
+    for (x = 0; x < 3; x++) {
+      adc_state[id].Iout[x] = adc_state[id].I[x];
+      adc_state[id].Qout[x] = adc_state[id].Q[x];
+      adc_state[id].I[x] = 0;
+      adc_state[id].Q[x] = 0;
+    }
+
+    if (adc_state[id].outsamples) {
+      adc_state[id].fault = 1;
+    }
+
+    if (!adc_state[id].discard) {
+      adc_state[id].outsamples = adc_state[id].cursample;
+    } else {
+      adc_state[id].outsamples = 0;
+    }
+
+    adc_state[id].discard = 0;
+    adc_state[id].cursample = 0;
+    adc_state[id].currev = 0;
+  }
+}
+
 //ISR for TACHa
 ISR(INT4_vect) {
   cli();
-  //busy();
-  adc_state[0].cursample = 0;
+  busy();
+  handle_tach(0);
   sei();
 }
 
 //ISR for TACHb
 ISR(INT5_vect) {
   cli();
-  //busy();
-  adc_state[1].cursample = 0;
+  busy();
+  handle_tach(1);
   sei();
 }
 
@@ -526,10 +590,35 @@ ISR(INT7_vect) {
 }
 
 ISR(TIMER0_OVF_vect) {
+  static uint8_t c;
   cli();
-  //busy();
-  PORTF ^= 3;
+  busy();
+  c++;
+  //generate in-phase and quadrature signals
+  PORTF = (PORTF & ~3) | (((c/2)&1)*3);
+  PORTB = (PORTB & ~16) | ((((c/2+(c&1)))&1)*16);
   sei();
+}
+
+ISR(TIMER1_OVF_vect) {
+  cli();
+  busy();
+  timer1_hi++;
+  sei();
+}
+
+static void setup_timer1() {
+  //normal port operation, normal counter mode
+  TCCR1A = 0;
+#if TIMER1_N == 1
+  //no noise canceller, no input capture, normal mode, prescaler=1
+  TCCR1B = 1;
+#else
+#error Only prescaler=1 supported for timer1 at the moment
+#endif
+
+  //enable timer1 overflow interrupt
+  TIMSK |= 1<<TOIE1;
 }
 
 static void setup_fake_tach_signals() {
@@ -545,6 +634,9 @@ static void setup_fake_tach_signals() {
 
   //tachometer is faked on PF0 and PF1
   DDRF |= 3;
+
+  //PB4 is free for the quadrature part
+  DDRB |= 1<<4;
 }
 
 static void cls() {
@@ -556,11 +648,39 @@ static void cls() {
   }
 }
 
+//avr-libc doesn't seem able to handle 64-bit integers
+/*static void print_int64_t(int64_t in) {
+  if (in == (1LL << 63)) {
+    printf("-9223372036854775808");
+  } else {
+    uint64_t tens = 1000000000000000000ULL;
+    uint64_t u;
+    uint8_t doit = 0;
+
+    if (in < 0) {
+      u = -in;
+      printf("-");
+    } else {
+      u = in;
+    }
+
+    for (; tens; tens /= 10) {
+      int p = 0;
+      if (u >= tens) {
+        doit = 1;
+        p = u/tens;
+        u = u%tens;
+      }
+      if (doit) {
+        printf("%1i", p);
+      }
+    }
+    //printf("%i")
+  }
+}*/
+
 int main(void)
 {
-  unsigned int x;
-  uint8_t lastcnt = 0;
-
   //setup stdout for printf()
   stdout = &mystdout;
 
@@ -568,10 +688,12 @@ int main(void)
   setup_uart1();
   setup_tach();
   setup_fake_tach_signals();
+  setup_timer1();
 
   cls();
 
   printf("\033[0;0HHello, world!\r\n");
+  memset((void*)adc_state, 0, sizeof(adc_state));
   setup_adc_pins(); disable_adc(0); disable_adc(1);
   config_adc(0);
   //config_adc(1);
@@ -582,29 +704,39 @@ int main(void)
   setup_sintab();
   printf("ADC state size: %i\r\n", sizeof(adc_state));
   printf("Done setting up\r\n");
+
+  adc_state[0].discard = 1;
+  adc_state[1].discard = 1;
   sei();
 
-  //lastcnt = adc_state[0].cnt;
   for (;;) {
-    uint8_t cnt = adc_state[0].cnt;
-    if (cnt != lastcnt) {
-      /*cli();
-      busy();
-      sei();*/
-      if (cnt != (uint8_t)(lastcnt+1)) {
-        //ignore the first one
-        if (lastcnt != 0) {
-          printf("We missed a sample :(  %i vs %i+1\r\n", cnt, lastcnt);
-        }
-      }
+    cli();
+    uint16_t outsamples = adc_state[0].outsamples;
+    sei();
 
-      lastcnt = cnt;
-      /*snprintf(temp,  128, "%X%X %04X%04X % 8li % 8li % 8li % 8li % 8li % 8li\r\n",
-        adc_state[0].cnt & 0xF, (adc_state[1].cnt - adc_state[0].cnt) & 0xF, adc_state[0].stat_1, adc_state[1].stat_1,
-        adc_state[0].lastsample[0], adc_state[0].lastsample[1], adc_state[0].lastsample[2],
-        adc_state[1].lastsample[0], adc_state[1].lastsample[1], adc_state[1].lastsample[2]);
-      //printf("Bluh\r\n");
-      printf(temp);*/
+    if (adc_state[0].fault) {
+      printf("Fault :(\r\n");
+      adc_state[0].fault = 0;
+    } else if (outsamples) {
+      uint8_t x;
+      uint32_t tachlen = adc_state[0].tachlen;
+
+      printf("%i,%li,%u", outsamples, tachlen, adc_state[0].dphi);
+      for (x = 0; x < 3; x++) {
+        char tmp[128];
+        int64_t i = adc_state[0].Iout[x], q = adc_state[0].Qout[x];
+
+        //float works but in64_t doesn't?
+        //printf(",%Li,%Li", i, q);
+        printf(",%f,%f", (float)i/outsamples, (float)q/outsamples);
+
+        /*printf(",");
+        print_int64_t(i);
+        printf(",");
+        print_int64_t(q);*/
+      }
+      printf("\r\n");
+      adc_state[0].outsamples = 0;
     } else {
       //we use PORTF in the TIMER0 ISR. disable interrupts temporarily to prevent it from interfering
       cli();

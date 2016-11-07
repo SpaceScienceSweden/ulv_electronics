@@ -1,7 +1,7 @@
 PRG            = adc
 OBJ            = adc.o
 MCU_TARGET     = atmega128
-OPTIMIZE       = -O3
+OPTIMIZE       = -O2 -frename-registers
 
 DEFS           =-I/usr/local/avr/include
 LIBS           =-L/usr/local/avr/lib -L/usr/local/avr/lib/avr5
@@ -14,8 +14,9 @@ CC             = avr-gcc
 
 #stop on all warnings except unused variables/functions since I'm
 #commenting a bunch of things out
+#LDFLAGS enable float functionality in printf()
 override CFLAGS        = -g -Werror -Wno-unused -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
-override LDFLAGS       = -Wl,-Map,$(PRG).map
+override LDFLAGS       = -Wl,-Map,$(PRG).map -Wl,-u,vfprintf -lprintf_flt -lm
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
