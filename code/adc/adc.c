@@ -733,6 +733,13 @@ int main(void)
   //CPU usage monitor on PF2
   DDRF |= 1 << 2;
 
+  //ISP disabler on PF3
+  //turns out this isn't really needed, since the 4016 on the ISP signals
+  //is enough to provide decent termination
+  //still probably a good idea to keep around
+  DDRF  |=   1<<3;
+  PORTF &= ~(1<<3);
+
   setup_sintab();
   printf("ADC state size: %i\r\n", sizeof(adc_state));
   printf("Done setting up\r\n");
