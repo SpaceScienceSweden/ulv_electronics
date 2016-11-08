@@ -425,6 +425,11 @@ static void config_adc(uint8_t id) {
 
 static uint32_t currenttime() {
   uint32_t ret = ((uint32_t)timer1_hi<<16) | TCNT1;
+  if (TIFR & (1<<TOV1)) {
+    //we may have overflowed while inside the current ISR,
+    //but since we cli()d then TIMER1_OVF_vect hasn't been called yet
+    ret += 65536;
+  }
   return ret;
 }
 
