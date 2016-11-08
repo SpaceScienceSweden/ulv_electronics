@@ -55,14 +55,14 @@ typedef struct {
   uint8_t fault;        //set if we read too many samples, if the main loop wasn't able to print fast enough
   uint16_t outsamples;
   uint8_t discard;      //if set, discard data up to the next TACH
-  uint32_t tachstart;
   uint16_t phi, dphi;   //phase, phase increment
   uint32_t lastt;
 } adc_state_t;
 
 volatile adc_state_t adc_state[2] = {{0},{0}};
 
-volatile uint16_t timer1_hi;  //for 32-bit counter
+//for 32-bit counter. nonvolatile since only ISRs use it
+uint16_t timer1_hi;
 
 //we might want to put this in PROGMEM, we'll see
 char sintab[256];
@@ -443,7 +443,6 @@ inline void adc_read_channel(int id) {
 
   state->lastt = currenttime();
 
-  //fake values for now
   iphase = state->phi >> 8;
   qphase = iphase + 64;
   state->phi += state->dphi;
@@ -529,7 +528,6 @@ inline void adc_read_channel(int id) {
 
 static void handle_tach(uint8_t id) {
   uint8_t x;
-  uint32_t t;
   uint32_t K = 2UL*CLK_DIV*ICLK_DIV*osrtab[OSR];
   uint32_t d;
   uint32_t tachlen, endphase;
@@ -540,10 +538,14 @@ static void handle_tach(uint8_t id) {
   cli();
   busy();
 
-  t = currenttime();
-  tachlen  = t - state->tachstart;
-  endphase = t - state->lastt;
-  state->tachstart = t;
+  tachlen = currenttime();
+
+  //reset TIMER1, so it counts the number of cycles between TACH impulses
+  timer1_hi = 0;
+  TCNT1 = 0;
+  //clear overflow flag if it got set somewhere above
+  //spec says to set TOV1 to one, not zero..
+  TIFR |= 1<<TOV1;
 
   //1 Hz cutoff
   if (tachlen < FCPU) {
@@ -552,6 +554,7 @@ static void handle_tach(uint8_t id) {
     //derive the starting phase from where we expect the next sample will be taken
     //this works because currenttime() gives us time in CPU cycles,
     //and K is the time it takes for the ADC to do one conversion, also in CPU cycles
+    endphase = tachlen - state->lastt;
     state->phi = state->dphi * (K - endphase) / K;
   } else {
     state->discard = 1;
