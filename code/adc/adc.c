@@ -50,13 +50,12 @@ typedef struct {
   uint16_t stat_1;
   uint16_t stat_s;
   uint16_t cursample, currev;
-  int64_t I[3], Q[3];
+  uint8_t curbuffer;        //0 or 1, depending on which I/Q buffers should be used by the DRDY ISR
+  int64_t I[2][3], Q[2][3]; //double buffering
   uint8_t fault;        //set if we read too many samples, if the main loop wasn't able to print fast enough
-  int64_t Iout[3], Qout[3];
   uint16_t outsamples;
   uint8_t discard;      //if set, discard data up to the next TACH
   uint32_t tachstart;
-  uint32_t tachlen;
   uint16_t phi, dphi;   //phase, phase increment
   uint32_t lastt;
 } adc_state_t;
@@ -515,8 +514,8 @@ inline void adc_read_channel(int id) {
 
     //add to 64-bit state
     //TODO: we need to deal with 
-    state->I[x] += I;
-    state->Q[x] += Q;
+    state->I[state->curbuffer][x] += I;
+    state->Q[state->curbuffer][x] += Q;
   }
 
   adc_end_frame2();
@@ -530,15 +529,18 @@ inline void adc_read_channel(int id) {
 
 static void handle_tach(uint8_t id) {
   uint8_t x;
-  uint32_t t = currenttime();
+  uint32_t t;
   uint32_t K = 2UL*CLK_DIV*ICLK_DIV*osrtab[OSR];
   uint32_t d;
   uint32_t tachlen, endphase;
-
   //cast away volatile
   //this is fine since we're cli()d and can't be interrupted
   adc_state_t *state = (adc_state_t*)&adc_state[id];
 
+  cli();
+  busy();
+
+  t = currenttime();
   tachlen  = t - state->tachstart;
   endphase = t - state->lastt;
   state->tachstart = t;
@@ -558,12 +560,9 @@ static void handle_tach(uint8_t id) {
   state->currev++;
 
   if (state->currev >= TACHS_PER_PRINT) {
-    for (x = 0; x < 3; x++) {
-      state->Iout[x] = state->I[x];
-      state->Qout[x] = state->Q[x];
-      state->I[x] = 0;
-      state->Q[x] = 0;
-    }
+    //the reserve buffer has been cleared by the main thread,
+    //so we only need to tell the DRDY ISR to switch buffer
+    state->curbuffer = !state->curbuffer;
 
     if (state->outsamples) {
       state->fault = 1;
@@ -574,29 +573,27 @@ static void handle_tach(uint8_t id) {
     } else {
       state->outsamples = 0;
     }
+    state->cursample = 0;
+
+    unbusy();
+    sei();
 
     state->discard = 0;
-    state->cursample = 0;
     state->currev = 0;
+  } else {
+    unbusy();
+    sei();
   }
 }
 
 //ISR for TACHa
 ISR(INT4_vect) {
-  cli();
-  busy();
   handle_tach(0);
-  unbusy();
-  sei();
 }
 
 //ISR for TACHb
 ISR(INT5_vect) {
-  cli();
-  busy();
   handle_tach(1);
-  unbusy();
-  sei();
 }
 
 //ISR for /DRDYa
@@ -750,13 +747,16 @@ int main(void)
       printf("Fault :(\r\n");
       adc_state[0].fault = 0;
     } else if (outsamples) {
-      uint8_t x;
-      uint32_t endphase = 0;
+      uint8_t x, y = !adc_state[0].curbuffer;
 
-      printf("%i,%li,%u", outsamples, endphase, adc_state[0].dphi);
+      printf("%u,%u", outsamples, adc_state[0].dphi);
       for (x = 0; x < 3; x++) {
         char tmp[128];
-        int64_t i = adc_state[0].Iout[x], q = adc_state[0].Qout[x];
+        int64_t i = adc_state[0].I[y][x], q = adc_state[0].Q[y][x];
+
+        //clear buffers while we're at it
+        adc_state[0].I[y][x] = 0;
+        adc_state[0].Q[y][x] = 0;
 
         //float works but in64_t doesn't?
         //printf(",%Li,%Li", i, q);
