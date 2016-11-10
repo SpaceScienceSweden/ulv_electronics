@@ -5,3 +5,15 @@
 *-cache.lib
 *.net
 _autosave-*
+*.bin
+*.o
+*.elf
+*.lst
+*.hex
+*.map
+*.srec
+*.workspace
+.codelite
+datasheets/
+documents/
+bom
