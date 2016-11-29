@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
@@ -796,8 +797,8 @@ int main(void)
   PORTF &= ~(1<<3);
 
   setup_sintab();
-  printf("ADC state size: %i\r\n", sizeof(adc_state));
-  printf("Done setting up\r\n");
+  printf_P(PSTR("ADC state size: %i\r\n"), sizeof(adc_state));
+  printf_P(PSTR("Done setting up\r\n"));
 
   adc_state[0].discard = 1;
   adc_state[1].discard = 1;
