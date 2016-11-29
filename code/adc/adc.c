@@ -711,6 +711,14 @@ static void cls() {
   }
 }*/
 
+//http://stackoverflow.com/questions/960389/how-can-i-visualise-the-memory-sram-usage-of-an-avr-program
+static int freeRam () {
+  extern int __heap_start, *__brkval; 
+  int v; 
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+}
+
+
 int main(void)
 {
   //setup stdout for printf()
@@ -725,6 +733,7 @@ int main(void)
   cls();
 
   printf("\033[0;0HHello, world!\r\n");
+  printf("%i B SRAM free\r\n", freeRam());
   memset((void*)adc_state, 0, sizeof(adc_state));
   setup_adc_pins(); disable_adc(0); disable_adc(1);
   config_adc(0);

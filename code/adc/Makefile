@@ -14,8 +14,9 @@ CC             = avr-gcc
 
 #stop on all warnings except unused variables/functions since I'm
 #commenting a bunch of things out
+#freeRam() needs -Wno-return-local-addr
 #LDFLAGS enable float functionality in printf()
-override CFLAGS        = -g -Werror -Wno-unused -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
+override CFLAGS        = -g -Werror -Wno-unused -Wno-return-local-addr -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
 override LDFLAGS       = -Wl,-Map,$(PRG).map -Wl,-u,vfprintf -lprintf_flt -lm
 
 OBJCOPY        = avr-objcopy
