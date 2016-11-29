@@ -61,8 +61,8 @@ typedef struct {
 
 volatile adc_state_t adc_state[2] = {{0},{0}};
 
-//for 32-bit counter. nonvolatile since only ISRs use it
-uint16_t timer1_hi;
+//for 32-bit counter. volatile *because* we can be interrupted
+volatile uint32_t timer1_base;
 
 //we might want to put this in PROGMEM, we'll see
 char sintab[256];
@@ -439,13 +439,14 @@ static void config_adc(uint8_t id) {
   EIMSK |= (1<<(6+id));
 }
 
-static uint32_t currenttime() {
-  uint32_t ret = ((uint32_t)timer1_hi<<16) | TCNT1;
+inline uint32_t currenttime() {
+  uint32_t ret = timer1_base + TCNT1;
+
   if (TIFR & (1<<TOV1)) {
-    //we may have overflowed while inside the current ISR,
-    //but since we cli()d then TIMER1_OVF_vect hasn't been called yet
-    ret += 65536;
+    //this should never happen
+    printf("Fault in currenttime() :( %lu %u\r\n", ret, TCNT1);
   }
+
   return ret;
 }
 
@@ -648,12 +649,32 @@ ISR(TIMER0_OVF_vect) {
   sei();
 }
 
+ISR(TIMER1_COMPA_vect) {
+  //this ISR is hit in the middle of Timer1's range
+  //its purpose is to prevent an overflow from ever occuring
+  //the reason is so that we're guaranteed that TOV1 is never set in currenttime()
+
+  uint16_t tcnt1 = TCNT1;
+  TCNT1 = 6;  //number of cycles taken by this exchange
+
+  //the code for the above will look something like the following:
+/*
+     e40:	2c b5       	in	r18, 0x2c	; 44
+     e42:	3d b5       	in	r19, 0x2d	; 45
+     e44:	86 e0       	ldi	r24, 0x06	; 6
+     e46:	90 e0       	ldi	r25, 0x00	; 0
+     e48:	9d bd       	out	0x2d, r25	; 45
+     e4a:	8c bd       	out	0x2c, r24	; 44
+*/
+  //which works out to 6 cycles
+
+  timer1_base += tcnt1;
+}
+
 ISR(TIMER1_OVF_vect) {
-  cli();
-  busy();
-  timer1_hi++;
-  unbusy();
-  sei();
+  //this shouldn't happen
+  timer1_base += 65536;
+  printf("TIMER1_OVF_vect was hit :(\r\n");
 }
 
 static void setup_timer1() {
@@ -666,8 +687,15 @@ static void setup_timer1() {
 #error Only prescaler=1 supported for timer1 at the moment
 #endif
 
-  //enable timer1 overflow interrupt
-  TIMSK |= 1<<TOIE1;
+  //trigger TIMER1_COMPA_vect in the middle of the range
+  OCR1A = 0x8000;
+
+  //pre-emptively clear TOV1
+  TCNT1 = 0;
+  TIFR &= ~(1<<TOV1);
+
+  //enable Timer1 overflow and COMPA match interrupts
+  TIMSK |= (1<<TOIE1) | (1<<OCIE1A);
 }
 
 static void setup_fake_tach_signals() {
@@ -738,14 +766,15 @@ static int freeRam () {
 
 int main(void)
 {
+  cli();
+
   //setup stdout for printf()
   stdout = &mystdout;
 
   setup_uart0();
   setup_uart1();
   setup_tach();
-  setup_fake_tach_signals();
-  setup_timer1();
+  //setup_fake_tach_signals();
 
   cls();
 
@@ -772,6 +801,10 @@ int main(void)
 
   adc_state[0].discard = 1;
   adc_state[1].discard = 1;
+
+  //Timer1 must be set up just before enabling interrupts,
+  //else an overflow might occur while we're setting up
+  setup_timer1();
   sei();
 
   for (;;) {
