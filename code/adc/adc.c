@@ -90,6 +90,23 @@ int usart_putchar_printf(char var, FILE *stream) {
 }
 static FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE);
 
+//58 cy with both -O2 and -O3
+//just having the union is enough for r25 to not be touched, for some reason
+//TODO: we could hand-optimize this. the common case does two rjmps, which is wasteful
+static union {
+  char *nv;
+  volatile char *v;
+} usart0_str;
+
+ISR(USART0_UDRE_vect) {
+  if (*usart0_str.nv) {
+    UDR0 = *usart0_str.nv++;
+  } else {
+    //disable UDRE0 interrupt
+    UCSR0B &= ~(1<<UDRIE0);
+  }
+}
+
 inline void busy() {
   //PF2 low = CPU busy
   PORTF &= ~(1 << 2);
