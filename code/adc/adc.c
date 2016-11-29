@@ -12,13 +12,13 @@
 #define WORDSZ    32    //ADC word size
 #define CLK_DIV   2
 #define ICLK_DIV  2
-#define OSR       8     //0..15 -> 4096 .. 32, see osrtab below
+#define OSR       5     //0..15 -> 4096 .. 32, see osrtab below
 #define GAIN      0     //0..4, actual gain = 2^GAIN
 #define TIMER1_N  1     //timer1 prescaler
 #define SIGNAL_N  1     //signal frequency compared to tach, numerator
 #define SIGNAL_D  1     //signal frequency compared to tach, denominator
-#define TACHS_PER_PRINT  10
-#define MAX_SAMPLES_PER_PRINT 1000
+#define TACHS_PER_PRINT  100
+#define MAX_SAMPLES_PER_TACH 1000
 
 static const uint16_t osrtab[16] = {
   4096, 2048, 1024, 800, 768, 512, 400, 384, 256, 200, 192, 128, 96, 64, 48, 32
@@ -47,17 +47,22 @@ static const uint16_t osrtab[16] = {
 #endif
 
 typedef struct {
+  int64_t I[3], Q[3];
+  uint16_t numsamples;
+  uint16_t phi, dphi;   //phase, phase increment
+  uint32_t lastt, tachstart, tachend, d;
+} adc_data_t;
+
+typedef struct {
   uint8_t nchan;
   uint16_t stat_1;
   uint16_t stat_s;
-  uint16_t cursample, currev;
-  uint8_t curbuffer;        //0 or 1, depending on which I/Q buffers should be used by the DRDY ISR
-  int64_t I[2][3], Q[2][3]; //double buffering
   uint8_t fault;        //set if we read too many samples, if the main loop wasn't able to print fast enough
-  uint16_t outsamples;
   uint8_t discard;      //if set, discard data up to the next TACH
-  uint16_t phi, dphi;   //phase, phase increment
-  uint32_t lastt;
+  uint8_t curbuffer;    //0 or 1, depending on which I/Q buffers should be used by the DRDY ISR
+  uint8_t buffersswapped; //set to 1 when TACH ISR swapped buffers
+  //uint16_t numrevs;
+  adc_data_t buffer[2]; //double buffering
 } adc_state_t;
 
 volatile adc_state_t adc_state[2] = {{0},{0}};
@@ -82,9 +87,6 @@ static void setup_sintab() {
 //source: http://efundies.com/avr-and-printf/
 //we could probable make scanf() work too
 int usart_putchar_printf(char var, FILE *stream) {
-  //print to both UARTs
-  while (!(UCSR0A & (1<<UDRE0)));
-  UDR0 = var;
   while (!(UCSR1A & (1<<UDRE1)));
   UDR1 = var;
   return 0;
@@ -100,21 +102,31 @@ static union {
 } usart0_str;
 
 ISR(USART0_UDRE_vect) {
+  PORTF &= ~(1 << 2);
   if (*usart0_str.nv) {
     UDR0 = *usart0_str.nv++;
   } else {
     //disable UDRE0 interrupt
     UCSR0B &= ~(1<<UDRIE0);
   }
+  PORTF |= 1 << 2;
 }
 
+volatile uint8_t busy_cnt = 0;
+//we need to be careful to cli() when using these in the main loop
 inline void busy() {
   //PF2 low = CPU busy
+  if (busy_cnt++) {
+    //already busy - strobe PF2
+    PORTF |= 1 << 2;
+  }
   PORTF &= ~(1 << 2);
 }
 
 inline void unbusy() {
-  PORTF |= 1 << 2;
+  if (--busy_cnt == 0) {
+    PORTF |= 1 << 2;
+  }
 }
 
 static void setup_adc_pins() {
@@ -233,22 +245,6 @@ static uint32_t adc_comm(uint8_t id, uint32_t cmd) {
     spi_comm_word(0);
   }
   //printf("%08lX -> %08lX\r\n", in, out);
-  adc_end_frame2();
-
-  return out;
-}
-
-inline uint32_t adc_comm_samples(uint8_t id, uint32_t cmd, volatile int32_t *samples_out) {
-  uint8_t x;
-  uint32_t out;
-
-  adc_start_frame2(id);
-  out = spi_comm_word(cmd);
-
-  for (x = 0; x < adc_state[id].nchan; x++) {
-    samples_out[x] = ((int32_t)spi_comm_word(0)) / 256;
-  }
-
   adc_end_frame2();
 
   return out;
@@ -452,19 +448,27 @@ inline uint32_t currenttime() {
 }
 
 inline void adc_read_channel(int id) {
+  //TACH ISR needs to know at what time this sample was
+  //use the volatile version of the buffer so the write actually happens
+  uint8_t curbuffer = adc_state[id].curbuffer;
+  adc_state[id].buffer[curbuffer].lastt = currenttime();
+
+  busy();
+
+  //allow ourselves to be interrupted
+  sei();
+
   uint8_t x;
   int32_t samples[3] = {0,0,0};
   uint8_t iphase, qphase;
 
   //cast away volatile
-  //this is fine since we're cli()d and can't be interrupted
-  adc_state_t *state = (adc_state_t*)&adc_state[id];
+  //this is fine since only this ISR and the main thread access the adc_data_t array
+  adc_data_t *data = (adc_data_t*)&adc_state[id].buffer[curbuffer];
 
-  state->lastt = currenttime();
-
-  iphase = state->phi >> 8;
+  iphase = data->phi >> 8;
   qphase = iphase + 64;
-  state->phi += state->dphi;
+  data->phi += data->dphi;
 
   adc_start_frame2(id);
 
@@ -532,80 +536,61 @@ inline void adc_read_channel(int id) {
 
     //add to 64-bit state
     //TODO: we need to deal with 
-    state->I[state->curbuffer][x] += I;
-    state->Q[state->curbuffer][x] += Q;
+    data->I[x] += I;
+    data->Q[x] += Q;
   }
 
   adc_end_frame2();
 
-  if (state->cursample < MAX_SAMPLES_PER_PRINT-1) {
-    state->cursample++;
+  if (data->numsamples < MAX_SAMPLES_PER_TACH-1) {
+    data->numsamples++;
   } else {
-    state->fault = 1;
+    adc_state[id].fault = 1;
   }
+
+  unbusy();
 }
 
 static void handle_tach(uint8_t id) {
-  uint8_t x;
-  uint32_t K = 2UL*CLK_DIV*ICLK_DIV*osrtab[OSR];
-  uint32_t d;
-  uint32_t tachlen, endphase;
-  //cast away volatile
-  //this is fine since we're cli()d and can't be interrupted
-  adc_state_t *state = (adc_state_t*)&adc_state[id];
+  uint32_t t = currenttime();
 
-  cli();
   busy();
 
-  tachlen = currenttime();
+  uint8_t x;
+  uint32_t K = 2UL*CLK_DIV*ICLK_DIV*osrtab[OSR];
+  uint32_t tachlen, endphase;
+  //cast away volatile
+  //we can't be interrupted unless we sei()
+  adc_state_t *state = (adc_state_t*)&adc_state[id];
+  adc_data_t *curdata  = (adc_data_t*)&state->buffer[ state->curbuffer];
+  adc_data_t *nextdata = (adc_data_t*)&state->buffer[!state->curbuffer];
+  state->curbuffer = !state->curbuffer;
+  state->buffersswapped = 1;
 
-  //reset TIMER1, so it counts the number of cycles between TACH impulses
-  timer1_hi = 0;
-  TCNT1 = 0;
-  //clear overflow flag if it got set somewhere above
-  //spec says to set TOV1 to one, not zero..
-  TIFR |= 1<<TOV1;
+  //clear next buffer
+  memset((void*)nextdata->I, 0, sizeof(nextdata->I));
+  memset((void*)nextdata->Q, 0, sizeof(nextdata->Q));
+  nextdata->numsamples = 0;
+
+  curdata->tachend = t;
+  nextdata->tachstart = t;
+  tachlen = curdata->tachend - curdata->tachstart;
 
   //1 Hz cutoff
   if (tachlen < FCPU) {
-    d = tachlen * TIMER1_N * SIGNAL_D;
-    state->dphi = (65536UL * SIGNAL_N * K + d/2) / d;
+    nextdata->d = tachlen * TIMER1_N * SIGNAL_D;
+    nextdata->dphi = (65536UL * SIGNAL_N * K + nextdata->d/2) / nextdata->d;
     //derive the starting phase from where we expect the next sample will be taken
     //this works because currenttime() gives us time in CPU cycles,
     //and K is the time it takes for the ADC to do one conversion, also in CPU cycles
-    endphase = tachlen - state->lastt;
-    state->phi = state->dphi * (K - endphase) / K;
+    uint32_t endphase = curdata->tachend - curdata->lastt;
+    nextdata->phi = (uint32_t)nextdata->dphi * (K - endphase) / K;
   } else {
+    nextdata->d = 1337;
     state->discard = 1;
   }
 
-  state->currev++;
-
-  if (state->currev >= TACHS_PER_PRINT) {
-    //the reserve buffer has been cleared by the main thread,
-    //so we only need to tell the DRDY ISR to switch buffer
-    state->curbuffer = !state->curbuffer;
-
-    if (state->outsamples) {
-      state->fault = 1;
-    }
-
-    if (!state->discard) {
-      state->outsamples = state->cursample;
-    } else {
-      state->outsamples = 0;
-    }
-    state->cursample = 0;
-
-    unbusy();
-    sei();
-
-    state->discard = 0;
-    state->currev = 0;
-  } else {
-    unbusy();
-    sei();
-  }
+  unbusy();
 }
 
 //ISR for TACHa
@@ -620,34 +605,22 @@ ISR(INT5_vect) {
 
 //ISR for /DRDYa
 ISR(INT6_vect) {
-  cli();
-  busy();
   adc_read_channel(0);
-  unbusy();
-  sei();
-  //printf("INT6\r\n");
 }
 
 //ISR for /DRDYb
 ISR(INT7_vect) {
-  cli();
-  busy();
   adc_read_channel(1);
-  unbusy();
-  sei();
-  //printf("INT7\r\n");
 }
 
 ISR(TIMER0_OVF_vect) {
   static uint8_t c;
-  cli();
   busy();
   c++;
   //generate in-phase and quadrature signals
   PORTF = (PORTF & ~3) | (((c/2)&1)*3);
   PORTB = (PORTB & ~16) | ((((c/2+(c&1)))&1)*16);
   unbusy();
-  sei();
 }
 
 ISR(TIMER1_COMPA_vect) {
@@ -809,40 +782,61 @@ int main(void)
   sei();
 
   for (;;) {
-    cli();
-    uint16_t outsamples = adc_state[0].outsamples;
-    sei();
+    uint16_t outsamples = 0, numrevs = 0, last_phi = 0, last_dphi = 0;
+    uint32_t last_d = 0, last_tachstart = 0, last_tachend = 0;
+    int32_t last_endphase = 0;
+    uint32_t last_lastt = 0;
+    int64_t I[3] = {0}, Q[3] = {0};
 
-    if (adc_state[0].fault) {
-      printf("Fault :(\r\n");
-      adc_state[0].fault = 0;
-    } else if (outsamples) {
-      uint8_t x, y = !adc_state[0].curbuffer;
+    while (numrevs < TACHS_PER_PRINT) {
+      cli();
+      uint8_t curbuffer  = adc_state[0].curbuffer;
+      uint8_t buffersswapped = adc_state[0].buffersswapped;
+      sei();
 
-      printf("%u,%u", outsamples, adc_state[0].dphi);
-      for (x = 0; x < 3; x++) {
-        char tmp[128];
-        int64_t i = adc_state[0].I[y][x], q = adc_state[0].Q[y][x];
-
-        //clear buffers while we're at it
-        adc_state[0].I[y][x] = 0;
-        adc_state[0].Q[y][x] = 0;
-
-        //float works but in64_t doesn't?
-        //printf(",%Li,%Li", i, q);
-        printf(",%f,%f", (float)i/outsamples, (float)q/outsamples);
-
-        /*printf(",");
-        print_int64_t(i);
-        printf(",");
-        print_int64_t(q);*/
+      if (adc_state[0].fault) {
+        printf("Fault :(\r\n");
+        adc_state[0].fault = 0;
       }
-      printf("\r\n");
-      adc_state[0].outsamples = 0;
-    } else {
+      if (buffersswapped) {
+        adc_state[0].buffersswapped = 0;
+
+        //old buffer
+        adc_data_t *data = (adc_data_t*)&adc_state[0].buffer[!curbuffer];
+        uint8_t x;
+
+        if (adc_state[0].discard) {
+          adc_state[0].discard = 0;
+          continue;
+        }
+
+        outsamples += data->numsamples;
+        numrevs++;
+        last_d          = data->d;
+        last_tachstart  = data->tachstart;
+        last_tachend    = data->tachend;
+        last_endphase   = data->tachend - data->lastt;
+        last_lastt      = data->lastt;
+        last_phi        = data->phi;
+        last_dphi       = data->dphi;
+
+        for (x = 0; x < 3; x++) {
+          I[x] += data->I[x];
+          Q[x] += data->Q[x];
+        }
+      }
     }
+
+    /*cli();
+    uint32_t t = currenttime();
+    sei();*/
+    printf("%u, %7li : %7li, %7lu, %5u, %5u", outsamples, last_lastt-last_tachstart, last_tachend-last_lastt, last_d, last_phi, last_dphi);
+    uint8_t x;
+    for (x = 0; x < 3; x++) {
+      printf(",% 12.0f,% 12.0f", (float)I[x]/outsamples, (float)Q[x]/outsamples);
+    }
+    printf("\r\n");
   }
-  //*/
 
   return 0;
 }
