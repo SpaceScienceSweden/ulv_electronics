@@ -46,11 +46,13 @@ static const uint16_t osrtab[16] = {
 #error Illegal GAIN
 #endif
 
+typedef __uint24 timer_t;
+
 typedef struct {
   int64_t I[3], Q[3];
   uint16_t numsamples;
   uint16_t phi, dphi;   //phase, phase increment
-  uint32_t lastt, tachstart, tachend, d;
+  timer_t lastt, tachstart, tachend, d;
 } adc_data_t;
 
 typedef struct {
@@ -67,8 +69,8 @@ typedef struct {
 
 volatile adc_state_t adc_state[2] = {{0},{0}};
 
-//for 32-bit counter. volatile *because* we can be interrupted
-volatile uint32_t timer1_base;
+//volatile *because* we can be interrupted
+volatile timer_t timer1_base;
 
 //we might want to put this in PROGMEM, we'll see
 char sintab[256];
@@ -436,27 +438,16 @@ static void config_adc(uint8_t id) {
   EIMSK |= (1<<(6+id));
 }
 
-inline uint32_t currenttime() {
-  uint32_t ret = timer1_base + TCNT1;
-
-  if (TIFR & (1<<TOV1)) {
-    //this should never happen
-    printf("Fault in currenttime() :( %lu %u\r\n", ret, TCNT1);
-  }
-
-  return ret;
+inline timer_t currenttime() {
+  return timer1_base + TCNT1;
 }
 
-inline void adc_read_channel(int id) {
+void adc_read_channel(uint8_t id) {
   //TACH ISR needs to know at what time this sample was
   //use the volatile version of the buffer so the write actually happens
   uint8_t curbuffer = adc_state[id].curbuffer;
-  adc_state[id].buffer[curbuffer].lastt = currenttime();
 
   busy();
-
-  //allow ourselves to be interrupted
-  sei();
 
   uint8_t x;
   int32_t samples[3] = {0,0,0};
@@ -552,10 +543,12 @@ inline void adc_read_channel(int id) {
 }
 
 static void handle_tach(uint8_t id) {
-  uint32_t t = currenttime();
+  timer_t t = currenttime();
 
   busy();
 
+  //TODO: reevaluate this thing, see if we can use __uint24 here and there
+  //the phase calculations are especially suspect
   uint8_t x;
   uint32_t K = 2UL*CLK_DIV*ICLK_DIV*osrtab[OSR];
   uint32_t tachlen, endphase;
@@ -605,11 +598,17 @@ ISR(INT5_vect) {
 
 //ISR for /DRDYa
 ISR(INT6_vect) {
+  adc_state[0].buffer[adc_state[0].curbuffer].lastt = currenttime();
+  //allow ourselves to be interrupted
+  sei();
   adc_read_channel(0);
 }
 
 //ISR for /DRDYb
 ISR(INT7_vect) {
+  adc_state[1].buffer[adc_state[1].curbuffer].lastt = currenttime();
+  //allow ourselves to be interrupted
+  sei();
   adc_read_channel(1);
 }
 
