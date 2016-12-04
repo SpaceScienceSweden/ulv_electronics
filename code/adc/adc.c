@@ -95,25 +95,19 @@ int usart_putchar_printf(char var, FILE *stream) {
 }
 static FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE);
 
-//58 cy with both -O2 and -O3
-//just having the union is enough for r25 to not be touched, for some reason
-//TODO: we could hand-optimize this. the common case does two rjmps, which is wasteful
-static union {
-  char *nv;
-  volatile char *v;
-} usart1_str;
+volatile char *usart1_str;
 static char usart1_buf[256];
 
-ISR(USART1_UDRE_vect) {
+/*ISR(USART1_UDRE_vect) {
   PORTF &= ~(1 << 2);
-  if (*usart1_str.nv) {
-    UDR1 = *usart1_str.nv++;
+  if (*usart1_str) {
+    UDR1 = *usart1_str++;
   } else {
     //disable UDRE1 interrupt
     UCSR1B &= ~(1<<UDRIE1);
   }
   PORTF |= 1 << 2;
-}
+}*/
 
 //background printf, format string in PROGMEM
 //NOTE: %s is SRAM strings, %S is PROGMEM strings 
@@ -136,7 +130,7 @@ static void bprintf_P(const char *format, ...) {
     while (UCSR1B & (1<<UDRIE1));
 
     //point to next character
-    usart1_str.v = &usart1_buf[1];
+    usart1_str = &usart1_buf[1];
 
     //enable USART1 interrupt
     UCSR1B |= (1<<UDRIE1);
