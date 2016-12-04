@@ -101,18 +101,51 @@ static FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP
 static union {
   char *nv;
   volatile char *v;
-} usart0_str;
+} usart1_str;
+static char usart1_buf[256];
 
-ISR(USART0_UDRE_vect) {
+ISR(USART1_UDRE_vect) {
   PORTF &= ~(1 << 2);
-  if (*usart0_str.nv) {
-    UDR0 = *usart0_str.nv++;
+  if (*usart1_str.nv) {
+    UDR1 = *usart1_str.nv++;
   } else {
-    //disable UDRE0 interrupt
-    UCSR0B &= ~(1<<UDRIE0);
+    //disable UDRE1 interrupt
+    UCSR1B &= ~(1<<UDRIE1);
   }
   PORTF |= 1 << 2;
 }
+
+//background printf, format string in PROGMEM
+//NOTE: %s is SRAM strings, %S is PROGMEM strings 
+static void bprintf_P(const char *format, ...) {
+  int n;
+  va_list args;
+
+  //va_start() extracts the stack position of the ..., so no need for a va_start_P()
+  va_start(args, format);
+  n = vsnprintf_P(usart1_buf, sizeof(usart1_buf), format, args);
+  va_end(args);
+
+  if (n >= sizeof(usart1_buf)-1) {
+    strcpy_P(usart1_buf, PSTR("bprintf_P: vsnprintf_P too long!\r\n"));
+  }
+
+  //might happen that the resulting string is empty
+  if (usart1_buf[0]) {
+    //wait for last bprintf_P to finish
+    while (UCSR1B & (1<<UDRIE1));
+
+    //point to next character
+    usart1_str.v = &usart1_buf[1];
+
+    //enable USART1 interrupt
+    UCSR1B |= (1<<UDRIE1);
+
+    //start the transfer
+    UDR1 = usart1_buf[0];
+  }
+}
+
 
 volatile uint8_t busy_cnt = 0;
 //we need to be careful to cli() when using these in the main loop
@@ -769,8 +802,8 @@ int main(void)
   PORTF &= ~(1<<3);
 
   setup_sintab();
-  printf_P(PSTR("ADC state size: %i\r\n"), sizeof(adc_state));
-  printf_P(PSTR("Done setting up\r\n"));
+  bprintf_P(PSTR("ADC state size: %i\r\n"), sizeof(adc_state));
+  bprintf_P(PSTR("Done setting up\r\n"));
 
   adc_state[0].discard = 1;
   adc_state[1].discard = 1;
@@ -829,12 +862,21 @@ int main(void)
     /*cli();
     uint32_t t = currenttime();
     sei();*/
-    printf("%u, %7li : %7li, %7lu, %5u, %5u", outsamples, last_lastt-last_tachstart, last_tachend-last_lastt, last_d, last_phi, last_dphi);
+    /*printf("%u, %7li : %7li, %7lu, %5u, %5u", outsamples, last_lastt-last_tachstart, last_tachend-last_lastt, last_d, last_phi, last_dphi);
     uint8_t x;
     for (x = 0; x < 3; x++) {
       printf(",% 12.0f,% 12.0f", (float)I[x]/outsamples, (float)Q[x]/outsamples);
     }
-    printf("\r\n");
+    printf("\r\n");*/
+
+    bprintf_P(PSTR("%u, %7li : %7li, %7lu, %5u, %5u,% 12.0f,% 12.0f,% 12.0f,% 12.0f,% 12.0f,% 12.0f\r\n"),
+      outsamples, last_lastt-last_tachstart, last_tachend-last_lastt, last_d, last_phi, last_dphi,
+      (float)I[0]/outsamples, (float)Q[0]/outsamples,
+      (float)I[1]/outsamples, (float)Q[1]/outsamples,
+      (float)I[2]/outsamples, (float)Q[2]/outsamples
+    );
+
+    //TODO: there should be a flag in adc_state that we finished dealing the the results
   }
 
   return 0;
