@@ -115,6 +115,11 @@ static void bprintf_P(const char *format, ...) {
   int n;
   va_list args;
 
+  if (!(SREG & (1<<7))) {
+    printf_P(PSTR("Tried to bprintf_P() without sei()..\r\n"));
+    for(;;);
+  }
+
   //wait for last bprintf_P to finish
   while (UCSR1B & (1<<UDRIE1));
 
