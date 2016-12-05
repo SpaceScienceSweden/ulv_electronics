@@ -811,9 +811,6 @@ int main(void)
   PORTF &= ~(1<<3);
 
   setup_sintab();
-  bprintf_P(PSTR("ADC state size: %i\r\n"), sizeof(adc_state));
-  bprintf_P(PSTR("Done setting up\r\n"));
-
   adc_state[0].discard = 1;
   adc_state[1].discard = 1;
 
@@ -821,6 +818,9 @@ int main(void)
   //else an overflow might occur while we're setting up
   setup_timer1();
   sei();
+
+  bprintf_P(PSTR("ADC state size: %i\r\n"), sizeof(adc_state));
+  bprintf_P(PSTR("Done setting up\r\n"));
 
   for (;;) {
     uint16_t outsamples = 0, numrevs = 0, last_phi = 0, last_dphi = 0;

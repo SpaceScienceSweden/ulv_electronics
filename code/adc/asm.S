@@ -5,7 +5,7 @@
 
   .section .text
 
-#define USE_PF2
+//#define USE_PF2
 
   .global USART1_UDRE_vect
   ;52 cy with USE_PF2
