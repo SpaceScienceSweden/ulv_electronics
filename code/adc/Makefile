@@ -1,5 +1,5 @@
 PRG            = adc
-OBJ            = adc.o
+OBJ            = adc.o asm.S
 MCU_TARGET     = atmega128
 OPTIMIZE       = -O2 -frename-registers
 
