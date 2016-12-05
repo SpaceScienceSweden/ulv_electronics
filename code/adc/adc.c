@@ -774,7 +774,19 @@ int main(void)
   setup_uart0();
   setup_uart1();
   setup_tach();
-  //setup_fake_tach_signals();
+
+  if (1) {
+    //enable analog power (PF0 connected to EN_APWR)
+    DDRF |= 1;
+    PORTF |= 1;
+
+    //put RS-485 bus in TX mode (not yet connected)
+    //this could also be done in the UDRE ISR
+    DDRF |= 2;
+    PORTF |= 2;
+  } else {
+    setup_fake_tach_signals();
+  }
 
   cls();
 
