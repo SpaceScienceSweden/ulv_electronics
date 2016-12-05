@@ -14,7 +14,7 @@
 #define ICLK_DIV  2
 #define OSR       5     //0..15 -> 4096 .. 32, see osrtab below
 #define GAIN      0     //0..4, actual gain = 2^GAIN
-#define TIMER1_N  1     //timer1 prescaler
+#define TIMER3_N  1     //timer3 prescaler
 #define SIGNAL_N  1     //signal frequency compared to tach, numerator
 #define SIGNAL_D  1     //signal frequency compared to tach, denominator
 #define TACHS_PER_PRINT  100
@@ -70,7 +70,7 @@ typedef struct {
 volatile adc_state_t adc_state[2] = {{0},{0}};
 
 //volatile *because* we can be interrupted
-volatile timer_t timer1_base;
+volatile timer_t timer3_base;
 
 //we might want to put this in PROGMEM, we'll see
 char sintab[256];
@@ -473,7 +473,7 @@ static void config_adc(uint8_t id) {
 }
 
 inline timer_t currenttime() {
-  return timer1_base + TCNT1;
+  return timer3_base + TCNT3;
 }
 
 void adc_read_channel(uint8_t id) {
@@ -605,7 +605,7 @@ static void handle_tach(uint8_t id) {
 
   //1 Hz cutoff
   if (tachlen < FCPU) {
-    nextdata->d = tachlen * TIMER1_N * SIGNAL_D;
+    nextdata->d = tachlen * TIMER3_N * SIGNAL_D;
     nextdata->dphi = (65536UL * SIGNAL_N * K + nextdata->d/2) / nextdata->d;
     //derive the starting phase from where we expect the next sample will be taken
     //this works because currenttime() gives us time in CPU cycles,
@@ -656,13 +656,13 @@ ISR(TIMER0_OVF_vect) {
   unbusy();
 }
 
-ISR(TIMER1_COMPA_vect) {
-  //this ISR is hit in the middle of Timer1's range
+ISR(TIMER3_COMPA_vect) {
+  //this ISR is hit in the middle of Timer3's range
   //its purpose is to prevent an overflow from ever occuring
   //the reason is so that we're guaranteed that TOV1 is never set in currenttime()
 
-  uint16_t tcnt1 = TCNT1;
-  TCNT1 = 6;  //number of cycles taken by this exchange
+  uint16_t tcnt3 = TCNT3;
+  TCNT3 = 6;  //number of cycles taken by this exchange
 
   //the code for the above will look something like the following:
 /*
@@ -675,34 +675,34 @@ ISR(TIMER1_COMPA_vect) {
 */
   //which works out to 6 cycles
 
-  timer1_base += tcnt1;
+  timer3_base += tcnt3;
 }
 
-ISR(TIMER1_OVF_vect) {
+ISR(TIMER3_OVF_vect) {
   //this shouldn't happen
-  timer1_base += 65536;
-  printf_P(PSTR("TIMER1_OVF_vect was hit :(\r\n"));
+  timer3_base += 65536;
+  printf_P(PSTR("TIMER3_OVF_vect was hit :(\r\n"));
 }
 
-static void setup_timer1() {
+static void setup_timer3() {
   //normal port operation, normal counter mode
-  TCCR1A = 0;
-#if TIMER1_N == 1
+  TCCR3A = 0;
+#if TIMER3_N == 1
   //no noise canceller, no input capture, normal mode, prescaler=1
-  TCCR1B = 1;
+  TCCR3B = 1;
 #else
-#error Only prescaler=1 supported for timer1 at the moment
+#error Only prescaler=1 supported for timer3 at the moment
 #endif
 
-  //trigger TIMER1_COMPA_vect in the middle of the range
-  OCR1A = 0x8000;
+  //trigger TIMER3_COMPA_vect in the middle of the range
+  OCR3A = 0x8000;
 
   //pre-emptively clear TOV1
-  TCNT1 = 0;
-  TIFR &= ~(1<<TOV1);
+  TCNT3 = 0;
+  ETIFR &= ~(1<<TOV3);
 
-  //enable Timer1 overflow and COMPA match interrupts
-  TIMSK |= (1<<TOIE1) | (1<<OCIE1A);
+  //enable Timer3 overflow and COMPA match interrupts
+  ETIMSK |= (1<<TOIE3) | (1<<OCIE3A);
 }
 
 static void setup_fake_tach_signals() {
@@ -817,9 +817,9 @@ int main(void)
   adc_state[0].discard = 1;
   adc_state[1].discard = 1;
 
-  //Timer1 must be set up just before enabling interrupts,
+  //Timer3 must be set up just before enabling interrupts,
   //else an overflow might occur while we're setting up
-  setup_timer1();
+  setup_timer3();
   sei();
 
   bprintf_P(PSTR("ADC state size: %i\r\n"), sizeof(adc_state));
