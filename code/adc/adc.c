@@ -115,6 +115,9 @@ static void bprintf_P(const char *format, ...) {
   int n;
   va_list args;
 
+  //wait for last bprintf_P to finish
+  while (UCSR1B & (1<<UDRIE1));
+
   //va_start() extracts the stack position of the ..., so no need for a va_start_P()
   va_start(args, format);
   n = vsnprintf_P(usart1_buf, sizeof(usart1_buf), format, args);
@@ -126,17 +129,17 @@ static void bprintf_P(const char *format, ...) {
 
   //might happen that the resulting string is empty
   if (usart1_buf[0]) {
-    //wait for last bprintf_P to finish
-    while (UCSR1B & (1<<UDRIE1));
+    //wait for buffer to be available
+    while (!(UCSR1A & (1<<UDRE1)));
 
     //point to next character
     usart1_str = &usart1_buf[1];
 
-    //enable USART1 interrupt
-    UCSR1B |= (1<<UDRIE1);
-
     //start the transfer
     UDR1 = usart1_buf[0];
+
+    //enable USART1 interrupt
+    UCSR1B |= (1<<UDRIE1);
   }
 }
 
