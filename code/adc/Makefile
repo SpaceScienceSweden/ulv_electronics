@@ -1,7 +1,7 @@
 PRG            = adc
 OBJ            = adc.o asm.S
 MCU_TARGET     = atmega128
-OPTIMIZE       = -O2 -frename-registers
+OPTIMIZE       = -O3 -frename-registers -funroll-loops
 
 DEFS           =-I/usr/local/avr/include
 LIBS           =-L/usr/local/avr/lib -L/usr/local/avr/lib/avr5
