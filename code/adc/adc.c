@@ -183,6 +183,7 @@ static void setup_adc_pins() {
   //setup SPI
   //set MOSI and SCK as output, obviously
   //but also set /SS as output or a low input will put us in SPI slave mode
+  //incidentally this also asserts EN_APWR
   PORTB |= (1<<0);
   DDRB |= (1<<0) | (1<<1) | (1<<2);
 
@@ -646,16 +647,6 @@ ISR(INT7_vect) {
   adc_read_channel(1);
 }
 
-ISR(TIMER0_OVF_vect) {
-  static uint8_t c;
-  busy();
-  c++;
-  //generate in-phase and quadrature signals
-  PORTF = (PORTF & ~3) | (((c/2)&1)*3);
-  PORTB = (PORTB & ~16) | ((((c/2+(c&1)))&1)*16);
-  unbusy();
-}
-
 ISR(TIMER3_COMPA_vect) {
   //this ISR is hit in the middle of Timer3's range
   //its purpose is to prevent an overflow from ever occuring
@@ -703,24 +694,6 @@ static void setup_timer3() {
 
   //enable Timer3 overflow and COMPA match interrupts
   ETIMSK |= (1<<TOIE3) | (1<<OCIE3A);
-}
-
-static void setup_fake_tach_signals() {
-  //use Timer0. normal mode is good enough (TOP = 0xFF)
-  //prescaler = 1024
-  TCCR0 = 5;
-  //OCR0 = 0xFF;
-  TIMSK |= 1<<TOIE0;
-
-  //use 32.768 kHz crystal
-  //ASSR |= (1<<AS0);
-  
-
-  //tachometer is faked on PF0 and PF1
-  DDRF |= 3;
-
-  //PB4 is free for the quadrature part
-  DDRB |= 1<<4;
 }
 
 static void cls() {
@@ -782,16 +755,10 @@ int main(void)
   setup_tach();
 
   if (1) {
-    //enable analog power (PF0 connected to EN_APWR)
-    DDRF |= 1;
-    PORTF |= 1;
-
     //put RS-485 bus in TX mode (not yet connected)
     //this could also be done in the UDRE ISR
     DDRF |= 2;
     PORTF |= 2;
-  } else {
-    setup_fake_tach_signals();
   }
 
   cls();
