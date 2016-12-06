@@ -742,6 +742,23 @@ static int freeRam () {
   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
 }
 
+static void setup_motor_pwm() {
+  //PB5 = OC1A, PB5 = OC1B. inverted drive signals
+  //pwm frequency range is 500 Hz .. 20 kHz
+  //WGM=1 -> TOP=0xFF -> (7372800/256/2) = 14400 Hz (8-bit phase-correct PWM)
+  uint8_t wgm = 1;
+  TCCR1A = (3<<COM1A0) | (3<<COM1B0) | ((wgm&3) << WGM10);
+  //enable clock, no prescaler
+  TCCR1B = (((wgm>>2)&3) << WGM12) | (1<<CS10);
+  TCCR1C = 0;
+
+  //90% duty
+  OCR1A = 128;
+
+  //enable outputs
+  DDRB |= (1<<5) | (1<<6);
+}
+
 
 int main(void)
 {
@@ -749,6 +766,8 @@ int main(void)
 
   //setup stdout for printf()
   stdout = &mystdout;
+
+  setup_motor_pwm();
 
   setup_uart0();
   setup_uart1();
