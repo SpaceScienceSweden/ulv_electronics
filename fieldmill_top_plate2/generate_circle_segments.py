@@ -18,6 +18,12 @@ rr = r1 - clearance - ring/2
 
 edge = 42.5 #0.5 * 85x85 mm
 
+#TACH holes (P11 & P12)
+a11 = 300*math.pi/180
+a12 = 330*math.pi/180
+rp  = 43
+
+
 segments = 16
 
 def draw_arc(r, a1, a2, segments):
@@ -122,4 +128,35 @@ for i in range(nring):
             cx + rr*math.cos(a4), cy + rr*math.sin(a4),
             ring
         ))
+
+print('''
+  (module SCUBE:M3_PTH (layer F.Cu) (tedit 57ADC4E8) (tstamp 584875C3)
+    (at %f %f)
+    (path /58487826)
+    (fp_text reference P11 (at 0 -3.175) (layer F.SilkS)
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (fp_text value M3 (at 0 -4.445) (layer F.Fab)
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (pad 1 thru_hole circle (at 0 0) (size 4 4) (drill 3.2) (layers *.Cu *.Mask F.SilkS)
+      (net 1 GND))
+  )
+
+  (module SCUBE:M3_PTH (layer F.Cu) (tedit 57ADC4E8) (tstamp 584875C8)
+    (at %f %f)
+    (path /58487879)
+    (fp_text reference P12 (at 0 -3.175) (layer F.SilkS)
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (fp_text value M3 (at 0 -4.445) (layer F.Fab)
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (pad 1 thru_hole circle (at 0 0) (size 4 4) (drill 3.2) (layers *.Cu *.Mask F.SilkS)
+      (net 1 GND))
+  )
+''' % (
+    cx + rp*math.cos(a11), cy + rp*math.sin(a11),
+    cx + rp*math.cos(a12), cy + rp*math.sin(a12),
+))
 
