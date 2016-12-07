@@ -38,8 +38,8 @@ def draw_slice(r1, r2, a1, a2, clearance1, clearance2, segments):
 for i in range(6):
     a1 = 2*math.pi*(i+1)/6
     a2 = 2*math.pi*(i+2)/6
-    spokea = 0.5 if i % 2 == 1 else spokes
-    spokeb = 0.5 if i % 2 == 0 else spokes
+    spokea = -clearance if i % 2 == 1 else spokes
+    spokeb = -clearance if i % 2 == 0 else spokes
 
     print('''
   (zone (net %i) (net_name "/SENSOR%i") (layer F.Cu) (tstamp 0) (hatch edge 0.508)
@@ -57,8 +57,9 @@ for i in range(6):
   )
 ''')
 
-    #spoke
-    print('''
+    if spokea > 0:
+        #spoke
+        print('''
   (zone (net 1) (net_name "GND") (layer F.Cu) (tstamp 0) (hatch edge 0.508)
     (connect_pads yes (clearance %f))
     (min_thickness 0.254)
@@ -67,8 +68,8 @@ for i in range(6):
       (pts
 ''' % segmentclearance)
 
-    draw_slice(r1-clearance-ring, r2+clearance+1, a1, a1, spokea, spokea, 4)
-    print('''
+        draw_slice(r1-clearance-ring, r2+clearance+1, a1, a1, spokea, spokea, 4)
+        print('''
       )
     )
   )
