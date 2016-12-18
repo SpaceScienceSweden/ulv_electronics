@@ -43,7 +43,8 @@ loadusb: $(PRG).hex
 setfuses:
 	# External HF crystal, 16k CK + 4 ms startup
 	# ATmega103 compatibility mode *off* (else USART1 won't work)
-	avrdude -c stk600 -p m128 -U lfuse:w:0xef:m -U hfuse:w:0x99:m -U efuse:w:0xff:m 
+	# CKOPT=1 (3.3V XTAL2 output)
+	avrdude -c stk600 -p m128 -U lfuse:w:0xef:m -U hfuse:w:0x89:m -U efuse:w:0xff:m
 
 lst:  $(PRG).lst
 
