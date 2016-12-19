@@ -1,5 +1,5 @@
 PRG            = adc
-OBJ            = adc.o asm.S
+OBJ            = adc.o main.o printstuff.o setup.o asm.S
 MCU_TARGET     = atmega128
 OPTIMIZE       = -O3 -frename-registers -funroll-loops
 

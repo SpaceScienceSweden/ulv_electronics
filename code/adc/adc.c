@@ -1,239 +1,11 @@
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/pgmspace.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
+#include "main.h"
 
-#define FCPU      7372800LL
-#define FADC      (FCPU/2)
-#define BAUD      115200
-#define WORDSZ    32    //ADC word size
-#define CLK_DIV   2
-#define ICLK_DIV  2
-#define OSR       5     //0..15 -> 4096 .. 32, see osrtab below
-#define GAIN      0     //0..4, actual gain = 2^GAIN
-#define TIMER3_N  1     //timer3 prescaler
-#define SIGNAL_N  1     //signal frequency compared to tach, numerator
-#define SIGNAL_D  1     //signal frequency compared to tach, denominator
-#define TACHS_PER_PRINT  100
-#define MAX_SAMPLES_PER_TACH 1000
-
-static const uint16_t osrtab[16] = {
-  4096, 2048, 1024, 800, 768, 512, 400, 384, 256, 200, 192, 128, 96, 64, 48, 32
-};
-
-
-//#define UBRR  (((FCPU+8LL*BAUD)/(16LL*BAUD))-1) //lo-speed (U2X=0)
-#define UBRR  (((FCPU+4LL*BAUD)/(8LL*BAUD))-1) //hi-speed (U2X=1)
-#if UBRR > 65535
-#error UBRR too high
-#endif
-#if WORDSZ < 24
-#error We want WORDSZ >= 24
-#endif
-#if CLK_DIV % 2 != 0 || CLK_DIV < 2 || CLK_DIV > 14
-#error Illegal CLK_DIV
-#endif
-#if ICLK_DIV % 2 != 0 || ICLK_DIV < 2 || ICLK_DIV > 14
-#error Illegal ICLK_DIV
-#endif
-#if OSR < 0 || OSR > 15
-#error Illegal OSR
-#endif
-#if GAIN < 0 || GAIN > 4
-#error Illegal GAIN
-#endif
-
-typedef __uint24 timer_t;
-
-typedef struct {
-  int64_t I[3], Q[3];
-  uint16_t numsamples;
-  uint16_t phi, dphi;   //phase, phase increment
-  timer_t lastt, tachstart, tachend, d;
-} adc_data_t;
-
-typedef struct {
-  uint8_t nchan;
-  uint16_t stat_1;
-  uint16_t stat_s;
-  uint8_t fault;        //set if we read too many samples, if the main loop wasn't able to print fast enough
-  uint8_t discard;      //if set, discard data up to the next TACH
-  uint8_t curbuffer;    //0 or 1, depending on which I/Q buffers should be used by the DRDY ISR
-  uint8_t buffersswapped; //set to 1 when TACH ISR swapped buffers
-  //uint16_t numrevs;
-  adc_data_t buffer[2]; //double buffering
-} adc_state_t;
-
-volatile adc_state_t adc_state[2] = {{0},{0}};
-
-//volatile *because* we can be interrupted
-volatile timer_t timer3_base;
-
-//we might want to put this in PROGMEM, we'll see
-char sintab[256];
-
-static void setup_sintab() {
-  int x;
-  for (x = 0; x < 256; x++) {
-    //this approximation minimizes harmonic distortion when limited to 8 bits
-    //see optimize_sintab.m
-    sintab[x] = 124.72 * sin(2*M_PI*x/256);
-  }
-}
-
-//stuff to make printf() work
-//source: http://efundies.com/avr-and-printf/
-//we could probable make scanf() work too
-int usart_putchar_printf(char var, FILE *stream) {
-  while (!(UCSR1A & (1<<UDRE1)));
-  UDR1 = var;
-  return 0;
-}
-static FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE);
-
-volatile char *usart1_str;
-static char usart1_buf[256];
-
-/*ISR(USART1_UDRE_vect) {
-  PORTF &= ~(1 << 2);
-  if (*usart1_str) {
-    UDR1 = *usart1_str++;
-  } else {
-    //disable UDRE1 interrupt
-    UCSR1B &= ~(1<<UDRIE1);
-  }
-  PORTF |= 1 << 2;
-}*/
-
-//background printf, format string in PROGMEM
-//NOTE: %s is SRAM strings, %S is PROGMEM strings 
-static void bprintf_P(const char *format, ...) {
-  int n;
-  va_list args;
-
-  if (!(SREG & (1<<7))) {
-    printf_P(PSTR("Tried to bprintf_P() without sei()..\r\n"));
-    for(;;);
-  }
-
-  //wait for last bprintf_P to finish
-  while (UCSR1B & (1<<UDRIE1));
-
-  //va_start() extracts the stack position of the ..., so no need for a va_start_P()
-  va_start(args, format);
-  n = vsnprintf_P(usart1_buf, sizeof(usart1_buf), format, args);
-  va_end(args);
-
-  if (n >= sizeof(usart1_buf)-1) {
-    strcpy_P(usart1_buf, PSTR("bprintf_P: vsnprintf_P too long!\r\n"));
-  }
-
-  //might happen that the resulting string is empty
-  if (usart1_buf[0]) {
-    //wait for buffer to be available
-    while (!(UCSR1A & (1<<UDRE1)));
-
-    //point to next character
-    usart1_str = &usart1_buf[1];
-
-    //start the transfer
-    UDR1 = usart1_buf[0];
-
-    //enable USART1 interrupt
-    UCSR1B |= (1<<UDRIE1);
-  }
-}
-
-
-volatile uint8_t busy_cnt = 0;
-//we need to be careful to cli() when using these in the main loop
-inline void busy() {
-  //PF2 low = CPU busy
-  if (busy_cnt++) {
-    //already busy - strobe PF2
-    PORTF |= 1 << 2;
-  }
-  PORTF &= ~(1 << 2);
-}
-
-inline void unbusy() {
-  if (--busy_cnt == 0) {
-    PORTF |= 1 << 2;
-  }
-}
-
-static void setup_adc_pins() {
-  //use Timer2 output for f_ADC, run it as fast as possible (4 MHz)
-  //CTC mode (TOP=OCR2), toggle OC2 on match, no prescaling
-  //on the real thing we'll use the main oscillator (8 MHz)
-  TCCR2 = (0<<FOC2) | (1<<WGM21) | (0<<WGM20) | (0<<COM21) | (1<<COM20) | (1<<CS20);
-  OCR2 = 0; //period = 1
-  DDRB |= (1<<7);
-
-  //CS pins = PD6..7
-  PORTD |= (1<<7) | (1<<6);
-  DDRD |= (1<<7) | (1<<6);
-
-  //falling edge..
-  EICRB |= (2<<ISC60) | (2<<ISC70);
-
-  //setup SPI
-  //set MOSI and SCK as output, obviously
-  //but also set /SS as output or a low input will put us in SPI slave mode
-  //incidentally this also asserts EN_APWR
-  PORTB |= (1<<0);
-  DDRB |= (1<<0) | (1<<1) | (1<<2);
-
-  //enable spi, run at fck/2 (3.7 Mbps)
-  SPCR = (1<<SPE) | (1<<MSTR);
-  SPSR |= (1<<SPI2X); //double speed (vroom!)
-  //CPOL=0, CPHA=1
-  SPCR |= 1<<CPHA;
-}
-
-//sets up tachometer interrupts (INT4, INT5)
-static void setup_tach() {
-  //enable INT4 and INT5
-  EIMSK |= (1<<4) | (1<<5);
-  //rising edge
-  EICRB |= (3<<ISC40) | (3<<ISC50);
-}
-
-static void setup_uart0() {
-  //double speed for higher UBRR resolution
-  UCSR0A |= (1<<U2X);
-  //enable RX and TX
-  UCSR0B = (1<<RXEN) | (1<<TXEN);
-  //8 data bits, 2 stop bits
-  UCSR0C = (1<<USBS) | (3<<UCSZ00);
-  UBRR0L = UBRR;
-  UBRR0H = UBRR / 256;
-  
-  DDRE |= (1<<PE1);
-}
-
-static void setup_uart1() {
-  //double speed for higher UBRR resolution
-  UCSR1A |= (1<<U2X);
-  //enable RX and TX
-  UCSR1B = (1<<RXEN) | (1<<TXEN);
-  //8 data bits, 2 stop bits
-  UCSR1C = (1<<USBS) | (3<<UCSZ10);
-  UBRR1L = UBRR;
-  UBRR1H = UBRR / 256;
-  
-  DDRD |= (1<<PD3);
-}
-
-static void adc_end_frame2() {
+void adc_end_frame2() {
   //de-assert /CS
   PORTD |= (1<<6) | (1<<7);
 }
 
-static void adc_start_frame2(uint8_t id) {
+void adc_start_frame2(uint8_t id) {
   //end last frame, if any
   adc_end_frame2();
 
@@ -245,7 +17,7 @@ static void adc_start_frame2(uint8_t id) {
   }
 }
 
-static uint8_t spi_comm_byte(uint8_t in) {
+uint8_t spi_comm_byte(uint8_t in) {
   //we could write this in asm
   //16 cy delay between setting and reading SPDR should be enough
   SPDR = in;
@@ -285,6 +57,35 @@ static uint32_t adc_comm(uint8_t id, uint32_t cmd) {
   adc_end_frame2();
 
   return out;
+}
+
+void setup_adc_pins() {
+  //use Timer2 output for f_ADC, run it as fast as possible (4 MHz)
+  //CTC mode (TOP=OCR2), toggle OC2 on match, no prescaling
+  //on the real thing we'll use the main oscillator (8 MHz)
+  TCCR2 = (0<<FOC2) | (1<<WGM21) | (0<<WGM20) | (0<<COM21) | (1<<COM20) | (1<<CS20);
+  OCR2 = 0; //period = 1
+  DDRB |= (1<<7);
+
+  //CS pins = PD6..7
+  PORTD |= (1<<7) | (1<<6);
+  DDRD |= (1<<7) | (1<<6);
+
+  //falling edge..
+  EICRB |= (2<<ISC60) | (2<<ISC70);
+
+  //setup SPI
+  //set MOSI and SCK as output, obviously
+  //but also set /SS as output or a low input will put us in SPI slave mode
+  //incidentally this also asserts EN_APWR
+  PORTB |= (1<<0);
+  DDRB |= (1<<0) | (1<<1) | (1<<2);
+
+  //enable spi, run at fck/2 (3.7 Mbps)
+  SPCR = (1<<SPE) | (1<<MSTR);
+  SPSR |= (1<<SPI2X); //double speed (vroom!)
+  //CPOL=0, CPHA=1
+  SPCR |= 1<<CPHA;
 }
 
 #define RESET   (0x0011L << (WORDSZ-16))
@@ -361,12 +162,12 @@ static void printit() {
   printf_P(PSTR("gain = %i\r\n"), 1<<GAIN);
 }
 
-static void disable_adc(uint8_t id) {
+void disable_adc(uint8_t id) {
   //just disable interrupt for now
   EIMSK &= ~(1<<(6+id));
 }
 
-static void config_adc(uint8_t id) {
+void config_adc(uint8_t id) {
   uint8_t msb, lsb, gain, x;
   uint32_t word;
 
@@ -472,402 +273,3 @@ static void config_adc(uint8_t id) {
   //enable /DRDYx interrupts on PE6..7
   EIMSK |= (1<<(6+id));
 }
-
-inline timer_t currenttime() {
-  return timer3_base + TCNT3;
-}
-
-void adc_read_channel(uint8_t id) {
-  //TACH ISR needs to know at what time this sample was
-  //use the volatile version of the buffer so the write actually happens
-  uint8_t curbuffer = adc_state[id].curbuffer;
-
-  busy();
-
-  uint8_t x;
-  int32_t samples[3] = {0,0,0};
-  uint8_t iphase, qphase;
-
-  //cast away volatile
-  //this is fine since only this ISR and the main thread access the adc_data_t array
-  adc_data_t *data = (adc_data_t*)&adc_state[id].buffer[curbuffer];
-
-  iphase = data->phi >> 8;
-  qphase = iphase + 64;
-  data->phi += data->dphi;
-
-  adc_start_frame2(id);
-
-  //ignore control word
-  spi_comm_byte(0);
-  spi_comm_byte(0);
-  spi_comm_byte(0);
-#if WORDSZ==32
-  spi_comm_byte(0);
-#endif
-
-  //warm-up
-  SPDR = 0;
-  while(!(SPSR & (1<<SPIF)));
-
-  //read and demodulate at the same time
-  for (x = 0; x < 3; x++) {
-    uint8_t b;
-    //use 32-bit integers locally here, both because we don't
-    //need 64 bits and because adc_state is volatile
-    int32_t I, Q;
-
-    //this XOR switches signed to unsigned
-    //in other words, we add a DC offset of Vref (2.4 V or so),
-    //which gets removed by the demodulation
-    //
-    // 0x800000 .. 0xFFFFFF 0x000000 0x000001 ... 0x7FFFFF
-    //
-    //becomes
-    //
-    // 0x000000 .. 0x7FFFFF 0x800000 0x800001 ... 0xFFFFFF
-    //
-    //the demodulation done here fits nicely in 32 bits
-    //
-    // 127*(2^24-1) => +-2130706305
-
-    //we have a byte here because we did the warm-up further up
-    b = SPDR ^ 0x80;
-    SPDR = 0;
-    //uint8_t * int8_t * int32_t
-    I = b * sintab[iphase] * (1L<<16);
-    Q = b * sintab[qphase] * (1L<<16);
-    //above computation is >16 cy  while(!(SPSR & (1<<SPIF)));
-    b = SPDR;
-    SPDR = 0;
-    I += b * sintab[iphase] * (1L<<8);
-    Q += b * sintab[qphase] * (1L<<8);
-    //above computation is >16 cy  while(!(SPSR & (1<<SPIF)));
-    b = SPDR;
-#if WORDSZ == 32
-    SPDR = 0;
-#endif
-    I += b * sintab[iphase];
-    Q += b * sintab[qphase];
-#if WORDSZ == 32
-    while(!(SPSR & (1<<SPIF)));
-    b = SPDR;
-#endif
-
-    //start transfer of first byte of next sample, unless we're done
-    if (x < 2) {
-      SPDR = 0;
-      //computation below is > 16 cy  while(!(SPSR & (1<<SPIF)));
-    }
-
-    //add to 64-bit state
-    //TODO: we need to deal with 
-    data->I[x] += I;
-    data->Q[x] += Q;
-  }
-
-  adc_end_frame2();
-
-  if (data->numsamples < MAX_SAMPLES_PER_TACH-1) {
-    data->numsamples++;
-  } else {
-    adc_state[id].fault = 1;
-  }
-
-  unbusy();
-}
-
-static void handle_tach(uint8_t id) {
-  timer_t t = currenttime();
-
-  busy();
-
-  //TODO: reevaluate this thing, see if we can use __uint24 here and there
-  //the phase calculations are especially suspect
-  uint8_t x;
-  uint32_t K = 2UL*CLK_DIV*ICLK_DIV*osrtab[OSR];
-  uint32_t tachlen, endphase;
-  //cast away volatile
-  //we can't be interrupted unless we sei()
-  adc_state_t *state = (adc_state_t*)&adc_state[id];
-  adc_data_t *curdata  = (adc_data_t*)&state->buffer[ state->curbuffer];
-  adc_data_t *nextdata = (adc_data_t*)&state->buffer[!state->curbuffer];
-  state->curbuffer = !state->curbuffer;
-  state->buffersswapped = 1;
-
-  //clear next buffer
-  memset((void*)nextdata->I, 0, sizeof(nextdata->I));
-  memset((void*)nextdata->Q, 0, sizeof(nextdata->Q));
-  nextdata->numsamples = 0;
-
-  curdata->tachend = t;
-  nextdata->tachstart = t;
-  tachlen = curdata->tachend - curdata->tachstart;
-
-  //1 Hz cutoff
-  if (tachlen < FCPU) {
-    nextdata->d = tachlen * TIMER3_N * SIGNAL_D;
-    nextdata->dphi = (65536UL * SIGNAL_N * K + nextdata->d/2) / nextdata->d;
-    //derive the starting phase from where we expect the next sample will be taken
-    //this works because currenttime() gives us time in CPU cycles,
-    //and K is the time it takes for the ADC to do one conversion, also in CPU cycles
-    uint32_t endphase = curdata->tachend - curdata->lastt;
-    nextdata->phi = (uint32_t)nextdata->dphi * (K - endphase) / K;
-  } else {
-    nextdata->d = 1337;
-    state->discard = 1;
-  }
-
-  unbusy();
-}
-
-//ISR for TACHa
-ISR(INT4_vect) {
-  handle_tach(0);
-}
-
-//ISR for TACHb
-ISR(INT5_vect) {
-  handle_tach(1);
-}
-
-//ISR for /DRDYa
-ISR(INT6_vect) {
-  adc_state[0].buffer[adc_state[0].curbuffer].lastt = currenttime();
-  //allow ourselves to be interrupted
-  sei();
-  adc_read_channel(0);
-}
-
-//ISR for /DRDYb
-ISR(INT7_vect) {
-  adc_state[1].buffer[adc_state[1].curbuffer].lastt = currenttime();
-  //allow ourselves to be interrupted
-  sei();
-  adc_read_channel(1);
-}
-
-ISR(TIMER3_COMPA_vect) {
-  //this ISR is hit in the middle of Timer3's range
-  //its purpose is to prevent an overflow from ever occuring
-  //the reason is so that we're guaranteed that TOV1 is never set in currenttime()
-
-  uint16_t tcnt3 = TCNT3;
-  TCNT3 = 6;  //number of cycles taken by this exchange
-
-  //the code for the above will look something like the following:
-/*
-     e40:	2c b5       	in	r18, 0x2c	; 44
-     e42:	3d b5       	in	r19, 0x2d	; 45
-     e44:	86 e0       	ldi	r24, 0x06	; 6
-     e46:	90 e0       	ldi	r25, 0x00	; 0
-     e48:	9d bd       	out	0x2d, r25	; 45
-     e4a:	8c bd       	out	0x2c, r24	; 44
-*/
-  //which works out to 6 cycles
-
-  timer3_base += tcnt3;
-}
-
-ISR(TIMER3_OVF_vect) {
-  //this shouldn't happen
-  timer3_base += 65536;
-  printf_P(PSTR("TIMER3_OVF_vect was hit :(\r\n"));
-}
-
-static void setup_timer3() {
-  //normal port operation, normal counter mode
-  TCCR3A = 0;
-#if TIMER3_N == 1
-  //no noise canceller, no input capture, normal mode, prescaler=1
-  TCCR3B = 1;
-#else
-#error Only prescaler=1 supported for timer3 at the moment
-#endif
-
-  //trigger TIMER3_COMPA_vect in the middle of the range
-  OCR3A = 0x8000;
-
-  //pre-emptively clear TOV1
-  TCNT3 = 0;
-  ETIFR &= ~(1<<TOV3);
-
-  //enable Timer3 overflow and COMPA match interrupts
-  ETIMSK |= (1<<TOIE3) | (1<<OCIE3A);
-}
-
-static void cls() {
-  //clear screen. maybe there's a better way?
-  int y;
-  for (y = 0; y < 100; y++) {
-    printf_P(PSTR("\033[%i;0H"), y);
-    printf_P(PSTR("                                                                      "));
-  }
-}
-
-//avr-libc doesn't seem able to handle 64-bit integers
-/*static void print_int64_t(int64_t in) {
-  if (in == (1LL << 63)) {
-    printf_P(PSTR("-9223372036854775808"));
-  } else {
-    uint64_t tens = 1000000000000000000ULL;
-    uint64_t u;
-    uint8_t doit = 0;
-
-    if (in < 0) {
-      u = -in;
-      printf_P(PSTR("-"));
-    } else {
-      u = in;
-    }
-
-    for (; tens; tens /= 10) {
-      int p = 0;
-      if (u >= tens) {
-        doit = 1;
-        p = u/tens;
-        u = u%tens;
-      }
-      if (doit) {
-        printf_P(PSTR("%1i"), p);
-      }
-    }
-  }
-}*/
-
-//http://stackoverflow.com/questions/960389/how-can-i-visualise-the-memory-sram-usage-of-an-avr-program
-static int freeRam () {
-  extern int __heap_start, *__brkval; 
-  int v; 
-  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
-}
-
-static void setup_motor_pwm() {
-  //PB5 = OC1A, PB5 = OC1B. inverted drive signals
-  //pwm frequency range is 500 Hz .. 20 kHz
-  //WGM=1 -> TOP=0xFF -> (7372800/256/2) = 14400 Hz (8-bit phase-correct PWM)
-  uint8_t wgm = 1;
-  TCCR1A = (3<<COM1A0) | (3<<COM1B0) | ((wgm&3) << WGM10);
-  //enable clock, no prescaler
-  TCCR1B = (((wgm>>2)&3) << WGM12) | (1<<CS10);
-  TCCR1C = 0;
-
-  //90% duty
-  OCR1A = 128;
-
-  //enable outputs
-  DDRB |= (1<<5) | (1<<6);
-}
-
-
-int main(void)
-{
-  cli();
-
-  //setup stdout for printf()
-  stdout = &mystdout;
-
-  setup_motor_pwm();
-
-  setup_uart0();
-  setup_uart1();
-  setup_tach();
-
-  if (1) {
-    //put RS-485 bus in TX mode (not yet connected)
-    //this could also be done in the UDRE ISR
-    DDRF |= 2;
-    PORTF |= 2;
-  }
-
-  cls();
-
-  printf_P(PSTR("\033[0;0HHello, world!\r\n"));
-  printf_P(PSTR("%i B SRAM free\r\n"), freeRam());
-  memset((void*)adc_state, 0, sizeof(adc_state));
-  setup_adc_pins(); disable_adc(0); disable_adc(1);
-  config_adc(0);
-  //config_adc(1);
-
-  //CPU usage monitor on PF2
-  DDRF |= 1 << 2;
-
-  //ISP disabler on PF3
-  //turns out this isn't really needed, since the 4016 on the ISP signals
-  //is enough to provide decent termination
-  //still probably a good idea to keep around
-  DDRF  |=   1<<3;
-  PORTF &= ~(1<<3);
-
-  setup_sintab();
-  adc_state[0].discard = 1;
-  adc_state[1].discard = 1;
-
-  //Timer3 must be set up just before enabling interrupts,
-  //else an overflow might occur while we're setting up
-  setup_timer3();
-  sei();
-
-  bprintf_P(PSTR("ADC state size: %i\r\n"), sizeof(adc_state));
-  bprintf_P(PSTR("Done setting up\r\n"));
-
-  for (;;) {
-    uint16_t outsamples = 0, numrevs = 0, last_phi = 0, last_dphi = 0;
-    uint32_t last_d = 0, last_tachstart = 0, last_tachend = 0;
-    int32_t last_endphase = 0;
-    uint32_t last_lastt = 0;
-    int64_t I[3] = {0}, Q[3] = {0};
-
-    while (numrevs < TACHS_PER_PRINT) {
-      cli();
-      uint8_t curbuffer  = adc_state[0].curbuffer;
-      uint8_t buffersswapped = adc_state[0].buffersswapped;
-      sei();
-
-      if (adc_state[0].fault) {
-        printf_P(PSTR("Fault :(\r\n"));
-        adc_state[0].fault = 0;
-      }
-      if (buffersswapped) {
-        adc_state[0].buffersswapped = 0;
-
-        //old buffer
-        adc_data_t *data = (adc_data_t*)&adc_state[0].buffer[!curbuffer];
-        uint8_t x;
-
-        if (adc_state[0].discard) {
-          adc_state[0].discard = 0;
-          continue;
-        }
-
-        outsamples += data->numsamples;
-        numrevs++;
-        last_d          = data->d;
-        last_tachstart  = data->tachstart;
-        last_tachend    = data->tachend;
-        last_endphase   = data->tachend - data->lastt;
-        last_lastt      = data->lastt;
-        last_phi        = data->phi;
-        last_dphi       = data->dphi;
-
-        for (x = 0; x < 3; x++) {
-          I[x] += data->I[x];
-          Q[x] += data->Q[x];
-        }
-      }
-    }
-
-    bprintf_P(PSTR("%u, %7li : %7li, %7lu, %5u, %5u,% 12.0f,% 12.0f,% 12.0f,% 12.0f,% 12.0f,% 12.0f\r\n"),
-      outsamples, last_lastt-last_tachstart, last_tachend-last_lastt, last_d, last_phi, last_dphi,
-      (float)I[0]/outsamples, (float)Q[0]/outsamples,
-      (float)I[1]/outsamples, (float)Q[1]/outsamples,
-      (float)I[2]/outsamples, (float)Q[2]/outsamples
-    );
-
-    //TODO: there should be a flag in adc_state that we finished dealing the the results
-  }
-
-  return 0;
-}
-
-
