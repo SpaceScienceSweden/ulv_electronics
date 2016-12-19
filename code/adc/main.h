@@ -14,9 +14,6 @@
 #define ICLK_DIV  2
 #define OSR       5     //0..15 -> 4096 .. 32, see osrtab below
 #define GAIN      0     //0..4, actual gain = 2^GAIN
-#define TIMER3_N  1     //timer3 prescaler
-#define SIGNAL_N  1     //signal frequency compared to tach, numerator
-#define SIGNAL_D  1     //signal frequency compared to tach, denominator
 #define TACHS_PER_PRINT  100
 #define MAX_SAMPLES_PER_TACH 1000
 
@@ -48,22 +45,9 @@ static const uint16_t osrtab[16] = {
 typedef __uint24 timer_t;
 
 typedef struct {
-  int64_t I[3], Q[3];
-  uint16_t numsamples;
-  uint16_t phi, dphi;   //phase, phase increment
-  timer_t lastt, tachstart, tachend, d;
-} adc_data_t;
-
-typedef struct {
   uint8_t nchan;
   uint16_t stat_1;
   uint16_t stat_s;
-  uint8_t fault;        //set if we read too many samples, if the main loop wasn't able to print fast enough
-  uint8_t discard;      //if set, discard data up to the next TACH
-  uint8_t curbuffer;    //0 or 1, depending on which I/Q buffers should be used by the DRDY ISR
-  uint8_t buffersswapped; //set to 1 when TACH ISR swapped buffers
-  //uint16_t numrevs;
-  adc_data_t buffer[2]; //double buffering
 } adc_state_t;
 
 extern volatile adc_state_t adc_state[2];
@@ -76,6 +60,11 @@ uint8_t spi_comm_byte(uint8_t in);
 void setup_adc_pins();
 void disable_adc(uint8_t id);
 void config_adc(uint8_t id);
+void enable_adc(uint8_t id);
+void disable_tachs();
+void setup_tach(uint8_t id);
+void disable_timer3();
+void setup_timer3();
 
 //background printf, format string in PROGMEM
 //NOTE: %s is SRAM strings, %S is PROGMEM strings 

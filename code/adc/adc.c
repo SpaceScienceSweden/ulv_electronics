@@ -165,6 +165,7 @@ static void printit() {
 void disable_adc(uint8_t id) {
   //just disable interrupt for now
   EIMSK &= ~(1<<(6+id));
+  EIFR |= 1<<(6+id);
 }
 
 void config_adc(uint8_t id) {
@@ -270,6 +271,9 @@ void config_adc(uint8_t id) {
     printf_P(PSTR("Waiting for LOCK\r\n"));
   }
 
+}
+
+void enable_adc(uint8_t id) {
   //enable /DRDYx interrupts on PE6..7
   EIMSK |= (1<<(6+id));
 }
