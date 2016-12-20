@@ -208,7 +208,10 @@ static int capture_fm(uint8_t id, uint16_t avg) {
 
       if (first_tach) {
         first_tach = 0;
-        samplet = second_samplet - K;
+        //modulo instead of just second_samplet - K, to reduce risk of demodulation loop being aborted early (x=0)
+        //this would happen about one every few minutes with avg=2 and a 300 Hz input
+        //TODO: fully debug this, or switch to input capture
+        samplet = tachstart_copy + ((second_samplet - tachstart_copy) % K);
         first_tachstart = tachstart_copy;
       }
 
