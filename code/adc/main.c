@@ -80,9 +80,8 @@ inline void handle_tach() {
 }
 
 typedef struct {
-  timer_t t;
   __int24 sample[3];
-  uint8_t dummy[4];   //pad to 16 bytes
+  uint8_t dummy[7];   //pad to 16 bytes
 } capture_t;
 
 #define CAPTURE_MAX 80
@@ -90,13 +89,21 @@ volatile capture_t capture_data[CAPTURE_MAX];
 volatile capture_t *capture_ptr;
 volatile uint8_t capture_cnt;
 volatile uint8_t cur_adc;
+volatile timer_t second_samplet;
+volatile uint8_t second_samplet_cnt;
 
 inline void adc_read_channel() {
   if (tach_cnt < 2) {
     return;
   }
 
-  capture_ptr->t = currenttime();
+  if (second_samplet_cnt == 1) {
+    //we could get better accuracy using timer3 input capture
+    second_samplet = currenttime();
+    second_samplet_cnt = 2;
+  } else if (second_samplet_cnt == 0) {
+    second_samplet_cnt = 1;
+  }
 
   sei();
 
@@ -147,6 +154,7 @@ static void reset_capture(uint8_t id) {
   tach_cnt = 0;
   got_tach = 0;
   cur_adc = id;
+  second_samplet_cnt = 0;
 }
 
 static int capture_fm(uint8_t id, uint16_t avg) {
@@ -165,16 +173,17 @@ static int capture_fm(uint8_t id, uint16_t avg) {
   uint32_t avg_tot = 0;
   int64_t I[3] = {0,0,0};
   int64_t Q[3] = {0,0,0};
-  uint16_t dphi = 0, phi = 0;
   timer_t tachlen_min = 0, tachlen_max = 0;
   uint32_t tachlen_sum = 0;
+
+  timer_t samplet = 0;
+  uint8_t first_tach = 1;
+  timer_t first_tachstart = 0;
 
   int ret = 0;
   for (avg_cnt = 0; avg_cnt < avg;) {
     cli();
     uint8_t cnt = capture_cnt;
-    timer_t tachstart_copy = tachstart;
-    timer_t tachend_copy = tachend;
 
     if (cnt >= CAPTURE_MAX) {
       ret = 1;
@@ -188,7 +197,15 @@ static int capture_fm(uint8_t id, uint16_t avg) {
 
       got_tach = 0;
 
+      timer_t tachstart_copy = tachstart;
+      timer_t tachend_copy = tachend;
       timer_t tachlen = tachend_copy - tachstart_copy;
+
+      if (first_tach) {
+        first_tach = 0;
+        samplet = second_samplet - K;
+        first_tachstart = tachstart_copy;
+      }
 
       //collect statistics on rotor speed
       if (avg_cnt == 0) {
@@ -203,26 +220,20 @@ static int capture_fm(uint8_t id, uint16_t avg) {
       }
       tachlen_sum += tachlen;
 
-      //compute start phase and phase increment
-      dphi = (65536UL * K) / tachlen;
-       phi = (uint32_t)dphi*((capture_data[1].t - tachstart_copy) % K) / K;
-
       //purposefully non-volatile
       capture_t *loop_ptr = (capture_t*)capture_data;
 
       //demodulate
       uint8_t x;
-      for (x = 0; x < cnt && loop_ptr->t - tachstart_copy < tachend_copy - tachstart_copy; x++, loop_ptr++) {
+      for (x = 0; x < cnt && samplet - tachstart_copy < tachlen; x++, loop_ptr++, samplet += K) {
         uint8_t y;
-        uint8_t iphase = phi >> 8;
+        uint8_t iphase = 256UL * (samplet - tachstart_copy) / tachlen;
         uint8_t qphase = iphase + 64;
 
         for (y = 0; y < 3; y++) {
           I[y] += (int32_t)loop_ptr->sample[y] * sintab[iphase];
           Q[y] += (int32_t)loop_ptr->sample[y] * sintab[qphase];
         }
-
-        phi += dphi;
       }
 
       //deal with capturing samples past tachend
@@ -246,12 +257,14 @@ static int capture_fm(uint8_t id, uint16_t avg) {
         break;
       }
 
+      if (avg_cnt != avg-1) {
       //pull capture_data "back" cnt entries
       //a circular buffer would be faster, but then the DRDY ISR becomes more complicated
       if (capture_cnt > cnt) {
         memmove((void*)capture_data, (void*)&capture_data[cnt], (capture_cnt-cnt)*sizeof(capture_t));
       }
       capture_ptr = &capture_data[capture_cnt -= cnt];
+      }
       unbusy();
       sei();
 
@@ -265,13 +278,13 @@ static int capture_fm(uint8_t id, uint16_t avg) {
   }
 
   cli();
+  //printf_P(PSTR("first samplet: %li\r\n"), (int32_t)(__int24)(second_samplet - first_tachstart - K));
   reset_capture(id);
   sei();
 
   if (ret == 0) {
   //TODO: print Is and Qs as 64-bit integers
-  printf_P(PSTR("%5i,%5i,%8lu,%9lu,%8lu,%8lu,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f\r\n"),
-    phi, dphi,
+  printf_P(PSTR("%5lu,%8lu,%5lu,%5lu,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f\r\n"),
     (uint32_t)tachlen_min, tachlen_sum, (uint32_t)tachlen_max,
     avg_tot,
     (float)I[0] / avg_tot, (float)Q[0] / avg_tot,
