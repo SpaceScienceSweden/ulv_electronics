@@ -18,10 +18,17 @@ static void setup_sintab() {
   }
 }
 
+void disable_tachs() {
+  EIMSK &= ~((1<<4) | (1<<5));
+  
+  //clear associated interrupt flags
+  EIFR |= (1<<4) | (1<<5);
+}
+
 //sets up tachometer interrupts (INT4, INT5)
-static void setup_tach() {
+void setup_tach(uint8_t id) {
   //enable INT4 and INT5
-  EIMSK |= (1<<4) | (1<<5);
+  EIMSK |= (1<<(4+id));
   //rising edge
   EICRB |= (3<<ISC40) | (3<<ISC50);
 }
@@ -52,22 +59,22 @@ static void setup_uart1() {
   DDRD |= (1<<PD3);
 }
 
-static void setup_timer3() {
+void disable_timer3() {
+  ETIMSK &= ((1<<TOIE3) | (1<<OCIE3A));
+}
+
+void setup_timer3() {
   //normal port operation, normal counter mode
   TCCR3A = 0;
-#if TIMER3_N == 1
   //no noise canceller, no input capture, normal mode, prescaler=1
   TCCR3B = 1;
-#else
-#error Only prescaler=1 supported for timer3 at the moment
-#endif
 
   //trigger TIMER3_COMPA_vect in the middle of the range
   OCR3A = 0x8000;
 
   //pre-emptively clear TOV1
   TCNT3 = 0;
-  ETIFR &= ~(1<<TOV3);
+  ETIFR |= ~(1<<TOV3);
 
   //enable Timer3 overflow and COMPA match interrupts
   ETIMSK |= (1<<TOIE3) | (1<<OCIE3A);
@@ -105,7 +112,7 @@ void setup() {
 
   setup_uart0();
   setup_uart1();
-  setup_tach();
+  disable_tachs();
 
   if (1) {
     //put RS-485 bus in TX mode (not yet connected)
@@ -114,14 +121,12 @@ void setup() {
     PORTF |= 2;
   }
 
-  cls();
-
-  printf_P(PSTR("\033[0;0HHello, world!\r\n"));
   printf_P(PSTR("%i B SRAM free\r\n"), freeRam());
   memset((void*)adc_state, 0, sizeof(adc_state));
-  setup_adc_pins(); disable_adc(0); disable_adc(1);
+  setup_adc_pins();
+  disable_adc(0);
+  disable_adc(1);
   config_adc(0);
-  //config_adc(1);
 
   //CPU usage monitor on PF2
   DDRF |= 1 << 2;
@@ -134,10 +139,4 @@ void setup() {
   PORTF &= ~(1<<3);
 
   setup_sintab();
-  adc_state[0].discard = 1;
-  adc_state[1].discard = 1;
-
-  //Timer3 must be set up just before enabling interrupts,
-  //else an overflow might occur while we're setting up
-  setup_timer3();
 }
