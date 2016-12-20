@@ -121,9 +121,6 @@ void setup() {
     PORTF |= 2;
   }
 
-  cls();
-
-  printf_P(PSTR("\033[0;0HHello, world!\r\n"));
   printf_P(PSTR("%i B SRAM free\r\n"), freeRam());
   memset((void*)adc_state, 0, sizeof(adc_state));
   setup_adc_pins();
