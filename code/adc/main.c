@@ -68,11 +68,12 @@ inline void handle_tach() {
   tachstart = tachend;
   tachend = t;
 
-  if (tach_cnt < 2) {
+  //ignore the very first TACH, since it might happen before the first sei() in capture_fm()
+  if (tach_cnt < 3) {
     tach_cnt++;
   }
 
-  if (tach_cnt >= 2) {
+  if (tach_cnt > 2) {
     got_tach = 1;
   }
   unbusy();
@@ -84,14 +85,14 @@ typedef struct {
   uint8_t dummy[4];   //pad to 16 bytes
 } capture_t;
 
-#define CAPTURE_MAX 30
+#define CAPTURE_MAX 80
 volatile capture_t capture_data[CAPTURE_MAX];
 volatile capture_t *capture_ptr;
 volatile uint8_t capture_cnt;
 volatile uint8_t cur_adc;
 
 inline void adc_read_channel() {
-  if (tach_cnt == 0) {
+  if (tach_cnt < 2) {
     return;
   }
 
@@ -101,8 +102,7 @@ inline void adc_read_channel() {
 
   busy();
   if (capture_cnt >= CAPTURE_MAX) {
-    printf_P(PSTR("CAPTURE_MAX\r\n"));
-    for(;;);
+    return;
   }
 
   adc_start_frame2(cur_adc);
@@ -135,39 +135,52 @@ inline void adc_read_channel() {
   unbusy();
 }
 
-static void capture_fm(uint8_t id, uint16_t avg) {
-  const uint16_t K = 2U*CLK_DIV*ICLK_DIV*osrtab[OSR];
-
-  //clean start
-  cli();
+static void reset_capture(uint8_t id) {
+  busy_cnt = 0;
   disable_timer3();
   disable_adc(0);
   disable_adc(1);
-  enable_adc(id);
   disable_tachs();
-  setup_tach(id);
 
   capture_ptr = capture_data;
   capture_cnt = 0;
   tach_cnt = 0;
   got_tach = 0;
   cur_adc = id;
+}
+
+static int capture_fm(uint8_t id, uint16_t avg) {
+  const uint16_t K = 2U*CLK_DIV*ICLK_DIV*osrtab[OSR];
+
+  //clean start
+  cli();
+  reset_capture(id);
 
   setup_timer3();
+  enable_adc(id);
+  setup_tach(id);
   sei();
 
   uint16_t avg_cnt;
+  uint32_t avg_tot = 0;
   int64_t I[3] = {0,0,0};
   int64_t Q[3] = {0,0,0};
-  uint16_t dphi, phi;
+  uint16_t dphi = 0, phi = 0;
   timer_t tachlen_min = 0, tachlen_max = 0;
   uint32_t tachlen_sum = 0;
 
+  int ret = 0;
   for (avg_cnt = 0; avg_cnt < avg;) {
     cli();
     uint8_t cnt = capture_cnt;
     timer_t tachstart_copy = tachstart;
     timer_t tachend_copy = tachend;
+
+    if (cnt >= CAPTURE_MAX) {
+      ret = 1;
+      printf_P(PSTR("rotor too slow: %i\r\n"), (int)cnt);
+      break;
+    }
 
     if (got_tach) {
       busy();
@@ -227,6 +240,12 @@ static void capture_fm(uint8_t id, uint16_t avg) {
       cnt = x;
 
       cli();
+      if (cnt < 4) {
+        ret = 1;
+        printf_P(PSTR("only got %i samples - rotor is spinning too fast\r\n"), cnt);
+        break;
+      }
+
       //pull capture_data "back" cnt entries
       //a circular buffer would be faster, but then the DRDY ISR becomes more complicated
       if (capture_cnt > cnt) {
@@ -237,6 +256,7 @@ static void capture_fm(uint8_t id, uint16_t avg) {
       sei();
 
       avg_cnt++;
+      avg_tot += cnt;
     } else {
       sei();
 
@@ -245,20 +265,22 @@ static void capture_fm(uint8_t id, uint16_t avg) {
   }
 
   cli();
-  disable_timer3();
-  disable_adc(0);
-  disable_adc(1);
-  disable_tachs();
+  reset_capture(id);
   sei();
 
+  if (ret == 0) {
   //TODO: print Is and Qs as 64-bit integers
-  printf_P(PSTR("%5i,%5i,%8lu,%9lu,%8lu,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f\r\n"),
+  printf_P(PSTR("%5i,%5i,%8lu,%9lu,%8lu,%8lu,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f\r\n"),
     phi, dphi,
     (uint32_t)tachlen_min, tachlen_sum, (uint32_t)tachlen_max,
-    (float)I[0] / avg, (float)Q[0] / avg,
-    (float)I[1] / avg, (float)Q[1] / avg,
-    (float)I[2] / avg, (float)Q[2] / avg
+    avg_tot,
+    (float)I[0] / avg_tot, (float)Q[0] / avg_tot,
+    (float)I[1] / avg_tot, (float)Q[1] / avg_tot,
+    (float)I[2] / avg_tot, (float)Q[2] / avg_tot
   );
+  }
+
+  return ret;
 }
 
 //ISR for TACHa
