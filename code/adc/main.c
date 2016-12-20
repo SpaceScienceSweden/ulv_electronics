@@ -100,8 +100,13 @@ inline void adc_read_channel() {
   if (second_samplet_cnt == 1) {
     //we could get better accuracy using timer3 input capture
     second_samplet = currenttime();
+    //re-enable timer3 interrupts
+    ETIMSK |= (1<<TOIE3) | (1<<OCIE3A);
     second_samplet_cnt = 2;
   } else if (second_samplet_cnt == 0) {
+    //disable timer3 interrupts until next sample
+    //this reduces timing jitter since TIMER3_COMPA might occur just before DRDY
+    ETIMSK &= ((1<<TOIE3) | (1<<OCIE3A));
     second_samplet_cnt = 1;
   }
 
