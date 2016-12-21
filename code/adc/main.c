@@ -119,6 +119,9 @@ inline void adc_read_channel() {
 
   adc_start_frame2(cur_adc);
 
+  //TODO: we could speed this up by writing an inline "skip one byte" asm routine
+  //something like out SPDR, r1 followed by 15x NOPs (16 cy total)
+  //the regular spi_comm_byte() could be similarly optimized, to 17 cycles
   spi_comm_byte(0);
   spi_comm_byte(0);
   spi_comm_byte(0);
@@ -127,6 +130,28 @@ inline void adc_read_channel() {
 #endif
 
   uint8_t x;
+  uint8_t *sample_ptr = (uint8_t*)capture_ptr->sample;
+
+  sample_ptr[2] = spi_comm_byte(0);
+  sample_ptr[1] = spi_comm_byte(0);
+  sample_ptr[0] = spi_comm_byte(0);
+#if WORDSZ == 32
+    spi_comm_byte(0);
+#endif
+  sample_ptr[5] = spi_comm_byte(0);
+  sample_ptr[4] = spi_comm_byte(0);
+  sample_ptr[3] = spi_comm_byte(0);
+#if WORDSZ == 32
+    spi_comm_byte(0);
+#endif
+  sample_ptr[8] = spi_comm_byte(0);
+  sample_ptr[7] = spi_comm_byte(0);
+  sample_ptr[6] = spi_comm_byte(0);
+#if WORDSZ == 32
+    spi_comm_byte(0);
+#endif
+
+  /*
   capture_t *capture_ptr_nv = (capture_t*)capture_ptr;
 
   for (x = 0; x < 3; x++) {
@@ -139,6 +164,7 @@ inline void adc_read_channel() {
     }
 #endif
   }
+  */
 
   adc_end_frame2();
   capture_cnt++;

@@ -1,30 +1,5 @@
 #include "main.h"
 
-void adc_end_frame2() {
-  //de-assert /CS
-  PORTD |= (1<<6) | (1<<7);
-}
-
-void adc_start_frame2(uint8_t id) {
-  //end last frame, if any
-  adc_end_frame2();
-
-  //assert relevant /CS pin
-  if (id == 0) {
-    PORTD &= ~(1 << PD6);
-  } else {
-    PORTD &= ~(1 << PD7);
-  }
-}
-
-uint8_t spi_comm_byte(uint8_t in) {
-  //we could write this in asm
-  //16 cy delay between setting and reading SPDR should be enough
-  SPDR = in;
-  while(!(SPSR & (1<<SPIF)));
-  return SPDR;
-}
-
 static uint32_t spi_comm_word(uint32_t in) {
   uint32_t out = 0;
   uint8_t x;

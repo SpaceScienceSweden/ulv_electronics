@@ -1,3 +1,6 @@
+#ifndef MAIN_H
+#define MAIN_H
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -54,9 +57,6 @@ extern volatile adc_state_t adc_state[2];
 extern FILE mystdout;
 extern char sintab[256];
 
-void adc_end_frame2();
-void adc_start_frame2(uint8_t id);
-uint8_t spi_comm_byte(uint8_t in);
 void setup_adc_pins();
 void disable_adc(uint8_t id);
 void config_adc(uint8_t id);
@@ -71,3 +71,30 @@ void setup_timer3();
 void bprintf_P(const char *format, ...);
 
 void setup();
+
+static inline void adc_end_frame2() {
+  //de-assert /CS
+  PORTD |= (1<<6) | (1<<7);
+}
+
+static inline void adc_start_frame2(uint8_t id) {
+  //end last frame, if any
+  adc_end_frame2();
+
+  //assert relevant /CS pin
+  if (id == 0) {
+    PORTD &= ~(1 << PD6);
+  } else {
+    PORTD &= ~(1 << PD7);
+  }
+}
+
+static inline uint8_t spi_comm_byte(uint8_t in) {
+  //we could write this in asm
+  //16 cy delay between setting and reading SPDR should be enough
+  SPDR = in;
+  while(!(SPSR & (1<<SPIF)));
+  return SPDR;
+}
+
+#endif //MAIN_H
