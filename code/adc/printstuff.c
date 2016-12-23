@@ -11,7 +11,7 @@ int usart_putchar_printf(char var, FILE *stream) {
 FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE);
 
 volatile char *usart1_str;
-static char usart1_buf[256];
+char usart1_buf[256];
 
 void bprintf_P(const char *format, ...) {
   int n;
