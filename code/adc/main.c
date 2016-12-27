@@ -65,6 +65,15 @@ inline void handle_tach() {
   timer_t t = currenttime();
   busy();
 
+  if (t - tachstart < 1000) {
+    //debounce
+    //TODO: higher amplitude on analog tach signal maybe?
+    //it is ~200 mVp-p at the moment (0.8-1.0 V)
+    //470 kOhm -> 3.76-4.70 V
+    unbusy();
+    return;
+  }
+
   tachstart = tachend;
   tachend = t;
 
@@ -287,7 +296,7 @@ static int capture_fm(uint8_t id, uint16_t avg) {
       cli();
       if (cnt < 4) {
         ret = 1;
-        printf_P(PSTR("only got %i samples - rotor is spinning too fast\r\n"), cnt);
+        printf_P(PSTR("only got %i samples - rotor is spinning too fast: %li\r\n"), cnt, (int32_t)(tachend - tachstart));
         break;
       }
 
