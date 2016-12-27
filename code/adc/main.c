@@ -197,7 +197,7 @@ static void reset_capture(uint8_t id) {
   second_samplet_cnt = 0;
 }
 
-static int capture_fm(uint8_t id, uint16_t avg) {
+static int capture_fm(uint8_t id, uint16_t avg, char *buf, size_t sz) {
   const uint16_t K = 2U*CLK_DIV*ICLK_DIV*osrtab[OSR];
 
   //clean start
@@ -227,7 +227,9 @@ static int capture_fm(uint8_t id, uint16_t avg) {
 
     if (cnt >= CAPTURE_MAX) {
       ret = 1;
+#ifdef DEBUG
       printf_P(PSTR("rotor too slow: %i\r\n"), (int)cnt);
+#endif
       break;
     }
 
@@ -296,7 +298,9 @@ static int capture_fm(uint8_t id, uint16_t avg) {
       cli();
       if (cnt < 4) {
         ret = 1;
+#ifdef DEBUG
         printf_P(PSTR("only got %i samples - rotor is spinning too fast: %li\r\n"), cnt, (int32_t)(tachend - tachstart));
+#endif
         break;
       }
 
@@ -327,7 +331,7 @@ static int capture_fm(uint8_t id, uint16_t avg) {
 
   if (ret == 0) {
   //TODO: print Is and Qs as 64-bit integers
-  printf_P(PSTR("%5lu,%8lu,%5lu,%5lu,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f\r\n"),
+  snprintf_P(buf, sz, PSTR("%6lu,%8lu,%6lu,%5lu,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f"),
     (uint32_t)tachlen_min, tachlen_sum, (uint32_t)tachlen_max,
     avg_tot,
     (float)I[0] / avg_tot, (float)Q[0] / avg_tot,
@@ -365,11 +369,21 @@ int main(void)
   setup();
   sei();
 
+#ifdef DEBUG
   printf_P(PSTR("ADC state size: %i\r\n"), sizeof(adc_state));
   printf_P(PSTR("Done setting up\r\n"));
+#endif
 
   for (;;) {
-    capture_fm(0, 100);
+    char buf1[128];
+    char buf2[128];
+    if (capture_fm(0, 10, buf1, sizeof(buf1)) ||
+        capture_fm(1, 10, buf2, sizeof(buf2))) {
+      //something went wrong
+      continue;
+    } else {
+      printf_P(PSTR("%s,%s\r\n"), buf1, buf2);
+    }
   }
 
   return 0;
