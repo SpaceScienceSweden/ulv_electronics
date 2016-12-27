@@ -90,8 +90,9 @@ static void setup_motor_pwm() {
   TCCR1B = (((wgm>>2)&3) << WGM12) | (1<<CS10);
   TCCR1C = 0;
 
-  //90% duty
+  //50% duty
   OCR1A = 128;
+  OCR1B = 128;
 
   //enable outputs
   DDRB |= (1<<5) | (1<<6);
@@ -127,6 +128,7 @@ void setup() {
   disable_adc(0);
   disable_adc(1);
   config_adc(0);
+  config_adc(1);
 
   //CPU usage monitor on PF2
   DDRF |= 1 << 2;
