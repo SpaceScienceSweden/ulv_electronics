@@ -28,6 +28,7 @@ Z3 = 1  ./ (-2i*pi*f*C3);
 g2 = g1 .* Z3 ./ (R3 + Z3);
 
 sinc3 = abs(sin(N*pi*f/fmod)./(N*sin(pi*f/fmod))).^3;
+%sinc3 = (sin(N*pi*f/fmod)./(N*sin(pi*f/fmod)).*exp(N*pi*i*f/fmod)).^3;
 final = g2.*sinc3;
 
 g1p = 180/pi*angle(g1);
