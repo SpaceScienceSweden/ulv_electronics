@@ -16,7 +16,7 @@
 #define CLK_DIV   2
 #define ICLK_DIV  2
 #define OSR       5     //0..15 -> 4096 .. 32, see osrtab below
-#define GAIN      0     //0..4, actual gain = 2^GAIN
+#define GAIN      4     //0..4, actual gain = 2^GAIN
 #define TACHS_PER_PRINT  100
 #define MAX_SAMPLES_PER_TACH 1000
 
