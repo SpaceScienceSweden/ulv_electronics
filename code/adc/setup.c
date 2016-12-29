@@ -90,9 +90,9 @@ static void setup_motor_pwm() {
   TCCR1B = (((wgm>>2)&3) << WGM12) | (1<<CS10);
   TCCR1C = 0;
 
-  //50% duty
-  OCR1A = 128;
-  OCR1B = 128;
+  //0% duty to start
+  OCR1A = 0;
+  OCR1B = 0;
 
   //enable outputs
   DDRB |= (1<<5) | (1<<6);

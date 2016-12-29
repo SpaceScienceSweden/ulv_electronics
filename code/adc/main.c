@@ -49,6 +49,42 @@ ISR(TIMER3_COMPA_vect) {
   //which works out to 6 cycles
 
   timer3_base += tcnt3;
+  timer_t t = currenttime();
+  static timer_t motort = 0;
+
+  sei();
+
+  //motor control
+  if (t - motort > 100000) {
+    motort = t;
+
+    static uint8_t motorstate = 0;
+    static uint8_t motorwait = 0;
+
+    if (motorstate == 0) {
+      if (OCR1A < 255) {
+        //ramp up
+        OCR1B = ++OCR1A;
+      } else {
+        motorstate = 1;
+        motorwait = 255;
+      }
+    } else if (motorstate == 1) {
+      if (--motorwait == 0) {
+        motorstate = 2;
+      }
+    } else if (motorstate == 2) {
+      //go down to half speed only
+      if ((OCR1B = --OCR1A) == 128) {
+        motorstate = 3;
+        motorwait = 255;
+      }
+    } else {
+      if (--motorwait == 0) {
+        motorstate = 0;
+      }
+    }
+  }
 }
 
 ISR(TIMER3_OVF_vect) {
