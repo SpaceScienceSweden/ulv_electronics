@@ -55,7 +55,7 @@ ISR(TIMER3_COMPA_vect) {
   sei();
 
   //motor control
-  if (t - motort > 2000000) {
+  if (t - motort > 250000) {
     motort = t;
 
     static uint8_t motorstate = 0;
@@ -67,7 +67,7 @@ ISR(TIMER3_COMPA_vect) {
         OCR1B = ++OCR1A;
       } else {
         motorstate = 1;
-        motorwait = 10;
+        motorwait = 200;
       }
     } else if (motorstate == 1) {
       if (--motorwait == 0) {
@@ -75,9 +75,9 @@ ISR(TIMER3_COMPA_vect) {
       }
     } else if (motorstate == 2) {
       //go down to half speed only
-      if ((OCR1B = --OCR1A) == 64) {
+      if ((OCR1B = --OCR1A) == 128) {
         motorstate = 3;
-        motorwait = 10;
+        motorwait = 200;
       }
     } else {
       if (--motorwait == 0) {
@@ -413,8 +413,8 @@ int main(void)
   for (;;) {
     char buf1[128];
     char buf2[128];
-    if (capture_fm(0, 10, buf1, sizeof(buf1)) ||
-        capture_fm(1, 10, buf2, sizeof(buf2))) {
+    if (capture_fm(0, 100, buf1, sizeof(buf1)) ||
+        capture_fm(1, 100, buf2, sizeof(buf2))) {
       //something went wrong
       continue;
     } else {
