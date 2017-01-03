@@ -147,6 +147,7 @@ void config_adc(uint8_t id) {
   uint8_t msb, lsb, gain, x;
   uint32_t word;
 
+restart:
   printf_P(PSTR("Resetting ADC %i (nchan = %i)\r\n"), id, adc_state[id].nchan);
   //reset procedure:
   //- reset
@@ -186,8 +187,12 @@ void config_adc(uint8_t id) {
 
   //unlock
   adc_comm(id, UNLOCK);
+  int w = 0;
   while ((adc_comm(id, 0) >> (WORDSZ-16)) != 0x0655) {
     printf_P(PSTR("Waiting for UNLOCK\r\n"));
+    if (++w >= 10) {
+      goto restart;
+    }
   }
 
   printf_P(PSTR("STAT_1: %02X\r\n"), rreg(id, STAT_1));
