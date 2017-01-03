@@ -49,42 +49,6 @@ ISR(TIMER3_COMPA_vect) {
   //which works out to 6 cycles
 
   timer3_base += tcnt3;
-  timer_t t = currenttime();
-  static timer_t motort = 0;
-
-  sei();
-
-  //motor control
-  if (t - motort > 250000) {
-    motort = t;
-
-    static uint8_t motorstate = 0;
-    static uint8_t motorwait = 0;
-
-    if (motorstate == 0) {
-      if (OCR1A < 255) {
-        //ramp up
-        OCR1B = ++OCR1A;
-      } else {
-        motorstate = 1;
-        motorwait = 200;
-      }
-    } else if (motorstate == 1) {
-      if (--motorwait == 0) {
-        motorstate = 2;
-      }
-    } else if (motorstate == 2) {
-      //go down to half speed only
-      if ((OCR1B = --OCR1A) == 128) {
-        motorstate = 3;
-        motorwait = 200;
-      }
-    } else {
-      if (--motorwait == 0) {
-        motorstate = 0;
-      }
-    }
-  }
 }
 
 ISR(TIMER3_OVF_vect) {
@@ -233,8 +197,16 @@ static void reset_capture(uint8_t id) {
   second_samplet_cnt = 0;
 }
 
-static int capture_fm(uint8_t id, uint16_t avg, char *buf, size_t sz) {
+#define REVS 1
+#define SAMP 2
+#define DEBUG
+static int capture_fm(uint8_t id, uint32_t avg, uint8_t avg_type, char *buf, size_t sz) {
   const uint16_t K = 2U*CLK_DIV*ICLK_DIV*osrtab[OSR];
+
+  if (avg_type != REVS && avg_type != SAMP) {
+    printf_P(PSTR("bad avg_type\r\n"));
+    return 1;
+  }
 
   //clean start
   cli();
@@ -245,7 +217,7 @@ static int capture_fm(uint8_t id, uint16_t avg, char *buf, size_t sz) {
   setup_tach(id);
   sei();
 
-  uint16_t avg_cnt;
+  uint16_t revs;
   uint32_t avg_tot = 0;
   int64_t I[3] = {0,0,0};
   int64_t Q[3] = {0,0,0};
@@ -257,7 +229,7 @@ static int capture_fm(uint8_t id, uint16_t avg, char *buf, size_t sz) {
   timer_t first_tachstart = 0;
 
   int ret = 0;
-  for (avg_cnt = 0; avg_cnt < avg;) {
+  for (revs = 0; avg_type == REVS ? revs < avg : avg_tot < avg;) {
     cli();
     uint8_t cnt = capture_cnt;
 
@@ -289,7 +261,7 @@ static int capture_fm(uint8_t id, uint16_t avg, char *buf, size_t sz) {
       }
 
       //collect statistics on rotor speed
-      if (avg_cnt == 0) {
+      if (revs == 0) {
         tachlen_min = tachlen;
         tachlen_max = tachlen;
       } else {
@@ -323,7 +295,7 @@ static int capture_fm(uint8_t id, uint16_t avg, char *buf, size_t sz) {
         cli();
         printf_P(PSTR("%i!=%i\r\n"),(int)cnt,(int)x);
         printf_P(PSTR("%li < %li < %li\r\n"), (int32_t)tachstart_copy, (int32_t)loop_ptr->t, (int32_t)tachend_copy);
-        printf_P(PSTR("avg_cnt = %i\r\n"), avg_cnt);
+        printf_P(PSTR("revs = %i\r\n"), revs);
         for (x = 0; x < capture_cnt; x++) {
           printf_P(PSTR("%li\r\n"), capture_data[x].t);
         }
@@ -340,7 +312,7 @@ static int capture_fm(uint8_t id, uint16_t avg, char *buf, size_t sz) {
         break;
       }
 
-      if (avg_cnt != avg-1) {
+      if (revs != avg-1) {
       //pull capture_data "back" cnt entries
       //a circular buffer would be faster, but then the DRDY ISR becomes more complicated
       if (capture_cnt > cnt) {
@@ -351,7 +323,7 @@ static int capture_fm(uint8_t id, uint16_t avg, char *buf, size_t sz) {
       unbusy();
       sei();
 
-      avg_cnt++;
+      revs++;
       avg_tot += cnt;
     } else {
       sei();
@@ -367,8 +339,8 @@ static int capture_fm(uint8_t id, uint16_t avg, char *buf, size_t sz) {
 
   if (ret == 0) {
   //TODO: print Is and Qs as 64-bit integers
-  snprintf_P(buf, sz, PSTR("%6lu,%8lu,%6lu,%5lu,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f"),
-    (uint32_t)tachlen_min, tachlen_sum, (uint32_t)tachlen_max,
+  snprintf_P(buf, sz, PSTR("%6lu,%8lu,%6lu,%4u,%5lu,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f,%10.0f"),
+    (uint32_t)tachlen_min, tachlen_sum, (uint32_t)tachlen_max, revs,
     avg_tot,
     (float)I[0] / avg_tot, (float)Q[0] / avg_tot,
     (float)I[1] / avg_tot, (float)Q[1] / avg_tot,
@@ -399,6 +371,24 @@ ISR(INT7_vect) {
   adc_read_channel();
 }
 
+void delay_ms(uint32_t ms) {
+  int32_t cycles = FCPU * ms / 1000;
+  setup_timer3();
+
+  cli();
+  timer_t t = currenttime();
+  sei();
+
+  while (cycles > 0) {
+    cli();
+    timer_t t2 = currenttime();
+    sei();
+
+    cycles -= t2 - t;
+    t = t2;
+  }
+}
+
 int main(void)
 {
   cli();
@@ -413,6 +403,43 @@ int main(void)
   for (;;) {
     char buf1[128];
     char buf2[128];
+    char buf3[128];
+    char buf4[128];
+
+    OCR1A = OCR1B = 150;
+    //printf_P(PSTR("delay\r\n"));
+    delay_ms(7000);
+    //printf_P(PSTR("capture\r\n"));
+
+    if (capture_fm(0, 1800*3, SAMP, buf1, sizeof(buf1)) ||
+        capture_fm(1, 1800*3, SAMP, buf2, sizeof(buf2))) {
+      //something went wrong
+      //printf_P(PSTR("fail1\r\n"));
+      continue;
+    }
+
+    OCR1A = 200;
+    //printf_P(PSTR("delay\r\n"));
+    delay_ms(2000);
+    OCR1B = 200;
+    delay_ms(5000);
+    //printf_P(PSTR("capture\r\n"));
+
+    if (capture_fm(0, 1800*3, SAMP, buf3, sizeof(buf3)) ||
+        capture_fm(1, 1800*3, SAMP, buf4, sizeof(buf4))) {
+      //something went wrong
+      //printf_P(PSTR("fail2\r\n"));
+      continue;
+    }
+
+    printf_P(PSTR("%s,%s\r\n"), buf1, buf2);
+    printf_P(PSTR("%s,%s\r\n"), buf3, buf4);
+
+  }
+
+  /*for (;;) {
+    char buf1[128];
+    char buf2[128];
     if (capture_fm(0, 100, buf1, sizeof(buf1)) ||
         capture_fm(1, 100, buf2, sizeof(buf2))) {
       //something went wrong
@@ -420,7 +447,7 @@ int main(void)
     } else {
       printf_P(PSTR("%s,%s\r\n"), buf1, buf2);
     }
-  }
+  }*/
 
   return 0;
 }
