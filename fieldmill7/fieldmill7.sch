@@ -1759,4 +1759,8 @@ Text Notes 2700 5900 0    60   ~ 0
 Installed components determine threshold mode
 Text Notes 7150 3650 0    60   ~ 0
 8 kHz low-pass
+Text Notes 1250 5850 0    60   ~ 0
+NOTE: 100 pF\non 470 kOhm\nsuppresses noise
+Text Notes 2450 4750 0    39   ~ 0
+Could be higher, maybe 47k\nLowers risk of superfluous\nactivation 
 $EndSCHEMATC
