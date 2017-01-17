@@ -1,4 +1,5 @@
 #include "main.h"
+#include "ds18b20.h"
 
 volatile adc_state_t adc_state[2] = {{0},{0}};
 
@@ -389,11 +390,144 @@ void delay_ms(uint32_t ms) {
   }
 }
 
+#include <util/delay.h>
+
+//based on onewireWrite
+void onewireWriteBit(volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask,
+                     uint8_t bit) {
+  uint8_t sreg = SREG; //Store status register
+
+  cli( );
+
+  *port |= mask; //Write 1 to output
+  *direction |= mask;
+  *port &= ~mask; //Write 0 to output
+
+  if ( bit ) _delay_us( 8 );
+  else _delay_us( 80 );
+
+  *port |= mask;
+
+  if ( bit ) _delay_us( 80 );
+  else _delay_us( 2 );
+
+  SREG = sreg;
+}
+
+//based on onewireRead
+//returns 1 or 0
+uint8_t onewireReadBit( volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask ) {
+  uint8_t sreg = SREG; //Store status register
+  uint8_t data = 0;
+
+  cli( ); //Disable interrupts
+
+  *port |= mask; //Write 1 to output
+  *direction |= mask;
+  *port &= ~mask; //Write 0 to output
+  _delay_us( 2 );
+  *direction &= ~mask; //Set port to input
+  _delay_us( 5 );
+  data = !!( *portin & mask ); //Read input
+  _delay_us( 60 );
+
+  SREG = sreg;
+
+  return data;
+}
+
+//returns number of devices detected, up to maxroms
+int enumerate(volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask,
+              uint64_t *roms, int maxroms) {
+  int nroms = 0;
+  uint64_t last_rom = 0;
+  int8_t last_conflict = -1;
+  int8_t last_zero = -1;
+
+  int y;
+  for (y = 0; y < maxroms; y++) {
+    uint64_t cur_rom = 0;
+    int8_t x;
+
+    if (onewireInit(port, direction, portin, mask)) {
+      //probably no sensors on the bus
+      //printf_P(PSTR("1-wire reset failed\r\n"));
+      return 0;
+    }
+
+    //begin search
+    onewireWrite(port, direction, portin, mask, 0xF0);
+
+    for (x = 0; x < 64; x++) {
+      uint8_t bits =    onewireReadBit(port, direction, portin, mask);
+      bits         |= 2*onewireReadBit(port, direction, portin, mask);
+
+      //algorithm via https://www.maximintegrated.com/en/app-notes/index.mvp/id/187
+      uint8_t bit = 0;
+      if (bits == 0) {
+        if (x == last_conflict ) {
+          bit = 1;
+        } else if (x < last_conflict) {
+          bit = (last_rom >> x) & 1;
+        } else {
+          last_conflict = x;
+          bit = 0;
+        }
+        if (bit == 0) {
+          last_zero = x;
+        }
+      } else if (bits == 1) {
+        bit = 1;
+      } else if (bits == 2) {
+        bit = 0;
+      } else {
+        //no more devices
+        return nroms;
+      }
+
+      cur_rom |= ((uint64_t)bit)<<x;
+      onewireWriteBit(port, direction, portin, mask, bit);
+    }
+
+    if (cur_rom == last_rom) {
+      //looks like we're done
+      break;
+    }
+
+    last_conflict = last_zero;
+    //printf_P(PSTR("found device: %08lX%08lX\r\n"), (uint32_t)(cur_rom >> 32), (uint32_t)cur_rom);
+    roms[nroms++] = last_rom = cur_rom;
+  }
+
+  return nroms;
+}
+
+void read_temperatures(volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask,
+                       const uint64_t *roms, int nroms) {
+  int y;
+  //tell all devices on the bus to perform a conversion
+  ds18b20convert(port, direction, portin, mask, NULL );
+  _delay_ms( 1000 );
+
+  for (y = 0; y < nroms; y++) {
+    int temp;
+    ds18b20read(port, direction, portin, mask, (uint8_t*)&roms[y], &temp );
+    printf_P(PSTR("temp: %f\r\n"), temp * 0.062500f);
+  }
+}
+
 int main(void)
 {
   cli();
   setup();
   sei();
+
+  uint64_t roms[8];
+  int maxroms = sizeof(roms)/sizeof(roms[0]);
+  int nroms = enumerate(&PORTF, &DDRF, &PINF, 1<<0, roms, maxroms);
+  read_temperatures(&PORTF, &DDRF, &PINF, 1<<0, roms, nroms);
+
+  for (;;);
 
 #ifdef DEBUG
   printf_P(PSTR("ADC state size: %i\r\n"), sizeof(adc_state));

@@ -1,9 +1,9 @@
 PRG            = adc
-OBJ            = adc.o main.o printstuff.o setup.o asm.S
+OBJ            = adc.o main.o printstuff.o setup.o asm.S ../avr-ds18b20/src/ds18b20.o ../avr-ds18b20/src/onewire.o
 MCU_TARGET     = atmega128
 OPTIMIZE       = -O3 -frename-registers -funroll-loops
 
-DEFS           =-I/usr/local/avr/include
+DEFS           =-I/usr/local/avr/include -I../avr-ds18b20/include
 LIBS           =-L/usr/local/avr/lib -L/usr/local/avr/lib/avr5
 
 # You should not have to change anything below here.
