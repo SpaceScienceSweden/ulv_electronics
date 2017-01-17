@@ -9,8 +9,7 @@
 #include <math.h>
 #include <string.h>
 
-#define FCPU      7372800LL
-#define FADC      (FCPU/2)
+#define FADC      (F_CPU/2)
 #define BAUD      115200
 #define WORDSZ    32    //ADC word size
 #define CLK_DIV   2
@@ -20,8 +19,8 @@
 #define TACHS_PER_PRINT  100
 #define MAX_SAMPLES_PER_TACH 1000
 
-//#define UBRR  (((FCPU+8LL*BAUD)/(16LL*BAUD))-1) //lo-speed (U2X=0)
-#define UBRR  (((FCPU+4LL*BAUD)/(8LL*BAUD))-1) //hi-speed (U2X=1)
+//#define UBRR  (((F_CPU+8LL*BAUD)/(16LL*BAUD))-1) //lo-speed (U2X=0)
+#define UBRR  (((F_CPU+4LL*BAUD)/(8LL*BAUD))-1) //hi-speed (U2X=1)
 #if UBRR > 65535
 #error UBRR too high
 #endif

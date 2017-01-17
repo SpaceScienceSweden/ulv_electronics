@@ -372,7 +372,7 @@ ISR(INT7_vect) {
 }
 
 void delay_ms(uint32_t ms) {
-  int32_t cycles = FCPU * ms / 1000;
+  int32_t cycles = F_CPU * ms / 1000;
   setup_timer3();
 
   cli();
