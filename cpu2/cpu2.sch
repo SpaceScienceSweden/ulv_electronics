@@ -1283,4 +1283,6 @@ F 5 "https://www.elfa.se/sv/schottkydiod-40-melf-diotec-sms240/p/17002496" H 220
 	1    2200 1700
 	-1   0    0    1   
 $EndComp
+Text Notes 600  1250 0    60   ~ 0
+Things to do on this board:\nMake input capture work for us, on tachometer and ADC interrupts. There needs to be something mux-ish to switch between FMs\nAdd two or more µSD card slots\nUse some things like JTAG and 32 kHz pins for other pins (but leave footprints in place for now)\nRoute some more CPU pins to board edge headers\nAdd some eFuses\nAdd RS-485 driver, maybe RS-485 pins (we might have two CPUs)
 $EndSCHEMATC
