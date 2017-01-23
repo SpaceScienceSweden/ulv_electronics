@@ -199,7 +199,7 @@ static void reset_capture(uint8_t id) {
 
 #define REVS 1
 #define SAMP 2
-#define DEBUG
+//#define DEBUG
 static int capture_fm(uint8_t id, uint32_t avg, uint8_t avg_type, char *buf, size_t sz) {
   const uint16_t K = 2U*CLK_DIV*ICLK_DIV*osrtab[OSR];
 
@@ -236,7 +236,7 @@ static int capture_fm(uint8_t id, uint32_t avg, uint8_t avg_type, char *buf, siz
     if (cnt >= CAPTURE_MAX) {
       ret = 1;
 #ifdef DEBUG
-      printf_P(PSTR("rotor too slow: %i\r\n"), (int)cnt);
+      printf_P(PSTR("rotor too slow: %i (id=%i)\r\n"), (int)cnt, (int)id);
 #endif
       break;
     }
@@ -307,7 +307,7 @@ static int capture_fm(uint8_t id, uint32_t avg, uint8_t avg_type, char *buf, siz
       if (cnt < 4) {
         ret = 1;
 #ifdef DEBUG
-        printf_P(PSTR("only got %i samples - rotor is spinning too fast: %li\r\n"), cnt, (int32_t)(tachend - tachstart));
+        printf_P(PSTR("only got %i samples - rotor is spinning too fast: %li (id=%i, rev=%i)\r\n"), cnt, (int32_t)(tachend - tachstart), (int)id, (int)revs);
 #endif
         break;
       }
@@ -389,6 +389,20 @@ void delay_ms(uint32_t ms) {
   }
 }
 
+void capture_seconds(int s) {
+  char buf1[128];
+  char buf2[128];
+  int x;
+  for (x = 0; x < s*10; x++) {
+    if (capture_fm(0, 1800/20, SAMP, buf1, sizeof(buf1)) ||
+        capture_fm(1, 1800/20, SAMP, buf2, sizeof(buf2))) {
+      //something went wrong
+      //printf_P(PSTR("fail1\r\n"));
+    }
+    printf_P(PSTR("%s,%s\r\n"), buf1, buf2);
+  }
+}
+
 int main(void)
 {
   cli();
@@ -401,53 +415,15 @@ int main(void)
 #endif
 
   for (;;) {
-    char buf1[128];
-    char buf2[128];
-    char buf3[128];
-    char buf4[128];
-
-    OCR1A = OCR1B = 150;
-    //printf_P(PSTR("delay\r\n"));
-    delay_ms(7000);
-    //printf_P(PSTR("capture\r\n"));
-
-    if (capture_fm(0, 1800*3, SAMP, buf1, sizeof(buf1)) ||
-        capture_fm(1, 1800*3, SAMP, buf2, sizeof(buf2))) {
-      //something went wrong
-      //printf_P(PSTR("fail1\r\n"));
-      continue;
-    }
-
+    OCR1A = 150;
+    capture_seconds(1);
+    OCR1B = 150;
+    capture_seconds(9);
     OCR1A = 200;
-    //printf_P(PSTR("delay\r\n"));
-    delay_ms(2000);
+    capture_seconds(1);
     OCR1B = 200;
-    delay_ms(5000);
-    //printf_P(PSTR("capture\r\n"));
-
-    if (capture_fm(0, 1800*3, SAMP, buf3, sizeof(buf3)) ||
-        capture_fm(1, 1800*3, SAMP, buf4, sizeof(buf4))) {
-      //something went wrong
-      //printf_P(PSTR("fail2\r\n"));
-      continue;
-    }
-
-    printf_P(PSTR("%s,%s\r\n"), buf1, buf2);
-    printf_P(PSTR("%s,%s\r\n"), buf3, buf4);
-
+    capture_seconds(9);
   }
-
-  /*for (;;) {
-    char buf1[128];
-    char buf2[128];
-    if (capture_fm(0, 100, buf1, sizeof(buf1)) ||
-        capture_fm(1, 100, buf2, sizeof(buf2))) {
-      //something went wrong
-      continue;
-    } else {
-      printf_P(PSTR("%s,%s\r\n"), buf1, buf2);
-    }
-  }*/
 
   return 0;
 }

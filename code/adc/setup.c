@@ -91,8 +91,8 @@ static void setup_motor_pwm() {
   TCCR1C = 0;
 
   //0% duty to start
-  OCR1A = 0;
-  OCR1B = 0;
+  OCR1A = 64;
+  OCR1B = 64;
 
   //enable outputs
   DDRB |= (1<<5) | (1<<6);
