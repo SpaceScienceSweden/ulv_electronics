@@ -415,14 +415,8 @@ int main(void)
 #endif
 
   for (;;) {
-    OCR1A = 150;
+    OCR1B = OCR1A = 200;
     capture_seconds(1);
-    OCR1B = 150;
-    capture_seconds(9);
-    OCR1A = 200;
-    capture_seconds(1);
-    OCR1B = 200;
-    capture_seconds(9);
   }
 
   return 0;
