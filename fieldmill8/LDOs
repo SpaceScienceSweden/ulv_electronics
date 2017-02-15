@@ -1,0 +1,11 @@
+vill helst ha +-2.5V fast i samma kapsel (dubbel in/utgång)
+I brist på det: bra, platt ripple rejection (<60 dB) upp till minst 1 kHz, gärna 10 kHz
+
++2.5:       Vmax    Iquies  Drop-out    PSRR (dB)           Noise       Kapsel      Temp (°C)   Övrigt
+ZMR250:     22 V    30 µA   1.2-1.7 V   -75, -70 @ 3000 Hz              SOT23-3     -55..+125
+LP3990:                                 -75, -55 @ 1000 Hz
+
+-2.5V:      Vmin    Iquies  Drop-out    PSRR (dB)           Noise (RMS) Kapsel      Temp (°C)   Övrigt
+MAX1735     -6.5 V  85 µA   0.04 V      -63, -60 @  200 Hz  160 µV      SOT23-5
+TPS72325    -10 V   >2 µA   0.28 V      -65, -60 @ 2500 Hz   60 µV      SOT23-5     -40..+125   10 nF NR cap
+
