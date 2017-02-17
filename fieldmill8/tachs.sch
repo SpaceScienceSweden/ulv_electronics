@@ -135,17 +135,6 @@ F 3 "" H 5950 2550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +9V #PWR?
-U 1 1 58A66873
-P 4250 2100
-F 0 "#PWR?" H 4250 1950 50  0001 C CNN
-F 1 "+9V" H 4250 2240 50  0000 C CNN
-F 2 "" H 4250 2100 50  0000 C CNN
-F 3 "" H 4250 2100 50  0000 C CNN
-	1    4250 2100
-	1    0    0    -1  
-$EndComp
-$Comp
 L R_Small R?
 U 1 1 58A66879
 P 7200 2600
@@ -203,11 +192,13 @@ $EndComp
 Text Notes 5650 3750 0    60   ~ 0
 fc = 1/(2*pi*1M*100n) = 1.6 Hz
 Wire Wire Line
-	4250 2900 4250 3300
+	4250 2900 4250 3000
+Wire Wire Line
+	4250 3000 4250 3250
+Wire Wire Line
+	4250 3250 4250 3300
 Wire Wire Line
 	4050 2200 4050 2250
-Wire Wire Line
-	4250 2100 4250 2250
 Connection ~ 4250 2200
 Wire Wire Line
 	3800 3550 3800 3250
@@ -222,7 +213,11 @@ Wire Wire Line
 Wire Wire Line
 	4550 3450 5200 3450
 Wire Wire Line
-	5200 3450 5200 2900
+	5200 3450 5200 3250
+Wire Wire Line
+	5200 3250 5200 3100
+Wire Wire Line
+	5200 3100 5200 2900
 Wire Wire Line
 	5200 3100 5150 3100
 Wire Wire Line
@@ -245,7 +240,9 @@ Wire Wire Line
 	7000 3550 7000 3300
 Connection ~ 5200 3100
 Wire Wire Line
-	5500 2900 6800 2900
+	5500 2900 6700 2900
+Wire Wire Line
+	6700 2900 6800 2900
 Wire Wire Line
 	5950 2200 5950 2450
 Connection ~ 5950 2200
@@ -284,19 +281,33 @@ F 3 "" H 5650 3400 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5650 3100 5650 3300
+	5650 3100 5650 3250
+Wire Wire Line
+	5650 3250 5650 3300
 Wire Wire Line
 	5650 3550 5650 3500
 Connection ~ 5650 3550
 Wire Wire Line
-	5650 3100 6800 3100
+	5650 3100 5950 3100
+Wire Wire Line
+	5950 3100 6800 3100
 Connection ~ 5650 3250
 Wire Wire Line
-	3450 2200 7000 2200
+	3450 2200 4050 2200
+Wire Wire Line
+	4050 2200 4250 2200
+Wire Wire Line
+	4250 2200 4750 2200
+Wire Wire Line
+	4750 2200 5950 2200
+Wire Wire Line
+	5950 2200 7000 2200
 Wire Wire Line
 	5200 2900 5300 2900
 Wire Wire Line
-	7400 3000 7750 3000
+	7400 3000 7450 3000
+Wire Wire Line
+	7450 3000 7750 3000
 $Comp
 L R_Small R?
 U 1 1 58A668DA
@@ -386,7 +397,11 @@ F 3 "" H 4550 5550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4250 4850 4250 5250
+	4250 4850 4250 4950
+Wire Wire Line
+	4250 4950 4250 5200
+Wire Wire Line
+	4250 5200 4250 5250
 Wire Wire Line
 	4050 4150 4050 4200
 Connection ~ 4250 4150
@@ -403,7 +418,11 @@ Wire Wire Line
 Wire Wire Line
 	4550 5400 5200 5400
 Wire Wire Line
-	5200 5400 5200 4850
+	5200 5400 5200 5200
+Wire Wire Line
+	5200 5200 5200 5050
+Wire Wire Line
+	5200 5050 5200 4850
 Wire Wire Line
 	5200 5050 5150 5050
 Wire Wire Line
@@ -448,7 +467,9 @@ F 3 "" H 5650 5350 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5650 5050 5650 5250
+	5650 5050 5650 5200
+Wire Wire Line
+	5650 5200 5650 5250
 Wire Wire Line
 	5650 5500 5650 5450
 Connection ~ 5650 5500
@@ -456,18 +477,34 @@ Connection ~ 5650 5200
 Wire Wire Line
 	5200 4850 5300 4850
 Wire Wire Line
-	7400 4950 7800 4950
+	7400 4950 7450 4950
+Wire Wire Line
+	7450 4950 7800 4950
 Wire Wire Line
 	7450 4550 7450 4950
 Connection ~ 7450 4950
 Connection ~ 5950 3100
 Connection ~ 5950 5050
 Wire Wire Line
-	3800 5500 7000 5500
+	3800 5500 4100 5500
 Wire Wire Line
-	5650 5050 6800 5050
+	4100 5500 4250 5500
 Wire Wire Line
-	5500 4850 6800 4850
+	4250 5500 4550 5500
+Wire Wire Line
+	4550 5500 4750 5500
+Wire Wire Line
+	4750 5500 5650 5500
+Wire Wire Line
+	5650 5500 7000 5500
+Wire Wire Line
+	5650 5050 5950 5050
+Wire Wire Line
+	5950 5050 6800 5050
+Wire Wire Line
+	5500 4850 6700 4850
+Wire Wire Line
+	6700 4850 6800 4850
 Text Notes 5250 3900 0    60   ~ 0
 Installed components determine threshold mode
 Text Notes 3800 3850 0    60   ~ 0
@@ -475,7 +512,15 @@ NOTE: 100 pF\non 470 kOhm\nsuppresses noise
 Text Notes 5000 2750 0    39   ~ 0
 Could be higher, maybe 47k\nLowers risk of superfluous\nactivation 
 Wire Wire Line
-	3450 4150 7000 4150
+	3450 4150 4050 4150
+Wire Wire Line
+	4050 4150 4250 4150
+Wire Wire Line
+	4250 4150 4750 4150
+Wire Wire Line
+	4750 4150 5950 4150
+Wire Wire Line
+	5950 4150 7000 4150
 Wire Wire Line
 	5950 3100 5950 2650
 Wire Wire Line
@@ -553,15 +598,29 @@ F 3 "" H 2500 3050 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	2600 3050 3450 3050
+	2600 3050 2750 3050
 Wire Wire Line
-	3450 2200 3450 4150
+	2750 3050 3450 3050
+Wire Wire Line
+	3450 2200 3450 3050
+Wire Wire Line
+	3450 3050 3450 4150
 Connection ~ 3450 3050
 Connection ~ 4050 4150
 Wire Wire Line
 	2400 3050 2300 3050
 Wire Wire Line
-	3800 3550 7000 3550
+	3800 3550 4100 3550
+Wire Wire Line
+	4100 3550 4250 3550
+Wire Wire Line
+	4250 3550 4550 3550
+Wire Wire Line
+	4550 3550 4750 3550
+Wire Wire Line
+	4750 3550 5650 3550
+Wire Wire Line
+	5650 3550 7000 3550
 $Comp
 L GND #PWR?
 U 1 1 58A7283B
@@ -581,4 +640,6 @@ TODO: Use 3.3V supply?\nAvoids disturbing analog things\nAlso needing 1.5 W resi
 Wire Wire Line
 	4250 4200 4250 4150
 Connection ~ 4250 4950
+Wire Wire Line
+	4250 2250 4250 2200
 $EndSCHEMATC

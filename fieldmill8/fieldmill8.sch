@@ -666,9 +666,9 @@ Connection ~ 8150 3050
 Wire Wire Line
 	3550 3150 3300 3150
 Wire Wire Line
-	3300 3050 3300 3150
+	3300 3150 3300 3050
 Wire Wire Line
-	2900 3050 3300 3050
+	3300 3050 2900 3050
 Wire Wire Line
 	3100 3050 3100 3100
 Wire Wire Line
@@ -706,9 +706,9 @@ Wire Wire Line
 Wire Wire Line
 	3550 3450 3400 3450
 Wire Wire Line
-	3400 3900 3400 3450
+	3400 3450 3400 3900
 Wire Wire Line
-	3050 3900 3400 3900
+	3400 3900 3050 3900
 Wire Wire Line
 	3100 3900 3100 3850
 Connection ~ 3100 3900
@@ -1075,7 +1075,7 @@ Wire Wire Line
 Text Label 5500 2850 0    60   ~ 0
 QTACH
 Wire Wire Line
-	5500 2850 6150 2850
+	5450 2850 6150 2850
 $Comp
 L GND #PWR025
 U 1 1 5807E809
@@ -1257,14 +1257,18 @@ Wire Wire Line
 	7250 4700 7250 3150
 Wire Wire Line
 	7250 3150 6650 3150
-Text Label 7900 4700 0    60   ~ 0
+Text Label 6700 3150 0    60   ~ 0
 ITACH
-Text Label 7900 4800 0    60   ~ 0
-QTACH
 Wire Wire Line
-	7900 4800 8250 4800
+	7150 4800 8250 4800
 Text Notes 8900 750  0    60   ~ 0
 TODO: change to fixed +-2.5V regs\nshunt resistors on reg inputs instead of outputs\none per channel if SOT-23
 Text Notes 9850 3250 0    60   ~ 0
 FIXME: this SOT-23 is dissipating up to 325 mW!
+Wire Wire Line
+	5450 2850 5450 2650
+Wire Wire Line
+	5450 2650 7150 2650
+Wire Wire Line
+	7150 2650 7150 4800
 $EndSCHEMATC
