@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name SCUBE)(type KiCad)(uri ${KIPRJMOD}/../libraries/scube.pretty)(options "")(descr ""))
+  (lib (name LOGOS)(type KiCad)(uri ${KIPRJMOD})(options "")(descr ""))
+)

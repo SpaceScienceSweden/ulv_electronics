@@ -1,0 +1,645 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:scube
+LIBS:fieldmill8-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 5 5
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L LM324 U?
+U 1 1 58A66839
+P 7100 3000
+F 0 "U?" H 7150 3200 50  0000 C CNN
+F 1 "LM324" H 7250 2800 50  0000 C CNN
+F 2 "SMD_Packages:SOIC-14_N" H 7050 3100 50  0001 C CNN
+F 3 "" H 7150 3200 50  0000 C CNN
+	1    7100 3000
+	1    0    0    -1  
+$EndComp
+$Comp
+L LM324 U?
+U 1 1 58A66840
+P 4850 3100
+F 0 "U?" H 4900 3300 50  0000 C CNN
+F 1 "LM324" H 5000 2900 50  0000 C CNN
+F 2 "SMD_Packages:SOIC-14_N" H 4800 3200 50  0001 C CNN
+F 3 "" H 4900 3300 50  0000 C CNN
+	1    4850 3100
+	1    0    0    -1  
+$EndComp
+$Comp
+L LM324 U?
+U 1 1 58A66847
+P 7100 4950
+F 0 "U?" H 7150 5150 50  0000 C CNN
+F 1 "LM324" H 7250 4750 50  0000 C CNN
+F 2 "SMD_Packages:SOIC-14_N" H 7050 5050 50  0001 C CNN
+F 3 "" H 7150 5150 50  0000 C CNN
+	1    7100 4950
+	1    0    0    -1  
+$EndComp
+$Comp
+L LM324 U?
+U 1 1 58A6684E
+P 4850 5050
+F 0 "U?" H 4900 5250 50  0000 C CNN
+F 1 "LM324" H 5000 4850 50  0000 C CNN
+F 2 "SMD_Packages:SOIC-14_N" H 4800 5150 50  0001 C CNN
+F 3 "" H 4900 5250 50  0000 C CNN
+	1    4850 5050
+	1    0    0    -1  
+$EndComp
+$Comp
+L ITR20001 IR?
+U 1 1 58A66857
+P 4050 2600
+F 0 "IR?" H 4050 2850 60  0000 C CNN
+F 1 "SG-2BC" H 4050 2750 60  0000 C CNN
+F 2 "SCUBE:SG-2BC" H 4050 2600 60  0001 C CNN
+F 3 "" H 4050 2600 60  0000 C CNN
+F 4 "175-34-043" H 4050 2600 60  0001 C CNN "1st Distrib. PN"
+F 5 "https://www.elfa.se/sv/reflexdetektor-kodenshi-sg-2bc/p/17534043" H 4050 2600 60  0001 C CNN "1st Distrib. Link"
+	1    4050 2600
+	0    -1   1    0   
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 58A6685E
+P 3800 3150
+F 0 "R?" H 3830 3170 50  0000 L CNN
+F 1 "5k6" H 3830 3110 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 3800 3150 50  0001 C CNN
+F 3 "" H 3800 3150 50  0000 C CNN
+	1    3800 3150
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 58A66865
+P 4250 3400
+F 0 "R?" H 4280 3420 50  0000 L CNN
+F 1 "470k" H 4280 3360 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 4250 3400 50  0001 C CNN
+F 3 "" H 4250 3400 50  0000 C CNN
+	1    4250 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 58A6686C
+P 5950 2550
+F 0 "R?" H 5980 2570 50  0000 L CNN
+F 1 "1T" H 5980 2510 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 5950 2550 50  0001 C CNN
+F 3 "" H 5950 2550 50  0000 C CNN
+	1    5950 2550
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 58A66879
+P 7200 2600
+F 0 "R?" H 7230 2620 50  0000 L CNN
+F 1 "1M" H 7230 2560 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 7200 2600 50  0001 C CNN
+F 3 "" H 7200 2600 50  0000 C CNN
+	1    7200 2600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 58A66880
+P 5400 2900
+F 0 "R?" H 5430 2920 50  0000 L CNN
+F 1 "10k" H 5430 2860 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 5400 2900 50  0001 C CNN
+F 3 "" H 5400 2900 50  0000 C CNN
+	1    5400 2900
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 58A66887
+P 5400 3250
+F 0 "R?" H 5430 3270 50  0000 L CNN
+F 1 "1M" H 5430 3210 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 5400 3250 50  0001 C CNN
+F 3 "" H 5400 3250 50  0000 C CNN
+	1    5400 3250
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 58A6688E
+P 4550 3600
+F 0 "#PWR?" H 4550 3350 50  0001 C CNN
+F 1 "GND" H 4550 3450 50  0000 C CNN
+F 2 "" H 4550 3600 50  0000 C CNN
+F 3 "" H 4550 3600 50  0000 C CNN
+	1    4550 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L C_Small C?
+U 1 1 58A66894
+P 2750 3250
+F 0 "C?" H 2760 3320 50  0000 L CNN
+F 1 "100n" H 2760 3170 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 2750 3250 50  0001 C CNN
+F 3 "" H 2750 3250 50  0000 C CNN
+	1    2750 3250
+	1    0    0    -1  
+$EndComp
+Text Notes 5650 3750 0    60   ~ 0
+fc = 1/(2*pi*1M*100n) = 1.6 Hz
+Wire Wire Line
+	4250 2900 4250 3000
+Wire Wire Line
+	4250 3000 4250 3250
+Wire Wire Line
+	4250 3250 4250 3300
+Wire Wire Line
+	4050 2200 4050 2250
+Connection ~ 4250 2200
+Wire Wire Line
+	3800 3550 3800 3250
+Connection ~ 4550 3550
+Wire Wire Line
+	4250 3550 4250 3500
+Connection ~ 4250 3550
+Wire Wire Line
+	4550 3200 4550 3200
+Wire Wire Line
+	4550 3200 4550 3450
+Wire Wire Line
+	4550 3450 5200 3450
+Wire Wire Line
+	5200 3450 5200 3250
+Wire Wire Line
+	5200 3250 5200 3100
+Wire Wire Line
+	5200 3100 5200 2900
+Wire Wire Line
+	5200 3100 5150 3100
+Wire Wire Line
+	4550 3550 4550 3600
+Wire Wire Line
+	4250 3000 4550 3000
+Connection ~ 4250 3000
+Wire Wire Line
+	4750 3550 4750 3400
+Wire Wire Line
+	4750 2200 4750 2800
+Connection ~ 4750 3550
+Wire Wire Line
+	5300 3250 5200 3250
+Connection ~ 5200 3250
+Connection ~ 4750 2200
+Wire Wire Line
+	7000 2200 7000 2700
+Wire Wire Line
+	7000 3550 7000 3300
+Connection ~ 5200 3100
+Wire Wire Line
+	5500 2900 6700 2900
+Wire Wire Line
+	6700 2900 6800 2900
+Wire Wire Line
+	5950 2200 5950 2450
+Connection ~ 5950 2200
+Wire Wire Line
+	7100 2600 6700 2600
+Wire Wire Line
+	6700 2600 6700 2900
+Connection ~ 6700 2900
+Wire Wire Line
+	7450 2600 7300 2600
+Wire Wire Line
+	5500 3250 5650 3250
+Connection ~ 4050 2200
+$Comp
+L ITR20001 IR?
+U 1 1 58A668C3
+P 4050 4550
+F 0 "IR?" H 4050 4800 60  0000 C CNN
+F 1 "SG-2BC" H 4050 4700 60  0000 C CNN
+F 2 "SCUBE:SG-2BC" H 4050 4550 60  0001 C CNN
+F 3 "" H 4050 4550 60  0000 C CNN
+F 4 "175-34-043" H 4050 4550 60  0001 C CNN "1st Distrib. PN"
+F 5 "https://www.elfa.se/sv/reflexdetektor-kodenshi-sg-2bc/p/17534043" H 4050 4550 60  0001 C CNN "1st Distrib. Link"
+	1    4050 4550
+	0    -1   1    0   
+$EndComp
+$Comp
+L C_Small C?
+U 1 1 58A668CA
+P 5650 3400
+F 0 "C?" H 5660 3470 50  0000 L CNN
+F 1 "100n" H 5660 3320 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 5650 3400 50  0001 C CNN
+F 3 "" H 5650 3400 50  0000 C CNN
+	1    5650 3400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5650 3100 5650 3250
+Wire Wire Line
+	5650 3250 5650 3300
+Wire Wire Line
+	5650 3550 5650 3500
+Connection ~ 5650 3550
+Wire Wire Line
+	5650 3100 5950 3100
+Wire Wire Line
+	5950 3100 6800 3100
+Connection ~ 5650 3250
+Wire Wire Line
+	3450 2200 4050 2200
+Wire Wire Line
+	4050 2200 4250 2200
+Wire Wire Line
+	4250 2200 4750 2200
+Wire Wire Line
+	4750 2200 5950 2200
+Wire Wire Line
+	5950 2200 7000 2200
+Wire Wire Line
+	5200 2900 5300 2900
+Wire Wire Line
+	7400 3000 7450 3000
+Wire Wire Line
+	7450 3000 7750 3000
+$Comp
+L R_Small R?
+U 1 1 58A668DA
+P 3800 5100
+F 0 "R?" H 3830 5120 50  0000 L CNN
+F 1 "5k6" H 3830 5060 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 3800 5100 50  0001 C CNN
+F 3 "" H 3800 5100 50  0000 C CNN
+	1    3800 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 58A668E1
+P 4250 5350
+F 0 "R?" H 4280 5370 50  0000 L CNN
+F 1 "470k" H 4280 5310 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 4250 5350 50  0001 C CNN
+F 3 "" H 4250 5350 50  0000 C CNN
+	1    4250 5350
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 58A668E8
+P 5950 4500
+F 0 "R?" H 5980 4520 50  0000 L CNN
+F 1 "1T" H 5980 4460 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 5950 4500 50  0001 C CNN
+F 3 "" H 5950 4500 50  0000 C CNN
+	1    5950 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L +9V #PWR?
+U 1 1 58A668EF
+P 2300 3050
+F 0 "#PWR?" H 2300 2900 50  0001 C CNN
+F 1 "+9V" H 2300 3190 50  0000 C CNN
+F 2 "" H 2300 3050 50  0000 C CNN
+F 3 "" H 2300 3050 50  0000 C CNN
+	1    2300 3050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 58A668F5
+P 7200 4550
+F 0 "R?" H 7230 4570 50  0000 L CNN
+F 1 "1M" H 7230 4510 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 7200 4550 50  0001 C CNN
+F 3 "" H 7200 4550 50  0000 C CNN
+	1    7200 4550
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 58A668FC
+P 5400 4850
+F 0 "R?" H 5430 4870 50  0000 L CNN
+F 1 "10k" H 5430 4810 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 5400 4850 50  0001 C CNN
+F 3 "" H 5400 4850 50  0000 C CNN
+	1    5400 4850
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 58A66903
+P 5400 5200
+F 0 "R?" H 5430 5220 50  0000 L CNN
+F 1 "1M" H 5430 5160 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 5400 5200 50  0001 C CNN
+F 3 "" H 5400 5200 50  0000 C CNN
+	1    5400 5200
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 58A6690A
+P 4550 5550
+F 0 "#PWR?" H 4550 5300 50  0001 C CNN
+F 1 "GND" H 4550 5400 50  0000 C CNN
+F 2 "" H 4550 5550 50  0000 C CNN
+F 3 "" H 4550 5550 50  0000 C CNN
+	1    4550 5550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4250 4850 4250 4950
+Wire Wire Line
+	4250 4950 4250 5200
+Wire Wire Line
+	4250 5200 4250 5250
+Wire Wire Line
+	4050 4150 4050 4200
+Connection ~ 4250 4150
+Wire Wire Line
+	3800 5500 3800 5200
+Connection ~ 4550 5500
+Wire Wire Line
+	4250 5500 4250 5450
+Connection ~ 4250 5500
+Wire Wire Line
+	4550 5150 4550 5150
+Wire Wire Line
+	4550 5150 4550 5400
+Wire Wire Line
+	4550 5400 5200 5400
+Wire Wire Line
+	5200 5400 5200 5200
+Wire Wire Line
+	5200 5200 5200 5050
+Wire Wire Line
+	5200 5050 5200 4850
+Wire Wire Line
+	5200 5050 5150 5050
+Wire Wire Line
+	4550 5500 4550 5550
+Wire Wire Line
+	4250 4950 4550 4950
+Wire Wire Line
+	4750 5500 4750 5350
+Wire Wire Line
+	4750 4150 4750 4750
+Connection ~ 4750 5500
+Wire Wire Line
+	5300 5200 5200 5200
+Connection ~ 5200 5200
+Connection ~ 4750 4150
+Wire Wire Line
+	7000 4150 7000 4650
+Wire Wire Line
+	7000 5500 7000 5250
+Connection ~ 5200 5050
+Wire Wire Line
+	5950 4150 5950 4400
+Connection ~ 5950 4150
+Wire Wire Line
+	7100 4550 6700 4550
+Wire Wire Line
+	6700 4550 6700 4850
+Connection ~ 6700 4850
+Wire Wire Line
+	7450 4550 7300 4550
+Wire Wire Line
+	5500 5200 5650 5200
+$Comp
+L C_Small C?
+U 1 1 58A66930
+P 5650 5350
+F 0 "C?" H 5660 5420 50  0000 L CNN
+F 1 "100n" H 5660 5270 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 5650 5350 50  0001 C CNN
+F 3 "" H 5650 5350 50  0000 C CNN
+	1    5650 5350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5650 5050 5650 5200
+Wire Wire Line
+	5650 5200 5650 5250
+Wire Wire Line
+	5650 5500 5650 5450
+Connection ~ 5650 5500
+Connection ~ 5650 5200
+Wire Wire Line
+	5200 4850 5300 4850
+Wire Wire Line
+	7400 4950 7450 4950
+Wire Wire Line
+	7450 4950 7800 4950
+Wire Wire Line
+	7450 4550 7450 4950
+Connection ~ 7450 4950
+Connection ~ 5950 3100
+Connection ~ 5950 5050
+Wire Wire Line
+	3800 5500 4100 5500
+Wire Wire Line
+	4100 5500 4250 5500
+Wire Wire Line
+	4250 5500 4550 5500
+Wire Wire Line
+	4550 5500 4750 5500
+Wire Wire Line
+	4750 5500 5650 5500
+Wire Wire Line
+	5650 5500 7000 5500
+Wire Wire Line
+	5650 5050 5950 5050
+Wire Wire Line
+	5950 5050 6800 5050
+Wire Wire Line
+	5500 4850 6700 4850
+Wire Wire Line
+	6700 4850 6800 4850
+Text Notes 5250 3900 0    60   ~ 0
+Installed components determine threshold mode
+Text Notes 3800 3850 0    60   ~ 0
+NOTE: 100 pF\non 470 kOhm\nsuppresses noise
+Text Notes 5000 2750 0    39   ~ 0
+Could be higher, maybe 47k\nLowers risk of superfluous\nactivation 
+Wire Wire Line
+	3450 4150 4050 4150
+Wire Wire Line
+	4050 4150 4250 4150
+Wire Wire Line
+	4250 4150 4750 4150
+Wire Wire Line
+	4750 4150 5950 4150
+Wire Wire Line
+	5950 4150 7000 4150
+Wire Wire Line
+	5950 3100 5950 2650
+Wire Wire Line
+	5950 5050 5950 4600
+$Comp
+L C_Small C?
+U 1 1 58A6694B
+P 4100 3400
+F 0 "C?" H 4110 3470 50  0000 L CNN
+F 1 "100p" H 4110 3320 50  0000 L CNN
+F 2 "" H 4100 3400 50  0000 C CNN
+F 3 "" H 4100 3400 50  0000 C CNN
+	1    4100 3400
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4100 3550 4100 3500
+Connection ~ 4100 3550
+Wire Wire Line
+	4100 3300 4100 3250
+Wire Wire Line
+	4100 3250 4250 3250
+Connection ~ 4250 3250
+Wire Wire Line
+	3800 3050 3800 2950
+Wire Wire Line
+	3800 2950 4050 2950
+Wire Wire Line
+	4050 2950 4050 2900
+Wire Wire Line
+	4250 2950 4250 2950
+$Comp
+L C_Small C?
+U 1 1 58A6695C
+P 4100 5350
+F 0 "C?" H 4110 5420 50  0000 L CNN
+F 1 "100p" H 4110 5270 50  0000 L CNN
+F 2 "" H 4100 5350 50  0000 C CNN
+F 3 "" H 4100 5350 50  0000 C CNN
+	1    4100 5350
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4100 5450 4100 5500
+Connection ~ 4100 5500
+Wire Wire Line
+	4100 5250 4100 5200
+Wire Wire Line
+	4100 5200 4250 5200
+Connection ~ 4250 5200
+Wire Wire Line
+	4050 4850 4050 4900
+Wire Wire Line
+	4050 4900 3800 4900
+Wire Wire Line
+	3800 4900 3800 5000
+Connection ~ 7450 3000
+Wire Wire Line
+	7450 3000 7450 2600
+Text Notes 3600 1800 0    60   ~ 0
+TODO: One regulator just for this maybe?
+Text HLabel 7750 3000 2    60   Input ~ 0
+ITACH
+Text HLabel 7800 4950 2    60   Input ~ 0
+QTACH
+$Comp
+L R_Small R?
+U 1 1 58A72048
+P 2500 3050
+F 0 "R?" H 2530 3070 50  0000 L CNN
+F 1 "100" H 2530 3010 50  0000 L CNN
+F 2 "" H 2500 3050 50  0000 C CNN
+F 3 "" H 2500 3050 50  0000 C CNN
+	1    2500 3050
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2600 3050 2750 3050
+Wire Wire Line
+	2750 3050 3450 3050
+Wire Wire Line
+	3450 2200 3450 3050
+Wire Wire Line
+	3450 3050 3450 4150
+Connection ~ 3450 3050
+Connection ~ 4050 4150
+Wire Wire Line
+	2400 3050 2300 3050
+Wire Wire Line
+	3800 3550 4100 3550
+Wire Wire Line
+	4100 3550 4250 3550
+Wire Wire Line
+	4250 3550 4550 3550
+Wire Wire Line
+	4550 3550 4750 3550
+Wire Wire Line
+	4750 3550 5650 3550
+Wire Wire Line
+	5650 3550 7000 3550
+$Comp
+L GND #PWR?
+U 1 1 58A7283B
+P 2750 3350
+F 0 "#PWR?" H 2750 3100 50  0001 C CNN
+F 1 "GND" H 2750 3200 50  0000 C CNN
+F 2 "" H 2750 3350 50  0000 C CNN
+F 3 "" H 2750 3350 50  0000 C CNN
+	1    2750 3350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2750 3150 2750 3050
+Connection ~ 2750 3050
+Text Notes 1950 2800 0    60   ~ 0
+TODO: Use 3.3V supply?\nAvoids disturbing analog things\nAlso needing 1.5 W resistor
+Wire Wire Line
+	4250 4200 4250 4150
+Connection ~ 4250 4950
+Wire Wire Line
+	4250 2250 4250 2200
+$EndSCHEMATC
