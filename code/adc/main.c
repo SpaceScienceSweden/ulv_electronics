@@ -420,14 +420,14 @@ int main(void)
   printf_P(PSTR("Spin up\r\n"));
 
   uint8_t x;
-  for (x = 64; x < 200; x++) {
+  for (x = 64; x < 100; x++) {
     OCR1B = OCR1A = x;
     delay_ms(20);
   }
   printf_P(PSTR("Done spinup\r\n"));
 
   for (;;) {
-    OCR1B = OCR1A = 200;
+    OCR1B = OCR1A = 100;
     capture_seconds(1);
   }
 
