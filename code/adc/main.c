@@ -1,4 +1,5 @@
 #include "main.h"
+#include <util/delay.h>
 
 volatile adc_state_t adc_state[2] = {{0},{0}};
 
@@ -414,15 +415,20 @@ int main(void)
   printf_P(PSTR("Done setting up\r\n"));
 #endif
 
+  printf_P(PSTR("Start motors\r\n"));
+  _delay_ms(3000);
+  printf_P(PSTR("Spin up\r\n"));
+
+  uint8_t x;
+  for (x = 64; x < 100; x++) {
+    OCR1B = OCR1A = x;
+    delay_ms(20);
+  }
+  printf_P(PSTR("Done spinup\r\n"));
+
   for (;;) {
-    OCR1A = 150;
+    OCR1B = OCR1A = 100;
     capture_seconds(1);
-    OCR1B = 150;
-    capture_seconds(9);
-    OCR1A = 200;
-    capture_seconds(1);
-    OCR1B = 200;
-    capture_seconds(9);
   }
 
   return 0;
