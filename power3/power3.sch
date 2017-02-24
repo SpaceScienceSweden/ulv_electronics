@@ -1436,4 +1436,6 @@ Text Notes 4650 3500 0    60   ~ 0
 This two-stage low-pass pushes the\n100 kHz ripple down from 50 mVp-p\nto around 30 µVp-p, which is easy\nenough for our LDOs to push down\nbelow 1 µV
 Text Notes 7600 3250 0    60   ~ 0
 About 1 mV ripple left here,\nwhich is good enough
+Text Notes 4700 6200 0    60   ~ 0
+NOTE: There are smaller switchregs from Traco Power\nNew motors might use 9V, TMR 9WI should be enough.\nTSR 2-2490 also possible
 $EndSCHEMATC
