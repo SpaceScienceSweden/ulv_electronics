@@ -34,7 +34,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 5 5
+Sheet 5 9
 Title ""
 Date ""
 Rev ""
@@ -106,7 +106,7 @@ L R_Small R?
 U 1 1 58A6685E
 P 3800 3150
 F 0 "R?" H 3830 3170 50  0000 L CNN
-F 1 "5k6" H 3830 3110 50  0000 L CNN
+F 1 "680" H 3830 3110 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 3800 3150 50  0001 C CNN
 F 3 "" H 3800 3150 50  0000 C CNN
 	1    3800 3150
@@ -192,14 +192,7 @@ $EndComp
 Text Notes 5650 3750 0    60   ~ 0
 fc = 1/(2*pi*1M*100n) = 1.6 Hz
 Wire Wire Line
-	4250 2900 4250 3000
-Wire Wire Line
-	4250 3000 4250 3250
-Wire Wire Line
-	4250 3250 4250 3300
-Wire Wire Line
-	4050 2200 4050 2250
-Connection ~ 4250 2200
+	4250 2900 4250 3300
 Wire Wire Line
 	3800 3550 3800 3250
 Connection ~ 4550 3550
@@ -211,13 +204,9 @@ Wire Wire Line
 Wire Wire Line
 	4550 3200 4550 3450
 Wire Wire Line
-	4550 3450 5200 3450
+	5200 3450 4550 3450
 Wire Wire Line
-	5200 3450 5200 3250
-Wire Wire Line
-	5200 3250 5200 3100
-Wire Wire Line
-	5200 3100 5200 2900
+	5200 2900 5200 3450
 Wire Wire Line
 	5200 3100 5150 3100
 Wire Wire Line
@@ -228,24 +217,19 @@ Connection ~ 4250 3000
 Wire Wire Line
 	4750 3550 4750 3400
 Wire Wire Line
-	4750 2200 4750 2800
+	4750 1800 4750 2800
 Connection ~ 4750 3550
 Wire Wire Line
 	5300 3250 5200 3250
 Connection ~ 5200 3250
-Connection ~ 4750 2200
+Connection ~ 4750 1800
 Wire Wire Line
-	7000 2200 7000 2700
+	7000 1800 7000 2700
 Wire Wire Line
 	7000 3550 7000 3300
 Connection ~ 5200 3100
 Wire Wire Line
-	5500 2900 6700 2900
-Wire Wire Line
-	6700 2900 6800 2900
-Wire Wire Line
-	5950 2200 5950 2450
-Connection ~ 5950 2200
+	5500 2900 6800 2900
 Wire Wire Line
 	7100 2600 6700 2600
 Wire Wire Line
@@ -255,20 +239,6 @@ Wire Wire Line
 	7450 2600 7300 2600
 Wire Wire Line
 	5500 3250 5650 3250
-Connection ~ 4050 2200
-$Comp
-L ITR20001 IR?
-U 1 1 58A668C3
-P 4050 4550
-F 0 "IR?" H 4050 4800 60  0000 C CNN
-F 1 "SG-2BC" H 4050 4700 60  0000 C CNN
-F 2 "SCUBE:SG-2BC" H 4050 4550 60  0001 C CNN
-F 3 "" H 4050 4550 60  0000 C CNN
-F 4 "175-34-043" H 4050 4550 60  0001 C CNN "1st Distrib. PN"
-F 5 "https://www.elfa.se/sv/reflexdetektor-kodenshi-sg-2bc/p/17534043" H 4050 4550 60  0001 C CNN "1st Distrib. Link"
-	1    4050 4550
-	0    -1   1    0   
-$EndComp
 $Comp
 L C_Small C?
 U 1 1 58A668CA
@@ -281,39 +251,25 @@ F 3 "" H 5650 3400 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5650 3100 5650 3250
-Wire Wire Line
-	5650 3250 5650 3300
+	5650 3100 5650 3300
 Wire Wire Line
 	5650 3550 5650 3500
 Connection ~ 5650 3550
 Wire Wire Line
-	5650 3100 5950 3100
-Wire Wire Line
-	5950 3100 6800 3100
+	5650 3100 6800 3100
 Connection ~ 5650 3250
 Wire Wire Line
-	3450 2200 4050 2200
-Wire Wire Line
-	4050 2200 4250 2200
-Wire Wire Line
-	4250 2200 4750 2200
-Wire Wire Line
-	4750 2200 5950 2200
-Wire Wire Line
-	5950 2200 7000 2200
+	3450 1800 7000 1800
 Wire Wire Line
 	5200 2900 5300 2900
 Wire Wire Line
-	7400 3000 7450 3000
-Wire Wire Line
-	7450 3000 7750 3000
+	7400 3000 7750 3000
 $Comp
 L R_Small R?
 U 1 1 58A668DA
 P 3800 5100
 F 0 "R?" H 3830 5120 50  0000 L CNN
-F 1 "5k6" H 3830 5060 50  0000 L CNN
+F 1 "680" H 3830 5060 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 3800 5100 50  0001 C CNN
 F 3 "" H 3800 5100 50  0000 C CNN
 	1    3800 5100
@@ -340,17 +296,6 @@ F 2 "Resistors_SMD:R_0805" H 5950 4500 50  0001 C CNN
 F 3 "" H 5950 4500 50  0000 C CNN
 	1    5950 4500
 	1    0    0    -1  
-$EndComp
-$Comp
-L +9V #PWR?
-U 1 1 58A668EF
-P 2300 3050
-F 0 "#PWR?" H 2300 2900 50  0001 C CNN
-F 1 "+9V" H 2300 3190 50  0000 C CNN
-F 2 "" H 2300 3050 50  0000 C CNN
-F 3 "" H 2300 3050 50  0000 C CNN
-	1    2300 3050
-	0    -1   -1   0   
 $EndComp
 $Comp
 L R_Small R?
@@ -397,14 +342,7 @@ F 3 "" H 4550 5550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4250 4850 4250 4950
-Wire Wire Line
-	4250 4950 4250 5200
-Wire Wire Line
-	4250 5200 4250 5250
-Wire Wire Line
-	4050 4150 4050 4200
-Connection ~ 4250 4150
+	4250 4850 4250 5250
 Wire Wire Line
 	3800 5500 3800 5200
 Connection ~ 4550 5500
@@ -416,13 +354,9 @@ Wire Wire Line
 Wire Wire Line
 	4550 5150 4550 5400
 Wire Wire Line
-	4550 5400 5200 5400
+	5200 5400 4550 5400
 Wire Wire Line
-	5200 5400 5200 5200
-Wire Wire Line
-	5200 5200 5200 5050
-Wire Wire Line
-	5200 5050 5200 4850
+	5200 4850 5200 5400
 Wire Wire Line
 	5200 5050 5150 5050
 Wire Wire Line
@@ -432,20 +366,17 @@ Wire Wire Line
 Wire Wire Line
 	4750 5500 4750 5350
 Wire Wire Line
-	4750 4150 4750 4750
+	4750 3950 4750 4750
 Connection ~ 4750 5500
 Wire Wire Line
 	5300 5200 5200 5200
 Connection ~ 5200 5200
-Connection ~ 4750 4150
+Connection ~ 4750 3950
 Wire Wire Line
-	7000 4150 7000 4650
+	7000 3950 7000 4650
 Wire Wire Line
 	7000 5500 7000 5250
 Connection ~ 5200 5050
-Wire Wire Line
-	5950 4150 5950 4400
-Connection ~ 5950 4150
 Wire Wire Line
 	7100 4550 6700 4550
 Wire Wire Line
@@ -467,9 +398,7 @@ F 3 "" H 5650 5350 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5650 5050 5650 5200
-Wire Wire Line
-	5650 5200 5650 5250
+	5650 5050 5650 5250
 Wire Wire Line
 	5650 5500 5650 5450
 Connection ~ 5650 5500
@@ -477,34 +406,18 @@ Connection ~ 5650 5200
 Wire Wire Line
 	5200 4850 5300 4850
 Wire Wire Line
-	7400 4950 7450 4950
-Wire Wire Line
-	7450 4950 7800 4950
+	7400 4950 7800 4950
 Wire Wire Line
 	7450 4550 7450 4950
 Connection ~ 7450 4950
 Connection ~ 5950 3100
 Connection ~ 5950 5050
 Wire Wire Line
-	3800 5500 4100 5500
+	3800 5500 7000 5500
 Wire Wire Line
-	4100 5500 4250 5500
+	5650 5050 6800 5050
 Wire Wire Line
-	4250 5500 4550 5500
-Wire Wire Line
-	4550 5500 4750 5500
-Wire Wire Line
-	4750 5500 5650 5500
-Wire Wire Line
-	5650 5500 7000 5500
-Wire Wire Line
-	5650 5050 5950 5050
-Wire Wire Line
-	5950 5050 6800 5050
-Wire Wire Line
-	5500 4850 6700 4850
-Wire Wire Line
-	6700 4850 6800 4850
+	5500 4850 6800 4850
 Text Notes 5250 3900 0    60   ~ 0
 Installed components determine threshold mode
 Text Notes 3800 3850 0    60   ~ 0
@@ -512,15 +425,7 @@ NOTE: 100 pF\non 470 kOhm\nsuppresses noise
 Text Notes 5000 2750 0    39   ~ 0
 Could be higher, maybe 47k\nLowers risk of superfluous\nactivation 
 Wire Wire Line
-	3450 4150 4050 4150
-Wire Wire Line
-	4050 4150 4250 4150
-Wire Wire Line
-	4250 4150 4750 4150
-Wire Wire Line
-	4750 4150 5950 4150
-Wire Wire Line
-	5950 4150 7000 4150
+	3450 3950 7000 3950
 Wire Wire Line
 	5950 3100 5950 2650
 Wire Wire Line
@@ -580,8 +485,6 @@ Wire Wire Line
 Connection ~ 7450 3000
 Wire Wire Line
 	7450 3000 7450 2600
-Text Notes 3600 1800 0    60   ~ 0
-TODO: One regulator just for this maybe?
 Text HLabel 7750 3000 2    60   Input ~ 0
 ITACH
 Text HLabel 7800 4950 2    60   Input ~ 0
@@ -591,36 +494,21 @@ L R_Small R?
 U 1 1 58A72048
 P 2500 3050
 F 0 "R?" H 2530 3070 50  0000 L CNN
-F 1 "100" H 2530 3010 50  0000 L CNN
+F 1 "56" H 2530 3010 50  0000 L CNN
 F 2 "" H 2500 3050 50  0000 C CNN
 F 3 "" H 2500 3050 50  0000 C CNN
 	1    2500 3050
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	2600 3050 2750 3050
+	2600 3050 3450 3050
 Wire Wire Line
-	2750 3050 3450 3050
-Wire Wire Line
-	3450 2200 3450 3050
-Wire Wire Line
-	3450 3050 3450 4150
+	3450 1800 3450 3950
 Connection ~ 3450 3050
-Connection ~ 4050 4150
 Wire Wire Line
 	2400 3050 2300 3050
 Wire Wire Line
-	3800 3550 4100 3550
-Wire Wire Line
-	4100 3550 4250 3550
-Wire Wire Line
-	4250 3550 4550 3550
-Wire Wire Line
-	4550 3550 4750 3550
-Wire Wire Line
-	4750 3550 5650 3550
-Wire Wire Line
-	5650 3550 7000 3550
+	3800 3550 7000 3550
 $Comp
 L GND #PWR?
 U 1 1 58A7283B
@@ -635,11 +523,126 @@ $EndComp
 Wire Wire Line
 	2750 3150 2750 3050
 Connection ~ 2750 3050
-Text Notes 1950 2800 0    60   ~ 0
-TODO: Use 3.3V supply?\nAvoids disturbing analog things\nAlso needing 1.5 W resistor
-Wire Wire Line
-	4250 4200 4250 4150
 Connection ~ 4250 4950
+$Comp
+L +3V3 #PWR?
+U 1 1 58B46917
+P 2300 3050
+F 0 "#PWR?" H 2300 2900 50  0001 C CNN
+F 1 "+3V3" H 2300 3190 50  0000 C CNN
+F 2 "" H 2300 3050 50  0000 C CNN
+F 3 "" H 2300 3050 50  0000 C CNN
+	1    2300 3050
+	0    -1   -1   0   
+$EndComp
+Text Notes 1550 2800 0    60   ~ 0
+TI's LM324ADR handles down to 3.0 V\n3 mA + 1 mA drive\n(3.3-3.1)/4 mA = 56 Ohm\n3.3^2/56 = 200 mW
+Text Notes 1250 5150 0    60   ~ 0
+(3.3-1.2)/680 = 3.1 mA\nUsed to be 1.4 mA, aiming for a bit stronger signal\nTopology inherently latch-up safe
+$Comp
+L ITR20001 IR?
+U 1 1 58A668C3
+P 4050 4550
+F 0 "IR?" H 4050 4800 60  0000 C CNN
+F 1 "SG-2BC" H 4050 4700 60  0000 C CNN
+F 2 "SCUBE:SG-2BC" H 4050 4550 60  0001 C CNN
+F 3 "" H 4050 4550 60  0000 C CNN
+F 4 "175-34-043" H 4050 4550 60  0001 C CNN "1st Distrib. PN"
+F 5 "https://www.elfa.se/sv/reflexdetektor-kodenshi-sg-2bc/p/17534043" H 4050 4550 60  0001 C CNN "1st Distrib. Link"
+	1    4050 4550
+	0    -1   1    0   
+$EndComp
+$Comp
+L +3V3 #PWR?
+U 1 1 58B45D6E
+P 4050 4200
+F 0 "#PWR?" H 4050 4050 50  0001 C CNN
+F 1 "+3V3" H 4050 4340 50  0000 C CNN
+F 2 "" H 4050 4200 50  0000 C CNN
+F 3 "" H 4050 4200 50  0000 C CNN
+	1    4050 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR?
+U 1 1 58B45E51
+P 4250 4200
+F 0 "#PWR?" H 4250 4050 50  0001 C CNN
+F 1 "+3V3" H 4250 4340 50  0000 C CNN
+F 2 "" H 4250 4200 50  0000 C CNN
+F 3 "" H 4250 4200 50  0000 C CNN
+	1    4250 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR?
+U 1 1 58B461FC
+P 4250 2250
+F 0 "#PWR?" H 4250 2100 50  0001 C CNN
+F 1 "+3V3" H 4250 2390 50  0000 C CNN
+F 2 "" H 4250 2250 50  0000 C CNN
+F 3 "" H 4250 2250 50  0000 C CNN
+	1    4250 2250
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR?
+U 1 1 58B46297
+P 4050 2250
+F 0 "#PWR?" H 4050 2100 50  0001 C CNN
+F 1 "+3V3" H 4050 2390 50  0000 C CNN
+F 2 "" H 4050 2250 50  0000 C CNN
+F 3 "" H 4050 2250 50  0000 C CNN
+	1    4050 2250
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR?
+U 1 1 58B463AC
+P 5950 4400
+F 0 "#PWR?" H 5950 4250 50  0001 C CNN
+F 1 "+3V3" H 5950 4540 50  0000 C CNN
+F 2 "" H 5950 4400 50  0000 C CNN
+F 3 "" H 5950 4400 50  0000 C CNN
+	1    5950 4400
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR?
+U 1 1 58B46BCF
+P 5950 2450
+F 0 "#PWR?" H 5950 2300 50  0001 C CNN
+F 1 "+3V3" H 5950 2590 50  0000 C CNN
+F 2 "" H 5950 2450 50  0000 C CNN
+F 3 "" H 5950 2450 50  0000 C CNN
+	1    5950 2450
+	1    0    0    -1  
+$EndComp
+$Comp
+L C_Small C?
+U 1 1 58B46E5A
+P 3100 3250
+F 0 "C?" H 3110 3320 50  0000 L CNN
+F 1 "10u" H 3110 3170 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 3100 3250 50  0001 C CNN
+F 3 "" H 3100 3250 50  0000 C CNN
+	1    3100 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 58B47058
+P 3100 3350
+F 0 "#PWR?" H 3100 3100 50  0001 C CNN
+F 1 "GND" H 3100 3200 50  0000 C CNN
+F 2 "" H 3100 3350 50  0000 C CNN
+F 3 "" H 3100 3350 50  0000 C CNN
+	1    3100 3350
+	1    0    0    -1  
+$EndComp
 Wire Wire Line
-	4250 2250 4250 2200
+	3100 3150 3100 3050
+Connection ~ 3100 3050
+Text Notes 2400 3700 0    60   ~ 0
+-52j Ohm @ 300 Hz
 $EndSCHEMATC
