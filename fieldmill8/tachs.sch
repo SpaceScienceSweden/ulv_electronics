@@ -204,9 +204,9 @@ Wire Wire Line
 Wire Wire Line
 	4550 3200 4550 3450
 Wire Wire Line
-	5200 3450 4550 3450
+	4550 3450 5200 3450
 Wire Wire Line
-	5200 2900 5200 3450
+	5200 3450 5200 2900
 Wire Wire Line
 	5200 3100 5150 3100
 Wire Wire Line
@@ -354,9 +354,9 @@ Wire Wire Line
 Wire Wire Line
 	4550 5150 4550 5400
 Wire Wire Line
-	5200 5400 4550 5400
+	4550 5400 5200 5400
 Wire Wire Line
-	5200 4850 5200 5400
+	5200 5400 5200 4850
 Wire Wire Line
 	5200 5050 5150 5050
 Wire Wire Line
