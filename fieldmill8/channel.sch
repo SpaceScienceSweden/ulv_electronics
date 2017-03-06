@@ -176,11 +176,7 @@ Connection ~ 6100 5400
 Wire Wire Line
 	6100 5400 6450 5400
 Wire Wire Line
-	6100 4550 6100 4850
-Wire Wire Line
-	6100 4850 6100 5400
-Wire Wire Line
-	6100 5400 6100 5700
+	6100 4550 6100 5700
 Wire Wire Line
 	6100 5700 6450 5700
 Connection ~ 6950 5400
@@ -188,9 +184,7 @@ Wire Wire Line
 	6650 5400 6950 5400
 Connection ~ 6950 4950
 Wire Wire Line
-	6950 4950 6950 5400
-Wire Wire Line
-	6950 5400 6950 5700
+	6950 4950 6950 5700
 Wire Wire Line
 	6950 5700 6650 5700
 Connection ~ 6100 3650
@@ -199,21 +193,15 @@ Wire Wire Line
 Wire Wire Line
 	6100 3100 6250 3100
 Wire Wire Line
-	6100 3100 6100 3650
+	6100 3100 6100 3950
 Wire Wire Line
-	6100 3650 6100 3950
-Wire Wire Line
-	3950 3950 6100 3950
-Wire Wire Line
-	6100 3950 6450 3950
+	3950 3950 6450 3950
 Connection ~ 6950 3650
 Wire Wire Line
 	6650 3650 6950 3650
 Connection ~ 6950 3200
 Wire Wire Line
-	6950 3200 6950 3650
-Wire Wire Line
-	6950 3650 6950 3950
+	6950 3200 6950 3950
 Wire Wire Line
 	6950 3950 6650 3950
 Text Notes 1850 1200 0    60   ~ 0
@@ -325,17 +313,13 @@ F 3 "" H 8350 4050 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
-	8100 4950 8500 4950
-Wire Wire Line
-	8500 4950 9000 4950
+	8100 4950 9000 4950
 Wire Wire Line
 	8500 4950 8500 4400
 Wire Wire Line
 	8500 3700 8500 3200
 Wire Wire Line
-	8100 3200 8500 3200
-Wire Wire Line
-	8500 3200 9000 3200
+	8100 3200 9000 3200
 $Comp
 L GND #PWR?
 U 1 1 58A45D0E
@@ -371,20 +355,14 @@ VGND
 Wire Wire Line
 	7150 4750 6850 4750
 Wire Wire Line
-	7150 2850 7150 3000
-Wire Wire Line
-	7150 3000 7150 4750
+	7150 2850 7150 4750
 Wire Wire Line
 	6850 3000 7150 3000
 Connection ~ 7150 3000
 Wire Wire Line
-	6850 4950 6950 4950
+	6850 4950 7700 4950
 Wire Wire Line
-	6950 4950 7700 4950
-Wire Wire Line
-	6850 3200 6950 3200
-Wire Wire Line
-	6950 3200 7700 3200
+	6850 3200 7700 3200
 Text Notes 5100 2250 0    47   ~ 0
 LTC6241: 2*2.4 mA + I/O, 2.8 .. 6 V\nAD8555: 2.5 mA + I/O, 2.7 .. 5.5 V
 Text Notes 3250 5050 0    60   ~ 0

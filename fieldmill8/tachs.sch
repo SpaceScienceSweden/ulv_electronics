@@ -126,12 +126,12 @@ $EndComp
 $Comp
 L R_Small R?
 U 1 1 58A6686C
-P 5950 2550
-F 0 "R?" H 5980 2570 50  0000 L CNN
-F 1 "1T" H 5980 2510 50  0000 L CNN
-F 2 "Resistors_SMD:R_0805" H 5950 2550 50  0001 C CNN
-F 3 "" H 5950 2550 50  0000 C CNN
-	1    5950 2550
+P 5950 2750
+F 0 "R?" H 5980 2770 50  0000 L CNN
+F 1 "1T" H 5980 2710 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 5950 2750 50  0001 C CNN
+F 3 "" H 5950 2750 50  0000 C CNN
+	1    5950 2750
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -192,8 +192,6 @@ $EndComp
 Text Notes 5650 3750 0    60   ~ 0
 fc = 1/(2*pi*1M*100n) = 1.6 Hz
 Wire Wire Line
-	4250 2900 4250 3300
-Wire Wire Line
 	3800 3550 3800 3250
 Connection ~ 4550 3550
 Wire Wire Line
@@ -206,7 +204,7 @@ Wire Wire Line
 Wire Wire Line
 	4550 3450 5200 3450
 Wire Wire Line
-	5200 3450 5200 2900
+	5200 3450 5200 2300
 Wire Wire Line
 	5200 3100 5150 3100
 Wire Wire Line
@@ -289,12 +287,12 @@ $EndComp
 $Comp
 L R_Small R?
 U 1 1 58A668E8
-P 5950 4500
-F 0 "R?" H 5980 4520 50  0000 L CNN
-F 1 "1T" H 5980 4460 50  0000 L CNN
-F 2 "Resistors_SMD:R_0805" H 5950 4500 50  0001 C CNN
-F 3 "" H 5950 4500 50  0000 C CNN
-	1    5950 4500
+P 5950 4700
+F 0 "R?" H 5980 4720 50  0000 L CNN
+F 1 "1T" H 5980 4660 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 5950 4700 50  0001 C CNN
+F 3 "" H 5950 4700 50  0000 C CNN
+	1    5950 4700
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -356,7 +354,7 @@ Wire Wire Line
 Wire Wire Line
 	4550 5400 5200 5400
 Wire Wire Line
-	5200 5400 5200 4850
+	5200 5400 5200 4300
 Wire Wire Line
 	5200 5050 5150 5050
 Wire Wire Line
@@ -422,14 +420,12 @@ Text Notes 5250 3900 0    60   ~ 0
 Installed components determine threshold mode
 Text Notes 3800 3850 0    60   ~ 0
 NOTE: 100 pF\non 470 kOhm\nsuppresses noise
-Text Notes 5000 2750 0    39   ~ 0
-Could be higher, maybe 47k\nLowers risk of superfluous\nactivation 
 Wire Wire Line
 	3450 3950 7000 3950
 Wire Wire Line
-	5950 3100 5950 2650
+	5950 3100 5950 2850
 Wire Wire Line
-	5950 5050 5950 4600
+	5950 5050 5950 4800
 $Comp
 L C_Small C?
 U 1 1 58A6694B
@@ -455,8 +451,6 @@ Wire Wire Line
 	3800 2950 4050 2950
 Wire Wire Line
 	4050 2950 4050 2900
-Wire Wire Line
-	4250 2950 4250 2950
 $Comp
 L C_Small C?
 U 1 1 58A6695C
@@ -599,23 +593,23 @@ $EndComp
 $Comp
 L +3V3 #PWR?
 U 1 1 58B463AC
-P 5950 4400
-F 0 "#PWR?" H 5950 4250 50  0001 C CNN
-F 1 "+3V3" H 5950 4540 50  0000 C CNN
-F 2 "" H 5950 4400 50  0000 C CNN
-F 3 "" H 5950 4400 50  0000 C CNN
-	1    5950 4400
+P 5950 4600
+F 0 "#PWR?" H 5950 4450 50  0001 C CNN
+F 1 "+3V3" H 5950 4740 50  0000 C CNN
+F 2 "" H 5950 4600 50  0000 C CNN
+F 3 "" H 5950 4600 50  0000 C CNN
+	1    5950 4600
 	1    0    0    -1  
 $EndComp
 $Comp
 L +3V3 #PWR?
 U 1 1 58B46BCF
-P 5950 2450
-F 0 "#PWR?" H 5950 2300 50  0001 C CNN
-F 1 "+3V3" H 5950 2590 50  0000 C CNN
-F 2 "" H 5950 2450 50  0000 C CNN
-F 3 "" H 5950 2450 50  0000 C CNN
-	1    5950 2450
+P 5950 2650
+F 0 "#PWR?" H 5950 2500 50  0001 C CNN
+F 1 "+3V3" H 5950 2790 50  0000 C CNN
+F 2 "" H 5950 2650 50  0000 C CNN
+F 3 "" H 5950 2650 50  0000 C CNN
+	1    5950 2650
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -645,4 +639,16 @@ Wire Wire Line
 Connection ~ 3100 3050
 Text Notes 2400 3700 0    60   ~ 0
 -52j Ohm @ 300 Hz
+Text HLabel 7750 2300 2    60   Input ~ 0
+RAW_ITACH
+Wire Wire Line
+	5200 2300 7750 2300
+Connection ~ 5200 2900
+Text HLabel 7800 4300 2    60   Input ~ 0
+RAW_QTACH
+Wire Wire Line
+	5200 4300 7800 4300
+Connection ~ 5200 4850
+Wire Wire Line
+	4250 2900 4250 3300
 $EndSCHEMATC

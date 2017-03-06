@@ -45,37 +45,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 Text Notes 4850 2450 0    60   ~ 0
-Voltage regulators: ZMR250F (+2.5V), TPS72325 (-2.5V)\nOutput current: 10 mA\nInput voltage: +- 5 V\nMinimum input voltage tolerated: +- 4.2 V (ZMR250)\n(5-4.2)/10 mA = 80 ≃ 68 Ohm\n5^2/68 = 370 mW\nSchottkies allow back currents to pass
-$Comp
-L D_Schottky_Small D?
-U 1 1 58B4D4EB
-P 5850 2850
-AR Path="/58B4D07F/58B4D4EB" Ref="D?"  Part="1" 
-AR Path="/58B50798/58B4D4EB" Ref="D?"  Part="1" 
-AR Path="/58B5082C/58B4D4EB" Ref="D?"  Part="1" 
-AR Path="/58B5082E/58B4D4EB" Ref="D?"  Part="1" 
-F 0 "D?" H 5700 2900 50  0000 L CNN
-F 1 "SMS240" H 5700 2750 50  0000 L CNN
-F 2 "Diodes_SMD:MELF_Standard" V 5850 2850 50  0001 C CNN
-F 3 "" V 5850 2850 50  0000 C CNN
-	1    5850 2850
-	1    0    0    -1  
-$EndComp
-$Comp
-L D_Schottky_Small D?
-U 1 1 58B4D539
-P 5800 4350
-AR Path="/58B4D07F/58B4D539" Ref="D?"  Part="1" 
-AR Path="/58B50798/58B4D539" Ref="D?"  Part="1" 
-AR Path="/58B5082C/58B4D539" Ref="D?"  Part="1" 
-AR Path="/58B5082E/58B4D539" Ref="D?"  Part="1" 
-F 0 "D?" H 5650 4400 50  0000 L CNN
-F 1 "SMS240" H 5650 4250 50  0000 L CNN
-F 2 "Diodes_SMD:MELF_Standard" V 5800 4350 50  0001 C CNN
-F 3 "" V 5800 4350 50  0000 C CNN
-	1    5800 4350
-	-1   0    0    1   
-$EndComp
+Voltage regulators: ZMR250F (+2.5V), TPS72325 (-2.5V)\nOutput current: 10 mA\nInput voltage: +- 5 V\nMinimum input voltage tolerated: +- 4.2 V (ZMR250)\n(5-4.2)/10 mA = 80 ≃ 68 Ohm\n5^2/68 = 370 mW
 $Comp
 L ZMR250 U?
 U 1 1 58B4DA86
@@ -258,19 +228,10 @@ F 3 "" H 6300 3400 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5950 2850 6300 2850
-Wire Wire Line
-	6300 2850 6300 3300
-Wire Wire Line
 	6250 3250 6450 3250
 Connection ~ 6300 3250
 Wire Wire Line
-	5750 2850 5100 2850
-Wire Wire Line
-	5100 2850 5100 3250
-Wire Wire Line
 	5050 3250 5150 3250
-Connection ~ 5100 3250
 Wire Wire Line
 	5350 3250 5450 3250
 Wire Wire Line
@@ -361,13 +322,5 @@ Connection ~ 5850 5150
 Wire Wire Line
 	5000 4700 5100 4700
 Wire Wire Line
-	5050 4700 5050 4350
-Wire Wire Line
-	5050 4350 5700 4350
-Connection ~ 5050 4700
-Wire Wire Line
-	5900 4350 6350 4350
-Wire Wire Line
-	6350 4350 6350 4700
-Connection ~ 6350 4700
+	6300 3300 6300 3250
 $EndSCHEMATC
