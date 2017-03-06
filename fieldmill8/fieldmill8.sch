@@ -110,12 +110,6 @@ F 3 "" H 7950 2950 50  0000 C CNN
 	1    7950 2950
 	0    -1   -1   0   
 $EndComp
-Text Label 2500 2850 2    60   ~ 0
-OUT1
-Text Label 2500 3350 2    60   ~ 0
-OUT2
-Text Label 2500 3900 2    60   ~ 0
-OUT3
 $Sheet
 S 1300 2550 800  300 
 U 57B05F2F
@@ -528,8 +522,6 @@ F 3 "" H 6050 3900 50  0000 C CNN
 	1    6050 3900
 	-1   0    0    1   
 $EndComp
-Text Label 5500 2850 0    60   ~ 0
-QTACH
 $Comp
 L GND #PWR025
 U 1 1 5807E809
@@ -589,9 +581,7 @@ U 58A6604F
 F0 "Tachometers" 60
 F1 "tachs.sch" 60
 F2 "ITACH" I L 8250 4700 60 
-F3 "QTACH" I L 8250 4800 60 
-F4 "RAW_ITACH" I L 8250 4900 60 
-F5 "RAW_QTACH" I L 8250 5000 60 
+F3 "RAW_ITACH" I L 8250 4900 60 
 $EndSheet
 Text Label 6700 3150 0    60   ~ 0
 ITACH
@@ -860,8 +850,6 @@ Wire Wire Line
 	5350 2400 5350 2950
 Wire Wire Line
 	5350 2950 6150 2950
-Wire Wire Line
-	5450 2850 6150 2850
 Connection ~ 5400 3750
 Wire Wire Line
 	5250 3550 6150 3550
@@ -915,14 +903,6 @@ Wire Wire Line
 Wire Wire Line
 	7550 3150 6650 3150
 Wire Wire Line
-	7450 4800 8250 4800
-Wire Wire Line
-	5450 2850 5450 2650
-Wire Wire Line
-	5450 2650 7450 2650
-Wire Wire Line
-	7450 2650 7450 4800
-Wire Wire Line
 	6050 3750 6050 3900
 Connection ~ 6050 3750
 Wire Wire Line
@@ -935,9 +915,9 @@ Wire Wire Line
 Wire Wire Line
 	7800 3250 7650 3250
 Wire Wire Line
-	7650 3050 7650 3250
+	7650 3250 7650 3050
 Wire Wire Line
-	6650 3050 7650 3050
+	7650 3050 6650 3050
 Connection ~ 7800 3250
 Wire Wire Line
 	6650 2850 7650 2850
@@ -967,18 +947,6 @@ Wire Wire Line
 	6650 3350 7150 3350
 Wire Wire Line
 	7150 3350 7150 3050
-Text Label 6950 3450 2    60   ~ 0
-G0
-Text Label 6950 3550 2    60   ~ 0
-G1
-Text Label 6950 3650 2    60   ~ 0
-G2
-Wire Wire Line
-	6650 3450 6950 3450
-Wire Wire Line
-	6950 3550 6650 3550
-Wire Wire Line
-	6650 3650 6950 3650
 Text Notes 4750 6300 0    60   ~ 0
 SMD hylslister:\n143-56-849 2x10\n300-24-857 2x20
 Wire Wire Line
@@ -1042,4 +1010,6 @@ Wire Wire Line
 Wire Wire Line
 	3450 3650 3450 3800
 Connection ~ 3450 3800
+Text Notes 3450 5100 0    60   ~ 0
+AVDD current <= 4.0 mA
 $EndSCHEMATC

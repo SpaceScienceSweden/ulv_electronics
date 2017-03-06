@@ -45,7 +45,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 Text Notes 4850 2450 0    60   ~ 0
-Voltage regulators: ZMR250F (+2.5V), TPS72325 (-2.5V)\nOutput current: 10 mA\nInput voltage: +- 5 V\nMinimum input voltage tolerated: +- 4.2 V (ZMR250)\n(5-4.2)/10 mA = 80 ≃ 68 Ohm\n5^2/68 = 370 mW
+Voltage regulators: ZMR250F (+2.5V), TPS72325 (-2.5V)\nOutput current: 7.5 mA (max(4.0 mA, 5.05 mA) + 50%)\nInput voltage: +- 5 V\nMinimum input voltage tolerated: +- 4.2 V (ZMR250)\n(5-4.2)/10 mA = 106 ≃ 100 Ohm\n5^2/100 = 250 mW
 $Comp
 L ZMR250 U?
 U 1 1 58B4DA86
@@ -115,7 +115,7 @@ AR Path="/58B50798/58B4EC76" Ref="R?"  Part="1"
 AR Path="/58B5082C/58B4EC76" Ref="R?"  Part="1" 
 AR Path="/58B5082E/58B4EC76" Ref="R?"  Part="1" 
 F 0 "R?" H 5280 3270 50  0000 L CNN
-F 1 "68" H 5280 3210 50  0000 L CNN
+F 1 "100" H 5280 3210 50  0000 L CNN
 F 2 "" H 5250 3250 50  0000 C CNN
 F 3 "" H 5250 3250 50  0000 C CNN
 	1    5250 3250
@@ -194,7 +194,7 @@ AR Path="/58B50798/58B4EF14" Ref="R?"  Part="1"
 AR Path="/58B5082C/58B4EF14" Ref="R?"  Part="1" 
 AR Path="/58B5082E/58B4EF14" Ref="R?"  Part="1" 
 F 0 "R?" H 5230 4720 50  0000 L CNN
-F 1 "68" H 5230 4660 50  0000 L CNN
+F 1 "100" H 5230 4660 50  0000 L CNN
 F 2 "" H 5200 4700 50  0000 C CNN
 F 3 "" H 5200 4700 50  0000 C CNN
 	1    5200 4700

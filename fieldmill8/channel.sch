@@ -152,31 +152,15 @@ F 3 "" H 6550 5700 50  0000 C CNN
 	1    6550 5700
 	0    1    1    0   
 $EndComp
-Text HLabel 5850 5000 3    60   Input ~ 0
+Text HLabel 6000 4850 0    60   Input ~ 0
 OUT+
-Text HLabel 4650 6450 3    60   Input ~ 0
+Text HLabel 6000 3950 0    60   Input ~ 0
 OUT-
-$Comp
-L C_Small C20
-U 1 1 58067F10
-P 3750 4350
-AR Path="/57B05F2F/58067F10" Ref="C20"  Part="1" 
-AR Path="/57B0A0EC/58067F10" Ref="C31"  Part="1" 
-AR Path="/57B0A102/58067F10" Ref="C37"  Part="1" 
-F 0 "C20" H 3760 4420 50  0000 L CNN
-F 1 "1n" H 3760 4270 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1210" H 3750 4350 50  0001 C CNN
-F 3 "" H 3750 4350 50  0000 C CNN
-	1    3750 4350
-	0    1    1    0   
-$EndComp
 Connection ~ 6100 3950
 Connection ~ 6100 4850
 Connection ~ 6100 5400
 Wire Wire Line
 	6100 5400 6450 5400
-Wire Wire Line
-	6100 4550 6100 5700
 Wire Wire Line
 	6100 5700 6450 5700
 Connection ~ 6950 5400
@@ -194,8 +178,6 @@ Wire Wire Line
 	6100 3100 6250 3100
 Wire Wire Line
 	6100 3100 6100 3950
-Wire Wire Line
-	3950 3950 6450 3950
 Connection ~ 6950 3650
 Wire Wire Line
 	6650 3650 6950 3650
@@ -205,7 +187,7 @@ Wire Wire Line
 Wire Wire Line
 	6950 3950 6650 3950
 Text Notes 1850 1200 0    60   ~ 0
-This design is based on the paper "A Highly Sensitive Field Mill for Registering\nWeak and Strong Variations of the Electric-Field Intensity of the Earth’s Atmosphere" by Boldyrev et al.\nSome differences include swapping the OPA1632 for an AD8555 to increase dynamic range,\nand lower values on the feedback resistors due to lack of component choices.\nLower values also reduce the noise due to of variable parasitic capacitances (vibrating metal parts)\nVishay's 1G resistors could also work, and can also be stacked to make 500M. With such\na high value oscillation become an issue due to insufficient compensation
+This design is based on the paper "A Highly Sensitive Field Mill for Registering\nWeak and Strong Variations of the Electric-Field Intensity of the Earth’s Atmosphere" by Boldyrev et al.\nSome differences include removing the OPA1632 for lower complexity and power use,\nand lower values on the feedback resistors due to lack of component choices.\nLower values also reduce the noise due to of variable parasitic capacitances (vibrating metal parts)\nVishay's 1G resistors could also work, and can also be stacked to make 500M. With such\na high value oscillation become an issue due to insufficient compensation
 Text Notes 6100 6150 0    60   ~ 0
 1p capacitor serves both to low-pass (1.6 kHz)\nand offer compensation to prevent oscillation\nWithout it oscillation *will* happen
 $Comp
@@ -224,66 +206,8 @@ F 5 "http://se.farnell.com/yageo-phycomp/rc2010fk-0710ml/motst-tjockfilm-10m-1-0
 	1    6550 5400
 	0    1    1    0   
 $EndComp
-$Comp
-L AD8555 U?
-U 1 1 58A236FB
-P 4900 4400
-AR Path="/57B05F2F/58A236FB" Ref="U?"  Part="1" 
-AR Path="/57B0A0EC/58A236FB" Ref="U?"  Part="1" 
-AR Path="/57B0A102/58A236FB" Ref="U?"  Part="1" 
-F 0 "U?" H 4900 4750 60  0000 C CNN
-F 1 "AD8555" H 4900 4650 60  0000 C CNN
-F 2 "" H 4950 4400 60  0000 C CNN
-F 3 "" H 4950 4400 60  0000 C CNN
-	1    4900 4400
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
-	3950 3950 3950 4550
-Wire Wire Line
-	3950 4550 4300 4550
-Wire Wire Line
-	5500 4550 6100 4550
-Wire Wire Line
-	6100 4850 6250 4850
-Wire Wire Line
-	5850 5000 5850 4350
-Wire Wire Line
-	5850 4350 5500 4350
-$Comp
-L GND #PWR?
-U 1 1 58A24440
-P 4650 6350
-AR Path="/57B05F2F/58A24440" Ref="#PWR?"  Part="1" 
-AR Path="/57B0A0EC/58A24440" Ref="#PWR?"  Part="1" 
-AR Path="/57B0A102/58A24440" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 4650 6100 50  0001 C CNN
-F 1 "GND" H 4650 6200 50  0000 C CNN
-F 2 "" H 4650 6350 50  0000 C CNN
-F 3 "" H 4650 6350 50  0000 C CNN
-	1    4650 6350
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	4650 6350 4650 6450
-Text Notes 3150 5950 0    60   ~ 0
-TODO: Get at V_ADC somehow?\nOr divide +-2V5 to obtain virtual ground?\nDC offset shouldn't be a problem\nWe can get 127.5/256 or 128.5/256, so +-10 mV from GND\nThis virtual ground will need a buffer\nWe might need to look for a slightly more suitable IC
-$Comp
-L GND #PWR?
-U 1 1 58A2470B
-P 3650 4350
-AR Path="/57B05F2F/58A2470B" Ref="#PWR?"  Part="1" 
-AR Path="/57B0A0EC/58A2470B" Ref="#PWR?"  Part="1" 
-AR Path="/57B0A102/58A2470B" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 3650 4100 50  0001 C CNN
-F 1 "GND" H 3650 4200 50  0000 C CNN
-F 2 "" H 3650 4350 50  0000 C CNN
-F 3 "" H 3650 4350 50  0000 C CNN
-	1    3650 4350
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	3850 4350 4300 4350
+	6000 4850 6250 4850
 $Comp
 L Transformer_1P_1S T?
 U 1 1 58A4585A
@@ -363,43 +287,8 @@ Wire Wire Line
 	6850 4950 7700 4950
 Wire Wire Line
 	6850 3200 7700 3200
-Text Notes 5100 2250 0    47   ~ 0
-LTC6241: 2*2.4 mA + I/O, 2.8 .. 6 V\nAD8555: 2.5 mA + I/O, 2.7 .. 5.5 V
-Text Notes 3250 5050 0    60   ~ 0
-We could put the RFI filter from the datasheet here
-$Comp
-L +2V5 #PWR?
-U 1 1 58B5CCAF
-P 4300 4250
-F 0 "#PWR?" H 4300 4100 50  0001 C CNN
-F 1 "+2V5" H 4300 4390 50  0000 C CNN
-F 2 "" H 4300 4250 50  0000 C CNN
-F 3 "" H 4300 4250 50  0000 C CNN
-	1    4300 4250
-	0    -1   -1   0   
-$EndComp
-$Comp
-L +2V5 #PWR?
-U 1 1 58B5CDE5
-P 5500 4450
-F 0 "#PWR?" H 5500 4300 50  0001 C CNN
-F 1 "+2V5" H 5500 4590 50  0000 C CNN
-F 2 "" H 5500 4450 50  0000 C CNN
-F 3 "" H 5500 4450 50  0000 C CNN
-	1    5500 4450
-	0    1    1    0   
-$EndComp
-$Comp
-L -2V5 #PWR?
-U 1 1 58B5CE11
-P 5500 4250
-F 0 "#PWR?" H 5500 4100 50  0001 C CNN
-F 1 "-2V5" H 5500 4390 50  0000 C CNN
-F 2 "" H 5500 4250 50  0000 C CNN
-F 3 "" H 5500 4250 50  0000 C CNN
-	1    5500 4250
-	0    1    1    0   
-$EndComp
+Text Notes 4000 4150 0    47   ~ 0
+LTC6241: 2*2.4 mA + I/O, 2.8 .. 6 V\nOutputs drive 5V/(10k+10k) -> 0.25 mA\nTotal: 5.05 mA
 $Comp
 L -2V5 #PWR?
 U 1 1 58B5CF19
@@ -444,4 +333,8 @@ F 3 "" H 6650 5150 50  0000 C CNN
 	1    6650 5150
 	-1   0    0    1   
 $EndComp
+Wire Wire Line
+	6000 3950 6450 3950
+Wire Wire Line
+	6100 5700 6100 4850
 $EndSCHEMATC
