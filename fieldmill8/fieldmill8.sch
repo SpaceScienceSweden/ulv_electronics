@@ -1012,4 +1012,8 @@ Wire Wire Line
 Connection ~ 3450 3800
 Text Notes 3450 5100 0    60   ~ 0
 AVDD current <= 4.0 mA
+Text Notes 2700 7450 0    60   ~ 0
+AD5551: external ref, bipolar\nAD7304: external ref, quad, bipolar\nAD7249: internal ref, dual, bipolar (+-15 Vsupply!), pricey, W-SOIC finns i lager (farnell)\nAD5722R: alternative to AD7249, TSSOP :(\nDAC2932: fairly complex..\nLTC1650: +-5V, 16-bit\nSLAS269F: OK? TI has a good selection
+Text Notes 2600 6250 0    60   ~ 0
+TODO: DS18B20 SO-8
 $EndSCHEMATC
