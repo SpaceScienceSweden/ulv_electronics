@@ -34,7 +34,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 9
+Sheet 2 9
 Title ""
 Date ""
 Rev ""
@@ -217,7 +217,7 @@ AR Path="/57B0A0EC/58A4585A" Ref="T2"  Part="1"
 AR Path="/57B0A102/58A4585A" Ref="T3"  Part="1" 
 F 0 "T3" H 7900 4300 50  0000 C CNN
 F 1 "Data CM choke" H 7900 3750 50  0000 C CNN
-F 2 "" H 7900 4050 50  0000 C CNN
+F 2 "" H 7900 4050 50  0001 C CNN
 F 3 "" H 7900 4050 50  0000 C CNN
 	1    7900 4050
 	0    1    1    0   
@@ -231,7 +231,7 @@ AR Path="/57B0A0EC/58A45944" Ref="D2"  Part="1"
 AR Path="/57B0A102/58A45944" Ref="D3"  Part="1" 
 F 0 "D3" H 8500 4225 50  0000 C CNN
 F 1 "D_TVS_x2_AAC" H 8500 4150 50  0000 C CNN
-F 2 "" H 8350 4050 50  0000 C CNN
+F 2 "" H 8350 4050 50  0001 C CNN
 F 3 "" H 8350 4050 50  0000 C CNN
 	1    8500 4050
 	0    -1   -1   0   
