@@ -295,39 +295,6 @@ F 3 "" H 2800 3750 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C18
-U 1 1 58074DB5
-P 3700 4550
-F 0 "C18" H 3710 4620 50  0000 L CNN
-F 1 "1u" H 3710 4470 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 3700 4550 50  0001 C CNN
-F 3 "" H 3700 4550 50  0000 C CNN
-	1    3700 4550
-	0    1    1    0   
-$EndComp
-$Comp
-L C_Small C19
-U 1 1 58075456
-P 4000 4550
-F 0 "C19" H 4010 4620 50  0000 L CNN
-F 1 "1u" H 4010 4470 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 4000 4550 50  0001 C CNN
-F 3 "" H 4000 4550 50  0000 C CNN
-	1    4000 4550
-	0    1    1    0   
-$EndComp
-$Comp
-L GND #PWR03
-U 1 1 580754F6
-P 3850 4650
-F 0 "#PWR03" H 3850 4400 50  0001 C CNN
-F 1 "GND" H 3850 4500 50  0000 C CNN
-F 2 "" H 3850 4650 50  0000 C CNN
-F 3 "" H 3850 4650 50  0000 C CNN
-	1    3850 4650
-	1    0    0    -1  
-$EndComp
-$Comp
 L C_Small C13
 U 1 1 58075867
 P 4300 4400
@@ -1119,22 +1086,12 @@ Connection ~ 4450 4550
 Wire Wire Line
 	4550 4550 4550 4500
 Connection ~ 4150 4550
-Connection ~ 3550 4550
 Wire Wire Line
 	4050 4300 4050 4150
 Wire Wire Line
 	3550 4300 4050 4300
 Wire Wire Line
 	3550 4300 3550 5050
-Wire Wire Line
-	3600 4550 3550 4550
-Connection ~ 3850 4550
-Wire Wire Line
-	3850 4650 3850 4550
-Wire Wire Line
-	3800 4550 3900 4550
-Wire Wire Line
-	4100 4550 4550 4550
 Connection ~ 4750 4250
 Connection ~ 4750 4200
 Wire Wire Line
@@ -1373,4 +1330,8 @@ F1 "vreg.sch" 60
 F2 "+2V5" I R 3250 5050 60 
 F3 "-2V5" I R 3250 5150 60 
 $EndSheet
+Wire Wire Line
+	4550 4550 4150 4550
+Text Notes 3600 4450 0    20   ~ 0
+Used to have 2x1 µF here\nbut vreg has 2x2.2 µF already
 $EndSCHEMATC
