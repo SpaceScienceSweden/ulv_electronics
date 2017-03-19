@@ -635,10 +635,10 @@ F 3 "" H 9350 2450 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L -5V #PWR19
+L -5V #PWR20
 U 1 1 58BF224E
 P 9350 4350
-F 0 "#PWR19" H 9350 4450 50  0001 C CNN
+F 0 "#PWR20" H 9350 4450 50  0001 C CNN
 F 1 "-5V" H 9350 4500 50  0000 C CNN
 F 2 "" H 9350 4350 50  0000 C CNN
 F 3 "" H 9350 4350 50  0000 C CNN
@@ -1106,15 +1106,15 @@ Wire Wire Line
 Wire Wire Line
 	7950 3600 7350 3600
 Wire Wire Line
-	7350 3600 7350 2650
+	7350 2650 7350 3600
 Wire Wire Line
-	7350 2650 6150 2650
+	6150 2650 7350 2650
 Wire Wire Line
 	10300 3300 10350 3300
 Wire Wire Line
-	10350 3300 10350 2750
+	10350 2750 10350 3300
 Wire Wire Line
-	10350 2750 6150 2750
+	6150 2750 10350 2750
 Wire Wire Line
 	5700 5200 5850 5200
 Wire Wire Line
@@ -1449,21 +1449,6 @@ Connection ~ 9350 2850
 Text Notes 2700 7450 0    60   ~ 0
 AD5551: external ref, bipolar\nAD7304: external ref, quad, bipolar\nAD7249: internal ref, dual, bipolar (+-15 Vsupply!), pricey, W-SOIC finns i lager (farnell)\nAD5722R: alternative to AD7249, TSSOP :(\nDAC2932: fairly complex..\nLTC1650: external ref, +-5V, 16-bit\nSLAS269F: internal ref, octal, bipolar\nDAC714: internal ref, single, bipolar, +-11.4 minimum :(\nMAX526: extern ref, parallel, bipolar\nMAX504ESD: internal ref, bipolar, good accuracy, -40..85°C, in stock @ farnell\nUse SPDT switch to toggle between DAC and GND
 $Comp
-L CONN_02X19 P12
-U 1 1 58CF1E8A
-P 6400 2850
-F 0 "P12" H 6400 3850 50  0000 C CNN
-F 1 "CONN_02X19" V 6400 2850 50  0000 C CNN
-F 2 "" H 6400 1850 50  0001 C CNN
-F 3 "" H 6400 1850 50  0000 C CNN
-	1    6400 2850
-	1    0    0    -1  
-$EndComp
-NoConn ~ 6150 1950
-NoConn ~ 6650 1950
-NoConn ~ 6150 3750
-NoConn ~ 6650 3750
-$Comp
 L PWR_FLAG #FLG030
 U 1 1 58CF3BAA
 P 9150 4150
@@ -1495,4 +1480,19 @@ Wire Wire Line
 Wire Wire Line
 	9650 2800 9350 2800
 Connection ~ 9350 2800
+$Comp
+L CONN_02X17 P12
+U 1 1 58CEB5AA
+P 6400 2850
+F 0 "P12" H 6400 3750 50  0000 C CNN
+F 1 "CONN_02X17" V 6400 2850 50  0000 C CNN
+F 2 "" H 6400 1750 50  0000 C CNN
+F 3 "" H 6400 1750 50  0000 C CNN
+F 4 "Würth" H 6400 2850 60  0001 C CNN "Mfg. Name"
+F 5 "61003421821" H 6400 2850 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-24-852" H 6400 2850 60  0001 C CNN "1st Distrib. PN"
+F 7 "https://www.elfa.se/sv/honlist-34p-smd-dubbelradigt-raka-wuerth-elektronik-61003421821/p/30024852" H 6400 2850 60  0001 C CNN "1st Distrib. Link"
+	1    6400 2850
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
