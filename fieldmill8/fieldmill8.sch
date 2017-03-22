@@ -477,8 +477,6 @@ Text Label 5500 2950 0    60   ~ 0
 f_ADC
 Text Label 5500 3050 0    60   ~ 0
 /CS_ADC
-Text Label 5500 3150 0    60   ~ 0
-SCLK
 Text Label 5500 3250 0    60   ~ 0
 MISO
 Text Label 5500 3350 0    60   ~ 0
@@ -503,12 +501,12 @@ $EndComp
 Text Notes 5500 4450 0    39   ~ 0
 IOVDD can be down to 1.65 V,\nbut I/O must be < IOVDD+0.3\nTherefore let IOVDD = 3.0 .. 3.3 V\nI(mA) = 0.8 + 1.0 drive\nShunt <= 166 Ohm\n3.3^2/150 = 73 mW
 $Sheet
-S 7800 5200 1050 550 
+S 7800 5850 1050 550 
 U 58A6604F
 F0 "Tachometers" 60
 F1 "tachs.sch" 60
-F2 "ITACH" I L 7800 5300 60 
-F3 "RAW_ITACH" I L 7800 5500 60 
+F2 "ITACH" I L 7800 6050 60 
+F3 "RAW_ITACH" I L 7800 6150 60 
 $EndSheet
 Text Label 6700 2550 0    60   ~ 0
 ITACH
@@ -553,7 +551,7 @@ F1 "vreg.sch" 60
 F2 "+2V5" I R 1250 2650 60 
 F3 "-2V5" I R 1250 2750 60 
 $EndSheet
-Text Notes 4750 6300 0    60   ~ 0
+Text Notes 3750 5950 0    60   ~ 0
 SMD hylslister:\n143-56-849 2x10\n300-24-844 2x15\n300-24-852 2x17\n300-24-857 2x20
 $Comp
 L GND #PWR011
@@ -697,11 +695,6 @@ Text GLabel 10600 3400 2    60   Input ~ 0
 VGND
 Text Label 7650 3300 0    60   ~ 0
 MOSI
-Text Label 7650 3500 0    60   ~ 0
-SCLK
-NoConn ~ 7950 3700
-Text Label 6700 2650 0    60   ~ 0
-/CS_VGND
 Text Label 6700 2750 0    60   ~ 0
 EN_VGND
 Text Notes 8850 1750 0    60   ~ 0
@@ -787,6 +780,272 @@ F 3 "" H 7250 2000 50  0000 C CNN
 	1    7250 2000
 	1    0    0    -1  
 $EndComp
+$Comp
+L PWR_FLAG #FLG020
+U 1 1 58C457DD
+P 6100 3800
+F 0 "#FLG020" H 6100 3895 50  0001 C CNN
+F 1 "PWR_FLAG" H 6100 3980 50  0000 C CNN
+F 2 "" H 6100 3800 50  0000 C CNN
+F 3 "" H 6100 3800 50  0000 C CNN
+	1    6100 3800
+	-1   0    0    1   
+$EndComp
+$Comp
+L PWR_FLAG #FLG021
+U 1 1 58C459C4
+P 5200 4400
+F 0 "#FLG021" H 5200 4495 50  0001 C CNN
+F 1 "PWR_FLAG" H 5200 4580 50  0000 C CNN
+F 2 "" H 5200 4400 50  0000 C CNN
+F 3 "" H 5200 4400 50  0000 C CNN
+	1    5200 4400
+	-1   0    0    1   
+$EndComp
+$Comp
+L PWR_FLAG #FLG022
+U 1 1 58C4625E
+P 5450 5050
+F 0 "#FLG022" H 5450 5145 50  0001 C CNN
+F 1 "PWR_FLAG" H 5450 5230 50  0000 C CNN
+F 2 "" H 5450 5050 50  0000 C CNN
+F 3 "" H 5450 5050 50  0000 C CNN
+	1    5450 5050
+	1    0    0    -1  
+$EndComp
+$Sheet
+S 550  3050 700  300 
+U 58C4A8D4
+F0 "vreg2" 60
+F1 "vreg.sch" 60
+F2 "+2V5" I R 1250 3150 60 
+F3 "-2V5" I R 1250 3250 60 
+$EndSheet
+$Sheet
+S 550  3600 700  300 
+U 58C4AA7C
+F0 "vreg3" 60
+F1 "vreg.sch" 60
+F2 "+2V5" I R 1250 3700 60 
+F3 "-2V5" I R 1250 3800 60 
+$EndSheet
+$Sheet
+S 2550 4950 700  300 
+U 58C4ACF0
+F0 "vreg4" 60
+F1 "vreg.sch" 60
+F2 "+2V5" I R 3250 5050 60 
+F3 "-2V5" I R 3250 5150 60 
+$EndSheet
+Text Notes 3600 4450 0    20   ~ 0
+Used to have 2x1 µF here\nbut vreg has 2x10 µF already
+$Comp
+L PWR_FLAG #FLG023
+U 1 1 58C73E73
+P 7050 2200
+F 0 "#FLG023" H 7050 2295 50  0001 C CNN
+F 1 "PWR_FLAG" H 7050 2380 50  0000 C CNN
+F 2 "" H 7050 2200 50  0000 C CNN
+F 3 "" H 7050 2200 50  0000 C CNN
+	1    7050 2200
+	1    0    0    -1  
+$EndComp
+$Comp
+L +24V #PWR024
+U 1 1 58C75C1D
+P 6600 1700
+F 0 "#PWR024" H 6600 1550 50  0001 C CNN
+F 1 "+24V" H 6600 1840 50  0000 C CNN
+F 2 "" H 6600 1700 50  0000 C CNN
+F 3 "" H 6600 1700 50  0000 C CNN
+	1    6600 1700
+	0    -1   -1   0   
+$EndComp
+Text Label 6800 1950 1    60   ~ 0
+PWM
+$Comp
+L GND #PWR025
+U 1 1 58C75F43
+P 6900 1550
+F 0 "#PWR025" H 6900 1300 50  0001 C CNN
+F 1 "GND" H 6900 1400 50  0000 C CNN
+F 2 "" H 6900 1550 50  0000 C CNN
+F 3 "" H 6900 1550 50  0000 C CNN
+	1    6900 1550
+	1    0    0    -1  
+$EndComp
+$Comp
+L PWR_FLAG #FLG026
+U 1 1 58C76342
+P 6500 1550
+F 0 "#FLG026" H 6500 1645 50  0001 C CNN
+F 1 "PWR_FLAG" H 6500 1730 50  0000 C CNN
+F 2 "" H 6500 1550 50  0000 C CNN
+F 3 "" H 6500 1550 50  0000 C CNN
+	1    6500 1550
+	0    -1   -1   0   
+$EndComp
+$Comp
+L CONN_02X03 P11
+U 1 1 58C768A6
+P 6800 1250
+F 0 "P11" H 6800 1450 50  0000 C CNN
+F 1 "MOTOR" H 6800 1050 50  0000 C CNN
+F 2 "" H 6800 50  50  0001 C CNN
+F 3 "" H 6800 50  50  0000 C CNN
+	1    6800 1250
+	0    1    1    0   
+$EndComp
+$Comp
+L C_Small C18
+U 1 1 58C7911E
+P 9500 3050
+F 0 "C18" H 9510 3120 50  0000 L CNN
+F 1 "10u" H 9510 2970 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 9500 3050 50  0001 C CNN
+F 3 "" H 9500 3050 50  0000 C CNN
+	1    9500 3050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR027
+U 1 1 58C798D2
+P 9600 3050
+F 0 "#PWR027" H 9600 2800 50  0001 C CNN
+F 1 "GND" H 9600 2900 50  0000 C CNN
+F 2 "" H 9600 3050 50  0000 C CNN
+F 3 "" H 9600 3050 50  0000 C CNN
+	1    9600 3050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L C_Small C19
+U 1 1 58C799DF
+P 9500 3900
+F 0 "C19" H 9510 3970 50  0000 L CNN
+F 1 "10u" H 9510 3820 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 9500 3900 50  0001 C CNN
+F 3 "" H 9500 3900 50  0000 C CNN
+	1    9500 3900
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR028
+U 1 1 58C79B0A
+P 9600 3900
+F 0 "#PWR028" H 9600 3650 50  0001 C CNN
+F 1 "GND" H 9600 3750 50  0000 C CNN
+F 2 "" H 9600 3900 50  0000 C CNN
+F 3 "" H 9600 3900 50  0000 C CNN
+	1    9600 3900
+	0    -1   -1   0   
+$EndComp
+$Comp
+L -5V #PWR11
+U 1 1 58B4E255
+P 7900 2650
+F 0 "#PWR11" H 7900 2750 50  0001 C CNN
+F 1 "-5V" H 7900 2800 50  0000 C CNN
+F 2 "" H 7900 2650 50  0000 C CNN
+F 3 "" H 7900 2650 50  0000 C CNN
+	1    7900 2650
+	0    1    1    0   
+$EndComp
+$Comp
+L +5V #PWR029
+U 1 1 58B4E1AF
+P 7900 2050
+F 0 "#PWR029" H 7900 1900 50  0001 C CNN
+F 1 "+5V" H 7900 2190 50  0000 C CNN
+F 2 "" H 7900 2050 50  0000 C CNN
+F 3 "" H 7900 2050 50  0000 C CNN
+	1    7900 2050
+	0    1    1    0   
+$EndComp
+Text Notes 8850 2200 0    60   ~ 0
+MAX504 tolerates +-4.5 V, aim for +-4.6 V\nCurrent: 0.4  mA + 2/10k + 0.001 ≃ 1 mA\n(5-4.6)/1e-3 = 400 ≃ 390\n3.3^2/390 = 28 mW
+$Comp
+L R_Small R34
+U 1 1 58CDFB31
+P 9350 2600
+F 0 "R34" H 9380 2620 50  0000 L CNN
+F 1 "390" H 9380 2560 50  0000 L CNN
+F 2 "Resistors_SMD:R_2010" H 9350 2600 50  0001 C CNN
+F 3 "" H 9350 2600 50  0000 C CNN
+	1    9350 2600
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R37
+U 1 1 58CE0570
+P 9350 4200
+F 0 "R37" H 9380 4220 50  0000 L CNN
+F 1 "390" H 9380 4160 50  0000 L CNN
+F 2 "Resistors_SMD:R_2010" H 9350 4200 50  0001 C CNN
+F 3 "" H 9350 4200 50  0000 C CNN
+	1    9350 4200
+	1    0    0    -1  
+$EndComp
+Text Notes 2700 7450 0    60   ~ 0
+AD5551: external ref, bipolar\nAD7304: external ref, quad, bipolar\nAD7249: internal ref, dual, bipolar (+-15 Vsupply!), pricey, W-SOIC finns i lager (farnell)\nAD5722R: alternative to AD7249, TSSOP :(\nDAC2932: fairly complex..\nLTC1650: external ref, +-5V, 16-bit\nSLAS269F: internal ref, octal, bipolar\nDAC714: internal ref, single, bipolar, +-11.4 minimum :(\nMAX526: extern ref, parallel, bipolar\nMAX504ESD: internal ref, bipolar, good accuracy, -40..85°C, in stock @ farnell\nUse SPDT switch to toggle between DAC and GND
+$Comp
+L PWR_FLAG #FLG030
+U 1 1 58CF3BAA
+P 9150 4150
+F 0 "#FLG030" H 9150 4245 50  0001 C CNN
+F 1 "PWR_FLAG" H 9150 4330 50  0000 C CNN
+F 2 "" H 9150 4150 50  0000 C CNN
+F 3 "" H 9150 4150 50  0000 C CNN
+	1    9150 4150
+	-1   0    0    1   
+$EndComp
+$Comp
+L PWR_FLAG #FLG031
+U 1 1 58CF414B
+P 9650 2650
+F 0 "#FLG031" H 9650 2745 50  0001 C CNN
+F 1 "PWR_FLAG" H 9650 2830 50  0000 C CNN
+F 2 "" H 9650 2650 50  0000 C CNN
+F 3 "" H 9650 2650 50  0000 C CNN
+	1    9650 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_02X17 P12
+U 1 1 58CEB5AA
+P 6400 2850
+F 0 "P12" H 6400 3750 50  0000 C CNN
+F 1 "CONN_02X17" V 6400 2850 50  0000 C CNN
+F 2 "" H 6400 1750 50  0001 C CNN
+F 3 "" H 6400 1750 50  0000 C CNN
+F 4 "Würth" H 6400 2850 60  0001 C CNN "Mfg. Name"
+F 5 "61003421821" H 6400 2850 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-24-852" H 6400 2850 60  0001 C CNN "1st Distrib. PN"
+F 7 "https://www.elfa.se/sv/honlist-34p-smd-dubbelradigt-raka-wuerth-elektronik-61003421821/p/30024852" H 6400 2850 60  0001 C CNN "1st Distrib. Link"
+	1    6400 2850
+	1    0    0    -1  
+$EndComp
+Text GLabel 5450 2800 1    60   Input ~ 0
+SCLK
+Text GLabel 7700 3500 0    60   Input ~ 0
+SCLK
+Text HLabel 7800 5950 2    60   Input ~ 0
+DIN
+Text GLabel 7350 3700 3    60   Input ~ 0
+/CS_DACS
+Text Notes 7650 4800 0    60   ~ 0
+Daisy chain with optional MAX504 in tachometer circuit
+$Comp
+L R_Small R38
+U 1 1 58D40091
+P 6000 3150
+F 0 "R38" V 6050 3250 50  0000 L CNN
+F 1 "50" V 6000 3100 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 6000 3150 50  0001 C CNN
+F 3 "" H 6000 3150 50  0000 C CNN
+	1    6000 3150
+	0    -1   -1   0   
+$EndComp
 Connection ~ 10450 3400
 Connection ~ 10300 3700
 Wire Wire Line
@@ -852,9 +1111,9 @@ Wire Wire Line
 Wire Wire Line
 	3550 3800 3550 3900
 Wire Wire Line
-	3350 5500 3350 4100
+	3350 6150 3350 4100
 Wire Wire Line
-	7800 5500 3350 5500
+	7800 6150 3350 6150
 Wire Wire Line
 	4250 4200 4150 4200
 Connection ~ 7800 2050
@@ -877,9 +1136,9 @@ Wire Wire Line
 Wire Wire Line
 	6150 2550 7250 2550
 Wire Wire Line
-	7250 2550 7250 5300
+	7250 2550 7250 6050
 Wire Wire Line
-	7250 5300 7800 5300
+	7250 6050 7800 6050
 Wire Wire Line
 	2250 3700 2250 3600
 Wire Wire Line
@@ -934,7 +1193,9 @@ Wire Wire Line
 Wire Wire Line
 	5250 3050 6650 3050
 Wire Wire Line
-	5250 3150 6650 3150
+	5250 3150 5900 3150
+Wire Wire Line
+	6100 3150 6650 3150
 Wire Wire Line
 	5250 3250 6650 3250
 Wire Wire Line
@@ -1102,19 +1363,19 @@ Wire Wire Line
 Wire Wire Line
 	7600 3400 7950 3400
 Wire Wire Line
-	7650 3500 7950 3500
+	7700 3500 7950 3500
 Wire Wire Line
 	7950 3600 7350 3600
 Wire Wire Line
-	7350 2650 7350 3600
+	7350 2650 7350 3700
 Wire Wire Line
 	6150 2650 7350 2650
 Wire Wire Line
 	10300 3300 10350 3300
 Wire Wire Line
-	10350 2750 10350 3300
+	10350 3300 10350 2750
 Wire Wire Line
-	6150 2750 10350 2750
+	10350 2750 6150 2750
 Wire Wire Line
 	5700 5200 5850 5200
 Wire Wire Line
@@ -1145,42 +1406,9 @@ Connection ~ 7250 2350
 Wire Wire Line
 	7450 2450 7450 2200
 Connection ~ 7450 2450
-$Comp
-L PWR_FLAG #FLG020
-U 1 1 58C457DD
-P 6100 3800
-F 0 "#FLG020" H 6100 3895 50  0001 C CNN
-F 1 "PWR_FLAG" H 6100 3980 50  0000 C CNN
-F 2 "" H 6100 3800 50  0000 C CNN
-F 3 "" H 6100 3800 50  0000 C CNN
-	1    6100 3800
-	-1   0    0    1   
-$EndComp
-$Comp
-L PWR_FLAG #FLG021
-U 1 1 58C459C4
-P 5200 4400
-F 0 "#FLG021" H 5200 4495 50  0001 C CNN
-F 1 "PWR_FLAG" H 5200 4580 50  0000 C CNN
-F 2 "" H 5200 4400 50  0000 C CNN
-F 3 "" H 5200 4400 50  0000 C CNN
-	1    5200 4400
-	-1   0    0    1   
-$EndComp
 Wire Wire Line
 	5200 4400 5200 4250
 Connection ~ 5200 4250
-$Comp
-L PWR_FLAG #FLG022
-U 1 1 58C4625E
-P 5450 5050
-F 0 "#FLG022" H 5450 5145 50  0001 C CNN
-F 1 "PWR_FLAG" H 5450 5230 50  0000 C CNN
-F 2 "" H 5450 5050 50  0000 C CNN
-F 3 "" H 5450 5050 50  0000 C CNN
-	1    5450 5050
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	5450 5050 5450 5100
 Connection ~ 5450 5100
@@ -1200,34 +1428,8 @@ Wire Wire Line
 	3550 5050 3250 5050
 Wire Wire Line
 	4150 5150 3250 5150
-$Sheet
-S 550  3050 700  300 
-U 58C4A8D4
-F0 "vreg2" 60
-F1 "vreg.sch" 60
-F2 "+2V5" I R 1250 3150 60 
-F3 "-2V5" I R 1250 3250 60 
-$EndSheet
-$Sheet
-S 550  3600 700  300 
-U 58C4AA7C
-F0 "vreg3" 60
-F1 "vreg.sch" 60
-F2 "+2V5" I R 1250 3700 60 
-F3 "-2V5" I R 1250 3800 60 
-$EndSheet
-$Sheet
-S 2550 4950 700  300 
-U 58C4ACF0
-F0 "vreg4" 60
-F1 "vreg.sch" 60
-F2 "+2V5" I R 3250 5050 60 
-F3 "-2V5" I R 3250 5150 60 
-$EndSheet
 Wire Wire Line
 	4150 4550 4550 4550
-Text Notes 3600 4450 0    20   ~ 0
-Used to have 2x1 µF here\nbut vreg has 2x10 µF already
 Wire Wire Line
 	6150 2450 7650 2450
 Wire Wire Line
@@ -1258,17 +1460,6 @@ Connection ~ 6650 2550
 Connection ~ 6650 2450
 Connection ~ 6650 2350
 Connection ~ 6650 2250
-$Comp
-L PWR_FLAG #FLG023
-U 1 1 58C73E73
-P 7050 2200
-F 0 "#FLG023" H 7050 2295 50  0001 C CNN
-F 1 "PWR_FLAG" H 7050 2380 50  0000 C CNN
-F 2 "" H 7050 2200 50  0000 C CNN
-F 3 "" H 7050 2200 50  0000 C CNN
-	1    7050 2200
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	7050 2200 7050 2250
 Connection ~ 7050 2250
@@ -1284,161 +1475,25 @@ Wire Wire Line
 	6700 1000 6700 2050
 Connection ~ 6650 2050
 Connection ~ 6650 2150
-$Comp
-L +24V #PWR024
-U 1 1 58C75C1D
-P 6600 1700
-F 0 "#PWR024" H 6600 1550 50  0001 C CNN
-F 1 "+24V" H 6600 1840 50  0000 C CNN
-F 2 "" H 6600 1700 50  0000 C CNN
-F 3 "" H 6600 1700 50  0000 C CNN
-	1    6600 1700
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	6600 1700 6700 1700
 Connection ~ 6700 1700
-Text Label 6800 1950 1    60   ~ 0
-PWM
-$Comp
-L GND #PWR025
-U 1 1 58C75F43
-P 6900 1550
-F 0 "#PWR025" H 6900 1300 50  0001 C CNN
-F 1 "GND" H 6900 1400 50  0000 C CNN
-F 2 "" H 6900 1550 50  0000 C CNN
-F 3 "" H 6900 1550 50  0000 C CNN
-	1    6900 1550
-	1    0    0    -1  
-$EndComp
-$Comp
-L PWR_FLAG #FLG026
-U 1 1 58C76342
-P 6500 1550
-F 0 "#FLG026" H 6500 1645 50  0001 C CNN
-F 1 "PWR_FLAG" H 6500 1730 50  0000 C CNN
-F 2 "" H 6500 1550 50  0000 C CNN
-F 3 "" H 6500 1550 50  0000 C CNN
-	1    6500 1550
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	6500 1550 6700 1550
 Connection ~ 6700 1550
-$Comp
-L CONN_02X03 P11
-U 1 1 58C768A6
-P 6800 1250
-F 0 "P11" H 6800 1450 50  0000 C CNN
-F 1 "MOTOR" H 6800 1050 50  0000 C CNN
-F 2 "" H 6800 50  50  0001 C CNN
-F 3 "" H 6800 50  50  0000 C CNN
-	1    6800 1250
-	0    1    1    0   
-$EndComp
 Connection ~ 6700 1500
 Connection ~ 6800 1500
 Wire Wire Line
 	6900 1000 6900 1550
 Connection ~ 6900 1500
-$Comp
-L C_Small C18
-U 1 1 58C7911E
-P 9500 3050
-F 0 "C18" H 9510 3120 50  0000 L CNN
-F 1 "10u" H 9510 2970 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 9500 3050 50  0001 C CNN
-F 3 "" H 9500 3050 50  0000 C CNN
-	1    9500 3050
-	0    -1   -1   0   
-$EndComp
-$Comp
-L GND #PWR027
-U 1 1 58C798D2
-P 9600 3050
-F 0 "#PWR027" H 9600 2800 50  0001 C CNN
-F 1 "GND" H 9600 2900 50  0000 C CNN
-F 2 "" H 9600 3050 50  0000 C CNN
-F 3 "" H 9600 3050 50  0000 C CNN
-	1    9600 3050
-	0    -1   -1   0   
-$EndComp
-$Comp
-L C_Small C19
-U 1 1 58C799DF
-P 9500 3900
-F 0 "C19" H 9510 3970 50  0000 L CNN
-F 1 "10u" H 9510 3820 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 9500 3900 50  0001 C CNN
-F 3 "" H 9500 3900 50  0000 C CNN
-	1    9500 3900
-	0    -1   -1   0   
-$EndComp
-$Comp
-L GND #PWR028
-U 1 1 58C79B0A
-P 9600 3900
-F 0 "#PWR028" H 9600 3650 50  0001 C CNN
-F 1 "GND" H 9600 3750 50  0000 C CNN
-F 2 "" H 9600 3900 50  0000 C CNN
-F 3 "" H 9600 3900 50  0000 C CNN
-	1    9600 3900
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	9350 3900 9400 3900
 Connection ~ 9350 3900
 Wire Wire Line
 	9400 3050 9350 3050
 Connection ~ 9350 3050
-$Comp
-L -5V #PWR11
-U 1 1 58B4E255
-P 7900 2650
-F 0 "#PWR11" H 7900 2750 50  0001 C CNN
-F 1 "-5V" H 7900 2800 50  0000 C CNN
-F 2 "" H 7900 2650 50  0000 C CNN
-F 3 "" H 7900 2650 50  0000 C CNN
-	1    7900 2650
-	0    1    1    0   
-$EndComp
-$Comp
-L +5V #PWR029
-U 1 1 58B4E1AF
-P 7900 2050
-F 0 "#PWR029" H 7900 1900 50  0001 C CNN
-F 1 "+5V" H 7900 2190 50  0000 C CNN
-F 2 "" H 7900 2050 50  0000 C CNN
-F 3 "" H 7900 2050 50  0000 C CNN
-	1    7900 2050
-	0    1    1    0   
-$EndComp
-Text Notes 8850 2200 0    60   ~ 0
-MAX504 tolerates +-4.5 V, aim for +-4.6 V\nCurrent: 0.4  mA + 2/10k + 0.001 ≃ 1 mA\n(5-4.6)/1e-3 = 400 ≃ 390\n3.3^2/390 = 28 mW
-$Comp
-L R_Small R34
-U 1 1 58CDFB31
-P 9350 2600
-F 0 "R34" H 9380 2620 50  0000 L CNN
-F 1 "390" H 9380 2560 50  0000 L CNN
-F 2 "Resistors_SMD:R_2010" H 9350 2600 50  0001 C CNN
-F 3 "" H 9350 2600 50  0000 C CNN
-	1    9350 2600
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	9350 2500 9350 2450
-$Comp
-L R_Small R37
-U 1 1 58CE0570
-P 9350 4200
-F 0 "R37" H 9380 4220 50  0000 L CNN
-F 1 "390" H 9380 4160 50  0000 L CNN
-F 2 "Resistors_SMD:R_2010" H 9350 4200 50  0001 C CNN
-F 3 "" H 9350 4200 50  0000 C CNN
-	1    9350 4200
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	9350 4350 9350 4300
 Wire Wire Line
@@ -1446,53 +1501,24 @@ Wire Wire Line
 Wire Wire Line
 	7600 2850 9350 2850
 Connection ~ 9350 2850
-Text Notes 2700 7450 0    60   ~ 0
-AD5551: external ref, bipolar\nAD7304: external ref, quad, bipolar\nAD7249: internal ref, dual, bipolar (+-15 Vsupply!), pricey, W-SOIC finns i lager (farnell)\nAD5722R: alternative to AD7249, TSSOP :(\nDAC2932: fairly complex..\nLTC1650: external ref, +-5V, 16-bit\nSLAS269F: internal ref, octal, bipolar\nDAC714: internal ref, single, bipolar, +-11.4 minimum :(\nMAX526: extern ref, parallel, bipolar\nMAX504ESD: internal ref, bipolar, good accuracy, -40..85°C, in stock @ farnell\nUse SPDT switch to toggle between DAC and GND
-$Comp
-L PWR_FLAG #FLG030
-U 1 1 58CF3BAA
-P 9150 4150
-F 0 "#FLG030" H 9150 4245 50  0001 C CNN
-F 1 "PWR_FLAG" H 9150 4330 50  0000 C CNN
-F 2 "" H 9150 4150 50  0000 C CNN
-F 3 "" H 9150 4150 50  0000 C CNN
-	1    9150 4150
-	-1   0    0    1   
-$EndComp
 Wire Wire Line
 	9150 4150 9150 4000
 Wire Wire Line
 	9150 4000 9350 4000
 Connection ~ 9350 4000
-$Comp
-L PWR_FLAG #FLG031
-U 1 1 58CF414B
-P 9650 2650
-F 0 "#FLG031" H 9650 2745 50  0001 C CNN
-F 1 "PWR_FLAG" H 9650 2830 50  0000 C CNN
-F 2 "" H 9650 2650 50  0000 C CNN
-F 3 "" H 9650 2650 50  0000 C CNN
-	1    9650 2650
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	9650 2650 9650 2800
 Wire Wire Line
 	9650 2800 9350 2800
 Connection ~ 9350 2800
-$Comp
-L CONN_02X17 P12
-U 1 1 58CEB5AA
-P 6400 2850
-F 0 "P12" H 6400 3750 50  0000 C CNN
-F 1 "CONN_02X17" V 6400 2850 50  0000 C CNN
-F 2 "" H 6400 1750 50  0000 C CNN
-F 3 "" H 6400 1750 50  0000 C CNN
-F 4 "Würth" H 6400 2850 60  0001 C CNN "Mfg. Name"
-F 5 "61003421821" H 6400 2850 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-24-852" H 6400 2850 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/honlist-34p-smd-dubbelradigt-raka-wuerth-elektronik-61003421821/p/30024852" H 6400 2850 60  0001 C CNN "1st Distrib. Link"
-	1    6400 2850
-	1    0    0    -1  
-$EndComp
+Wire Wire Line
+	5450 3150 5450 2800
+Connection ~ 5450 3150
+Wire Wire Line
+	7800 5950 7600 5950
+Wire Wire Line
+	7600 5950 7600 3700
+Wire Wire Line
+	7600 3700 7950 3700
+Connection ~ 7350 3600
 $EndSCHEMATC
