@@ -636,8 +636,8 @@ F 3 "" H 2450 2000 50  0000 C CNN
 	1    2450 2000
 	1    0    0    -1  
 $EndComp
-Text Notes 1800 2850 0    60   ~ 0
-Run ADC synchronous with CPU
+Text Notes 1300 3200 0    39   ~ 0
+Run ADC synchronous with CPU\nA few words on impedance:\nThe 74AHC1G125GW can drive 3.3/0.025 = 132 Ohm\nA 0.3 mm trace has 127 Ohm impedance, so would match well\n0.5 mm is a bit lower, around 110 Ohm\nHence we don't need to do much to avoid reflection,\nwhich matches the problem-free behavior we've had so far
 Text Label 7100 5550 2    60   ~ 0
 /CS_ADCa
 Text Label 7100 5650 2    60   ~ 0
@@ -985,17 +985,6 @@ F 3 "" H 10250 3000 50  0000 C CNN
 	1    10250 3000
 	1    0    0    -1  
 $EndComp
-$Comp
-L Micro_SD_Card CON2
-U 1 1 58CF57BC
-P 10250 4350
-F 0 "CON2" H 9600 4950 50  0000 C CNN
-F 1 "Micro_SD_Card" H 10900 4950 50  0000 R CNN
-F 2 "" H 11400 4650 50  0001 C CNN
-F 3 "" H 10250 4350 50  0000 C CNN
-	1    10250 4350
-	1    0    0    -1  
-$EndComp
 Text GLabel 3300 5350 0    60   Input ~ 0
 TACH0
 Text GLabel 3300 5450 0    60   Input ~ 0
@@ -1072,4 +1061,6 @@ Connection ~ 1250 6850
 Wire Wire Line
 	1200 7050 1250 7050
 Connection ~ 1250 7050
+Text Notes 3450 1650 0    60   ~ 0
+Supply current > 10 mA (table 162)
 $EndSCHEMATC
