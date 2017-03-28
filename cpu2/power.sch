@@ -1225,4 +1225,6 @@ F 3 "" H 8650 3450 50  0000 C CNN
 	1    8650 3450
 	0    1    1    0   
 $EndComp
+Text Notes 3800 6200 0    60   ~ 0
+TODO: Should A or B be the larger one?
 $EndSCHEMATC
