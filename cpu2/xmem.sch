@@ -127,10 +127,10 @@ F 5 "http://www.digikey.se/product-detail/en/idt-integrated-device-technology-in
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR029
+L VCC #PWR032
 U 1 1 57FA4515
 P 6950 3950
-F 0 "#PWR029" H 6950 3800 50  0001 C CNN
+F 0 "#PWR032" H 6950 3800 50  0001 C CNN
 F 1 "VCC" H 6950 4100 50  0000 C CNN
 F 2 "" H 6950 3950 50  0000 C CNN
 F 3 "" H 6950 3950 50  0000 C CNN
@@ -138,10 +138,10 @@ F 3 "" H 6950 3950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR030
+L +3.3V #PWR033
 U 1 1 57FA452D
 P 6650 3950
-F 0 "#PWR030" H 6650 3800 50  0001 C CNN
+F 0 "#PWR033" H 6650 3800 50  0001 C CNN
 F 1 "+3.3V" H 6650 4090 50  0000 C CNN
 F 2 "" H 6650 3950 50  0000 C CNN
 F 3 "" H 6650 3950 50  0000 C CNN
@@ -159,7 +159,7 @@ F 3 "" H 6950 4350 50  0000 C CNN
 	1    6950 4350
 	1    0    0    -1  
 $EndComp
-Text Notes 7250 4350 0    60   ~ 0
+Text Notes 7500 4400 0    60   ~ 0
 71V124SA12YG = 10..140 mA (83 MHz)\nGuess linear in frequency -> 23 mA\nSN74AHC573 seems to be 4 mA\n(3.3-3.0)/27mA = 11 Ohm\n3.3^2/11 = 1.0 W
 $Comp
 L R_Small R19
@@ -189,7 +189,7 @@ Wire Wire Line
 	6900 4200 6950 4200
 Connection ~ 6950 4200
 Wire Wire Line
-	6900 4000 6950 4000
+	6900 4000 7250 4000
 Connection ~ 6950 4000
 Wire Wire Line
 	6650 3950 6650 4200
@@ -199,10 +199,10 @@ Wire Wire Line
 	6700 4000 6650 4000
 Connection ~ 6650 4000
 $Comp
-L GND #PWR031
+L GND #PWR034
 U 1 1 58D97560
 P 6950 4450
-F 0 "#PWR031" H 6950 4200 50  0001 C CNN
+F 0 "#PWR034" H 6950 4200 50  0001 C CNN
 F 1 "GND" H 6950 4300 50  0000 C CNN
 F 2 "" H 6950 4450 50  0000 C CNN
 F 3 "" H 6950 4450 50  0000 C CNN
@@ -218,8 +218,32 @@ Wire Wire Line
 Wire Wire Line
 	1750 4450 3200 4450
 Connection ~ 1750 3650
-Text GLabel 3200 4250 0    60   Input ~ 0
-A16
 Text Notes 550  3950 0    60   ~ 0
 /EN_XMEM purpose: try\nto save some power
+$Comp
+L PWR_FLAG #FLG035
+U 1 1 58DB376A
+P 7250 3950
+F 0 "#FLG035" H 7250 4045 50  0001 C CNN
+F 1 "PWR_FLAG" H 7250 4130 50  0000 C CNN
+F 2 "" H 7250 3950 50  0000 C CNN
+F 3 "" H 7250 3950 50  0000 C CNN
+	1    7250 3950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7250 4000 7250 3950
+$Comp
+L GND #PWR036
+U 1 1 58DBA48F
+P 3000 4250
+F 0 "#PWR036" H 3000 4000 50  0001 C CNN
+F 1 "GND" H 3000 4100 50  0000 C CNN
+F 2 "" H 3000 4250 50  0000 C CNN
+F 3 "" H 3000 4250 50  0000 C CNN
+	1    3000 4250
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3000 4250 3200 4250
 $EndSCHEMATC
