@@ -81,21 +81,6 @@ Text GLabel 1800 3350 0    60   Input ~ 0
 AD7
 Text GLabel 1800 3550 0    60   Input ~ 0
 ALE
-$Comp
-L GND #PWR026
-U 1 1 57F80B40
-P 1750 3700
-F 0 "#PWR026" H 1750 3450 50  0001 C CNN
-F 1 "GND" H 1750 3550 50  0000 C CNN
-F 2 "" H 1750 3700 50  0000 C CNN
-F 3 "" H 1750 3700 50  0000 C CNN
-	1    1750 3700
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	1750 3700 1750 3650
-Wire Wire Line
-	1750 3650 1800 3650
 Text GLabel 4600 2650 2    60   Input ~ 0
 AD0
 Text GLabel 4600 2750 2    60   Input ~ 0
@@ -112,17 +97,6 @@ Text GLabel 4600 3250 2    60   Input ~ 0
 AD6
 Text GLabel 4600 3350 2    60   Input ~ 0
 AD7
-$Comp
-L GND #PWR027
-U 1 1 57F80F06
-P 3200 4450
-F 0 "#PWR027" H 3200 4200 50  0001 C CNN
-F 1 "GND" H 3200 4300 50  0000 C CNN
-F 2 "" H 3200 4450 50  0000 C CNN
-F 3 "" H 3200 4450 50  0000 C CNN
-	1    3200 4450
-	0    1    1    0   
-$EndComp
 Text GLabel 3200 3450 0    60   Input ~ 0
 A8
 Text GLabel 3200 3550 0    60   Input ~ 0
@@ -153,10 +127,10 @@ F 5 "http://www.digikey.se/product-detail/en/idt-integrated-device-technology-in
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR028
+L VCC #PWR029
 U 1 1 57FA4515
 P 6950 3950
-F 0 "#PWR028" H 6950 3800 50  0001 C CNN
+F 0 "#PWR029" H 6950 3800 50  0001 C CNN
 F 1 "VCC" H 6950 4100 50  0000 C CNN
 F 2 "" H 6950 3950 50  0000 C CNN
 F 3 "" H 6950 3950 50  0000 C CNN
@@ -164,18 +138,16 @@ F 3 "" H 6950 3950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR029
+L +3.3V #PWR030
 U 1 1 57FA452D
 P 6650 3950
-F 0 "#PWR029" H 6650 3800 50  0001 C CNN
+F 0 "#PWR030" H 6650 3800 50  0001 C CNN
 F 1 "+3.3V" H 6650 4090 50  0000 C CNN
 F 2 "" H 6650 3950 50  0000 C CNN
 F 3 "" H 6650 3950 50  0000 C CNN
 	1    6650 3950
 	1    0    0    -1  
 $EndComp
-Text HLabel 3200 4250 0    60   Input ~ 0
-A16
 $Comp
 L C_Small C3
 U 1 1 58D96905
@@ -190,23 +162,23 @@ $EndComp
 Text Notes 7250 4350 0    60   ~ 0
 71V124SA12YG = 10..140 mA (83 MHz)\nGuess linear in frequency -> 23 mA\nSN74AHC573 seems to be 4 mA\n(3.3-3.0)/27mA = 11 Ohm\n3.3^2/11 = 1.0 W
 $Comp
-L R_Small R?
+L R_Small R19
 U 1 1 58D97222
 P 6800 4200
-F 0 "R?" H 6830 4220 50  0000 L CNN
+F 0 "R19" H 6830 4220 50  0000 L CNN
 F 1 "22" H 6830 4160 50  0000 L CNN
-F 2 "" H 6800 4200 50  0000 C CNN
+F 2 "Resistors_SMD:R_2010" H 6800 4200 50  0001 C CNN
 F 3 "" H 6800 4200 50  0000 C CNN
 	1    6800 4200
 	0    1    1    0   
 $EndComp
 $Comp
-L R_Small R?
+L R_Small R18
 U 1 1 58D974AA
 P 6800 4000
-F 0 "R?" H 6830 4020 50  0000 L CNN
+F 0 "R18" H 6830 4020 50  0000 L CNN
 F 1 "22" H 6830 3960 50  0000 L CNN
-F 2 "" H 6800 4000 50  0000 C CNN
+F 2 "Resistors_SMD:R_2010" H 6800 4000 50  0001 C CNN
 F 3 "" H 6800 4000 50  0000 C CNN
 	1    6800 4000
 	0    1    1    0   
@@ -227,14 +199,27 @@ Wire Wire Line
 	6700 4000 6650 4000
 Connection ~ 6650 4000
 $Comp
-L GND #PWR?
+L GND #PWR031
 U 1 1 58D97560
 P 6950 4450
-F 0 "#PWR?" H 6950 4200 50  0001 C CNN
+F 0 "#PWR031" H 6950 4200 50  0001 C CNN
 F 1 "GND" H 6950 4300 50  0000 C CNN
 F 2 "" H 6950 4450 50  0000 C CNN
 F 3 "" H 6950 4450 50  0000 C CNN
 	1    6950 4450
 	1    0    0    -1  
 $EndComp
+Text GLabel 1700 3650 0    60   Input ~ 0
+/EN_XMEM
+Wire Wire Line
+	1800 3650 1700 3650
+Wire Wire Line
+	1750 3650 1750 4450
+Wire Wire Line
+	1750 4450 3200 4450
+Connection ~ 1750 3650
+Text GLabel 3200 4250 0    60   Input ~ 0
+A16
+Text Notes 550  3950 0    60   ~ 0
+/EN_XMEM purpose: try\nto save some power
 $EndSCHEMATC
