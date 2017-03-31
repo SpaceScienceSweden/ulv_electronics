@@ -2,8 +2,8 @@
 
   (general
     (links 330)
-    (no_connects 40)
-    (area 57.499499 57.499499 142.500501 142.500501)
+    (no_connects 44)
+    (area 21.064286 35.325 171.425 142.515779)
     (thickness 1.6)
     (drawings 68)
     (tracks 1474)
@@ -4537,7 +4537,7 @@
   )
 
   (module SCUBE:SG-2BC (layer F.Cu) (tedit 5849C9B3) (tstamp 58D5BC57)
-    (at 118 44)
+    (at 121.5 62.760908)
     (path /58A6604F/58A66857)
     (fp_text reference IR1 (at 0 3) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
