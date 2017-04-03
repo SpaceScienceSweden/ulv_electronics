@@ -448,9 +448,13 @@ L Micro_SD_Card CON1
 U 1 1 58CF56C1
 P 10150 2600
 F 0 "CON1" H 9500 3200 50  0000 C CNN
-F 1 "Micro_SD_Card" H 10800 3200 50  0000 R CNN
-F 2 "" H 11300 2900 50  0001 C CNN
-F 3 "" H 10150 2600 50  0000 C CNN
+F 1 "502774-0891" H 10800 3200 50  0000 R CNN
+F 2 "SCUBE:Molex_502774-0891" H 11300 2900 50  0001 C CNN
+F 3 "http://www.molex.com/pdm_docs/sd/5027740891_sd.pdf" H 10000 1850 50  0000 C CNN
+F 4 "Molex" H 10150 2600 60  0001 C CNN "Mfg. Name"
+F 5 "502774-0891" H 10150 2600 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-76-403" H 10150 2600 60  0001 C CNN "1st Distrib. PN"
+F 7 "https://www.elfa.se/sv/minneskortskontaktdon-microsd-skaermad-push-push-smt-molex-502774-0891/p/30076403" H 10150 2600 60  0001 C CNN "1st Distrib. Link"
 	1    10150 2600
 	1    0    0    -1  
 $EndComp
@@ -1358,4 +1362,6 @@ Wire Wire Line
 Wire Wire Line
 	4050 3850 1600 3850
 Connection ~ 1600 3850
+Text Notes 9700 1950 0    60   ~ 0
+NOTE: reverse-mount
 $EndSCHEMATC
