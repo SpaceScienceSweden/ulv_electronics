@@ -177,19 +177,19 @@ F 3 "" H 6300 3150 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 Text Label 5150 3050 0    60   ~ 0
-VIN
+VLANDER
 Text Label 5150 3550 0    60   ~ 0
 A
 Text Label 5150 3650 0    60   ~ 0
 B
 Text Label 5150 3750 0    60   ~ 0
-MISO
+PDO
 Text Label 5150 3850 0    60   ~ 0
-MOSI
-Text Label 5150 3950 0    60   ~ 0
+PDI
+Text Label 3000 4350 0    60   ~ 0
 SCK
-Text Label 5150 4050 0    60   ~ 0
-RESET
+Text Label 5150 4150 0    60   ~ 0
+/RESET
 $Comp
 L CONN_02X12 P4
 U 1 1 58E26EBE
@@ -237,13 +237,13 @@ $EndComp
 $Comp
 L +3.3V #PWR06
 U 1 1 58E26D24
-P 5250 4400
-F 0 "#PWR06" H 5250 4250 50  0001 C CNN
-F 1 "+3.3V" H 5250 4540 50  0000 C CNN
-F 2 "" H 5250 4400 50  0000 C CNN
-F 3 "" H 5250 4400 50  0000 C CNN
-	1    5250 4400
-	1    0    0    -1  
+P 6150 4050
+F 0 "#PWR06" H 6150 3900 50  0001 C CNN
+F 1 "+3.3V" H 6150 4190 50  0000 C CNN
+F 2 "" H 6150 4050 50  0000 C CNN
+F 3 "" H 6150 4050 50  0000 C CNN
+	1    6150 4050
+	0    1    1    0   
 $EndComp
 $Comp
 L R_Small R1
@@ -272,7 +272,7 @@ Wire Wire Line
 Connection ~ 5100 3050
 Connection ~ 5550 3050
 Wire Wire Line
-	2950 4050 6050 4050
+	2950 4050 6150 4050
 Wire Wire Line
 	2950 3950 6050 3950
 Wire Wire Line
@@ -396,8 +396,6 @@ Connection ~ 4000 4050
 Wire Wire Line
 	5100 4150 6050 4150
 Wire Wire Line
-	5100 4150 5100 4450
-Wire Wire Line
 	3450 4250 5100 4250
 Wire Wire Line
 	4550 4250 4550 4150
@@ -413,12 +411,6 @@ Wire Wire Line
 Wire Wire Line
 	5250 4750 5250 5100
 Wire Wire Line
-	5250 4400 5250 4550
-Wire Wire Line
-	5000 4450 5250 4450
-Connection ~ 5100 4250
-Connection ~ 5250 4450
-Wire Wire Line
 	6050 5100 6400 5100
 Wire Wire Line
 	6400 4950 6400 5150
@@ -428,9 +420,7 @@ Wire Wire Line
 	5250 5100 5850 5100
 Connection ~ 5250 4850
 Wire Wire Line
-	4600 4950 5550 4950
-Wire Wire Line
-	4600 4150 4600 4950
+	4800 4950 5550 4950
 Wire Wire Line
 	2950 4350 4600 4350
 Wire Wire Line
@@ -441,8 +431,7 @@ Connection ~ 4050 4350
 Wire Wire Line
 	3500 4150 3500 4350
 Connection ~ 3500 4350
-Connection ~ 4600 4350
-Text Label 4650 4950 0    60   ~ 0
+Text Label 5150 3950 0    60   ~ 0
 ONEWIRE
 $Comp
 L PWR_FLAG #FLG07
@@ -487,13 +476,28 @@ Connection ~ 6200 3150
 $Comp
 L PWR_FLAG #FLG010
 U 1 1 58E283FB
-P 5000 4450
-F 0 "#FLG010" H 5000 4545 50  0001 C CNN
-F 1 "PWR_FLAG" H 5000 4630 50  0000 C CNN
-F 2 "" H 5000 4450 50  0000 C CNN
-F 3 "" H 5000 4450 50  0000 C CNN
-	1    5000 4450
-	0    -1   -1   0   
+P 6300 3900
+F 0 "#FLG010" H 6300 3995 50  0001 C CNN
+F 1 "PWR_FLAG" H 6300 4080 50  0000 C CNN
+F 2 "" H 6300 3900 50  0000 C CNN
+F 3 "" H 6300 3900 50  0000 C CNN
+	1    6300 3900
+	0    1    1    0   
 $EndComp
-Connection ~ 5100 4450
+Connection ~ 6050 4050
+Wire Wire Line
+	6300 3900 6100 3900
+Wire Wire Line
+	6100 3900 6100 4300
+Connection ~ 6100 4050
+Wire Wire Line
+	5100 4250 5100 4150
+Wire Wire Line
+	6100 4300 5250 4300
+Wire Wire Line
+	5250 4300 5250 4550
+Wire Wire Line
+	4600 4350 4600 4150
+Text Label 4800 4950 0    60   ~ 0
+ONEWIRE
 $EndSCHEMATC
