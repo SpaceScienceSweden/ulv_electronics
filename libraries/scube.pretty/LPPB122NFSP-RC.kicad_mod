@@ -1,4 +1,4 @@
-(module LPPB122NFSP-RC (layer F.Cu) (tedit 58D408E2)
+(module LPPB122NFSP-RC (layer F.Cu) (tedit 58E395F9)
   (fp_text reference REF** (at 8.89 0 90) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)))
   )
@@ -33,4 +33,6 @@
   (pad 22 smd rect (at 5.715 -2.1) (size 0.76 1.8) (layers F.Cu F.Paste F.Mask))
   (pad 23 smd rect (at 6.985 2.1) (size 0.76 1.8) (layers F.Cu F.Paste F.Mask))
   (pad 24 smd rect (at 6.985 -2.1) (size 0.76 1.8) (layers F.Cu F.Paste F.Mask))
+  (pad "" np_thru_hole circle (at 6.35 0) (size 0.8 0.8) (drill 0.8) (layers *.Cu))
+  (pad "" np_thru_hole circle (at -6.35 0) (size 0.8 0.8) (drill 0.8) (layers *.Cu))
 )
