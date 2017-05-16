@@ -174,7 +174,7 @@ L C_Small C6
 U 1 1 58A6694B
 P 5300 3400
 F 0 "C6" H 5310 3470 50  0000 L CNN
-F 1 "470p" H 5310 3320 50  0000 L CNN
+F 1 "4n7" H 5310 3320 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 5300 3400 50  0001 C CNN
 F 3 "" H 5300 3400 50  0000 C CNN
 	1    5300 3400
@@ -450,13 +450,13 @@ L R_Small R43
 U 1 1 58D3A2A2
 P 5150 3750
 F 0 "R43" H 5180 3770 50  0000 L CNN
-F 1 "10k" H 5180 3710 50  0000 L CNN
+F 1 "0" H 5180 3710 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 5150 3750 50  0001 C CNN
 F 3 "" H 5150 3750 50  0000 C CNN
 	1    5150 3750
 	1    0    0    -1  
 $EndComp
-Text Notes 5000 4750 0    60   ~ 0
+Text Notes 5000 5650 0    60   ~ 0
 Lots of customizability here:\nR43 is fallback in case MAX504 breaks\nReplace with 0 Ohm if not using MAX504\nR40 might be better/simpler way to get RAW_ITACH to a "lagom" level\nDon't populate R20/R43 or MAX504 in this case, obviously
 Wire Wire Line
 	5050 3950 5050 3250
@@ -634,7 +634,7 @@ U 1 1 58D3D0AF
 P 5650 2600
 F 0 "IR2" H 5650 2850 60  0000 C CNN
 F 1 "ITR20001" H 5650 2750 60  0000 C CNN
-F 2 "SCUBE:ITR20001-smd" H 5650 2600 60  0001 C CNN
+F 2 "SCUBE:LPPB032NFSP-RC-ITR20001" H 5650 2600 60  0001 C CNN
 F 3 "" H 5650 2600 60  0000 C CNN
 F 4 "175-34-043" H 5650 2600 60  0001 C CNN "1st Distrib. PN"
 F 5 "https://www.elfa.se/sv/reflexdetektor-kodenshi-sg-2bc/p/17534043" H 5650 2600 60  0001 C CNN "1st Distrib. Link"
@@ -689,7 +689,7 @@ L R_Small R40
 U 1 1 58D3DCE4
 P 5700 3650
 F 0 "R40" H 5730 3670 50  0000 L CNN
-F 1 "220k" H 5730 3610 50  0000 L CNN
+F 1 "open" H 5730 3610 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 5700 3650 50  0001 C CNN
 F 3 "" H 5700 3650 50  0000 C CNN
 	1    5700 3650
@@ -702,7 +702,7 @@ L C_Small C47
 U 1 1 58D41B0B
 P 5950 3600
 F 0 "C47" H 5960 3670 50  0000 L CNN
-F 1 "220p" H 5960 3520 50  0000 L CNN
+F 1 "open" H 5960 3520 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 5950 3600 50  0001 C CNN
 F 3 "" H 5950 3600 50  0000 C CNN
 	1    5950 3600
@@ -776,4 +776,6 @@ Wire Wire Line
 Connection ~ 9050 2850
 Text Notes 9300 3200 0    60   ~ 0
 (3.3-2.0)/1200 = 1 mA
+Text Notes 5000 4950 0    60   ~ 0
+Experiment results:\n680 ohm drive, 100k shunt to GND, 3 mm distance -> 0.8 .. 3.3 V swing\n1k2 drive seems OK too\n470 pF seems a bit on the low side\n47 nF was way too much\ncutoff @ 3rd harmonic, 100 Hz signal:\nC <= 1/(2*pi*100e3*300) = 5.3 n -> 4n7 should be perfect
 $EndSCHEMATC

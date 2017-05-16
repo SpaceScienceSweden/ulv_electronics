@@ -1573,10 +1573,9 @@ Wire Wire Line
 	7000 900  7400 900 
 Connection ~ 7000 900 
 Connection ~ 7250 900 
-Text Notes 7000 1150 1    60   ~ 0
-Gray\nGreen\nWhite\nBlack\nRed
+Text Notes 7000 1200 1    60   ~ 0
+Enable\nMonitor\nSpeed\nGND\n+24V
 NoConn ~ 6700 850 
-NoConn ~ 6600 850 
 Wire Wire Line
 	6900 1200 6900 850 
 $Comp
@@ -1603,4 +1602,9 @@ F 3 "" H 7250 1150 50  0000 C CNN
 $EndComp
 Text Notes 7450 1100 0    60   ~ 0
 50V 10µF 1210
+Wire Wire Line
+	6600 850  6600 1400
+Wire Wire Line
+	6600 1400 7000 1400
+Connection ~ 7000 1400
 $EndSCHEMATC
