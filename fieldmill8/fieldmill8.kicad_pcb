@@ -3,7 +3,7 @@
   (general
     (links 351)
     (no_connects 0)
-    (area 57.499499 57.499499 142.500501 142.500501)
+    (area 57.499499 57.499499 142.500501 142.6)
     (thickness 1.6)
     (drawings 113)
     (tracks 2180)
@@ -74,7 +74,7 @@
     (grid_origin 100 100)
     (visible_elements FFFFEF7F)
     (pcbplotparams
-      (layerselection 0x010f0_80000001)
+      (layerselection 0x011d0_80000001)
       (usegerberextensions true)
       (excludeedgelayer true)
       (linewidth 0.100000)
@@ -88,7 +88,7 @@
       (hpglpenoverlay 2)
       (psnegative false)
       (psa4output false)
-      (plotreference false)
+      (plotreference true)
       (plotvalue false)
       (plotinvisibletext false)
       (padsonsilk false)
