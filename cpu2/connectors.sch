@@ -337,17 +337,17 @@ Connection ~ 5600 7450
 $Comp
 L CONN_02X12 P1
 U 1 1 58D42ABF
-P 3200 3500
-F 0 "P1" H 3200 4150 50  0000 C CNN
-F 1 "CONN_02X12" V 3200 3500 50  0000 C CNN
-F 2 "SCUBE:FTSH-112-01-L-D-RA" H 3200 2300 50  0001 C CNN
-F 3 "" H 3200 2300 50  0000 C CNN
-F 4 "Samtec" H 3200 3500 60  0001 C CNN "Mfg. Name"
-F 5 "FTSH-112-04-L-D-RA" H 3200 3500 60  0001 C CNN "Mfg. Part Number"
-F 6 "1767213" H 3200 3500 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 3200 3500 60  0001 C CNN "1st Distrib. Link"
-	1    3200 3500
-	1    0    0    -1  
+P 3150 6900
+F 0 "P1" H 3150 7550 50  0000 C CNN
+F 1 "CONN_02X12" V 3150 6900 50  0000 C CNN
+F 2 "SCUBE:FTSH-112-01-L-D-RA" H 3150 5700 50  0001 C CNN
+F 3 "" H 3150 5700 50  0000 C CNN
+F 4 "Samtec" H 3150 6900 60  0001 C CNN "Mfg. Name"
+F 5 "FTSH-112-04-L-D-RA" H 3150 6900 60  0001 C CNN "Mfg. Part Number"
+F 6 "1767213" H 3150 6900 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 3150 6900 60  0001 C CNN "1st Distrib. Link"
+	1    3150 6900
+	1    0    0    1   
 $EndComp
 Wire Wire Line
 	2900 3050 6150 3050
@@ -540,53 +540,8 @@ Connection ~ 2350 4800
 $Comp
 L CONN_02X12 P5
 U 1 1 58D45863
-P 4550 3500
-F 0 "P5" H 4550 4150 50  0000 C CNN
-F 1 "CONN_02X12" V 4550 3500 50  0000 C CNN
-F 2 "SCUBE:FTSH-112-01-L-D-RA" H 4550 2300 50  0001 C CNN
-F 3 "" H 4550 2300 50  0000 C CNN
-F 4 "Samtec" H 4550 3500 60  0001 C CNN "Mfg. Name"
-F 5 "FTSH-112-04-L-D-RA" H 4550 3500 60  0001 C CNN "Mfg. Part Number"
-F 6 "1767213" H 4550 3500 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 4550 3500 60  0001 C CNN "1st Distrib. Link"
-	1    4550 3500
-	1    0    0    -1  
-$EndComp
-$Comp
-L CONN_02X12 P6
-U 1 1 58D458BC
-P 5900 3500
-F 0 "P6" H 5900 4150 50  0000 C CNN
-F 1 "CONN_02X12" V 5900 3500 50  0000 C CNN
-F 2 "SCUBE:FTSH-112-01-L-D-RA" H 5900 2300 50  0001 C CNN
-F 3 "" H 5900 2300 50  0000 C CNN
-F 4 "Samtec" H 5900 3500 60  0001 C CNN "Mfg. Name"
-F 5 "FTSH-112-04-L-D-RA" H 5900 3500 60  0001 C CNN "Mfg. Part Number"
-F 6 "1767213" H 5900 3500 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 5900 3500 60  0001 C CNN "1st Distrib. Link"
-	1    5900 3500
-	1    0    0    -1  
-$EndComp
-$Comp
-L CONN_02X12 P7
-U 1 1 58D4595A
-P 3150 6900
-F 0 "P7" H 3150 7550 50  0000 C CNN
-F 1 "CONN_02X12" V 3150 6900 50  0000 C CNN
-F 2 "SCUBE:FTSH-112-01-L-D-RA" H 3150 5700 50  0001 C CNN
-F 3 "" H 3150 5700 50  0000 C CNN
-F 4 "Samtec" H 3150 6900 60  0001 C CNN "Mfg. Name"
-F 5 "FTSH-112-04-L-D-RA" H 3150 6900 60  0001 C CNN "Mfg. Part Number"
-F 6 "1767213" H 3150 6900 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 3150 6900 60  0001 C CNN "1st Distrib. Link"
-	1    3150 6900
-	1    0    0    -1  
-$EndComp
-$Comp
-L CONN_02X12 P12
-U 1 1 58D45A7C
 P 4500 6900
-F 0 "P12" H 4500 7550 50  0000 C CNN
+F 0 "P5" H 4500 7550 50  0000 C CNN
 F 1 "CONN_02X12" V 4500 6900 50  0000 C CNN
 F 2 "SCUBE:FTSH-112-01-L-D-RA" H 4500 5700 50  0001 C CNN
 F 3 "" H 4500 5700 50  0000 C CNN
@@ -595,13 +550,13 @@ F 5 "FTSH-112-04-L-D-RA" H 4500 6900 60  0001 C CNN "Mfg. Part Number"
 F 6 "1767213" H 4500 6900 60  0001 C CNN "1st Distrib. PN"
 F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 4500 6900 60  0001 C CNN "1st Distrib. Link"
 	1    4500 6900
-	1    0    0    -1  
+	1    0    0    1   
 $EndComp
 $Comp
-L CONN_02X12 P13
-U 1 1 58D45AE0
+L CONN_02X12 P6
+U 1 1 58D458BC
 P 5850 6900
-F 0 "P13" H 5850 7550 50  0000 C CNN
+F 0 "P6" H 5850 7550 50  0000 C CNN
 F 1 "CONN_02X12" V 5850 6900 50  0000 C CNN
 F 2 "SCUBE:FTSH-112-01-L-D-RA" H 5850 5700 50  0001 C CNN
 F 3 "" H 5850 5700 50  0000 C CNN
@@ -610,7 +565,52 @@ F 5 "FTSH-112-04-L-D-RA" H 5850 6900 60  0001 C CNN "Mfg. Part Number"
 F 6 "1767213" H 5850 6900 60  0001 C CNN "1st Distrib. PN"
 F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 5850 6900 60  0001 C CNN "1st Distrib. Link"
 	1    5850 6900
-	1    0    0    -1  
+	1    0    0    1   
+$EndComp
+$Comp
+L CONN_02X12 P7
+U 1 1 58D4595A
+P 3200 3500
+F 0 "P7" H 3200 4150 50  0000 C CNN
+F 1 "CONN_02X12" V 3200 3500 50  0000 C CNN
+F 2 "SCUBE:FTSH-112-01-L-D-RA" H 3200 2300 50  0001 C CNN
+F 3 "" H 3200 2300 50  0000 C CNN
+F 4 "Samtec" H 3200 3500 60  0001 C CNN "Mfg. Name"
+F 5 "FTSH-112-04-L-D-RA" H 3200 3500 60  0001 C CNN "Mfg. Part Number"
+F 6 "1767213" H 3200 3500 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 3200 3500 60  0001 C CNN "1st Distrib. Link"
+	1    3200 3500
+	1    0    0    1   
+$EndComp
+$Comp
+L CONN_02X12 P12
+U 1 1 58D45A7C
+P 4550 3500
+F 0 "P12" H 4550 4150 50  0000 C CNN
+F 1 "CONN_02X12" V 4550 3500 50  0000 C CNN
+F 2 "SCUBE:FTSH-112-01-L-D-RA" H 4550 2300 50  0001 C CNN
+F 3 "" H 4550 2300 50  0000 C CNN
+F 4 "Samtec" H 4550 3500 60  0001 C CNN "Mfg. Name"
+F 5 "FTSH-112-04-L-D-RA" H 4550 3500 60  0001 C CNN "Mfg. Part Number"
+F 6 "1767213" H 4550 3500 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 4550 3500 60  0001 C CNN "1st Distrib. Link"
+	1    4550 3500
+	1    0    0    1   
+$EndComp
+$Comp
+L CONN_02X12 P13
+U 1 1 58D45AE0
+P 5900 3500
+F 0 "P13" H 5900 4150 50  0000 C CNN
+F 1 "CONN_02X12" V 5900 3500 50  0000 C CNN
+F 2 "SCUBE:FTSH-112-01-L-D-RA" H 5900 2300 50  0001 C CNN
+F 3 "" H 5900 2300 50  0000 C CNN
+F 4 "Samtec" H 5900 3500 60  0001 C CNN "Mfg. Name"
+F 5 "FTSH-112-04-L-D-RA" H 5900 3500 60  0001 C CNN "Mfg. Part Number"
+F 6 "1767213" H 5900 3500 60  0001 C CNN "1st Distrib. PN"
+F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 5900 3500 60  0001 C CNN "1st Distrib. Link"
+	1    5900 3500
+	1    0    0    1   
 $EndComp
 Wire Wire Line
 	2450 5150 2450 5100
