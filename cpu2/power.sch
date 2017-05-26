@@ -82,17 +82,6 @@ F 5 "https://www.digikey.se/product-detail/en/recom-power/RS-2405DZ/945-2868-ND/
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CONN_02X04 P15
-U 1 1 58D809C3
-P 2550 4300
-F 0 "P15" H 2550 4550 50  0000 C CNN
-F 1 "CONN_02X04" H 2550 4050 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_2x04" H 2550 3100 50  0001 C CNN
-F 3 "" H 2550 3100 50  0000 C CNN
-	1    2550 4300
-	1    0    0    -1  
-$EndComp
-$Comp
 L Polyfuse_Small F1
 U 1 1 58D80A2E
 P 3550 4150
@@ -460,16 +449,16 @@ $EndComp
 $Comp
 L C_Small C29
 U 1 1 58D89502
-P 4350 4450
-F 0 "C29" H 4360 4520 50  0000 L CNN
-F 1 "10u" H 4360 4370 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1210" H 4350 4450 50  0001 C CNN
-F 3 "" H 4350 4450 50  0000 C CNN
-F 4 "KEMET" H 4350 4450 60  0001 C CNN "Mfg. Name"
-F 5 "C1210C106M5RACTU" H 4350 4450 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-10-788" H 4350 4450 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/kondensator-10-uf-50-vdc-1210-kemet-c1210c106m5ractu/p/30010788" H 4350 4450 60  0001 C CNN "1st Distrib. Link"
-	1    4350 4450
+P 4750 4450
+F 0 "C29" H 4760 4520 50  0000 L CNN
+F 1 "10u" H 4760 4370 50  0000 L CNN
+F 2 "Capacitors_SMD:C_1210" H 4750 4450 50  0001 C CNN
+F 3 "" H 4750 4450 50  0000 C CNN
+F 4 "KEMET" H 4750 4450 60  0001 C CNN "Mfg. Name"
+F 5 "C1210C106M5RACTU" H 4750 4450 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-10-788" H 4750 4450 60  0001 C CNN "1st Distrib. PN"
+F 7 "https://www.elfa.se/sv/kondensator-10-uf-50-vdc-1210-kemet-c1210c106m5ractu/p/30010788" H 4750 4450 60  0001 C CNN "1st Distrib. Link"
+	1    4750 4450
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -680,14 +669,12 @@ Wire Wire Line
 Wire Wire Line
 	3700 4000 3700 4150
 Connection ~ 3700 4150
-Connection ~ 2300 4250
-Connection ~ 2800 4150
 Wire Wire Line
 	4000 4150 4000 4300
 Connection ~ 4000 4150
 Wire Wire Line
-	4350 4150 4350 4350
-Connection ~ 4350 4150
+	4750 4150 4750 4350
+Connection ~ 4750 4150
 Wire Wire Line
 	5050 4150 5050 4350
 Wire Wire Line
@@ -704,8 +691,8 @@ Wire Wire Line
 	4800 4800 4800 4950
 Connection ~ 4800 4800
 Wire Wire Line
-	4350 4550 4350 4800
-Connection ~ 4350 4800
+	4750 4550 4750 4800
+Connection ~ 4750 4800
 Wire Wire Line
 	5050 4800 5050 4550
 Connection ~ 6150 4150
@@ -907,7 +894,6 @@ Wire Wire Line
 	3750 4350 3750 6350
 Wire Wire Line
 	2750 6200 2250 6200
-Connection ~ 2800 4350
 $Comp
 L R_Small R8
 U 1 1 58D9277F
@@ -921,7 +907,6 @@ F 3 "" H 2900 6150 50  0000 C CNN
 $EndComp
 Wire Wire Line
 	2250 6100 2750 6100
-Connection ~ 2800 4450
 $Comp
 L GND #PWR070
 U 1 1 58D92EFA
@@ -1192,9 +1177,9 @@ Text Label 2650 6200 0    60   ~ 0
 A
 Text Label 2650 6100 0    60   ~ 0
 B
-Connection ~ 2300 4350
-Connection ~ 2300 4450
-Connection ~ 2300 4150
+Connection ~ 2400 4350
+Connection ~ 2400 4450
+Connection ~ 2400 4150
 Text GLabel 1200 4250 0    60   Input ~ 0
 PDO
 Text GLabel 1200 4350 0    60   Input ~ 0
@@ -1259,7 +1244,7 @@ Wire Wire Line
 	1150 4450 1700 4450
 Connection ~ 1200 4450
 Wire Wire Line
-	1750 4550 1200 4550
+	1200 4550 1750 4550
 Connection ~ 1700 4550
 Wire Wire Line
 	1200 3750 1800 3750
@@ -1270,9 +1255,9 @@ Wire Wire Line
 Wire Wire Line
 	1850 4350 3750 4350
 Wire Wire Line
-	1850 4350 1850 3650
+	1850 3650 1850 4350
 Wire Wire Line
-	1850 3650 1200 3650
+	1200 3650 1850 3650
 $Comp
 L GND #PWR081
 U 1 1 59084E3C
@@ -1284,8 +1269,63 @@ F 3 "" H 2200 4250 50  0000 C CNN
 	1    2200 4250
 	0    1    1    0   
 $EndComp
-Wire Wire Line
-	2800 4250 2200 4250
 Connection ~ 1700 3650
 Connection ~ 1700 3750
+$Comp
+L CONN_01X04 P15
+U 1 1 59284F76
+P 2600 4300
+F 0 "P15" H 2600 4550 50  0000 C CNN
+F 1 "CONN_01X04" H 2600 4050 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x04" H 2600 4300 50  0001 C CNN
+F 3 "" H 2600 4300 50  0000 C CNN
+	1    2600 4300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2400 4250 2200 4250
+$Comp
+L D_Schottky_Small D8
+U 1 1 59286ECB
+P 3100 3900
+F 0 "D8" H 3050 3980 50  0000 L CNN
+F 1 "SMS240" H 2950 3800 50  0000 L CNN
+F 2 "Diodes_SMD:MELF_Standard" V 3100 3900 50  0001 C CNN
+F 3 "" V 3100 3900 50  0000 C CNN
+F 4 "170-02-496" H 3100 3900 60  0001 C CNN "1st Distrib. PN"
+F 5 "https://www.elfa.se/sv/schottkydiod-40-melf-diotec-sms240/p/17002496" H 3100 3900 60  0001 C CNN "1st Distrib. Link"
+	1    3100 3900
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3200 3900 3250 3900
+Wire Wire Line
+	3250 3900 3250 4150
+Connection ~ 3250 4150
+Wire Wire Line
+	3000 3900 2950 3900
+Wire Wire Line
+	2950 3900 2950 4150
+Connection ~ 2950 4150
+$Comp
+L D_TVS D9
+U 1 1 592878D4
+P 4300 4450
+F 0 "D9" H 4300 4550 50  0000 C CNN
+F 1 "40V" H 4300 4350 50  0000 C CNN
+F 2 "Diodes_SMD:SMA_Standard" H 4300 4450 50  0001 C CNN
+F 3 "" H 4300 4450 50  0000 C CNN
+F 4 "Würth" H 4300 4450 60  0001 C CNN "Mfg. Name"
+F 5 "824501401" H 4300 4450 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-59-556" H 4300 4450 60  0001 C CNN "1st Distrib. PN"
+F 7 "https://www.elfa.se/sv/transientskyddsdiod-40-400-sma-wuerth-elektronik-824501401/p/30059556" H 4300 4450 60  0001 C CNN "1st Distrib. Link"
+	1    4300 4450
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4300 4600 4300 4800
+Connection ~ 4300 4800
+Wire Wire Line
+	4300 4300 4300 4150
+Connection ~ 4300 4150
 $EndSCHEMATC
