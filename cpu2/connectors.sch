@@ -144,9 +144,10 @@ L 74AHC1G125GW U5
 U 1 1 58D2F1DF
 P 2350 5550
 F 0 "U5" H 2350 5750 60  0000 C CNN
-F 1 "74AHC1G125GW" H 2350 5350 60  0000 C CNN
+F 1 "SN74LVC1G125DBVR" H 2350 5350 60  0000 C CNN
 F 2 "TO_SOT_Packages_SMD:SOT-23-5" H 2350 5550 60  0001 C CNN
 F 3 "" H 2350 5550 60  0000 C CNN
+F 4 "http://se.farnell.com/texas-instruments/sn74lvc1g125dbvr/ic-buffer-gate-bus-smd-sot-23/dp/1470768" H 2350 5550 60  0001 C CNN "1st Distrib. Link"
 	1    2350 5550
 	0    1    1    0   
 $EndComp
@@ -408,9 +409,10 @@ L 74AHC1G125GW U6
 U 1 1 58D44358
 P 3700 5550
 F 0 "U6" H 3700 5750 60  0000 C CNN
-F 1 "74AHC1G125GW" H 3700 5350 60  0000 C CNN
+F 1 "SN74LVC1G125DBVR" H 3700 5350 60  0000 C CNN
 F 2 "TO_SOT_Packages_SMD:SOT-23-5" H 3700 5550 60  0001 C CNN
 F 3 "" H 3700 5550 60  0000 C CNN
+F 4 "http://se.farnell.com/texas-instruments/sn74lvc1g125dbvr/ic-buffer-gate-bus-smd-sot-23/dp/1470768" H 3700 5550 60  0001 C CNN "1st Distrib. Link"
 	1    3700 5550
 	0    1    1    0   
 $EndComp
@@ -453,9 +455,10 @@ L 74AHC1G125GW U7
 U 1 1 58D44468
 P 5050 5550
 F 0 "U7" H 5050 5750 60  0000 C CNN
-F 1 "74AHC1G125GW" H 5050 5350 60  0000 C CNN
+F 1 "SN74LVC1G125DBVR" H 5050 5350 60  0000 C CNN
 F 2 "TO_SOT_Packages_SMD:SOT-23-5" H 5050 5550 60  0001 C CNN
 F 3 "" H 5050 5550 60  0000 C CNN
+F 4 "http://se.farnell.com/texas-instruments/sn74lvc1g125dbvr/ic-buffer-gate-bus-smd-sot-23/dp/1470768" H 5050 5550 60  0001 C CNN "1st Distrib. Link"
 	1    5050 5550
 	0    1    1    0   
 $EndComp
