@@ -84,6 +84,10 @@ char somedata[]="hello\n";
 char hello[4000];
 
 static void setup_xmem() {
+  //assert /EN_XMEM (PG3)
+  DDRG |= (1<<3);
+  PORTG &= ~(1<<3);
+
   //enable XMEM, one single sector (0x1100 - 0xFFFF), no wait states
   MCUCR = (1<<SRE);
   XMCRA = 0;
