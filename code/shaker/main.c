@@ -10,7 +10,7 @@
 
 #define FADC      F_CPU
 #define BAUD      115200
-#define WORDSZ    32    //ADC word size
+#define WORDSZ    24    //ADC word size
 #define CLK_DIV   2
 #define ICLK_DIV  2
 #define OSR       5     //0..15 -> 4096 .. 32, see osrtab below
@@ -163,7 +163,7 @@ static uint32_t spi_comm_word(uint32_t in) {
   uint8_t x;
 
   for (x = 0; x < WORDSZ; x += 8) {
-    out |= ((uint32_t)spi_comm_byte(in >> (WORDSZ-8-x)) << (24-x));
+    out |= ((uint32_t)spi_comm_byte(in >> (WORDSZ-8-x)) << (WORDSZ-8-x));
   }
 
   return out;
@@ -293,13 +293,12 @@ restart:
 
   adc_comm(id, RESET);
   x = 0;
-  while (((word = adc_comm(id, 0)) >> (WORDSZ-16)) != 0xFF04 && x < 10) {
+  while ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0xFF04) {
     if (++x >= 10) {
       printf_P(PSTR("Giving up\r\n"));
       return;
     }
     printf_P(PSTR("Waiting for FF04, got %08lX\r\n"), word);
-    word >>= (WORDSZ-16);
     if ((word >> 8) == 0x22) {
       if (word & 0x10) {
         printf_P(PSTR("STAT_N: %02X\r\n"), rreg(id, STAT_N));
@@ -394,7 +393,7 @@ restart:
 static void poll_adcs() {
   static const uint8_t default_conf[] = {
   0x04 ,0x03 ,0x00 ,0x00 ,
-  0x00 ,0x00 ,0x00 ,0x05 ,
+  0x00 ,0x00 ,0x00 , WORDSZ == 24 ? 0x01 : 0x05,
   0x00 ,0x00 ,0x00 ,0x60 ,
   0x3c ,0x08 ,0x86 ,0x00 ,
   0x00 ,0x00 ,0x00 ,0x00 ,
