@@ -302,7 +302,7 @@ restart:
       printf_P(PSTR("Giving up\r\n"));
       return;
     }
-    printf_P(PSTR("Waiting for FF04, got %08lX\r\n"), word);
+    //printf_P(PSTR("Waiting for FF04, got %08lX\r\n"), word);
     if ((word >> 8) == 0x22) {
       if (word & 0x10) {
         printf_P(PSTR("STAT_N: %02X\r\n"), rreg(id, STAT_N));
@@ -391,6 +391,9 @@ restart:
   while ((adc_comm(id, 0) >> (WORDSZ-16)) != 0x0555) {
     printf_P(PSTR("Waiting for LOCK\r\n"));
   }
+#else
+  rreg(id, STAT_1);
+  rreg(id, STAT_S);
 #endif
 }
 
@@ -424,6 +427,13 @@ static void poll_adcs() {
 
 int main(void)
 {
+  /*PORTB &= ~(1<<0);
+  DDRB |= (1<<0);
+
+  for (uint8_t x = 0; x < 200; x++) {
+    _delay_ms(30);
+  }*/
+
   setup_xmem();
   setup_uart0();
   setup_uart1();
@@ -431,13 +441,12 @@ int main(void)
   //setup stdout for printf()
   stdout = &mystdout;
 
-  DDRF |= (1<<5) | (1<<6);
-  PORTF |= (1<<5) | (1<<6); //LEDs
-  PORTD |= (1<<5); //enable RS-485 driver
+  //turn all motors on
+  DDRB |= (1<<5) | (1<<6) | (1<<7);
+  PORTB &= ~( (1<<5) | (1<<6) | (1<<7) );
 
-  config_adc(0);
-  config_adc(1);
-  config_adc(2);
+  DDRF |= (1<<5) | (1<<6); //LEDs
+  PORTD |= (1<<5); //enable RS-485 driver
 
   for (unsigned i = 0;; i++) {
     /*char *str = malloc(57000);
@@ -445,10 +454,16 @@ int main(void)
     puts(str);
     free(str);*/
     printf_P(PSTR("\r\n"));
+  config_adc(0);
+  config_adc(1);
+  config_adc(2);
+
     poll_adcs();
 
     //printf_P(PSTR("%u B SRAM free %u\r\n"), freeRam(), i);
-    _delay_ms(200);
+  PORTF &= ~( (1<<5) | (1<<6) ); //LEDs
+    _delay_ms(500);
+  PORTF |= (1<<5) | (1<<6); //LEDs
   }
   PORTD &= ~(1<<5);
 
