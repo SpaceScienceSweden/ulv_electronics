@@ -397,7 +397,7 @@ restart:
 #endif
 }
 
-static void poll_adcs() {
+static void poll_adcs(uint8_t *mask) {
   static const uint8_t default_conf[] = {
   0x04 ,0x03 ,0x00 ,0x00 ,
   0x00 ,0x00 ,0x00 , WORDSZ == 24 ? 0x01 : 0x05,
@@ -422,6 +422,10 @@ static void poll_adcs() {
       }
     }
     printf_P(ok ? PSTR("Online\r\n") : PSTR("OFF\r\n"));
+
+    if (ok) {
+      *mask |= 1<<id;
+    }
   }
 }
 
@@ -435,38 +439,56 @@ int main(void)
   }*/
 
   setup_xmem();
+
+  DDRF |= (1<<5) | (1<<6); //LEDs
+  PORTF &= ~( (1<<5) | (1<<6) ); //LEDs
+
   setup_uart0();
   setup_uart1();
   setup_adc_pins();
   //setup stdout for printf()
   stdout = &mystdout;
 
-  //turn all motors on
+  //turn all motors on, in sequence
   DDRB |= (1<<5) | (1<<6) | (1<<7);
-  PORTB &= ~( (1<<5) | (1<<6) | (1<<7) );
+  PORTB |= (1<<5) | (1<<6) | (1<<7);
 
-  DDRF |= (1<<5) | (1<<6); //LEDs
+  PORTF |= (1<<5); //LED
+  _delay_ms(500);
+  PORTB &= ~(1<<5);
+  _delay_ms(2000);
+  PORTB &= ~(1<<6);
+  _delay_ms(2000);
+  PORTB &= ~(1<<7);
+
   PORTD |= (1<<5); //enable RS-485 driver
+  PORTF &= ~(1<<5); //LED
+  PORTF |= (1<<6); //LED
 
-  for (unsigned i = 0;; i++) {
-    /*char *str = malloc(57000);
-    snprintf_P(str, 57000, PSTR("%u B SRAM free %u\r"), freeRam(), i);
-    puts(str);
-    free(str);*/
-    printf_P(PSTR("\r\n"));
-  config_adc(0);
-  config_adc(1);
-  config_adc(2);
+  uint8_t adcmask = 0;
+  for (uint8_t x = 0; adcmask != 7; x++) {
+    if (x >= 10) {
+      printf_P(PSTR("Failed to bring all ADCs online\r\n"));
+      break;
+    }
 
-    poll_adcs();
-
-    //printf_P(PSTR("%u B SRAM free %u\r\n"), freeRam(), i);
-  PORTF &= ~( (1<<5) | (1<<6) ); //LEDs
-    _delay_ms(500);
-  PORTF |= (1<<5) | (1<<6); //LEDs
+    poll_adcs(&adcmask);
+    for (uint8_t id = 0; id < 3; id++) {
+      if (!(adcmask & (1<<id))) {
+        config_adc(id);
+      }
+    }
   }
-  PORTD &= ~(1<<5);
 
+  if (adcmask == 7) {
+    printf_P(PSTR("All ADCs online :)\r\n"));
+  }
+
+  PORTF |= (1<<5); //LED
+
+  for (;;);
+
+  PORTD &= ~(1<<5);
 
   return 0;
 }
