@@ -617,6 +617,10 @@ int main(void)
   PORTF |= (1<<5); //LED
 
   //read DS18B20Z's
+  //temp: 25.438  ROM=040000096919d428
+  //temp: 24.625  ROM=d300000969205928
+  //temp: 24.875  ROM=2c000009486ab528
+  //temp: 24.563  ROM=5000000968ff0728
   uint64_t roms[8];
   int maxroms = sizeof(roms)/sizeof(roms[0]);
   int nroms = enumerate(&PORTG, &DDRG, &PING, 1<<4, roms, maxroms);
