@@ -1,6 +1,5 @@
 PRG            = shaker
-OBJ            = main.o
-#../avr-ds18b20/src/ds18b20.o ../avr-ds18b20/src/onewire.o
+OBJ            = main.o ../avr-ds18b20/src/ds18b20.o ../avr-ds18b20/src/onewire.o
 MCU_TARGET     = atmega128
 OPTIMIZE       = -O3 -frename-registers -funroll-loops
 
