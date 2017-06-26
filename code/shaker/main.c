@@ -556,6 +556,61 @@ void read_temperatures(volatile uint8_t *port, volatile uint8_t *direction, vola
   }
 }
 
+static void set_vgnd(uint8_t config_dacs) {
+  //set all DACs to -1.024 V, enable ADG601's
+  DDRE |= (1<<2) | (1<<3) | (1<<4);
+  PORTE |= (1<<2) | (1<<3) | (1<<4); //de-assert /CS
+
+  if (config_dacs) {
+    //CPOL=0, CPHA=0
+    SPCR &= ~(1<<CPHA);
+
+    for (uint8_t x = 0; x < 3; x++) {
+      PORTE &= ~(1<<(x+2));
+
+      //   0 = -2.048 V
+      // 256 = -1.024 V
+      // 512 =  0.000 V
+      // 768 =  1.024 V
+      //1023 =  2.046 V
+      uint16_t code = 0;
+
+      //from the MAX504 datasheet:
+      //16 bits of serial data are
+      //clocked into the DAC in the following order: 4 fill (dummy)
+      //bits, 10 data bits, and 2 sub-LSB 0s.
+      code <<= 2; //dddd CCCC CCCC CC00
+
+      //from the ATmega128 datasheet:
+      //When the DORD bit is written to zero, the MSB of the data word is transmitted first.
+      SPCR &= ~(1<<DORD); //just to be sure
+
+      spi_comm_byte(code >> 8);
+      spi_comm_byte(code);
+
+      //de-assert all /CS
+      PORTE |= (1<<2) | (1<<3) | (1<<4);
+    }
+
+    //CPOL=0, CPHA=1
+    SPCR |= 1<<CPHA;
+  }
+
+  //enable ADG601's
+  //these happen to be LEDs too currently
+  DDRE |= (1<<5);
+  PORTE |= (1<<5);
+  DDRF |= (1<<5) | (1<<6);
+  PORTF |= (1<<5) | (1<<6);
+}
+
+static void disable_vgnd() {
+  DDRE |= (1<<5);
+  PORTE &= ~(1<<5);
+  DDRF |= (1<<5) | (1<<6);
+  PORTF &= ~((1<<5) | (1<<6));
+}
+
 int main(void)
 {
   /*PORTB &= ~(1<<0);
@@ -626,6 +681,10 @@ int main(void)
   int nroms = enumerate(&PORTG, &DDRG, &PING, 1<<4, roms, maxroms);
   read_temperatures(&PORTG, &DDRG, &PING, 1<<4, roms, nroms);
 
+  //gate VGND, but don't configure DACs
+  //this leaves them in their default configuration (-2.048 V)
+  //the reason for this is I don't have time to fully debug which order the bits go in
+  set_vgnd(0);
 
   for (;;);
 
