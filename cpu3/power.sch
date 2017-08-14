@@ -29,6 +29,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:scube
+LIBS:cpu3-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -107,12 +108,12 @@ $EndComp
 $Comp
 L GND #PWR059
 U 1 1 58D80E4A
-P 700 4050
-F 0 "#PWR059" H 700 3800 50  0001 C CNN
-F 1 "GND" H 700 3900 50  0000 C CNN
-F 2 "" H 700 4050 50  0000 C CNN
-F 3 "" H 700 4050 50  0000 C CNN
-	1    700  4050
+P 800 4050
+F 0 "#PWR059" H 800 3800 50  0001 C CNN
+F 1 "GND" H 800 3900 50  0000 C CNN
+F 2 "" H 800 4050 50  0000 C CNN
+F 3 "" H 800 4050 50  0000 C CNN
+	1    800  4050
 	0    1    1    0   
 $EndComp
 $Comp
@@ -651,8 +652,6 @@ F 3 "" H 8500 3500 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	1200 4150 3000 4150
-Wire Wire Line
 	3200 4150 3450 4150
 Wire Wire Line
 	3500 3950 3500 4000
@@ -1012,11 +1011,11 @@ Wire Wire Line
 Wire Wire Line
 	2750 6300 3750 6300
 Wire Wire Line
-	3450 4450 3450 6000
+	3450 6000 3450 4400
 Wire Wire Line
-	3450 6000 2750 6000
+	2750 6000 3450 6000
 Wire Wire Line
-	2750 6000 2750 6100
+	2750 6100 2750 6000
 Wire Wire Line
 	2900 5950 2900 6050
 Connection ~ 2900 6000
@@ -1176,75 +1175,69 @@ Text Label 2650 6200 0    60   ~ 0
 A
 Text Label 2650 6100 0    60   ~ 0
 B
-Text GLabel 1200 4250 0    60   Input ~ 0
+Text GLabel 1450 4250 0    60   Input ~ 0
 PDO
-Text GLabel 1200 4350 0    60   Input ~ 0
+Text GLabel 1450 4350 0    60   Input ~ 0
 PDI
-Text GLabel 1200 3950 0    60   Input ~ 0
+Text GLabel 1450 3950 0    60   Input ~ 0
 SCLK_OUT
-Text GLabel 1200 3850 0    60   Input ~ 0
+Text GLabel 1450 3850 0    60   Input ~ 0
 /RESET
 $Comp
 L +3.3V #PWR080
 U 1 1 58E3DD70
-P 1750 4550
-F 0 "#PWR080" H 1750 4400 50  0001 C CNN
-F 1 "+3.3V" H 1750 4690 50  0000 C CNN
-F 2 "" H 1750 4550 50  0000 C CNN
-F 3 "" H 1750 4550 50  0000 C CNN
-	1    1750 4550
+P 2000 4550
+F 0 "#PWR080" H 2000 4400 50  0001 C CNN
+F 1 "+3.3V" H 2000 4690 50  0000 C CNN
+F 2 "" H 2000 4550 50  0000 C CNN
+F 3 "" H 2000 4550 50  0000 C CNN
+	1    2000 4550
 	0    1    1    0   
 $EndComp
-Text GLabel 1150 4450 0    60   Input ~ 0
+Text GLabel 1400 4450 0    60   Input ~ 0
 ONEWIRE
-Text Label 1750 3650 0    60   ~ 0
+Text Label 2000 3650 0    60   ~ 0
 A
-Text Label 1750 3750 0    60   ~ 0
+Text Label 2000 3750 0    60   ~ 0
 B
-Text Label 1900 4150 0    60   ~ 0
+Text Label 2150 4150 0    60   ~ 0
 VLANDER
 Wire Wire Line
 	7400 1450 7400 1400
 Wire Wire Line
-	1750 4050 700  4050
+	2000 4050 800  4050
 Wire Wire Line
-	1750 3850 1750 4050
+	2000 3850 2000 4050
 Wire Wire Line
-	1750 3850 1700 3850
+	1950 3950 2000 3950
+Connection ~ 2000 3950
+Connection ~ 1950 4050
+Connection ~ 1450 4050
 Wire Wire Line
-	1700 3950 1750 3950
-Connection ~ 1750 3950
-Connection ~ 1700 4050
-Connection ~ 1200 4050
+	2000 4150 2000 4350
 Wire Wire Line
-	1750 4150 1750 4350
+	2000 4350 1950 4350
+Connection ~ 2000 4150
 Wire Wire Line
-	1750 4350 1700 4350
-Connection ~ 1750 4150
+	1950 4250 2000 4250
+Connection ~ 2000 4250
+Connection ~ 1950 4150
 Wire Wire Line
-	1700 4250 1750 4250
-Connection ~ 1750 4250
-Connection ~ 1700 4150
+	1400 4450 1950 4450
+Connection ~ 1450 4450
 Wire Wire Line
-	1150 4450 1700 4450
-Connection ~ 1200 4450
+	1450 4550 2000 4550
+Connection ~ 1950 4550
 Wire Wire Line
-	1200 4550 1750 4550
-Connection ~ 1700 4550
+	1450 3750 2050 3750
 Wire Wire Line
-	1200 3750 1800 3750
+	2050 3750 2050 4400
 Wire Wire Line
-	1800 3750 1800 4450
+	2100 3650 2100 4350
 Wire Wire Line
-	1800 4450 3450 4450
-Wire Wire Line
-	1850 4350 3750 4350
-Wire Wire Line
-	1850 3650 1850 4350
-Wire Wire Line
-	1200 3650 1850 3650
-Connection ~ 1700 3650
-Connection ~ 1700 3750
+	1450 3650 2100 3650
+Connection ~ 1950 3650
+Connection ~ 1950 3750
 $Comp
 L D_Schottky_Small D8
 U 1 1 59286ECB
@@ -1292,16 +1285,48 @@ Connection ~ 4300 4150
 $Comp
 L CONN_02X12 P4
 U 1 1 5991B9AB
-P 1450 4100
-F 0 "P4" H 1450 4750 50  0000 C CNN
-F 1 "CONN_02X12" V 1450 4100 50  0000 C CNN
-F 2 "SCUBE:LPPB122NFSP-RC-holes-backpads" H 1450 2900 50  0001 C CNN
-F 3 "" H 1450 2900 50  0001 C CNN
-	1    1450 4100
+P 1700 4100
+F 0 "P4" H 1700 4750 50  0000 C CNN
+F 1 "CONN_02X12" V 1700 4100 50  0000 C CNN
+F 2 "SCUBE:LPPB122NFSP-RC-holes-backpads" H 1700 2900 50  0001 C CNN
+F 3 "" H 1700 2900 50  0001 C CNN
+	1    1700 4100
 	1    0    0    1   
 $EndComp
-NoConn ~ 1700 3550
-NoConn ~ 1200 3550
-NoConn ~ 1200 4650
-NoConn ~ 1700 4650
+Wire Wire Line
+	1450 4650 1400 4650
+Wire Wire Line
+	1400 4650 1400 4800
+Wire Wire Line
+	1400 4800 2600 4800
+Wire Wire Line
+	2000 4800 2000 4650
+Wire Wire Line
+	2000 4650 1950 4650
+Wire Wire Line
+	2600 4800 2600 4150
+Connection ~ 2600 4150
+Connection ~ 2000 4800
+Wire Wire Line
+	900  3550 1450 3550
+Wire Wire Line
+	1400 3550 1400 3400
+Wire Wire Line
+	1400 3400 2000 3400
+Wire Wire Line
+	2000 3400 2000 3550
+Wire Wire Line
+	2000 3850 1950 3850
+Wire Wire Line
+	2000 3550 1950 3550
+Wire Wire Line
+	2100 4350 3750 4350
+Wire Wire Line
+	2050 4400 3450 4400
+Wire Wire Line
+	1450 4150 3000 4150
+Wire Wire Line
+	900  3550 900  4050
+Connection ~ 900  4050
+Connection ~ 1400 3550
 $EndSCHEMATC
