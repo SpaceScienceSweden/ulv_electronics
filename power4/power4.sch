@@ -426,14 +426,8 @@ F 3 "" H 4800 1350 50  0001 C CNN
 	1    4800 2550
 	-1   0    0    1   
 $EndComp
-Wire Wire Line
-	4500 2000 5050 2000
 Connection ~ 4500 2300
-Connection ~ 4550 2000
-Wire Wire Line
-	4500 3100 5050 3100
 Connection ~ 4500 2800
-Connection ~ 4550 3100
 $Comp
 L GND #PWR09
 U 1 1 5994AE06
@@ -514,16 +508,38 @@ F 1 "CONN_02X12" V 6550 2550 50  0000 C CNN
 F 2 "SCUBE:FTSH-112-04-L-D-RA" H 6550 1350 50  0001 C CNN
 F 3 "" H 6550 1350 50  0001 C CNN
 	1    6550 2550
-	1    0    0    -1  
+	-1   0    0    -1  
 $EndComp
-Wire Wire Line
-	6250 2000 6800 2000
 Connection ~ 6250 2300
-Connection ~ 6300 2000
-Wire Wire Line
-	6250 3100 6800 3100
 Connection ~ 6250 2800
-Connection ~ 6300 3100
 Text Notes 6300 1800 0    60   ~ 0
 Flipped 180°
+Wire Wire Line
+	6300 2000 6250 2000
+Wire Wire Line
+	4550 2000 4500 2000
+Wire Wire Line
+	4500 3100 4550 3100
+Wire Wire Line
+	6250 3100 6300 3100
+Wire Wire Line
+	6800 3100 6850 3100
+Wire Wire Line
+	6850 3100 6850 3200
+Wire Wire Line
+	6850 3200 5100 3200
+Wire Wire Line
+	5100 3200 5100 3100
+Wire Wire Line
+	5100 3100 5050 3100
+Wire Wire Line
+	6800 2000 6850 2000
+Wire Wire Line
+	6850 2000 6850 1850
+Wire Wire Line
+	6850 1850 5100 1850
+Wire Wire Line
+	5100 1850 5100 2000
+Wire Wire Line
+	5100 2000 5050 2000
 $EndSCHEMATC
