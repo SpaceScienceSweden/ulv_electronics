@@ -1236,7 +1236,7 @@ Connection ~ 3250 4150
 Wire Wire Line
 	3000 3900 2950 3900
 Wire Wire Line
-	2950 4150 2950 3900
+	2950 3900 2950 4150
 Connection ~ 2950 4150
 $Comp
 L D_TVS D9
@@ -1268,7 +1268,7 @@ F 1 "CONN_02X12" V 1700 4100 50  0000 C CNN
 F 2 "SCUBE:LPPB122NFSP-RC-holes-backpads" H 1700 2900 50  0001 C CNN
 F 3 "" H 1700 2900 50  0001 C CNN
 	1    1700 4100
-	1    0    0    1   
+	-1   0    0    1   
 $EndComp
 Wire Wire Line
 	1450 4650 1400 4650
@@ -1281,7 +1281,7 @@ Wire Wire Line
 Wire Wire Line
 	2000 4650 1950 4650
 Wire Wire Line
-	2600 4150 2600 4800
+	2600 4800 2600 4150
 Connection ~ 2600 4150
 Connection ~ 2000 4800
 Wire Wire Line
