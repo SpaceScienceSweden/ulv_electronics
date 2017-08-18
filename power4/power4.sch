@@ -321,16 +321,12 @@ Wire Wire Line
 Wire Wire Line
 	4500 2600 5500 2600
 Wire Wire Line
-	4500 2600 4500 3100
-Wire Wire Line
 	4500 2800 4550 2800
 Connection ~ 4550 2600
 Wire Wire Line
 	4550 2700 4500 2700
 Connection ~ 4500 2700
 Connection ~ 5050 2600
-Wire Wire Line
-	4500 2000 4500 2500
 Wire Wire Line
 	4500 2300 4550 2300
 Connection ~ 4550 2500
@@ -426,8 +422,6 @@ F 3 "" H 4800 1350 50  0001 C CNN
 	1    4800 2550
 	-1   0    0    1   
 $EndComp
-Connection ~ 4500 2300
-Connection ~ 4500 2800
 $Comp
 L GND #PWR09
 U 1 1 5994AE06
@@ -471,18 +465,14 @@ Wire Wire Line
 Wire Wire Line
 	6250 2600 7250 2600
 Wire Wire Line
-	6250 2600 6250 3100
-Wire Wire Line
-	6250 2800 6300 2800
+	5900 2800 6300 2800
 Connection ~ 6300 2600
 Wire Wire Line
 	6300 2700 6250 2700
 Connection ~ 6250 2700
 Connection ~ 6800 2600
 Wire Wire Line
-	6250 2000 6250 2500
-Wire Wire Line
-	6250 2300 6300 2300
+	5900 2300 6300 2300
 Connection ~ 6300 2500
 Wire Wire Line
 	6300 2400 6250 2400
@@ -510,18 +500,8 @@ F 3 "" H 6550 1350 50  0001 C CNN
 	1    6550 2550
 	-1   0    0    -1  
 $EndComp
-Connection ~ 6250 2300
-Connection ~ 6250 2800
 Text Notes 6300 1800 0    60   ~ 0
 Flipped 180°
-Wire Wire Line
-	6300 2000 6250 2000
-Wire Wire Line
-	4550 2000 4500 2000
-Wire Wire Line
-	4500 3100 4550 3100
-Wire Wire Line
-	6250 3100 6300 3100
 Wire Wire Line
 	6800 3100 6850 3100
 Wire Wire Line
@@ -542,4 +522,100 @@ Wire Wire Line
 	5100 1850 5100 2000
 Wire Wire Line
 	5100 2000 5050 2000
+Wire Wire Line
+	6250 2300 6250 2500
+Wire Wire Line
+	6250 2600 6250 2800
+Wire Wire Line
+	4500 2600 4500 2800
+Wire Wire Line
+	4500 2300 4500 2500
+Wire Wire Line
+	4550 2000 4500 2000
+Wire Wire Line
+	4500 2000 4500 1800
+Wire Wire Line
+	4500 1800 6250 1800
+Wire Wire Line
+	6250 1800 6250 2000
+Wire Wire Line
+	6250 2000 6300 2000
+Wire Wire Line
+	6300 3100 6250 3100
+Wire Wire Line
+	6250 3100 6250 3250
+Wire Wire Line
+	6250 3250 4500 3250
+Wire Wire Line
+	4500 3250 4500 3100
+Wire Wire Line
+	4500 3100 4550 3100
+$Comp
+L R_Small R5
+U 1 1 59972D00
+P 6100 2000
+F 0 "R5" H 6130 2020 50  0000 L CNN
+F 1 "0" H 6130 1960 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 6100 2000 50  0001 C CNN
+F 3 "" H 6100 2000 50  0001 C CNN
+	1    6100 2000
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R4
+U 1 1 59972DB0
+P 5900 2000
+F 0 "R4" H 5930 2020 50  0000 L CNN
+F 1 "0" H 5930 1960 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 5900 2000 50  0001 C CNN
+F 3 "" H 5900 2000 50  0001 C CNN
+	1    5900 2000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5900 2300 5900 2100
+Connection ~ 6250 2300
+Wire Wire Line
+	6100 2100 6100 2300
+Connection ~ 6100 2300
+Wire Wire Line
+	6100 1900 6100 1850
+Connection ~ 6100 1850
+Wire Wire Line
+	5900 1900 5900 1800
+Connection ~ 5900 1800
+$Comp
+L R_Small R7
+U 1 1 59973059
+P 6100 3050
+F 0 "R7" H 6130 3070 50  0000 L CNN
+F 1 "0" H 6130 3010 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 6100 3050 50  0001 C CNN
+F 3 "" H 6100 3050 50  0001 C CNN
+	1    6100 3050
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R6
+U 1 1 599730BD
+P 5900 3050
+F 0 "R6" H 5930 3070 50  0000 L CNN
+F 1 "0" H 5930 3010 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 5900 3050 50  0001 C CNN
+F 3 "" H 5900 3050 50  0001 C CNN
+	1    5900 3050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5900 2950 5900 2800
+Connection ~ 6250 2800
+Wire Wire Line
+	6100 2950 6100 2800
+Connection ~ 6100 2800
+Wire Wire Line
+	6100 3150 6100 3200
+Connection ~ 6100 3200
+Wire Wire Line
+	5900 3150 5900 3250
+Connection ~ 5900 3250
 $EndSCHEMATC
