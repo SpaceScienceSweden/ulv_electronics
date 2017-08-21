@@ -47,12 +47,12 @@ $EndDescr
 $Comp
 L LM324 U7
 U 1 1 58A66839
-P 7500 3100
-F 0 "U7" H 7550 3300 50  0000 C CNN
-F 1 "MAX44252ASD+" V 7450 2600 50  0000 C CNN
-F 2 "SMD_Packages:SOIC-14_N" H 7450 3200 50  0001 C CNN
-F 3 "" H 7550 3300 50  0000 C CNN
-	1    7500 3100
+P 8800 3000
+F 0 "U7" H 8850 3200 50  0000 C CNN
+F 1 "MAX44252ASD+" V 8750 2500 50  0000 C CNN
+F 2 "SMD_Packages:SOIC-14_N" H 8750 3100 50  0001 C CNN
+F 3 "" H 8850 3200 50  0000 C CNN
+	1    8800 3000
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -91,23 +91,23 @@ $EndComp
 $Comp
 L R_Small R14
 U 1 1 58A66879
-P 7600 2750
-F 0 "R14" H 7630 2770 50  0000 L CNN
-F 1 "1M" H 7630 2710 50  0000 L CNN
-F 2 "Resistors_SMD:R_0805" H 7600 2750 50  0001 C CNN
-F 3 "" H 7600 2750 50  0000 C CNN
-	1    7600 2750
+P 8900 2650
+F 0 "R14" H 8930 2670 50  0000 L CNN
+F 1 "1M" H 8930 2610 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 8900 2650 50  0001 C CNN
+F 3 "" H 8900 2650 50  0000 C CNN
+	1    8900 2650
 	0    -1   -1   0   
 $EndComp
 $Comp
 L R_Small R16
 U 1 1 58A66880
-P 6850 3000
-F 0 "R16" H 6880 3020 50  0000 L CNN
-F 1 "1k" H 6880 2960 50  0000 L CNN
-F 2 "Resistors_SMD:R_0805" H 6850 3000 50  0001 C CNN
-F 3 "" H 6850 3000 50  0000 C CNN
-	1    6850 3000
+P 8250 2900
+F 0 "R16" H 8280 2920 50  0000 L CNN
+F 1 "1k" H 8280 2860 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 8250 2900 50  0001 C CNN
+F 3 "" H 8250 2900 50  0000 C CNN
+	1    8250 2900
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -143,17 +143,17 @@ F 3 "" H 4200 2000 50  0000 C CNN
 	1    4200 2000
 	1    0    0    -1  
 $EndComp
-Text Notes 7100 4100 0    60   ~ 0
+Text Notes 6850 4100 0    60   ~ 0
 fc = 1/(2*pi*10k*10u) = 1.6 Hz
 $Comp
 L C_Small C7
 U 1 1 58A668CA
-P 7100 3500
-F 0 "C7" H 7110 3570 50  0000 L CNN
-F 1 "10u" H 7110 3420 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 7100 3500 50  0001 C CNN
-F 3 "" H 7100 3500 50  0000 C CNN
-	1    7100 3500
+P 7350 3600
+F 0 "C7" H 7360 3670 50  0000 L CNN
+F 1 "10u" H 7360 3520 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 7350 3600 50  0001 C CNN
+F 3 "" H 7350 3600 50  0000 C CNN
+	1    7350 3600
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -167,7 +167,7 @@ F 3 "" H 5300 3400 50  0000 C CNN
 	1    5300 3400
 	-1   0    0    1   
 $EndComp
-Text HLabel 8150 3100 2    60   Input ~ 0
+Text HLabel 9450 3000 2    60   Input ~ 0
 ITACH
 $Comp
 L R_Small R13
@@ -230,7 +230,7 @@ F 3 "" H 4550 2100 50  0000 C CNN
 $EndComp
 Text Notes 3850 2450 0    60   ~ 0
 -52j Ohm @ 300 Hz
-Text HLabel 8150 2500 2    60   Input ~ 0
+Text HLabel 9450 2400 2    60   Input ~ 0
 RAW_ITACH
 Text Notes 7950 1650 0    60   ~ 0
 TODO: better OP?\nLM324 has 2 mV input offset..\nLTC2052 is auto-zeroing, 2 V/µs\nMAX44252ASD+ 6 µV input offset
@@ -257,10 +257,10 @@ F 3 "" H 3400 3700 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L -5V #PWR41
+L -5V #PWR38
 U 1 1 58D3698E
 P 4250 4550
-F 0 "#PWR41" H 4250 4650 50  0001 C CNN
+F 0 "#PWR38" H 4250 4650 50  0001 C CNN
 F 1 "-5V" H 4250 4700 50  0000 C CNN
 F 2 "" H 4250 4550 50  0000 C CNN
 F 3 "" H 4250 4550 50  0000 C CNN
@@ -410,21 +410,145 @@ F 3 "" H 5150 3750 50  0000 C CNN
 	1    5150 3750
 	1    0    0    -1  
 $EndComp
-Text Notes 5000 5650 0    60   ~ 0
+Text Notes 2550 6300 0    60   ~ 0
 Lots of customizability here:\nR43 is fallback in case MAX504 breaks\nReplace with 0 Ohm if not using MAX504\nR40 might be better/simpler way to get RAW_ITACH to a "lagom" level\nDon't populate R20/R43 or MAX504 in this case, obviously
+$Comp
+L ITR20001 IR2
+U 1 1 58D3D0AF
+P 5500 2600
+F 0 "IR2" H 5500 2850 60  0000 C CNN
+F 1 "ITR20001" H 5500 2750 60  0000 C CNN
+F 2 "SCUBE:LPPB032NFSP-RC-ITR20001" H 5500 2600 60  0001 C CNN
+F 3 "" H 5500 2600 60  0000 C CNN
+F 4 "175-34-043" H 5500 2600 60  0001 C CNN "1st Distrib. PN"
+F 5 "https://www.elfa.se/sv/reflexdetektor-kodenshi-sg-2bc/p/17534043" H 5500 2600 60  0001 C CNN "1st Distrib. Link"
+	1    5500 2600
+	0    -1   1    0   
+$EndComp
+$Comp
+L +3V3 #PWR045
+U 1 1 58D3D2E9
+P 5500 2250
+F 0 "#PWR045" H 5500 2100 50  0001 C CNN
+F 1 "+3V3" H 5500 2390 50  0000 C CNN
+F 2 "" H 5500 2250 50  0000 C CNN
+F 3 "" H 5500 2250 50  0000 C CNN
+	1    5500 2250
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR046
+U 1 1 58D3D339
+P 5700 2250
+F 0 "#PWR046" H 5700 2100 50  0001 C CNN
+F 1 "+3V3" H 5700 2390 50  0000 C CNN
+F 2 "" H 5700 2250 50  0000 C CNN
+F 3 "" H 5700 2250 50  0000 C CNN
+	1    5700 2250
+	1    0    0    -1  
+$EndComp
+$Comp
+L -5V #PWR34
+U 1 1 58D3DB70
+P 5700 4000
+F 0 "#PWR34" H 5700 4100 50  0001 C CNN
+F 1 "-5V" H 5700 4150 50  0000 C CNN
+F 2 "" H 5700 4000 50  0000 C CNN
+F 3 "" H 5700 4000 50  0000 C CNN
+	1    5700 4000
+	-1   0    0    1   
+$EndComp
+$Comp
+L R_Small R40
+U 1 1 58D3DCE4
+P 5700 3650
+F 0 "R40" H 5730 3670 50  0000 L CNN
+F 1 "open" H 5730 3610 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 5700 3650 50  0001 C CNN
+F 3 "" H 5700 3650 50  0000 C CNN
+	1    5700 3650
+	1    0    0    -1  
+$EndComp
+$Comp
+L C_Small C47
+U 1 1 58D41B0B
+P 5950 3600
+F 0 "C47" H 5960 3670 50  0000 L CNN
+F 1 "open" H 5960 3520 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 5950 3600 50  0001 C CNN
+F 3 "" H 5950 3600 50  0000 C CNN
+	1    5950 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED D5
+U 1 1 58D45386
+P 9300 3250
+F 0 "D5" H 9300 3350 50  0000 C CNN
+F 1 "LED" H 9300 3150 50  0000 C CNN
+F 2 "LEDs:LED_0805" H 9300 3250 50  0001 C CNN
+F 3 "" H 9300 3250 50  0000 C CNN
+	1    9300 3250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R_Small R45
+U 1 1 58D453FA
+P 9300 3500
+F 0 "R45" H 9330 3520 50  0000 L CNN
+F 1 "1k2" H 9330 3460 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 9300 3500 50  0001 C CNN
+F 3 "" H 9300 3500 50  0000 C CNN
+	1    9300 3500
+	1    0    0    -1  
+$EndComp
+Text Notes 9550 3350 0    60   ~ 0
+(3.3-2.0)/1200 = 1 mA
+Text Notes 2550 5600 0    60   ~ 0
+Experiment results:\n680 ohm drive, 100k shunt to GND, 3 mm distance -> 0.8 .. 3.3 V swing\n1k2 drive seems OK too\n470 pF seems a bit on the low side\n47 nF was way too much\ncutoff @ 3rd harmonic, 100 Hz signal:\nC <= 1/(2*pi*100e3*300) = 5.3 n -> 4n7 should be perfect
+$Comp
+L LM324 U7
+U 3 1 599B1968
+P 8100 3600
+F 0 "U7" H 8150 3800 50  0000 C CNN
+F 1 "MAX44252ASD+" H 8400 3400 50  0000 C CNN
+F 2 "SMD_Packages:SOIC-14_N" H 8050 3700 50  0001 C CNN
+F 3 "" H 8150 3800 50  0000 C CNN
+	3    8100 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R53
+U 1 1 599B2A1E
+P 7150 3200
+F 0 "R53" H 7180 3220 50  0000 L CNN
+F 1 "10k" H 7180 3160 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 7150 3200 50  0001 C CNN
+F 3 "" H 7150 3200 50  0000 C CNN
+	1    7150 3200
+	0    1    1    0   
+$EndComp
+$Comp
+L C_Small C51
+U 1 1 599B2BF2
+P 7550 3100
+F 0 "C51" H 7560 3170 50  0000 L CNN
+F 1 "10u" H 7560 3020 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 7550 3100 50  0001 C CNN
+F 3 "" H 7550 3100 50  0000 C CNN
+	1    7550 3100
+	0    -1   -1   0   
+$EndComp
 Wire Wire Line
 	5050 3950 5050 3250
-Connection ~ 6150 3950
 Wire Wire Line
 	6000 3200 6000 3200
 Wire Wire Line
 	6000 3200 6000 3450
 Wire Wire Line
-	6650 2500 6650 3450
+	6650 2400 6650 3450
 Wire Wire Line
 	6650 3100 6600 3100
-Wire Wire Line
-	6150 3950 6150 4050
 Wire Wire Line
 	5700 3000 6000 3000
 Connection ~ 5700 3000
@@ -436,29 +560,22 @@ Connection ~ 6200 3950
 Connection ~ 6200 1800
 Connection ~ 6650 3100
 Wire Wire Line
-	6950 3000 7200 3000
+	9150 2650 9000 2650
 Wire Wire Line
-	7500 2750 7100 2750
+	4050 1800 8700 1800
 Wire Wire Line
-	7100 2750 7100 3000
-Connection ~ 7100 3000
-Wire Wire Line
-	7850 2750 7700 2750
-Wire Wire Line
-	4050 1800 7400 1800
-Wire Wire Line
-	7800 3100 8150 3100
+	9100 3000 9450 3000
 Wire Wire Line
 	5300 3050 5300 3300
 Wire Wire Line
 	5050 2950 5500 2950
-Connection ~ 7850 3100
+Connection ~ 9150 3000
 Wire Wire Line
-	7850 3100 7850 2750
+	9150 3000 9150 2650
 Wire Wire Line
 	3850 1800 3750 1800
 Wire Wire Line
-	5050 3950 8000 3950
+	5050 3950 9300 3950
 Wire Wire Line
 	4200 1900 4200 1800
 Connection ~ 4200 1800
@@ -466,13 +583,13 @@ Wire Wire Line
 	4550 1900 4550 1800
 Connection ~ 4550 1800
 Wire Wire Line
-	6650 2500 8150 2500
+	6650 2400 9450 2400
 Wire Wire Line
 	4800 1700 4800 1800
 Connection ~ 4800 1800
 Wire Wire Line
-	6750 3000 6650 3000
-Connection ~ 6650 3000
+	8150 2900 6650 2900
+Connection ~ 6650 2900
 Connection ~ 4050 3850
 Wire Wire Line
 	2850 3150 2850 3400
@@ -544,80 +661,12 @@ Wire Wire Line
 Wire Wire Line
 	3950 2900 3950 3050
 Connection ~ 3950 3050
-$Comp
-L ITR20001 IR2
-U 1 1 58D3D0AF
-P 5500 2600
-F 0 "IR2" H 5500 2850 60  0000 C CNN
-F 1 "ITR20001" H 5500 2750 60  0000 C CNN
-F 2 "SCUBE:LPPB032NFSP-RC-ITR20001" H 5500 2600 60  0001 C CNN
-F 3 "" H 5500 2600 60  0000 C CNN
-F 4 "175-34-043" H 5500 2600 60  0001 C CNN "1st Distrib. PN"
-F 5 "https://www.elfa.se/sv/reflexdetektor-kodenshi-sg-2bc/p/17534043" H 5500 2600 60  0001 C CNN "1st Distrib. Link"
-	1    5500 2600
-	0    -1   1    0   
-$EndComp
 Wire Wire Line
 	5500 2950 5500 2900
 Wire Wire Line
 	5700 2900 5700 3550
-$Comp
-L +3V3 #PWR045
-U 1 1 58D3D2E9
-P 5500 2250
-F 0 "#PWR045" H 5500 2100 50  0001 C CNN
-F 1 "+3V3" H 5500 2390 50  0000 C CNN
-F 2 "" H 5500 2250 50  0000 C CNN
-F 3 "" H 5500 2250 50  0000 C CNN
-	1    5500 2250
-	1    0    0    -1  
-$EndComp
-$Comp
-L +3V3 #PWR046
-U 1 1 58D3D339
-P 5700 2250
-F 0 "#PWR046" H 5700 2100 50  0001 C CNN
-F 1 "+3V3" H 5700 2390 50  0000 C CNN
-F 2 "" H 5700 2250 50  0000 C CNN
-F 3 "" H 5700 2250 50  0000 C CNN
-	1    5700 2250
-	1    0    0    -1  
-$EndComp
-$Comp
-L -5V #PWR37
-U 1 1 58D3DB70
-P 5700 4000
-F 0 "#PWR37" H 5700 4100 50  0001 C CNN
-F 1 "-5V" H 5700 4150 50  0000 C CNN
-F 2 "" H 5700 4000 50  0000 C CNN
-F 3 "" H 5700 4000 50  0000 C CNN
-	1    5700 4000
-	-1   0    0    1   
-$EndComp
-$Comp
-L R_Small R40
-U 1 1 58D3DCE4
-P 5700 3650
-F 0 "R40" H 5730 3670 50  0000 L CNN
-F 1 "open" H 5730 3610 50  0000 L CNN
-F 2 "Resistors_SMD:R_0805" H 5700 3650 50  0001 C CNN
-F 3 "" H 5700 3650 50  0000 C CNN
-	1    5700 3650
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	5700 3750 5700 4000
-$Comp
-L C_Small C47
-U 1 1 58D41B0B
-P 5950 3600
-F 0 "C47" H 5960 3670 50  0000 L CNN
-F 1 "open" H 5960 3520 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 5950 3600 50  0001 C CNN
-F 3 "" H 5950 3600 50  0000 C CNN
-	1    5950 3600
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	5950 3700 5950 3900
 Wire Wire Line
@@ -627,7 +676,7 @@ Wire Wire Line
 	5150 3600 5150 3650
 Connection ~ 5150 3600
 Wire Wire Line
-	5150 3850 5150 3950
+	5150 3950 5150 3850
 Connection ~ 5150 3950
 Wire Wire Line
 	5450 3600 5450 3500
@@ -644,53 +693,96 @@ Connection ~ 5700 3050
 Connection ~ 5700 3450
 Wire Wire Line
 	2850 3500 2250 3500
-$Comp
-L LED D5
-U 1 1 58D45386
-P 8000 3350
-F 0 "D5" H 8000 3450 50  0000 C CNN
-F 1 "LED" H 8000 3250 50  0000 C CNN
-F 2 "LEDs:LED_0805" H 8000 3350 50  0001 C CNN
-F 3 "" H 8000 3350 50  0000 C CNN
-	1    8000 3350
-	0    -1   -1   0   
-$EndComp
-$Comp
-L R_Small R45
-U 1 1 58D453FA
-P 8000 3600
-F 0 "R45" H 8030 3620 50  0000 L CNN
-F 1 "1k2" H 8030 3560 50  0000 L CNN
-F 2 "Resistors_SMD:R_0805" H 8000 3600 50  0001 C CNN
-F 3 "" H 8000 3600 50  0000 C CNN
-	1    8000 3600
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
-	8000 3200 8000 3100
-Connection ~ 8000 3100
-Text Notes 8250 3450 0    60   ~ 0
-(3.3-2.0)/1200 = 1 mA
-Text Notes 5000 4950 0    60   ~ 0
-Experiment results:\n680 ohm drive, 100k shunt to GND, 3 mm distance -> 0.8 .. 3.3 V swing\n1k2 drive seems OK too\n470 pF seems a bit on the low side\n47 nF was way too much\ncutoff @ 3rd harmonic, 100 Hz signal:\nC <= 1/(2*pi*100e3*300) = 5.3 n -> 4n7 should be perfect
+	9300 3100 9300 3000
+Connection ~ 9300 3000
 Wire Wire Line
 	5050 2950 5050 3050
-Wire Wire Line
-	6950 3200 7200 3200
 Wire Wire Line
 	6750 3200 6650 3200
 Connection ~ 6650 3200
 Wire Wire Line
-	7100 3400 7100 3200
-Connection ~ 7100 3200
+	8700 3300 8700 3950
+Connection ~ 8700 3950
 Wire Wire Line
-	7100 3600 7100 3950
-Connection ~ 7100 3950
+	9300 3950 9300 3600
 Wire Wire Line
-	7400 3400 7400 3950
-Connection ~ 7400 3950
+	7800 3500 7650 3500
 Wire Wire Line
-	7400 1800 7400 2800
+	7650 3500 7650 3950
+Connection ~ 7650 3950
 Wire Wire Line
-	8000 3950 8000 3700
+	7800 3700 7700 3700
+Wire Wire Line
+	7700 3200 7700 3700
+Wire Wire Line
+	7250 3200 8150 3200
+Wire Wire Line
+	7350 3500 7350 3200
+Connection ~ 7350 3200
+Wire Wire Line
+	6950 3200 7050 3200
+Wire Wire Line
+	7450 3100 7000 3100
+Wire Wire Line
+	7000 3100 7000 3200
+Connection ~ 7000 3200
+Wire Wire Line
+	8350 2900 8500 2900
+Wire Wire Line
+	7650 3100 8500 3100
+Wire Wire Line
+	7350 3700 7350 3950
+Connection ~ 7350 3950
+Wire Wire Line
+	8000 3900 8000 3950
+Connection ~ 8000 3950
+$Comp
+L R_Small R55
+U 1 1 599B393F
+P 8450 3400
+F 0 "R55" H 8480 3420 50  0000 L CNN
+F 1 "0" H 8480 3360 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 8450 3400 50  0001 C CNN
+F 3 "" H 8450 3400 50  0000 C CNN
+	1    8450 3400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8450 3500 8450 3600
+Wire Wire Line
+	8450 3600 8400 3600
+Wire Wire Line
+	8450 3100 8450 3300
+Connection ~ 8450 3100
+Wire Wire Line
+	8000 1800 8000 3300
+Wire Wire Line
+	8700 1800 8700 2700
+Connection ~ 8000 1800
+Wire Wire Line
+	8800 2650 8450 2650
+Wire Wire Line
+	8450 2650 8450 2900
+Connection ~ 8450 2900
+Wire Wire Line
+	6150 4050 6150 3950
+Connection ~ 6150 3950
+$Comp
+L R_Small R54
+U 1 1 599B43EB
+P 8250 3200
+F 0 "R54" H 8280 3220 50  0000 L CNN
+F 1 "0" H 8280 3160 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 8250 3200 50  0001 C CNN
+F 3 "" H 8250 3200 50  0000 C CNN
+	1    8250 3200
+	0    1    1    0   
+$EndComp
+Connection ~ 7700 3200
+Wire Wire Line
+	8350 3200 8450 3200
+Connection ~ 8450 3200
+Text Notes 6700 4500 0    60   ~ 0
+Both Sallen-Key (2nd order) and straight RC (1st order) low-pass possible\nFor S-K, populate R19, R53, C7, C51 and R55. Leave R54 open.\nFor RC, populate, R53, C7 and R54. Replace R19 with 0 Ohm. Leave C51 and R55 open.
 $EndSCHEMATC
