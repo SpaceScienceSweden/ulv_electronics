@@ -692,7 +692,7 @@ F 3 "" H 10300 3750 50  0000 C CNN
 	1    10300 3750
 	1    0    0    -1  
 $EndComp
-Text GLabel 10600 3400 2    60   Input ~ 0
+Text GLabel 10900 4200 2    60   Input ~ 0
 VGND
 Text Label 7650 3300 0    60   ~ 0
 MOSI
@@ -1006,8 +1006,6 @@ Text GLabel 7700 3500 0    60   Input ~ 0
 SCLK
 Text GLabel 7350 3700 3    60   Input ~ 0
 /CS_DACS
-Text Notes 7650 4800 0    60   ~ 0
-Daisy chain with optional MAX504 in tachometer circuit
 $Comp
 L R_Small R38
 U 1 1 58D40091
@@ -1028,7 +1026,7 @@ Wire Wire Line
 Wire Wire Line
 	10450 3400 10450 3450
 Wire Wire Line
-	10300 3400 10600 3400
+	10300 3400 10700 3400
 Wire Wire Line
 	10300 3500 10300 3750
 Connection ~ 9150 3650
@@ -1473,7 +1471,6 @@ Connection ~ 5450 3150
 Wire Wire Line
 	7600 3700 7950 3700
 Connection ~ 7350 3600
-NoConn ~ 12050 3050
 $Comp
 L CONN_02X12 P12
 U 1 1 58D45A24
@@ -1607,4 +1604,104 @@ Wire Wire Line
 Wire Wire Line
 	6600 1400 7000 1400
 Connection ~ 7000 1400
+$Comp
+L C_Small C52
+U 1 1 599C1D4E
+P 10350 4350
+F 0 "C52" H 10360 4420 50  0000 L CNN
+F 1 "open" H 10360 4270 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 10350 4350 50  0001 C CNN
+F 3 "" H 10350 4350 50  0000 C CNN
+	1    10350 4350
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R56
+U 1 1 599C2802
+P 10150 4200
+F 0 "R56" H 10180 4220 50  0000 L CNN
+F 1 "0" H 10180 4160 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 10150 4200 50  0001 C CNN
+F 3 "" H 10150 4200 50  0000 C CNN
+	1    10150 4200
+	0    1    1    0   
+$EndComp
+$Comp
+L C_Small C53
+U 1 1 599C420E
+P 10550 4350
+F 0 "C53" H 10560 4420 50  0000 L CNN
+F 1 "open" H 10560 4270 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 10550 4350 50  0001 C CNN
+F 3 "" H 10550 4350 50  0000 C CNN
+	1    10550 4350
+	1    0    0    -1  
+$EndComp
+$Comp
+L C_Small C54
+U 1 1 599C4355
+P 10750 4350
+F 0 "C54" H 10760 4420 50  0000 L CNN
+F 1 "open" H 10760 4270 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 10750 4350 50  0001 C CNN
+F 3 "" H 10750 4350 50  0000 C CNN
+	1    10750 4350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10700 3400 10700 4050
+Wire Wire Line
+	10700 4050 9950 4050
+Wire Wire Line
+	9950 4050 9950 4200
+Wire Wire Line
+	9950 4200 10050 4200
+Wire Wire Line
+	10250 4200 10900 4200
+Wire Wire Line
+	10350 4250 10350 4200
+Connection ~ 10350 4200
+Wire Wire Line
+	10550 4250 10550 4200
+Connection ~ 10550 4200
+Wire Wire Line
+	10750 4250 10750 4200
+Connection ~ 10750 4200
+$Comp
+L GND #PWR034
+U 1 1 599C5333
+P 10350 4450
+F 0 "#PWR034" H 10350 4200 50  0001 C CNN
+F 1 "GND" H 10350 4300 50  0000 C CNN
+F 2 "" H 10350 4450 50  0000 C CNN
+F 3 "" H 10350 4450 50  0000 C CNN
+	1    10350 4450
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR035
+U 1 1 599C5464
+P 10550 4450
+F 0 "#PWR035" H 10550 4200 50  0001 C CNN
+F 1 "GND" H 10550 4300 50  0000 C CNN
+F 2 "" H 10550 4450 50  0000 C CNN
+F 3 "" H 10550 4450 50  0000 C CNN
+	1    10550 4450
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR036
+U 1 1 599C5595
+P 10750 4450
+F 0 "#PWR036" H 10750 4200 50  0001 C CNN
+F 1 "GND" H 10750 4300 50  0000 C CNN
+F 2 "" H 10750 4450 50  0000 C CNN
+F 3 "" H 10750 4450 50  0000 C CNN
+	1    10750 4450
+	1    0    0    -1  
+$EndComp
+Text Notes 7550 5550 1    39   ~ 0
+Daisy chain with optional MAX504 in tachometer circuit.
+Text Notes 8400 5150 0    60   ~ 0
+Capacitance between VGND and GND is 77 pF (measured)\nMAX504 can drive this quite comfortably\nIf more capacitance is needed, populate\nR56 with 100k and C52..54 with 1 nF
 $EndSCHEMATC
