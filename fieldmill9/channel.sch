@@ -176,8 +176,8 @@ F 5 "http://se.farnell.com/yageo-phycomp/rc2010fk-0710ml/motst-tjockfilm-10m-1-0
 	1    6550 5400
 	0    1    1    0   
 $EndComp
-Text Notes 7300 2900 0    60   ~ 0
-T filter to block RF but let our 300 Hz signal through\nI would have used a CM choke, but inter-winding leakage may be an issue\nWIth discrete inductors there's nowhere to leak to\nThere's three "layers" of inductors here:\n470 nH to block everything up to about UHF (<=610 MHz)\n19.4 nH to block S-band (<=4 GHz)\n10-ish nH in the traces, hopefully not resonant at 10 GHz, blocking X-band
+Text Notes 7300 2600 0    60   ~ 0
+T filter to block RF but let our 300 Hz signal through\nI would have used a CM choke, but inter-winding leakage may be an issue\nWIth discrete inductors there's nowhere to leak to\nThere's three "layers" of inductors here:\n470 nH to block everything up to about UHF (<=610 MHz)\n56 nH to block S-band and X-band (<=23 GHz)\n10-ish nH in the traces
 Text GLabel 7150 2850 1    60   Input ~ 0
 VGND
 Text Notes 2950 3800 0    47   ~ 0
@@ -204,7 +204,7 @@ F 7 "http://se.farnell.com/coilcraft/0805ht-r47tglb/inductor-rf-470nh-2-610mhz-s
 	1    7550 3200
 	0    1    1    0   
 $EndComp
-Text Notes 6150 2200 0    60   ~ 0
+Text Notes 5500 2400 0    60   ~ 0
 VGND must be tied to the guard ring!
 $Comp
 L L L2
@@ -214,13 +214,13 @@ AR Path="/57B05F2F/58CE7E67" Ref="L2"  Part="1"
 AR Path="/57B0A0EC/58CE7E67" Ref="L6"  Part="1" 
 AR Path="/57B0A102/58CE7E67" Ref="L10"  Part="1" 
 F 0 "L2" V 7900 3200 50  0000 C CNN
-F 1 "19n4" V 8025 3200 50  0000 C CNN
-F 2 "SCUBE:0806SQ-19N" H 7950 3200 50  0001 C CNN
+F 1 "56n" V 8025 3200 50  0000 C CNN
+F 2 "SCUBE:0806SQ-19N_0603_combined" H 7950 3200 50  0001 C CNN
 F 3 "" H 7950 3200 50  0000 C CNN
-F 4 "Coilcraft" H 7950 3200 60  0001 C CNN "Mfg. Name"
-F 5 "0806SQ-19NGLB" H 7950 3200 60  0001 C CNN "Mfg. Part Number"
-F 6 "2286600" H 7950 3200 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/coilcraft/0806sq-19nglb/inductor-rf-19-4nh-2-4ghz-smd/dp/2286600" H 7950 3200 60  0001 C CNN "1st Distrib. Link"
+F 4 "Johanson" H 7950 3200 60  0001 C CNN "Mfg. Name"
+F 5 "L-14C56NJV4T" H 7950 3200 60  0001 C CNN "Mfg. Part Number"
+F 6 "712-1443-1-ND" H 7950 3200 60  0001 C CNN "1st Distrib. PN"
+F 7 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7950 3200 60  0001 C CNN "1st Distrib. Link"
 	1    7950 3200
 	0    1    1    0   
 $EndComp
@@ -232,13 +232,13 @@ AR Path="/57B05F2F/58CE80E2" Ref="L4"  Part="1"
 AR Path="/57B0A0EC/58CE80E2" Ref="L8"  Part="1" 
 AR Path="/57B0A102/58CE80E2" Ref="L12"  Part="1" 
 F 0 "L4" V 7900 4950 50  0000 C CNN
-F 1 "19n4" V 8025 4950 50  0000 C CNN
-F 2 "SCUBE:0806SQ-19N" H 7950 4950 50  0001 C CNN
+F 1 "56n" V 8025 4950 50  0000 C CNN
+F 2 "SCUBE:0806SQ-19N_0603_combined" H 7950 4950 50  0001 C CNN
 F 3 "" H 7950 4950 50  0000 C CNN
-F 4 "Coilcraft" H 7950 4950 60  0001 C CNN "Mfg. Name"
-F 5 "0806SQ-19NGLB" H 7950 4950 60  0001 C CNN "Mfg. Part Number"
-F 6 "2286600" H 7950 4950 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/coilcraft/0806sq-19nglb/inductor-rf-19-4nh-2-4ghz-smd/dp/2286600" H 7950 4950 60  0001 C CNN "1st Distrib. Link"
+F 4 "Johanson" H 7950 4950 60  0001 C CNN "Mfg. Name"
+F 5 "L-14C56NJV4T" H 7950 4950 60  0001 C CNN "Mfg. Part Number"
+F 6 "712-1443-1-ND" H 7950 4950 60  0001 C CNN "1st Distrib. PN"
+F 7 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7950 4950 60  0001 C CNN "1st Distrib. Link"
 	1    7950 4950
 	0    1    1    0   
 $EndComp
@@ -353,14 +353,10 @@ Wire Wire Line
 	7750 3950 7150 3950
 Connection ~ 7150 3950
 Connection ~ 7750 3950
-Wire Wire Line
-	7750 4350 7750 5150
 Connection ~ 7750 4950
-Wire Wire Line
-	7750 3050 7750 3550
 Connection ~ 7750 3200
 Text Notes 8050 3900 0    60   ~ 0
-These caps are optional, but should improve the RFI filter\nThe -6 dB point is placed at 527 MHz\nThe caps create a 100 MOhm path to VGND @ 300 Hz,\nwhich if the 50 µV input offset\nchanges sign would give rise to a 0.5 pA current
+These caps are optional, but should improve the RFI filter\nThe -6 dB point is placed at 310 MHz\nThe caps create a 100 MOhm path to VGND @ 300 Hz,\nwhich if the 50 µV input offset\nchanges sign would give rise to a 0.5 pA current\nLarger caps may be OK, but may affect source capacitance
 $Comp
 L L L3
 U 1 1 58CEB905
@@ -379,48 +375,8 @@ F 7 "http://se.farnell.com/coilcraft/0805ht-r47tglb/inductor-rf-470nh-2-610mhz-s
 	1    7550 4950
 	0    1    1    0   
 $EndComp
-$Comp
-L R_Small R46
-U 1 1 59123011
-P 7950 3050
-AR Path="/57B05F2F/59123011" Ref="R46"  Part="1" 
-AR Path="/57B0A0EC/59123011" Ref="R49"  Part="1" 
-AR Path="/57B0A102/59123011" Ref="R51"  Part="1" 
-F 0 "R46" H 7980 3070 50  0000 L CNN
-F 1 "0" H 7980 3010 50  0000 L CNN
-F 2 "SCUBE:solder_bridge_1mm" H 7950 3050 50  0001 C CNN
-F 3 "" H 7950 3050 50  0000 C CNN
-	1    7950 3050
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
-	7850 3050 7750 3050
+	7750 4350 7750 4950
 Wire Wire Line
-	8050 3050 8150 3050
-Wire Wire Line
-	8150 3050 8150 3200
-Connection ~ 8150 3200
-$Comp
-L R_Small R48
-U 1 1 59123210
-P 7950 5150
-AR Path="/57B05F2F/59123210" Ref="R48"  Part="1" 
-AR Path="/57B0A0EC/59123210" Ref="R50"  Part="1" 
-AR Path="/57B0A102/59123210" Ref="R52"  Part="1" 
-F 0 "R48" H 7980 5170 50  0000 L CNN
-F 1 "0" H 7980 5110 50  0000 L CNN
-F 2 "SCUBE:solder_bridge_1mm" H 7950 5150 50  0001 C CNN
-F 3 "" H 7950 5150 50  0000 C CNN
-	1    7950 5150
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	7750 5150 7850 5150
-Wire Wire Line
-	8050 5150 8150 5150
-Wire Wire Line
-	8150 5150 8150 4950
-Connection ~ 8150 4950
-Text Notes 8050 3050 0    47   ~ 0
-<- Bypass due to 10 week order delay
+	7750 3200 7750 3550
 $EndSCHEMATC
