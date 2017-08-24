@@ -1,4 +1,4 @@
-(module Resistors_SMD:R_2010 (layer F.Cu) (tedit 59948F58)
+(module Resistor_1206_2010_combined (layer F.Cu) (tedit 599EBC43)
   (descr "Resistor SMD 2010, reflow soldering, Vishay (see dcrcw.pdf)")
   (tags "resistor 2010")
   (attr smd)
@@ -23,8 +23,8 @@
   (fp_line (start 3.2 1.5) (end -3.2 1.5) (layer F.CrtYd) (width 0.05))
   (pad 1 smd rect (at -2.45 0) (size 1 2.5) (layers F.Cu F.Paste F.Mask))
   (pad 2 smd rect (at 2.45 0) (size 1 2.5) (layers F.Cu F.Paste F.Mask))
-  (pad 1 smd rect (at -1.5 0 180) (size 1 1.6) (layers F.Cu F.Paste F.Mask))
-  (pad 2 smd rect (at 1.5 0 180) (size 1 1.6) (layers F.Cu F.Paste F.Mask))
+  (pad 1 smd rect (at -1.7 0 180) (size 1.4 1.6) (layers F.Cu F.Paste F.Mask))
+  (pad 2 smd rect (at 1.7 0 180) (size 1.4 1.6) (layers F.Cu F.Paste F.Mask))
   (model ${KISYS3DMOD}/Resistors_SMD.3dshapes/R_2010.wrl
     (at (xyz 0 0 0))
     (scale (xyz 1 1 1))
