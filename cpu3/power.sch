@@ -29,6 +29,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:scube
+LIBS:cpu3-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -1270,31 +1271,21 @@ F 3 "" H 1700 2900 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	1450 4650 1400 4650
+	1350 4650 1450 4650
 Wire Wire Line
-	1400 4650 1400 4800
+	1400 5050 2700 5050
 Wire Wire Line
-	1400 4800 2600 4800
+	1950 4650 2200 4650
 Wire Wire Line
-	2000 4800 2000 4650
+	2700 5050 2700 4150
+Connection ~ 2700 4150
+Connection ~ 2000 5050
 Wire Wire Line
-	2000 4650 1950 4650
-Wire Wire Line
-	2600 4800 2600 4150
-Connection ~ 2600 4150
-Connection ~ 2000 4800
-Wire Wire Line
-	900  3550 1450 3550
-Wire Wire Line
-	1400 3550 1400 3400
-Wire Wire Line
-	1400 3400 2000 3400
-Wire Wire Line
-	2000 3400 2000 3550
+	1400 3550 1400 3450
 Wire Wire Line
 	2000 3850 1950 3850
 Wire Wire Line
-	2000 3550 1950 3550
+	1950 3550 2050 3550
 Wire Wire Line
 	2100 4350 3750 4350
 Wire Wire Line
@@ -1302,7 +1293,7 @@ Wire Wire Line
 Wire Wire Line
 	1450 4150 3000 4150
 Wire Wire Line
-	900  3550 900  4050
+	900  3150 900  4050
 Connection ~ 900  4050
 Connection ~ 1400 3550
 NoConn ~ 6250 4550
@@ -1454,4 +1445,78 @@ Wire Wire Line
 Wire Wire Line
 	5750 2950 5750 2850
 Connection ~ 5750 2850
+Text GLabel 2200 4650 2    60   Input ~ 0
+EXTRA1
+Text GLabel 1350 4650 0    60   Input ~ 0
+EXTRA2
+Text GLabel 1350 3550 0    60   Input ~ 0
+EXTRA3
+Text GLabel 2050 3550 2    60   Input ~ 0
+EXTRA4
+Connection ~ 1400 4650
+Connection ~ 2000 4650
+Connection ~ 2000 3550
+$Comp
+L R_Small R50
+U 1 1 599FF071
+P 1400 3350
+F 0 "R50" H 1430 3370 50  0000 L CNN
+F 1 "0" H 1430 3310 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 1400 3350 50  0001 C CNN
+F 3 "" H 1400 3350 50  0000 C CNN
+	1    1400 3350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1350 3550 1450 3550
+$Comp
+L R_Small R51
+U 1 1 599FF94A
+P 2000 3350
+F 0 "R51" H 2030 3370 50  0000 L CNN
+F 1 "0" H 2030 3310 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 2000 3350 50  0001 C CNN
+F 3 "" H 2000 3350 50  0000 C CNN
+	1    2000 3350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2000 3450 2000 3550
+Wire Wire Line
+	2000 3150 2000 3250
+Wire Wire Line
+	900  3150 2000 3150
+Wire Wire Line
+	1400 3250 1400 3150
+Connection ~ 1400 3150
+$Comp
+L R_Small R52
+U 1 1 59A0002F
+P 1400 4850
+F 0 "R52" H 1430 4870 50  0000 L CNN
+F 1 "0" H 1430 4810 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 1400 4850 50  0001 C CNN
+F 3 "" H 1400 4850 50  0000 C CNN
+	1    1400 4850
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R53
+U 1 1 59A001FF
+P 2000 4850
+F 0 "R53" H 2030 4870 50  0000 L CNN
+F 1 "0" H 2030 4810 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 2000 4850 50  0001 C CNN
+F 3 "" H 2000 4850 50  0000 C CNN
+	1    2000 4850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1400 4650 1400 4750
+Wire Wire Line
+	1400 4950 1400 5050
+Wire Wire Line
+	2000 4650 2000 4750
+Wire Wire Line
+	2000 4950 2000 5050
 $EndSCHEMATC
