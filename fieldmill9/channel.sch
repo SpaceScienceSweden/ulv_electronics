@@ -177,7 +177,7 @@ F 5 "http://se.farnell.com/yageo-phycomp/rc2010fk-0710ml/motst-tjockfilm-10m-1-0
 	0    1    1    0   
 $EndComp
 Text Notes 7300 2600 0    60   ~ 0
-T filter to block RF but let our 300 Hz signal through\nI would have used a CM choke, but inter-winding leakage may be an issue\nWIth discrete inductors there's nowhere to leak to\nThere's three "layers" of inductors here:\n470 nH to block everything up to about UHF (<=610 MHz)\n56 nH to block S-band and X-band (<=23 GHz)\n10-ish nH in the traces
+T filter to block RF but let our 300 Hz signal through\nI would have used a CM choke, but inter-winding leakage may be an issue\nWIth discrete inductors there's nowhere to leak to\nThere's two "layers" of inductors here:\n56 nH to block S-band and X-band (<=23 GHz)\n10-ish nH in the traces
 Text GLabel 7150 2850 1    60   Input ~ 0
 VGND
 Text Notes 2950 3800 0    47   ~ 0
@@ -194,13 +194,13 @@ AR Path="/57B05F2F/58CE5B9B" Ref="L1"  Part="1"
 AR Path="/57B0A0EC/58CE5B9B" Ref="L5"  Part="1" 
 AR Path="/57B0A102/58CE5B9B" Ref="L9"  Part="1" 
 F 0 "L1" V 7500 3200 50  0000 C CNN
-F 1 "470n" V 7625 3200 50  0000 C CNN
+F 1 "56n" V 7625 3200 50  0000 C CNN
 F 2 "Capacitors_SMD:C_0805" H 7550 3200 50  0001 C CNN
 F 3 "" H 7550 3200 50  0000 C CNN
-F 4 "Coilcraft" H 7550 3200 60  0001 C CNN "Mfg. Name"
-F 5 "0805HT-R47TGLB" H 7550 3200 60  0001 C CNN "Mfg. Part Number"
-F 6 "2286480" H 7550 3200 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/coilcraft/0805ht-r47tglb/inductor-rf-470nh-2-610mhz-smd/dp/2286480" H 7550 3200 60  0001 C CNN "1st Distrib. Link"
+F 4 "Johanson" H 7550 3200 60  0001 C CNN "Mfg. Name"
+F 5 "L-14C56NJV4T" H 7550 3200 60  0001 C CNN "Mfg. Part Number"
+F 6 "712-1443-1-ND" H 7550 3200 60  0001 C CNN "1st Distrib. PN"
+F 7 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7550 3200 60  0001 C CNN "1st Distrib. Link"
 	1    7550 3200
 	0    1    1    0   
 $EndComp
@@ -355,8 +355,8 @@ Connection ~ 7150 3950
 Connection ~ 7750 3950
 Connection ~ 7750 4950
 Connection ~ 7750 3200
-Text Notes 8050 3900 0    60   ~ 0
-These caps are optional, but should improve the RFI filter\nThe -6 dB point is placed at 310 MHz\nThe caps create a 100 MOhm path to VGND @ 300 Hz,\nwhich if the 50 µV input offset\nchanges sign would give rise to a 0.5 pA current\nLarger caps may be OK, but may affect source capacitance
+Text Notes 8100 4150 0    60   ~ 0
+These caps are optional, but should improve the RFI filter\nThe -6 dB point is placed at 310 MHz\nThe caps create a 100 MOhm path to VGND @ 300 Hz,\nwhich if the 50 µV input offset\nchanges sign would give rise to a 0.5 pA current\nLarger caps may be OK, but may affect source capacitance\nHave ordered 100 pF
 $Comp
 L L L3
 U 1 1 58CEB905
@@ -365,13 +365,13 @@ AR Path="/57B05F2F/58CEB905" Ref="L3"  Part="1"
 AR Path="/57B0A0EC/58CEB905" Ref="L7"  Part="1" 
 AR Path="/57B0A102/58CEB905" Ref="L11"  Part="1" 
 F 0 "L3" V 7500 4950 50  0000 C CNN
-F 1 "470n" V 7625 4950 50  0000 C CNN
+F 1 "56n" V 7625 4950 50  0000 C CNN
 F 2 "Capacitors_SMD:C_0805" H 7550 4950 50  0001 C CNN
 F 3 "" H 7550 4950 50  0000 C CNN
-F 4 "Coilcraft" H 7550 4950 60  0001 C CNN "Mfg. Name"
-F 5 "0805HT-R47TGLB" H 7550 4950 60  0001 C CNN "Mfg. Part Number"
-F 6 "2286480" H 7550 4950 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/coilcraft/0805ht-r47tglb/inductor-rf-470nh-2-610mhz-smd/dp/2286480" H 7550 4950 60  0001 C CNN "1st Distrib. Link"
+F 4 "Johanson" H 7550 4950 60  0001 C CNN "Mfg. Name"
+F 5 "L-14C56NJV4T" H 7550 4950 60  0001 C CNN "Mfg. Part Number"
+F 6 "712-1443-1-ND" H 7550 4950 60  0001 C CNN "1st Distrib. PN"
+F 7 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7550 4950 60  0001 C CNN "1st Distrib. Link"
 	1    7550 4950
 	0    1    1    0   
 $EndComp
