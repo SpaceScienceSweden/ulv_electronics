@@ -97,77 +97,55 @@ SCALE = 1000000.0
 import sys, os
 import svgwrite
 
+# Extract modules, group by prefix,value
+md = {}
+for m in board.GetModules():
+    # Skip virtual components
+    if m.GetAttributes() == 2:
+        continue
+
+    k = (m.GetReference()[0], m.GetValue())
+    if not k in md:
+        md[k] = []
+    md[k].append(m)
+
+
 print("working in the dir " + os.getcwd())
-name = "output.svg"
-# A4 is approximately 21x29
-dwg = svgwrite.Drawing(name, size=('21cm', '29cm'), profile='full', debug=True)
 
-dwg.viewbox(width=boardwidth, height=boardheight, minx=boardxl, miny=boardyl)
-background = dwg.add(dwg.g(id='bg', stroke='white'))
-background.add(dwg.rect(insert=(boardxl, boardyl), size=(boardwidth, boardheight), fill='white'))
+for k, ml in md.iteritems():
+    prefix = k[0]
+    value = k[1]
+    name = 'svgs/' + value + '.svg'
+    # A4 is approximately 21x29
+    dwg = svgwrite.Drawing(name, size=('21cm', '29cm'), profile='full', debug=True)
 
+    dwg.viewbox(width=boardwidth, height=boardheight, minx=boardxl, miny=boardyl)
+    background = dwg.add(dwg.g(id='bg', stroke='black'))
+    background.add(dwg.rect(insert=(boardxl, boardyl), size=(boardwidth, boardheight), stroke='black', fill='white', stroke_width=3e5))
 
+    tsz = 2.5e6
+    refs = ', '.join([m.GetReference() for m in ml])
+    # TODO: textarea instead? requires a different SVG profile
+    dwg.add(dwg.text('%s (%i pcs)' % (value, len(ml)), insert=(boardxl + tsz, boardyl - tsz*1.5), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
+    dwg.add(dwg.text(refs,                             insert=(boardxl + tsz, boardyl - tsz*0.5), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
 
-svglayers = {}
-for colorcode, colorname in colornames.items():
-    layer = dwg.add(dwg.g(id='layer_'+colorname, stroke=colorname.lower(), stroke_linecap="round"))
-    svglayers[colorcode] = layer
+    svglayers = {}
+    for colorcode, colorname in colornames.items():
+        layer = dwg.add(dwg.g(id='layer_'+colorname, stroke=colorname.lower(), stroke_linecap="round"))
+        svglayers[colorcode] = layer
 
-alltracks = board.GetTracks() 
-for track in alltracks:
-    # print("{}->{}".format(track.GetStart(), track.GetEnd()))
-    # print("{},{}->{},{} width {} layer {}".format(track.GetStart().x/SCALE, track.GetStart().y/SCALE,
-    #                                               track.GetEnd().x/SCALE,   track.GetEnd().y/SCALE,
-    #                                               track.GetWidth()/SCALE,
-    #                                               track.GetLayer())          
-    # )
-    layercolor = board.GetLayerColor(track.GetLayer())
-    svglayers[layercolor].add(dwg.line(start=(track.GetStart().x,
-                                              track.GetStart().y),
-                                       end=(track.GetEnd().x,
-                                            track.GetEnd().y),
-                                       stroke_width=track.GetWidth()
-    ))
+    for m in ml:
+        bb = m.GetFootprintRect()
+        global r
+        r = m.Reference()
+        dwg.add(dwg.rect(insert=bb.GetPosition(), size=bb.GetSize(), stroke='black', fill='none', stroke_width=3e5))
 
+        tsz = min(bb.GetWidth() / len(m.GetReference()), bb.GetHeight() * 0.7)
+        tx = bb.GetX() + 3e5
+        ty = bb.GetY() + bb.GetHeight() * 0.5 + tsz * 0.5
+        dwg.add(dwg.text(m.GetReference(), insert=(tx, ty), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
 
-svgpads = dwg.add(dwg.g(id='pads', stroke='red',fill='orange'))
-allpads = board.GetPads()
-
-'''
-for pad in allpads:
-    mod = pad.GetParent()
-    name = pad.GetPadName()
-    if (0):
-        print("pad {}({}) on {}({}) at {},{} shape {} size {},{}"
-              .format(name,
-                      pad.GetNet().GetNetname(),
-                      mod.GetReference(),
-                      mod.GetValue(),
-                      pad.GetPosition().x, pad.GetPosition().y,
-                      padshapes[pad.GetShape()],
-                      pad.GetSize().x, pad.GetSize().y
-              ))
-    if (pad.GetShape() == pcbnew.PAD_SHAPE_RECT):
-        if ((pad.GetOrientationDegrees()==270) | (pad.GetOrientationDegrees()==90)):
-            svgpads.add(dwg.rect(insert=(pad.GetPosition().x-pad.GetSize().x/2,
-                                         pad.GetPosition().y-pad.GetSize().y/2),
-                                 size=(pad.GetSize().y, pad.GetSize().x)))
-        else:
-            svgpads.add(dwg.rect(insert=(pad.GetPosition().x-pad.GetSize().x/2,
-                                         pad.GetPosition().y-pad.GetSize().y/2),
-                                 size=(pad.GetSize().x, pad.GetSize().y)))
-    elif (pad.GetShape() == pcbnew.PAD_SHAPE_CIRCLE):
-        svgpads.add(dwg.circle(center=(pad.GetPosition().x, pad.GetPosition().y),
-                               r=pad.GetSize().x))
-    elif (pad.GetShape() == pcbnew.PAD_SHAPE_OVAL):
-        svgpads.add(dwg.ellipse(center=(pad.GetPosition().x, pad.GetPosition().y),
-                                r=(pad.GetSize().x/2, pad.GetSize().y/2)))
-    else:
-        print("unknown pad shape {}({})".format(pad.GetShape(), padshapes[pad.GetShape()]))
-'''
-
-    
-dwg.save()
- 
+    dwg.save()
 
 print("done")
+
