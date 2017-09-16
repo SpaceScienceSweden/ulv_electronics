@@ -1,0 +1,24 @@
+This file contains the list of licenses used for various subprojects, and those
+subprojects' authors. For details, see the relevant LICENCE-* files.
+
+#
+# GNU Affero General Public License Version 3 (AGPLv3)
+#
+Tomas Härdin, applies to all original code and changes to existing code by
+others within this project. License notices are TODO.
+
+#
+# GNU Lesser General Public License Version 3 (LGPLv3)
+#
+Jacek Wieczorek, avr109
+
+#
+# MIT License
+#
+Jacek Wieczorek, avr-ds18b20
+
+#
+# Apache License, Version 2.0
+#
+Miles McCoo, gensvg.py
+
