@@ -72,7 +72,7 @@ if hasattr(pcbnew, 'PAD_SHAPE_ROUNDRECT'):
 
 
     
-board = pcbnew.GetBoard()
+board = pcbnew.LoadBoard('fieldmill9.kicad_pcb')
 
 boardbbox = board.ComputeBoundingBox()
 boardxl = boardbbox.GetX()
@@ -133,6 +133,7 @@ for track in alltracks:
 svgpads = dwg.add(dwg.g(id='pads', stroke='red',fill='orange'))
 allpads = board.GetPads()
 
+'''
 for pad in allpads:
     mod = pad.GetParent()
     name = pad.GetPadName()
@@ -163,7 +164,7 @@ for pad in allpads:
                                 r=(pad.GetSize().x/2, pad.GetSize().y/2)))
     else:
         print("unknown pad shape {}({})".format(pad.GetShape(), padshapes[pad.GetShape()]))
-
+'''
 
     
 dwg.save()
