@@ -115,19 +115,27 @@ print("working in the dir " + os.getcwd())
 for k, ml in md.iteritems():
     prefix = k[0]
     value = k[1]
-    name = 'svgs/' + value + '.svg'
+    name = 'svgs/' + prefix + value + '.svg'
     # A4 is approximately 21x29
-    dwg = svgwrite.Drawing(name, size=('21cm', '29cm'), profile='full', debug=True)
+    dwg = svgwrite.Drawing(name, size=('5cm', '6cm'), profile='full', debug=True)
 
-    dwg.viewbox(width=boardwidth, height=boardheight, minx=boardxl, miny=boardyl)
-    background = dwg.add(dwg.g(id='bg', stroke='black'))
+    scale = 0.5
+    dwg.viewbox(width=boardwidth*scale*1.1, height=boardheight*scale*1.1, minx=0, miny=0)
+    mover = dwg.add(dwg.g(id='bg', stroke='black', transform='translate(%f,%f)' % (-boardxl * scale / 1.1, -boardyl * scale  / 1.1)))
+    background = mover.add(dwg.g(id='bg', stroke='black', transform='scale(%f,%f)' % (scale,scale)))
     background.add(dwg.rect(insert=(boardxl, boardyl), size=(boardwidth, boardheight), stroke='black', fill='white', stroke_width=3e5))
 
     tsz = 2.5e6
-    refs = ', '.join([m.GetReference() for m in ml])
-    # TODO: textarea instead? requires a different SVG profile
-    dwg.add(dwg.text('%s (%i pcs)' % (value, len(ml)), insert=(boardxl + tsz, boardyl - tsz*1.5), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
-    dwg.add(dwg.text(refs,                             insert=(boardxl + tsz, boardyl - tsz*0.5), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
+    background.add(dwg.text('%s (%i pcs)' % (value, len(ml)), insert=(boardxl + tsz, boardyl - tsz*3.5), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
+
+    # Seems SVG doesn't do word wrap, so split the refs up manually
+    ref1 = ', '.join([m.GetReference() for m in ml[0:10]])
+    ref2 = ', '.join([m.GetReference() for m in ml[10:20]])
+    ref3 = ', '.join([m.GetReference() for m in ml[20:]])
+
+    background.add(dwg.text(ref1, insert=(boardxl + tsz, boardyl - tsz*2.5), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
+    background.add(dwg.text(ref2, insert=(boardxl + tsz, boardyl - tsz*1.5), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
+    background.add(dwg.text(ref3, insert=(boardxl + tsz, boardyl - tsz*0.5), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
 
     svglayers = {}
     for colorcode, colorname in colornames.items():
@@ -136,14 +144,16 @@ for k, ml in md.iteritems():
 
     for m in ml:
         bb = m.GetFootprintRect()
-        global r
+        bbx = boardwidth + boardxl - (bb.GetX() - boardxl) - bb.GetWidth()
+        bby = bb.GetY()
+
         r = m.Reference()
-        dwg.add(dwg.rect(insert=bb.GetPosition(), size=bb.GetSize(), stroke='black', fill='none', stroke_width=3e5))
+        background.add(dwg.rect(insert=(bbx, bby), size=bb.GetSize(), stroke='black', fill='none', stroke_width=3e5))
 
         tsz = min(bb.GetWidth() / len(m.GetReference()), bb.GetHeight() * 0.7)
-        tx = bb.GetX() + 3e5
-        ty = bb.GetY() + bb.GetHeight() * 0.5 + tsz * 0.5
-        dwg.add(dwg.text(m.GetReference(), insert=(tx, ty), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
+        tx = bbx + 3e5
+        ty = bby + bb.GetHeight() * 0.5 + tsz * 0.5
+        background.add(dwg.text(m.GetReference(), insert=(tx, ty), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
 
     dwg.save()
 

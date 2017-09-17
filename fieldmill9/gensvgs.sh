@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 mkdir -p svgs
-rm svgs/*
+rm -f svgs/*
 python gensvg.py
-#(cd svgs/ &&  convert -density 300 10k.svg 10k.svg.png && eog 10k.svg.png )
-cd svgs
-for f in *.svg
-do
-  convert -density 300 $f $f.png
-  rm $f
-done
+(cd svgs/ &&  convert -density 300 C10u.svg C10u.svg.png && eog C10u.svg.png )
+#cd svgs
+#for f in *.svg
+#do
+#  convert -density 300 $f $f.png
+#  rm $f
+#done
