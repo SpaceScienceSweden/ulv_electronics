@@ -123,7 +123,7 @@ for k, ml in md.iteritems():
     dwg.viewbox(width=boardwidth*scale*1.1, height=boardheight*scale*1.1, minx=0, miny=0)
     mover = dwg.add(dwg.g(id='bg', stroke='black', transform='translate(%f,%f)' % (-boardxl * scale / 1.1, -boardyl * scale  / 1.1)))
     background = mover.add(dwg.g(id='bg', stroke='black', transform='scale(%f,%f)' % (scale,scale)))
-    background.add(dwg.rect(insert=(boardxl, boardyl), size=(boardwidth, boardheight), stroke='black', fill='white', stroke_width=3e5))
+    background.add(dwg.rect(insert=(boardxl, boardyl), size=(boardwidth, boardheight), stroke='none', fill='white', stroke_width=3e5))
 
     tsz = 2.5e6
     background.add(dwg.text('%s (%i pcs)' % (value, len(ml)), insert=(boardxl + tsz, boardyl - tsz*3.5), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
@@ -137,10 +137,19 @@ for k, ml in md.iteritems():
     background.add(dwg.text(ref2, insert=(boardxl + tsz, boardyl - tsz*1.5), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
     background.add(dwg.text(ref3, insert=(boardxl + tsz, boardyl - tsz*0.5), fill = "rgb(0,0,0)", style='font-size:%f;font-weight:bold' % tsz))
 
-    svglayers = {}
-    for colorcode, colorname in colornames.items():
-        layer = dwg.add(dwg.g(id='layer_'+colorname, stroke=colorname.lower(), stroke_linecap="round"))
-        svglayers[colorcode] = layer
+    #mover = dwg.add(dwg.g(id='bg', stroke='black', transform='translate(%f,%f)' % (0, 0)))
+    #cuts1 = mover.add(dwg.g(id='bg', stroke='black', transform='translate(%f,%f)' % ( (boardxl- boardwidth*scale),0)))
+    cuts2 = mover.add(dwg.g(id='bg', stroke='black', transform='translate(%f,%f) scale(%f,%f) translate(%f,%f)' % (boardxl*scale + boardwidth*scale, 0, -scale,scale, -boardxl, 0)))
+    for d in board.GetDrawings():
+        if d.GetLayerName() == 'Edge.Cuts':
+            if d.GetShapeStr() == 'Line':
+                cuts2.add(dwg.line(start=d.GetStart(), end=d.GetEnd(), stroke_width=3e5))
+            elif d.GetShapeStr() == 'Circle' or d.GetShapeStr() == 'Arc':
+                # Arcs are drawn as circles because SVG arc are a huge pain
+                cuts2.add(dwg.circle(center=d.GetStart(), r=d.GetRadius(), stroke_width=3e5, fill='none'))
+            #elif d.GetShapeStr() == 'Arc':
+            #    Maybe do this later
+            #    cuts2.add(dwg.path('M %f %f A %f %f %f %i %i %f %f' % (d.GetArcStart().x, d.GetArcStart().y, d.GetRadius(), d.GetRadius(), 0, 0, 0, d.GetArcEnd().x, d.GetArcEnd().y), stroke_width=3e5, fill='none'))
 
     for m in ml:
         bb = m.GetFootprintRect()
