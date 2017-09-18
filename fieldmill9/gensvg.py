@@ -64,9 +64,9 @@ for k, ml in md.iteritems():
     value = k[1]
     name = 'svgs/' + prefix + value + '.svg'
     # A4 is approximately 21x29
-    dwg = svgwrite.Drawing(name, size=('5cm', '6cm'), profile='full', debug=True)
+    dwg = svgwrite.Drawing(name, size=('10cm', '12cm'), profile='full', debug=True)
 
-    scale = 0.5
+    scale = 1.0
     dwg.viewbox(width=boardwidth*scale*1.1, height=boardheight*scale*1.1, minx=0, miny=0)
     mover = dwg.add(dwg.g(id='bg', stroke='black', transform='translate(%f,%f)' % (-boardxl * scale / 1.1, -boardyl * scale  / 1.1)))
     background = mover.add(dwg.g(id='bg', stroke='black', transform='scale(%f,%f)' % (scale,scale)))
