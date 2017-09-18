@@ -18,59 +18,6 @@
 
 
 import pcbnew
-
-
-# c++ code has a nice struct with all of the colors, names, RGB
-# values. this doesn't seem to be exposed in a helpful way.
-# colorrefs = pcbnew.g_ColorRefs
-
-
-# some of the color names are modified to match svr colors.
-# the real answer is to get the rgb values from colorrefs.
-colornames = {
-    pcbnew.BLACK:         'BLACK',         
-    pcbnew.DARKDARKGRAY:  'DARKSLATEGRAY', # 'DARKDARKGRAY',  
-    pcbnew.DARKGRAY:      'DARKGRAY',      
-    pcbnew.LIGHTGRAY:     'LIGHTGRAY',     
-    pcbnew.WHITE:         'WHITE',         
-    pcbnew.LIGHTYELLOW:   'LIGHTYELLOW',   
-    pcbnew.DARKBLUE:      'DARKBLUE',      
-    pcbnew.DARKGREEN:     'DARKGREEN',     
-    pcbnew.DARKCYAN:      'DARKCYAN',      
-    pcbnew.DARKRED:       'DARKRED',       
-    pcbnew.DARKMAGENTA:   'DARKMAGENTA',   
-    pcbnew.DARKBROWN:     'MAROON', # 'DARKBROWN',     
-    pcbnew.BLUE:          'BLUE',          
-    pcbnew.GREEN:         'GREEN',         
-    pcbnew.CYAN:          'CYAN',          
-    pcbnew.RED:           'RED',           
-    pcbnew.MAGENTA:       'MAGENTA',       
-    pcbnew.BROWN:         'BROWN',         
-    pcbnew.LIGHTBLUE:     'LIGHTBLUE',     
-    pcbnew.LIGHTGREEN:    'LIGHTGREEN',    
-    pcbnew.LIGHTCYAN:     'LIGHTCYAN',     
-    pcbnew.LIGHTRED:      'INDIANRED',  # 'LIGHTRED',      
-    pcbnew.LIGHTMAGENTA:  'LIGHTPINK',  # 'LIGHTMAGENTA',  
-    pcbnew.YELLOW:        'YELLOW',        
-    pcbnew.PUREBLUE:      'MEDIUMBLUE', # 'PUREBLUE',      
-    pcbnew.PUREGREEN:     'LAWNGREEN',  # 'PUREGREEN',     
-    pcbnew.PURECYAN:      'DARKTURQUOISE', # 'PURECYAN',      
-    pcbnew.PURERED:       'FIREBRICK',  # 'PURERED',       
-    pcbnew.PUREMAGENTA:   'DARKORCHID', # PUREMAGENTA',   
-    pcbnew.PUREYELLOW:    'KHAKI',      # PUREYELLOW'     
-}
-
-padshapes = {
-    pcbnew.PAD_SHAPE_CIRCLE:  "PAD_SHAPE_CIRCLE",
-    pcbnew.PAD_SHAPE_OVAL:    "PAD_SHAPE_OVAL",
-    pcbnew.PAD_SHAPE_RECT:    "PAD_SHAPE_RECT",
-    pcbnew.PAD_SHAPE_TRAPEZOID: "PAD_SHAPE_TRAPEZOID"    
-}
-# new in the most recent kicad code
-if hasattr(pcbnew, 'PAD_SHAPE_ROUNDRECT'):
-    padshapes[pcbnew.PAD_SHAPE_ROUNDRECT] = "PAD_SHAPE_ROUNDRECT",
-
-
     
 board = pcbnew.LoadBoard('fieldmill9.kicad_pcb')
 
