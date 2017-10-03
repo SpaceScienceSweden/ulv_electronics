@@ -30,4 +30,7 @@ program:
 
 programserial:
 	make -C app all
+	# Tell application to enter bootloader
+	echo -n "S" > /dev/ttyUSB0
+	sleep 1
 	avrdude -b $(BAUD) -c avr109 -p atmega128 -P /dev/ttyUSB0 -U flash:w:app/app.hex
