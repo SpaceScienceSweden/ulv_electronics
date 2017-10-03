@@ -10,6 +10,13 @@
 #include <math.h>
 #include <string.h>
 
+/* RS-485 needs a DE pin */
+#define RS485_DE_PORT PORTD
+#define RS485_DE_DDR  DDRD
+#define RS485_DE_BIT  (1<<5)
+
+#define START_WAIT_UARTCHAR 'S'
+
 //bootloader address in bytes
 #define BOOTLOADER_ADDRESS (0x20000 - 2*BOOTSIZE)
 
@@ -26,27 +33,60 @@
 #error UBRR too high
 #endif
 
+#define UART_BAUD_HIGH	UBRR1H
+#define UART_BAUD_LOW	UBRR1L
+#define UART_STATUS	UCSR1A
+#define UART_TXREADY	UDRE1
+#define UART_TXCOMPLETE	TXC1
+#define UART_RXREADY	RXC1
+#define UART_DOUBLE	U2X1
+#define UART_CTRL	UCSR1B
+#define UART_CTRL_DATA_TX (1<<TXEN1)
+#define UART_CTRL_DATA_RX (1<<RXEN1)
+#define UART_CTRL2	UCSR1C
+#define UART_CTRL2_DATA	((1<<UCSZ11) | (1<<UCSZ10))
+#define UART_DATA	UDR1
+
+static void enable_tx(void) {
+  UART_CTRL = UART_CTRL_DATA_TX;
+  RS485_DE_PORT |= RS485_DE_BIT;
+}
+
+static void disable_tx(void) {
+  //wait for tx to finish
+  while (!(UART_STATUS & (1<<UART_TXCOMPLETE)));
+  RS485_DE_PORT &= ~RS485_DE_BIT;
+  //wait for ringing to die down a bit before switching to RX mode
+  //10 µs is enough, but doesn't hurt to wait longer so long as
+  //the RS-485 driver is set up correctly
+  _delay_us(4*1000000 / BAUD);
+  //_delay_us(100);
+  UART_CTRL = UART_CTRL_DATA_RX;
+}
+
+static void sendchar(uint8_t data)
+{
+  //don't enable_tx() here, that is dangerous
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+  //clear TXC so we can detect it being set later, by writing a one to it
+  UART_STATUS |= (1<<UART_TXCOMPLETE);
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+	return UART_DATA;
+}
+
 //stuff to make printf() work
 //source: http://efundies.com/avr-and-printf/
 //we could probable make scanf() work too
 int usart_putchar_printf(char var, FILE *stream) {
-  while (!(UCSR1A & (1<<UDRE1)));
-  //clear TXC so we can detect it being set later
-  UCSR1A &= ~(1<<TXC1);
-  UDR1 = var;
+  sendchar(var);
   return 0;
 }
 FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE);
-
-static void enable_tx() {
-  PORTD |= (1<<5);
-}
-
-static void disable_tx() {
-  //wait for tx to finish
-  while (!(UCSR1A & (1<<TXC1)));
-  PORTD &= ~(1<<5);
-}
 
 char somedata[]="hello\n";
 char hello[4000];
@@ -71,16 +111,18 @@ static void setup_xmem() {
 
 static void setup_uart1() {
   //double speed for higher UBRR resolution
-  UCSR1A |= (1<<U2X);
-  //enable RX and TX
-  UCSR1B = (1<<RXEN) | (1<<TXEN);
-  //8 data bits, 2 stop bits
-  UCSR1C = (1<<USBS) | (3<<UCSZ10);
+  UART_STATUS = ( 1<<UART_DOUBLE );
+  //enable RX
+  UART_CTRL = UART_CTRL_DATA_RX;
+  UART_CTRL2 = UART_CTRL2_DATA;
   UBRR1L = UBRR;
   UBRR1H = UBRR / 256;
 
   //TX and DE
-  DDRD |= (1<<PD3) | (1<<PD5);
+  DDRD |= (1<<PD3);
+  //ensure we're in RX mode
+  RS485_DE_DDR |= RS485_DE_BIT;
+  RS485_DE_PORT &= ~RS485_DE_BIT;
 }
 
 static unsigned freeRam () {
@@ -91,8 +133,7 @@ static unsigned freeRam () {
 
 int main(void)
 {
-  wdt_enable(WDTO_15MS);
-  for(;;);
+  wdt_enable(WDTO_2S);
   
   setup_xmem();
   setup_uart1();
@@ -100,9 +141,22 @@ int main(void)
   stdout = &mystdout;
 
   enable_tx();
-  printf_P(PSTR("app\r\n"));
+  printf_P(PSTR("hullo foop app2\r\n"));
   disable_tx();
-  
+
+  for (;;) {
+    //check if we have an 'S' coming in
+    //if so then goto bootloader
+		if (UART_STATUS & (1<<UART_RXREADY)) {
+			if (UART_DATA == START_WAIT_UARTCHAR) {
+        //TODO: jump into the appropriate place in the bootloader
+        wdt_enable(WDTO_15MS);
+        for (;;);
+      }
+    }
+  }
+
+
   //asm volatile("jmp 1F800h");
 
   _delay_ms(1000);
