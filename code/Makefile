@@ -29,4 +29,5 @@ program:
 	make programserial
 
 programserial:
-	./bootloader/avrdude-6.3/avrdude -vvv -b $(BAUD) -c butterfly -p atmega128 -P /dev/ttyUSB0 -U flash:w:app/app.hex
+	# Do not attempt to erase Flash (-D)
+	avrdude -b $(BAUD) -c avr109 -p atmega128 -P /dev/ttyUSB0 -D -U flash:w:app/app.hex

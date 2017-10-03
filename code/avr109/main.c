@@ -177,7 +177,7 @@
  * (AVRPROG has to detect the AVR correctly by device-code
  * to show the correct information).
  */
-//#define ENABLEREADFUSELOCK
+#define ENABLEREADFUSELOCK
 
 /* enable/disable write of lock-bits
  * WARNING: lock-bits can not be reseted by bootloader (as far as I know)
@@ -237,24 +237,26 @@ void __vector_default(void) { ; }
 #endif
 
 static void enable_tx(void) {
-  //_delay_ms(1);
+  UART_CTRL = UART_CTRL_DATA_TX;
   RS485_DE_PORT |= RS485_DE_BIT;
-  //_delay_ms(1);
 }
 
 static void disable_tx(void) {
   //wait for tx to finish
   while (!(UART_STATUS & (1<<UART_TXCOMPLETE)));
-  //_delay_us(4000000 / BAUD);
   RS485_DE_PORT &= ~RS485_DE_BIT;
+  //wait for ringing to die down a bit before switching to RX mode
+  //_delay_us(0.25*4000000 / BAUD);
+  _delay_us(10);
+  UART_CTRL = UART_CTRL_DATA_RX;
 }
 
 static void sendchar(uint8_t data)
 {
   //don't enable_tx() here, that is dangerous
 	while (!(UART_STATUS & (1<<UART_TXREADY)));
-  //clear TXC so we can detect it being set later
-  UART_STATUS &= ~(1<<UART_TXCOMPLETE);
+  //clear TXC so we can detect it being set later, by writing a one to it
+  UART_STATUS |= (1<<UART_TXCOMPLETE);
 	UART_DATA = data;
 }
 
@@ -462,7 +464,7 @@ int main(void)
 	UART_STATUS = ( 1<<UART_DOUBLE );
 #endif
 
-	UART_CTRL = UART_CTRL_DATA;
+	UART_CTRL = UART_CTRL_DATA_RX;
 	UART_CTRL2 = UART_CTRL2_DATA;
 
   //ensure we're in RX mode
@@ -519,7 +521,7 @@ int main(void)
 
 	uint16_t cnt = 0;
 
-  send_hello();
+  //send_hello();
 
 	while (1) {
 		if (UART_STATUS & (1<<UART_RXREADY))
