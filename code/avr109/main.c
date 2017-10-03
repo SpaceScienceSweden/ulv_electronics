@@ -246,8 +246,9 @@ static void disable_tx(void) {
   while (!(UART_STATUS & (1<<UART_TXCOMPLETE)));
   RS485_DE_PORT &= ~RS485_DE_BIT;
   //wait for ringing to die down a bit before switching to RX mode
-  //_delay_us(0.25*4000000 / BAUD);
-  _delay_us(10);
+  //10 µs is enough, but doesn't hurt to wait longer so long as
+  //the RS-485 driver is set up correctly
+  _delay_us(100);
   UART_CTRL = UART_CTRL_DATA_RX;
 }
 
@@ -262,7 +263,6 @@ static void sendchar(uint8_t data)
 
 static uint8_t recvchar(void)
 {
-  //disable_tx();
 	while (!(UART_STATUS & (1<<UART_RXREADY)));
 	return UART_DATA;
 }
@@ -275,6 +275,8 @@ static inline void eraseFlash(void)
 		boot_page_erase(addr);		// Perform page erase
 		boot_spm_busy_wait();		// Wait until the memory is erased.
 		addr += SPM_PAGESIZE;
+    //takes about 2 seconds to erase flash, so reset WDT at each page
+    wdt_reset();
 	}
 	boot_rww_enable();
 }

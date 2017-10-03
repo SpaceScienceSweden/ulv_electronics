@@ -29,5 +29,5 @@ program:
 	make programserial
 
 programserial:
-	# Do not attempt to erase Flash (-D)
-	avrdude -b $(BAUD) -c avr109 -p atmega128 -P /dev/ttyUSB0 -D -U flash:w:app/app.hex
+	make -C app all
+	avrdude -b $(BAUD) -c avr109 -p atmega128 -P /dev/ttyUSB0 -U flash:w:app/app.hex
