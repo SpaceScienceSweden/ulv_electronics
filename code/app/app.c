@@ -152,12 +152,12 @@ int main(void)
         //TODO: jump into the appropriate place in the bootloader
         wdt_enable(WDTO_15MS);
         for (;;);
+        //might need to use a jump table at a known location in bootloader ROM
+        //we also need some code that unwinds the stack there
+        asm volatile("jmp 1F800h");
       }
     }
   }
-
-
-  //asm volatile("jmp 1F800h");
 
   _delay_ms(1000);
 
