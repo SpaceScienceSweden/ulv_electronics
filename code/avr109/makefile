@@ -3,7 +3,7 @@
 # Makefile for the AVRProg-compatible Bootloader
 #
 # based on the 
-# WinAVR Sample makefile written by Eric B. Weddington, Jörg Wunsch, et al.
+# WinAVR Sample makefile written by Eric B. Weddington, JÃ¶rg Wunsch, et al.
 # Released to the Public Domain
 # Please read the make user manual!
 #
@@ -38,7 +38,7 @@
 
 # MCU name
 ## MCU = atmega8
-MCU = atmega16
+## MCU = atmega16
 ## MCU = atmega162
 ## MCU = atmega169
 ## MCU = atmega32
@@ -60,7 +60,6 @@ MCU = atmega16
 ## NO! BOOTSIZE=128
 ## NO! BOOTSIZE=256
 ## BOOTSIZE=512
-BOOTSIZE=512
 ## BOOTSIZE=2048
 
 # /* Select if bootloader should include the inverrupt-vectors 
@@ -316,7 +315,7 @@ CINCS =
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS = -g$(DEBUG)
+CFLAGS = $(CFLAGS_ROOT) -DWAIT_VALUE=$(WAIT_VALUE) -g$(DEBUG)
 CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
@@ -399,10 +398,10 @@ endif
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = stk500v2
+#AVRDUDE_PROGRAMMER = stk500v2
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = com1    # programmer connected to serial device
+#AVRDUDE_PORT = -P com1    # programmer connected to serial device
 #AVRDUDE_PORT = /dev/ttyS0    # programmer connected to serial device
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
@@ -423,7 +422,7 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+AVRDUDE_FLAGS = -D -p $(MCU) $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
