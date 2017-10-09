@@ -12,7 +12,7 @@ all:
 	make -C app clean all
 	WAIT_VALUE=0 make -C avr109 clean all
 
-.PHONY: flight program
+.PHONY: flight programserial
 flight:
 	make -C app clean all
 	WAIT_VALUE=300 make -C avr109 clean all
