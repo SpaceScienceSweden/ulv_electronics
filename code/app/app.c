@@ -91,7 +91,8 @@ FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE)
 char somedata[]="hello\n";
 char hello[4000];
 
-static void setup_xmem() {
+//called before main()
+__attribute__((constructor)) void setup_xmem(void) {
   //assert /EN_XMEM (PG3)
   DDRG |= (1<<3);
   PORTG &= ~(1<<3);
@@ -103,10 +104,7 @@ static void setup_xmem() {
   XMCRB = 0;
 
   //clear all of it (.bss and heap)
-  uint8_t *ptr = (uint8_t*)0x1100;
-  while (ptr != 0x0000) {
-    *ptr++ = 0;
-  }
+  memset((void*)0x1100, 0, 0x10000 - 0x1100);
 }
 
 static void setup_uart1() {
@@ -135,7 +133,6 @@ int main(void)
 {
   wdt_enable(WDTO_2S);
   
-  setup_xmem();
   setup_uart1();
   //setup stdout for printf()
   stdout = &mystdout;
