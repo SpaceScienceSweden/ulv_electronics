@@ -35,13 +35,6 @@ static uint32_t adc_comm(uint8_t id, uint32_t cmd) {
 }
 
 void setup_adc_pins() {
-  //use Timer2 output for f_ADC, run it as fast as possible (4 MHz)
-  //CTC mode (TOP=OCR2), toggle OC2 on match, no prescaling
-  //on the real thing we'll use the main oscillator (8 MHz)
-  TCCR2 = (0<<FOC2) | (1<<WGM21) | (0<<WGM20) | (0<<COM21) | (1<<COM20) | (1<<CS20);
-  OCR2 = 0; //period = 1
-  DDRB |= (1<<7);
-
   //CS pins = PD6..7
   PORTD |= (1<<7) | (1<<6);
   DDRD |= (1<<7) | (1<<6);
