@@ -239,6 +239,8 @@ void __vector_default(void) { ; }
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
   RS485_DE_PORT |= RS485_DE_BIT;
+  //wait a bit before transmitting
+  _delay_us(100);
 }
 
 static void disable_tx(void) {
