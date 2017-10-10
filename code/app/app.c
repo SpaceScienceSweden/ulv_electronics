@@ -34,19 +34,19 @@
 #error UBRR too high
 #endif
 
-#define UART_BAUD_HIGH	UBRR1H
-#define UART_BAUD_LOW	UBRR1L
-#define UART_STATUS	UCSR1A
-#define UART_TXREADY	UDRE1
-#define UART_TXCOMPLETE	TXC1
-#define UART_RXREADY	RXC1
-#define UART_DOUBLE	U2X1
-#define UART_CTRL	UCSR1B
+#define UART_BAUD_HIGH  UBRR1H
+#define UART_BAUD_LOW  UBRR1L
+#define UART_STATUS  UCSR1A
+#define UART_TXREADY  UDRE1
+#define UART_TXCOMPLETE  TXC1
+#define UART_RXREADY  RXC1
+#define UART_DOUBLE  U2X1
+#define UART_CTRL  UCSR1B
 #define UART_CTRL_DATA_TX (1<<TXEN1)
 #define UART_CTRL_DATA_RX (1<<RXEN1)
-#define UART_CTRL2	UCSR1C
-#define UART_CTRL2_DATA	((1<<UCSZ11) | (1<<UCSZ10))
-#define UART_DATA	UDR1
+#define UART_CTRL2  UCSR1C
+#define UART_CTRL2_DATA  ((1<<UCSZ11) | (1<<UCSZ10))
+#define UART_DATA  UDR1
 
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
@@ -68,16 +68,45 @@ static void disable_tx(void) {
 static void sendchar(uint8_t data)
 {
   //don't enable_tx() here, that is dangerous
-	while (!(UART_STATUS & (1<<UART_TXREADY)));
+  while (!(UART_STATUS & (1<<UART_TXREADY)));
   //clear TXC so we can detect it being set later, by writing a one to it
   UART_STATUS |= (1<<UART_TXCOMPLETE);
-	UART_DATA = data;
+  UART_DATA = data;
 }
 
 static uint8_t recvchar(void)
 {
-	while (!(UART_STATUS & (1<<UART_RXREADY)));
-	return UART_DATA;
+  while (!(UART_STATUS & (1<<UART_RXREADY)));
+  return UART_DATA;
+}
+
+//can't get scanf() to work, so read lines and run sscanf() on them
+//purposefully hangs if the user inputs too much data
+//returns length of the line, excluding terminating NUL
+char line[256];
+static int recvline(void) {
+  int ofs = 0;
+
+  for (;;) {
+    char c = recvchar();
+
+    if (c == '\r' || c == '\n') {
+      //minicom sends CR
+      //linux sends LF
+      //windows users will have to set their terminal up to send either one
+      line[ofs] = 0;
+      return ofs;
+    } else {
+      if (ofs == sizeof(line)-1) {
+        line[ofs] = 0;
+        enable_tx();
+        printf_P(PSTR("Buffer overflow in recvline()\r\n"));
+        disable_tx();
+        for (;;);
+      }
+      line[ofs++] = c;
+    }
+  }
 }
 
 //stuff to make printf() work
@@ -186,20 +215,74 @@ int main(void)
   sei();
 
   enable_tx();
-  bsend_P(PSTR("\r\nHello, world!\r\n"));
-  bsend_P(PSTR("line2\r\n"));
-  bsend_P(PSTR("line3\r\n"));
+  bsend_P(PSTR("\r\nHello, Earth!\r\n"));
   bwait();
   disable_tx();
 
   for (;;) {
-    //check if we have an 'S' coming in
-    //if so then goto bootloader
-		if (UART_STATUS & (1<<UART_RXREADY)) {
-			if (UART_DATA == START_WAIT_UARTCHAR) {
-        //stupid and simple, therefore the best way
+    //take a peek at the USART
+    //commands are single bytes
+    if (UART_STATUS & (1<<UART_RXREADY)) {
+      char c = recvchar();
+      if (c == START_WAIT_UARTCHAR) {
+        //go to bootloader
+        //stupid and simple, therefore the best way:
         wdt_enable(WDTO_15MS);
         for (;;);
+      } else if (c == 't') {
+        //measure and send temperatures
+      } else if (c == 'm' || c == 'M') {
+        //get/set motor speeds
+        if (c == 'M') {
+          //set motor speeds
+          int pwm0, pwm1, pwm2;
+          int len = recvline();
+
+          int n = sscanf(line, "%i %i %i", &pwm0, &pwm1, &pwm2);
+          if (n == 3) {
+            OCR1A = pwm0;
+            OCR1B = pwm1;
+            OCR1C = pwm2;
+          } else if (n == 2) {
+            //set some specific motor
+            //pwm0 = motor index
+            //pwm1 = value
+            if (pwm0 == 0) {
+              OCR1A = pwm1;
+            } else if (pwm0 == 1) {
+              OCR1B = pwm1;
+            } else if (pwm0 == 2) {
+              OCR1C = pwm1;
+            } else {
+              enable_tx();
+              printf_P(PSTR("bad motor ID: %i\r\n"), pwm0);
+              disable_tx();
+            }
+          } else {
+            enable_tx();
+            printf_P(PSTR("sscanf: n=%i\r\n"), n);
+            disable_tx();
+          }
+        }
+
+        //report motor speeds
+        int pwm0 = OCR1A;
+        int pwm1 = OCR1B;
+        int pwm2 = OCR1C;
+        enable_tx();
+        printf_P(PSTR("m %i %i %i\r\n"), pwm0, pwm1, pwm2);
+        disable_tx();
+      } else if (c == '?') {
+        //print help
+        enable_tx();
+        printf_P(PSTR(
+        "\r\n"
+        "Commands:\r\n"
+        "t - measure temperature\r\n"
+        "m - report motor speeds\r\n"
+        "M - set motor speeds\r\n"
+        ));
+        disable_tx();
       }
     }
     wdt_reset();
