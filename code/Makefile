@@ -30,6 +30,9 @@ flight:
 programserial:
 	make -C app all
 	# Tell application to enter bootloader
+	# Send twice, sometimes it borks
+	echo -n "S" > /dev/ttyUSB0
+	sleep 0.1
 	echo -n "S" > /dev/ttyUSB0
 	sleep 0.1
 	# Don't touch EEPROM -> motors keep spinning if spun up

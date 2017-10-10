@@ -226,6 +226,7 @@
 #include <util/delay.h>
 
 #include "chipdef.h"
+#include "../eeprom.h"
 
 uint8_t gBuffer[SPM_PAGESIZE];
 

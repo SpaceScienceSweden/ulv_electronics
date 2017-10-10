@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include "../eeprom.h"
 
 /* RS-485 needs a DE pin */
 #define RS485_DE_PORT PORTD
@@ -46,18 +47,6 @@
 #define UART_CTRL2	UCSR1C
 #define UART_CTRL2_DATA	((1<<UCSZ11) | (1<<UCSZ10))
 #define UART_DATA	UDR1
-
-typedef struct {
-  uint8_t gap;            //gap to make it easier to see where the data in eeprom.hex starts
-  uint8_t motor_pwm_set;  //if not FF then motor PWMs are set
-  uint8_t pwm0;           //OCR1A
-  uint8_t pwm1;           //OCR1B
-  uint8_t pwm2;           //OCR1C
-
-  //here's how you would set eeprom.hex for running all motors at 25% speed (0x40 == 64):
-  //:20000000FF00404040FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3C
-  //:00000001FF
-} eeprom_t;
 
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
@@ -100,9 +89,6 @@ int usart_putchar_printf(char var, FILE *stream) {
 }
 FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE);
 
-char somedata[]="hello\n";
-char hello[4000];
-
 //called before main()
 __attribute__((constructor)) void setup_xmem(void) {
   //assert /EN_XMEM (PG3)
@@ -141,16 +127,68 @@ static unsigned freeRam () {
   return 0xffff - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
 
+uint8_t bsend_buf[16384];
+uint16_t bsend_sz;
+uint16_t bsend_ofs;
+
+ISR(USART1_UDRE_vect) {
+  //send data, clear TXC1
+  UART_DATA = bsend_buf[bsend_ofs++];
+  UART_STATUS |= (1<<UART_TXCOMPLETE);
+
+  if (bsend_ofs == bsend_sz) {
+    //disable USART1 interrupt
+    UCSR1B &= ~(1<<UDRIE1);
+  }
+}
+
+static void bwait() {
+  //wait for last bsend to finish
+  while (UCSR1B & (1<<UDRIE1));
+}
+
+
+//send PSTR in background
+static void bsend_P(const char *str) {
+  if (!(SREG & (1<<7))) {
+    printf_P(PSTR("Can't bsend() without sei()..\r\n"));
+    for(;;);
+  }
+
+  size_t len = strlen_P(str);
+
+  if (len == 0) {    return;
+  }
+
+  bwait();
+  bsend_sz = len;
+  memcpy_P(bsend_buf, str, bsend_sz);
+  bsend_ofs = 1;
+
+  sendchar(bsend_buf[0]);
+
+  if (len > 1) {
+    //enable USART1 interrupt
+    UCSR1B |= (1<<UDRIE1);
+  }
+}
+
 int main(void)
 {
-  wdt_enable(WDTO_2S);
+  wdt_enable(WDTO_250MS);
   
   setup_uart1();
   //setup stdout for printf()
   stdout = &mystdout;
 
+  //enable interrupts
+  sei();
+
   enable_tx();
-  printf_P(PSTR("hullo foop app2\r\n"));
+  bsend_P(PSTR("\r\nHello, world!\r\n"));
+  bsend_P(PSTR("line2\r\n"));
+  bsend_P(PSTR("line3\r\n"));
+  bwait();
   disable_tx();
 
   for (;;) {
@@ -158,24 +196,13 @@ int main(void)
     //if so then goto bootloader
 		if (UART_STATUS & (1<<UART_RXREADY)) {
 			if (UART_DATA == START_WAIT_UARTCHAR) {
-        //TODO: jump into the appropriate place in the bootloader
+        //stupid and simple, therefore the best way
         wdt_enable(WDTO_15MS);
         for (;;);
-        //might need to use a jump table at a known location in bootloader ROM
-        //we also need some code that unwinds the stack there
-        asm volatile("jmp 1F800h");
       }
     }
+    wdt_reset();
   }
-
-  _delay_ms(1000);
-
-  //enable_tx();
-  //printf_P(PSTR("boot\r\n"));
-  //disable_tx();
-
-  //put a jmp 1F00 or whatever here
-  for (;;);
 
   return 0;
 }
