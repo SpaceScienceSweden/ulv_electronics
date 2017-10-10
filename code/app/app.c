@@ -128,15 +128,16 @@ static unsigned freeRam () {
 }
 
 uint8_t bsend_buf[16384];
-uint16_t bsend_sz;
-uint16_t bsend_ofs;
+//using two pointers is slightly faster than offset + size
+uint8_t *bsend_ptr;
+uint8_t *bsend_end;
 
 ISR(USART1_UDRE_vect) {
   //send data, clear TXC1
-  UART_DATA = bsend_buf[bsend_ofs++];
+  UART_DATA = *bsend_ptr++;
   UART_STATUS |= (1<<UART_TXCOMPLETE);
 
-  if (bsend_ofs == bsend_sz) {
+  if (bsend_ptr == bsend_end) {
     //disable USART1 interrupt
     UCSR1B &= ~(1<<UDRIE1);
   }
@@ -161,9 +162,9 @@ static void bsend_P(const char *str) {
   }
 
   bwait();
-  bsend_sz = len;
-  memcpy_P(bsend_buf, str, bsend_sz);
-  bsend_ofs = 1;
+  memcpy_P(bsend_buf, str, len);
+  bsend_ptr = &bsend_buf[1];
+  bsend_end = &bsend_buf[len];
 
   sendchar(bsend_buf[0]);
 
