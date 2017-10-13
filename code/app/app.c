@@ -86,6 +86,7 @@ static uint8_t recvchar(void)
 char line[256];
 static int recvline(void) {
   int ofs = 0;
+  char comment = 0; //if 1 then the rest of the line is a comment
 
   for (;;) {
     char c = recvchar();
@@ -96,7 +97,11 @@ static int recvline(void) {
       //windows users will have to set their terminal up to send either one
       line[ofs] = 0;
       return ofs;
-    } else {
+    } else if (c == '#') {
+      //rest of the line is a comment
+      line[ofs] = 0;
+      comment = 1;
+    } else if (!comment) {
       if (ofs == sizeof(line)-1) {
         line[ofs] = 0;
         enable_tx();
@@ -187,7 +192,8 @@ static void bsend_P(const char *str) {
 
   size_t len = strlen_P(str);
 
-  if (len == 0) {    return;
+  if (len == 0) {
+    return;
   }
 
   bwait();

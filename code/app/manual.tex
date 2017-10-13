@@ -1,5 +1,8 @@
 \documentclass{article}
 \usepackage{listings}
+\usepackage[table]{xcolor}
+\usepackage{varioref}
+\usepackage{float}
 \begin{document}
 
 \title{Hello}
@@ -21,9 +24,74 @@ Culpa quia voluptas cumque officia. Impedit est ad et assumenda dolorem ex et. V
 
 \section{Commands}
 
-All commands are human-readable and start with a single ASCII character.
+All commands are human-readable, start with a single ASCII character and are termianted with a line ending.
+If the command takes no parameters then the line ending is optional.
+Comments may be added by inserting a hash sign ('\#').
+This causes the rest of the line to be ignored (characters are consumed and discarded until end-of-line).
+Parameter parsing is handled by sscanf(), which allows for the same command character to take a varying number
+of parameters. An example of this is the 'M' command which exists in two-parameter and three-parameter forms:
 
-Poot table of commands here.
+\begin{lstlisting}
+    M0 10       # Set speed of motor 0 to 10
+    M10 10 10   # Set speed of all motors to 10
+\end{lstlisting}
+
+
+Line endings can either be carriage return ('{\textbackslash}r', ASCII code 13) or linefeed ('{\textbackslash}n', ASCII code 10), but never both in the same line.
+In other words both Unix and Mac line endings are OK, but Windows line endings ("{\textbackslash}r{\textbackslash}n") are not.
+This ensures both {\it echo} and {\it minicom} works as expected.
+Output from the instrument is terminated by Windows line endings however, in order to work well with {\it minicom}.
+
+Table \vref{command_table} summarizes all commands and their parameters.
+More detailed descriptions of each command are given in the subsections that follow.
+
+\definecolor{lgray}{gray}{0.95}
+\definecolor{dgray}{gray}{0.90}
+
+\begin{table}[H]
+\begin{centering}
+\rowcolors{1}{lgray}{dgray}
+\begin{tabular}{|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{5cm}|}
+\hline
+{\bf Command} & {\bf Parameter count} & {\bf Parameter syntax} & {\bf Description} \\ \hline
+m & 0 &                     & Read motor speeds \\ \hline
+M & 2 & ID spd              & Set motor speed \\ \hline
+M & 3 & spd spd spd         & Set motor speeds \\ \hline
+  & 0 &                     & Stop all motors \\ \hline
+  & 1 & ID                  & Stop specific motor \\ \hline
+  & 0 &                     & Measure motor speeds in RPM \\ \hline
+  & 1 &                     & Measure specific motor speed in RPM \\ \hline
+  &   &                     & Measure temperatures \\ \hline
+  &   &                     & Configure ADC \\ \hline
+  &   &                     & Read ADC configuration \\ \hline
+  &   &                     & Read registers (\$0000 - \$00FF) \\ \hline
+  &   &                     & Write registers (\$0000 - \$00FF) \\ \hline
+  &   &                     & Read RAM (\$0100 - \$FFFF) \\ \hline
+  &   &                     & Write RAM (\$0100 - \$FFFF) \\ \hline
+  &   &                     & Read EEPROM (\$000 - \$FFF) \\ \hline
+  &   &                     & Write EEPROM (\$000 - \$FFF) \\ \hline
+  &   &                     & Read ROM (\$00000 - \$1FFFF) \\ \hline
+  &   &                     & Read fuses \\ \hline
+  &   &                     & Read clock \\ \hline
+  &   &                     & Set clock \\ \hline
+  &   &                     & Configure measurement (block size + gap) \\ \hline
+  &   &                     & Read measurement configuration \\ \hline
+  &   &                     & Start measurement \\ \hline
+{\textbackslash}x1B (ESC)  &   &                     & Stop measurement \\ \hline
+\end{tabular}
+\caption{Command table}
+\label{command_table}
+\end{centering}
+\end{table}
+
+\subsection{Read motor speed ('m')}
+
+Prints three integers containing OCR1A, OCR1B and OCR1C respectively.
+0 - 255 roughly corresponding to 0 - 100\% or 0 - 6000 RPM.
+
+\subsection{Set motor speed(s) ('M')}
+
+Hardware will refuse if values are so low that they risk turning the motors off.
 
 \section{Listing}
 
