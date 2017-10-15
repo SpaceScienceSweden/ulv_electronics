@@ -1,5 +1,5 @@
 PRG            = app
-OBJ            = app.o
+OBJ            = app.o ../avr-ds18b20/src/ds18b20.o ../avr-ds18b20/src/onewire.o
 OPTIMIZE       = -O3 -frename-registers -funroll-loops
 
 DEFS           =-I/usr/local/avr/include -I../avr-ds18b20/include

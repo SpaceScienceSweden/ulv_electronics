@@ -10,6 +10,7 @@
 #include <math.h>
 #include <string.h>
 #include "../eeprom.h"
+#include <ds18b20/ds18b20.h>
 
 /* RS-485 needs a DE pin */
 #define RS485_DE_PORT PORTD
