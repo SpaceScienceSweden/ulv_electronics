@@ -38,71 +38,170 @@ Culpa quia voluptas cumque officia. Impedit est ad et assumenda dolorem ex et. V
 
 
 The instrument consists of a stainless steel skeleton into which a number of plates are screwed.
-All plates except one has a printed circuit board (PCB) attached
+All plates have a printed circuit board (PCB) attached via standoffs or screwed directly to the plate.
+The combination of board and plate is called a module.
 In this section we assume all PCBs have already been soldered and cleaned.
 
+The following tools and materials are needed:
+
+\begin{itemize}
+\item Wire cutters
+\item Wire stripper suitable for 0.4 mm wire. Strippers with fixed holes are recommended
+\item A small round or semi-round file
+\item Torque wrenches capable of 0.3 Nm and 0.8 Nm with the following bits:
+\begin{itemize}
+\item PH1 Phillips
+\item 9IP Torx-Plus or T10 Torx
+\item 5.5 mm hex socket
+\item ?? mm square socket? For DE-9. Or suitable hex socket
+\end{itemize}
+\item Loctite 603
+\item Scotch-Weld 2216
+\item Soldering station
+\item Helping hands
+\item 60/40 or 63/37 leaded solder
+\item Solder flux
+\item White gloves for handling silver
+\item Black permanent marker. As matte black as possible when applied to aluminium
+\end{itemize}
+
+The subsections that follow are ordered in the recommended order of assembly.
+The way the pin headers fit into corresponding sockets mean that the power4 module must be mounted first,
+then the cpu3 and credits modules can be mounted, and finally the fieldmill9 modules can be mounted.
+It's useful to mount the credits module last so that the mating of the fieldmill9 and cpu3 modules can be checked,
+and power-on tests performed.
+
+Use white gloves when handling any silver parts, to prevent them from being contaminated.
+Each aluminium plate requires 16 silver plates M3 screws (?? mm long, Torx T10) to mount it to the skeleton, 96 total.
+
+All M3 screws are torqued to 0.8 Nm and all M2 screws are torqued to 0.3 Nm.
+
+\subsection{power4}
+
+Parts needed:
+
+\begin{itemize}
+\item One (1) power4 PCB, soldered and cleaned
+\item One (1) silver plated bottom aluminium plate (2mm thick)
+\item Two (2) power4 aluminium standoffs
+\item Four (4) PEEK washers (top kind)
+\item Four (4) PEEK washers (bottom kind)
+\item Twentyfour (24) silver plated M3 screws, ?? length inluding head (Torx T10)
+\item Four (4) pieces of PTFE wire (TODO: length and diameter)
+\item One (1) DE-9 male connector
+\item A set of DE-9 panel mounting screws, washers and nuts
+\item Kynar shrink tube
+\item Zip ties
+\end{itemize}
+
+Solder the four PTFE wires to the DE-9 connector, see figure TODO.
+Use Kynar shrink tubing to protect the solder points.
+
+Screw the DE-9 connector to the aluminium plate (inside or outside??), ?? Nm.
+Screw the standoffs to the plate, 0.8 Nm.
+
+Solder the four PTFE wires to the appropriate places on the power4 board, see figure TODO.
+Zip tie the wires together at both ends or in the middle if there isn't enough room.
+
+Place bottom PEEK washers on the standoffs, then the power4 board on the standoffs and finally the top wasters on top.
+Screw everything in place using M3 screws, 0.8 Nm.
+
+Screw the finished module to the skeleton using M3 screws, 0.8 Nm.
+
+\subsection{cpu3}
+
+Parts needed:
+
+\begin{itemize}
+\item One (1) cpu3 PCB, soldered and cleaned
+\item One (1) silver plated cpu3 aluminium plate
+\item One (1) cpu3/credits aluminium standoff, short kind
+\item One (1) cpu3/credits aluminium standoff, long kind
+\item Four (4) PEEK washers (top kind)
+\item Four (4) PEEK washers (bottom kind)
+\item Twentyfour (24) silver plated M3 screws, ?? length inluding head (Torx T10)
+\end{itemize}
+
+Be careful to use the aluminium plate with holes countersunk in the correct direction.
+The credits plates are mirror images of the cpu3 plates.
+
+Screw the standoffs to the plate using M3 screws, 0.8 Nm.
+
+Places bottom PEEK washers, board and top PEEK washers on the standoffs.
+Screw in place using M3 screws, 0.8 Nm.
+
+Screw the finished module to the skeleton using M3 screws, 0.8 Nm.
+
+Perform a power-on test.
 
 \subsection{fieldmill9}
 
-For each fieldmill9 module you will need the following parts and materials:
+Parts needed:
 
 \begin{itemize}
 \item One (1) fieldmill9 / fieldmill\_top\_plate4 PCB assembly
 \item One (1) fieldmill aluminium top plate
 \item One (1) Maxon 349694 EC motor
+\item Stencil with a 15x5 mm hole
 \item Two (2) 100 µm stainless steel motor shims
 \item One (1) ITR20001/T IR reflex coupler
 \item Three (3) M2 screws, 6 mm length including head (Phillips PH1)
 \item Four (4) silver plated M3 screws, 10 mm length including head (Torx T10)
+\item Sixteen (16) silver plated M3 screws. Same as above??
 \item Four (4) M3 washers
 \item Four (4) M3 hex nuts
-\item One (1) M4 X 8/8 hex screw with 2 mm hole drilled through, preferably silver plated or silver painted if someone forgot to order silver plated M4 screws
+\item One (1) M4 X 8/8 hex screw with 2 mm hole drilled through, preferably silver plated or silver painted if {\it someone} forgot to order silver plated M4 screws
 \item One (1) silver plated M4 flange nut
-\item Loctite 603
-\item Scotch-Weld 2216
 \end{itemize}
-
-The following tools are also needed:
-
-\begin{itemize}
-\item A small semi-round file
-\item Torque wrenches capable of 0.3 Nm and 0.8 Nm with the following bits:
-\begin{itemize}
-\item PH1 Phillips
-\item 5.5 mm socket
-\end{itemize}
-\item 9IP Torx-Plus or T10 Torx driver or bit
-\end{itemize}
-
 
 Cut motor wires to 6-7 mm length.
-Strip so that 3 mm of insulation remains.
+Strip so that 3 mm of insulation remains, with the wire stripper set to 0.4 mm.
 Twist and tin the ends of the wires.
+
+Tape the stencil to the rotor can's edge and paint the area the black permanent marker.
+The black should be as matte as possible. The blackness will cover a roughly 90° arc of the edge of the can.
 
 Use a small semi-round file to grind away the perforation remains in the middle hole of the PCB,
 so that a motor will fit loosely.
 
 Mount the Maxon EC motor in the motor hole with two motor shims inbetween.
 The shims should raise the motor enough that a small lip / edge can be felt on the top side of the assembly between the motor housing and the fieldmill\_top\_plate4 PCB.
-
 Solder the five motor wires to the motor wire pads on the PCB.
 
-Bend and cut the IR reflex coupler leads so that the reflex coupler looks directly at the EC motor's rotor when inserted into its socket (IR2 reference on PCB).
+Bend and cut the IR reflex coupler leads so that the reflex coupler looks directly at the EC motor's rotor can when inserted into its 2x3 socket (IR2 reference on PCB).
+Solder the reflex coupler into the socket. Use plenty of flux so the leads and socket are guaranteed to be soldered together.
+Carefully test that pulling on the reflex coupler doesn't cause it to come out.
 
-Screw the motor + PCB assembly to the aluminium plate using the M2 screws for the motor and silver plated M3 screws, washes and nuts for the PCB.
+Screw the motor + PCB assembly to the aluminium plate using the M2 screws for the motor and silver plated M3 screws, washers and nuts for the PCB.
 First screw in the screws lightly, then tighten using the torque wrench. Use 0.3 Nm for the M2 screws and 0.8 Nm for the M3 nuts.
 
+Screw each module to the skeleton using M3 screws, 0.8 Nm.
 
-\subsection{cpu3}
-
-
-\subsection{power4}
-
+Perform power-on test and motor test.
 
 \subsection{credits}
 
+\begin{itemize}
+\item One (1) credits PCB, soldered and cleaned
+\item One (1) silver plated credits aluminium plate
+\item One (1) cpu3/credits aluminium standoff, short kind
+\item One (1) cpu3/credits aluminium standoff, long kind
+\item Four (4) PEEK washers (top kind)
+\item Four (4) PEEK washers (bottom kind)
+\item Twentyfour (24) silver plated M3 screws, ?? length inluding head (Torx T10)
+\end{itemize}
 
+Be careful to use the aluminium plate with holes countersunk in the correct direction.
+The credits plates are mirror images of the cpu3 plates.
 
+Screw the standoffs to the plate using M3 screws, 0.8 Nm.
+
+Places bottom PEEK washers, board and top PEEK washers on the standoffs.
+Screw in place using M3 screws, 0.8 Nm.
+
+Screw the finished module to the skeleton using M3 screws, 0.8 Nm.
+
+Perform a power-on test and a thermometer test.
 
 \section{Commands}
 
