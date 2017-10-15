@@ -54,9 +54,13 @@ More detailed descriptions of each command are given in the subsections that fol
 \begin{tabular}{|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{5cm}|}
 \hline
 {\bf Command} & {\bf Parameter count} & {\bf Parameter syntax} & {\bf Description} \\ \hline
+v & 0 &                     & Measure system voltages \\ \hline
+V & 0 &                     & Enable 24V and +-5V \\ \hline
+B & 0 &                     & Disable 24V and +-5V \\ \hline
 m & 0 &                     & Read motor speeds \\ \hline
 M & 2 & ID spd              & Set motor speed \\ \hline
 M & 3 & spd spd spd         & Set motor speeds \\ \hline
+K & 0 &                     & Set motor speeds to 50\% \\ \hline
   & 0 &                     & Stop all motors \\ \hline
   & 1 & ID                  & Stop specific motor \\ \hline
   & 0 &                     & Measure motor speeds in RPM \\ \hline

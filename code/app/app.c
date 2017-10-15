@@ -238,6 +238,10 @@ int main(void)
   //setup stdout for printf()
   stdout = &mystdout;
 
+  //disable 24V and +-5V
+  DDRB |= (1<<0);
+  PORTB &= ~(1<<0);
+
   //enable interrupts
   sei();
 
@@ -258,7 +262,7 @@ int main(void)
         for (;;);
       } else if (c == 't') {
         //measure and send temperatures
-      } else if (c == 'm' || c == 'M') {
+      } else if (c == 'm' || c == 'M' || c == 'K') {
         //get/set motor speeds
         if (c == 'M') {
           //set motor speeds
@@ -290,6 +294,11 @@ int main(void)
             printf_P(PSTR("sscanf: n=%i\r\n"), n);
             disable_tx();
           }
+        } else if (c == 'K') {
+          //start motors with default speed (50%)
+          OCR1A = 128;
+          OCR1B = 128;
+          OCR1C = 128;
         }
 
         //report motor speeds
@@ -298,6 +307,26 @@ int main(void)
         int pwm2 = OCR1C;
         enable_tx();
         printf_P(PSTR("m %i %i %i\r\n"), pwm0, pwm1, pwm2);
+
+        //be helpful if motor power is off
+        if (!(PORTB & (1<<0))) {
+          printf_P(PSTR("+24V and +-5V OFF\r\n"));
+        }
+        disable_tx();
+      } else if (c == 'v') {
+        //measure system voltages
+        enable_tx();
+        printf_P(PSTR("TODO\r\n"));
+        disable_tx();
+      } else if (c == 'V') {
+        PORTB |= (1<<0);
+        enable_tx();
+        printf_P(PSTR("+24V and +-5V ON\r\n"));
+        disable_tx();
+      } else if (c == 'B') {
+        PORTB &= ~(1<<0);
+        enable_tx();
+        printf_P(PSTR("+24V and +-5V OFF\r\n"));
         disable_tx();
       } else if (c == '?') {
         //print help
@@ -306,8 +335,12 @@ int main(void)
         "\r\n"
         "Commands:\r\n"
         "t - measure temperature\r\n"
+        "v - measure system voltages\r\n"
+        "V - enable +24V and +-5V\r\n"
+        "B - disable +24V and +-5V\r\n"
         "m - report motor speeds\r\n"
         "M - set motor speeds\r\n"
+        "K - set motor speeds to 50%%\r\n"
         ));
         disable_tx();
       }
