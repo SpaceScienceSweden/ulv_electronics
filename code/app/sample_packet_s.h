@@ -1,7 +1,7 @@
 // Overview of the sample packet format:
 //
 // +---------------------------------------+
-// | Header                (17 bytes)      |
+// | Header                (18 bytes)      |
 // +---------------------------------------+
 // | Tachometer timestamps (variable size) |
 // +---------------------------------------+
@@ -10,7 +10,7 @@
 //
 // The size of the packet can be summarized as:
 //
-//   packet_size = 17 + sum(num_tachs)*3 +
+//   packet_size = 18 + sum(num_tachs)*3 +
 //     num_frames*popcount(channel_conf)*
 //     bytes_per_sample(sample_fmt)
 //
@@ -20,6 +20,7 @@
 // Sample packet header. Fixed size.
 typedef struct sample_packet_header_s {
   char      header[2];    // "SP"
+  uint8_t   version;      // format version
   uint24_t  first_frame;  // timestamp of first frame
   uint16_t  num_tachs[3]; // tach impulses per channel
   uint16_t  num_frames;   // number of frames

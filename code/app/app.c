@@ -209,10 +209,30 @@ static void bsend_P(const char *str) {
   }
 }
 
+static void setup_motor_pwm() {
+  //PB5 = OC1A, PB6 = OC1B, PB7 = OC1C. inverted drive signals
+  //pwm frequency range is 500 Hz .. 20 kHz
+  //WGM=1 -> TOP=0xFF -> (7372800/256/2) = 14400 Hz (8-bit phase-correct PWM)
+  uint8_t wgm = 1;
+  TCCR1A = (3<<COM1A0) | (3<<COM1B0) | (3<<COM1C0) | ((wgm&3) << WGM10);
+  //enable clock, no prescaler
+  TCCR1B = (((wgm>>2)&3) << WGM12) | (1<<CS10);
+  TCCR1C = 0;
+
+  //0% duty to start
+  OCR1A = 0;
+  OCR1B = 0;
+  OCR1C = 0;
+
+  //enable outputs
+  DDRB |= (1<<5) | (1<<6) | (1<<7);
+}
+
 int main(void)
 {
   wdt_enable(WDTO_250MS);
-  
+
+  setup_motor_pwm();
   setup_uart1();
   //setup stdout for printf()
   stdout = &mystdout;
