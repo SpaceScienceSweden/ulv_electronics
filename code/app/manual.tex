@@ -5,7 +5,19 @@
 \usepackage{float}
 \begin{document}
 
-\title{Hello}
+\title{KUB manual}
+\date{October 15, 2017}
+\author{Tomas H\"ardin}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\newpage
 
 \section{Greeting}
 Hello world!
@@ -21,6 +33,76 @@ Et dolores amet id velit. Et ab saepe suscipit temporibus iusto. Odio dicta erro
 Quis quidem porro tempora consequatur. Voluptatibus adipisci quibusdam illo magnam. Ut consequatur quia ipsum. Enim ea tenetur mollitia sed quaerat et neque officiis. Nostrum harum explicabo ut.
 
 Culpa quia voluptas cumque officia. Impedit est ad et assumenda dolorem ex et. Voluptatem atque alias dicta ratione laborum modi rem.
+
+\section{Assembly}
+
+
+The instrument consists of a stainless steel skeleton into which a number of plates are screwed.
+All plates except one has a printed circuit board (PCB) attached
+In this section we assume all PCBs have already been soldered and cleaned.
+
+
+\subsection{fieldmill9}
+
+For each fieldmill9 module you will need the following parts and materials:
+
+\begin{itemize}
+\item One (1) fieldmill9 / fieldmill\_top\_plate4 PCB assembly
+\item One (1) fieldmill aluminium top plate
+\item One (1) Maxon 349694 EC motor
+\item Two (2) 100 µm stainless steel motor shims
+\item One (1) ITR20001/T IR reflex coupler
+\item Three (3) M2 screws, 6 mm length including head (Phillips PH1)
+\item Four (4) silver plated M3 screws, 10 mm length including head (Torx T10)
+\item Four (4) M3 washers
+\item Four (4) M3 hex nuts
+\item One (1) M4 X 8/8 hex screw with 2 mm hole drilled through, preferably silver plated or silver painted if someone forgot to order silver plated M4 screws
+\item One (1) silver plated M4 flange nut
+\item Loctite 603
+\item Scotch-Weld 2216
+\end{itemize}
+
+The following tools are also needed:
+
+\begin{itemize}
+\item A small semi-round file
+\item Torque wrenches capable of 0.3 Nm and 0.8 Nm with the following bits:
+\begin{itemize}
+\item PH1 Phillips
+\item 5.5 mm socket
+\end{itemize}
+\item 9IP Torx-Plus or T10 Torx driver or bit
+\end{itemize}
+
+
+Cut motor wires to 6-7 mm length.
+Strip so that 3 mm of insulation remains.
+Twist and tin the ends of the wires.
+
+Use a small semi-round file to grind away the perforation remains in the middle hole of the PCB,
+so that a motor will fit loosely.
+
+Mount the Maxon EC motor in the motor hole with two motor shims inbetween.
+The shims should raise the motor enough that a small lip / edge can be felt on the top side of the assembly between the motor housing and the fieldmill\_top\_plate4 PCB.
+
+Solder the five motor wires to the motor wire pads on the PCB.
+
+Bend and cut the IR reflex coupler leads so that the reflex coupler looks directly at the EC motor's rotor when inserted into its socket (IR2 reference on PCB).
+
+Screw the motor + PCB assembly to the aluminium plate using the M2 screws for the motor and silver plated M3 screws, washes and nuts for the PCB.
+First screw in the screws lightly, then tighten using the torque wrench. Use 0.3 Nm for the M2 screws and 0.8 Nm for the M3 nuts.
+
+
+\subsection{cpu3}
+
+
+\subsection{power4}
+
+
+\subsection{credits}
+
+
+
 
 \section{Commands}
 
