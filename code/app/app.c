@@ -271,8 +271,6 @@ int main(void)
         //stupid and simple, therefore the best way:
         wdt_enable(WDTO_15MS);
         for (;;);
-      } else if (c == 't') {
-        //measure and send temperatures
       } else if (c == 'm' || c == 'M' || c == 'K') {
         //get/set motor speeds
         if (c == 'M') {
@@ -339,7 +337,12 @@ int main(void)
         enable_tx();
         printf_P(PSTR("+24V and +-5V OFF\r\n"));
         disable_tx();
-      } else if (c == '1') {
+      } else if (c == '1' || c == '!') {
+        if (c == '!') {
+          //search for ROMs again
+          romcnt = 0;
+          ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
+        }
         enable_tx();
         printf_P(PSTR("%i 1-wire ROMs:\r\n"), (int)romcnt);
         for (uint8_t x = 0; x < romcnt; x++) {
@@ -347,6 +350,38 @@ int main(void)
             printf_P(PSTR("%02x"), roms[x*8+y]);
           }
           printf_P(PSTR("\r\n"));
+        }
+        disable_tx();
+      } else if (c == 't') {
+        //measure and send temperatures
+        enable_tx();
+        printf_P(PSTR("Starting temperature conversion...\r\n"));
+        disable_tx();
+
+        //tell all devices to do a temperature conversion
+        ds18b20convert( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, NULL );
+
+        //issue read slots, wait for all devices to transmit 1
+        while (!onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK )) {
+          wdt_reset();
+        }
+
+        enable_tx();
+        for (uint8_t x = 0; x < romcnt; x++) {
+          for (uint8_t y = 0; y < 8; y++) {
+            printf_P(PSTR("%02x"), roms[x*8+y]);
+          }
+          int16_t temp, templo;
+          ds18b20read( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &roms[x*8], &temp );
+
+          //poor man's binary to decimal conversion
+          if (temp >= 0) {
+            templo = temp & 15;
+          } else {
+            templo = (-temp) & 15;
+          }
+          temp /= 16;
+          printf_P(PSTR(" %i.%04i\r\n"), temp, 625*templo);
         }
         disable_tx();
       } else if (c == '?') {
@@ -363,6 +398,7 @@ int main(void)
         "M - set motor speeds\r\n"
         "K - set motor speeds to 50%%\r\n"
         "1 - list 1-wire device ROMs\r\n"
+        "! - search for 1-wire devices\r\n"
         ));
         disable_tx();
       }
