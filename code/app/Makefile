@@ -1,5 +1,5 @@
 PRG            = app
-OBJ            = app.o ../avr-ds18b20/src/ds18b20.o ../avr-ds18b20/src/onewire.o
+OBJ            = app.o ../avr-ds18b20/src/ds18b20.o ../avr-ds18b20/src/onewire.o ../avr-ds18b20/src/romsearch.o
 OPTIMIZE       = -O3 -frename-registers -funroll-loops
 
 DEFS           =-I/usr/local/avr/include -I../avr-ds18b20/include
@@ -101,5 +101,5 @@ pdf: $(PRG).pdf
 manual.pdf: manual.tex
 	pdflatex manual.tex
 	pdflatex manual.tex
-	rm manual.aux manual.log
+	rm manual.aux manual.log manual.lof manual.lot manual.toc
 

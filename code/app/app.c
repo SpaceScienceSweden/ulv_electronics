@@ -11,11 +11,17 @@
 #include <string.h>
 #include "../eeprom.h"
 #include <ds18b20/ds18b20.h>
+#include <ds18b20/romsearch.h>
 
 /* RS-485 needs a DE pin */
 #define RS485_DE_PORT PORTD
 #define RS485_DE_DDR  DDRD
 #define RS485_DE_BIT  (1<<5)
+
+#define ONEWIRE_PORT  PORTG
+#define ONEWIRE_PIN   PING
+#define ONEWIRE_DDR   DDRG
+#define ONEWIRE_MASK  (1<<4)
 
 #define START_WAIT_UARTCHAR 'S'
 
@@ -242,6 +248,11 @@ int main(void)
   DDRB |= (1<<0);
   PORTB &= ~(1<<0);
 
+  //search for 1-wire devices
+  uint8_t roms[6*8];
+  uint8_t romcnt = 0;
+  ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
+
   //enable interrupts
   sei();
 
@@ -328,6 +339,16 @@ int main(void)
         enable_tx();
         printf_P(PSTR("+24V and +-5V OFF\r\n"));
         disable_tx();
+      } else if (c == '1') {
+        enable_tx();
+        printf_P(PSTR("%i 1-wire ROMs:\r\n"), (int)romcnt);
+        for (uint8_t x = 0; x < romcnt; x++) {
+          for (uint8_t y = 0; y < 8; y++) {
+            printf_P(PSTR("%02x"), roms[x*8+y]);
+          }
+          printf_P(PSTR("\r\n"));
+        }
+        disable_tx();
       } else if (c == '?') {
         //print help
         enable_tx();
@@ -341,6 +362,7 @@ int main(void)
         "m - report motor speeds\r\n"
         "M - set motor speeds\r\n"
         "K - set motor speeds to 50%%\r\n"
+        "1 - list 1-wire device ROMs\r\n"
         ));
         disable_tx();
       }
