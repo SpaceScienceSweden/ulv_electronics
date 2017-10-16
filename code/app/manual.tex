@@ -46,13 +46,14 @@ The following tools and materials are needed:
 
 \begin{itemize}
 \item Wire cutters
-\item Wire stripper suitable for 0.4 mm wire. Strippers with fixed holes are recommended
+\item Wire strippers suitable for 0.4 mm and 0.9 mm diameter wire (26 and 20 AWG). Strippers with fixed holes are recommended
 \item A small round or semi-round file
 \item Torque wrenches capable of 0.3 Nm and 0.8 Nm with the following bits:
 \begin{itemize}
 \item PH1 Phillips
 \item 9IP Torx-Plus or T10 Torx
 \item 5.5 mm hex socket
+\item 7.0 mm hex socket
 \item ?? mm square socket? For DE-9. Or suitable hex socket
 \end{itemize}
 \item Loctite 603
@@ -62,7 +63,14 @@ The following tools and materials are needed:
 \item 60/40 or 63/37 leaded solder
 \item Solder flux
 \item White gloves for handling silver
-\item Black permanent marker. As matte black as possible when applied to aluminium
+\item Two fine paintbrushes
+\item Citadel Chaos Black primer
+\item The Army Painter WP1101 Matt Black
+\item Electrolube SCP03G Silver Conductive Paint
+\item Toothpicks
+\item Heat gun
+\item 0.62 $mm^2$ / 20 AWG Alpha Wire 5856 WH005 PTFE wire
+\item 2.4 mm $\rightarrow$ 1.2 mm Kynar shrink tube
 \end{itemize}
 
 The subsections that follow are ordered in the recommended order of assembly.
@@ -87,10 +95,10 @@ Parts needed:
 \item Four (4) PEEK washers (top kind)
 \item Four (4) PEEK washers (bottom kind)
 \item Twentyfour (24) silver plated M3 screws, ?? length inluding head (Torx T10)
-\item Four (4) pieces of PTFE wire (TODO: length and diameter)
+\item Four (4) pieces of Alpha Wire 5856 WH005 PTFE wire (TODO: length)
+\item 2.4 mm $\rightarrow$ 1.2 mm Kynar shrink tube
 \item One (1) DE-9 male connector
 \item A set of DE-9 panel mounting screws, washers and nuts
-\item Kynar shrink tube
 \item Zip ties
 \end{itemize}
 
@@ -141,6 +149,7 @@ Parts needed:
 \begin{itemize}
 \item One (1) fieldmill9 / fieldmill\_top\_plate4 PCB assembly
 \item One (1) fieldmill aluminium top plate
+\item One (1) fieldmill shutter plate
 \item One (1) Maxon 349694 EC motor
 \item Stencil with a 15x5 mm hole
 \item Two (2) 100 µm stainless steel motor shims
@@ -158,8 +167,10 @@ Cut motor wires to 6-7 mm length.
 Strip so that 3 mm of insulation remains, with the wire stripper set to 0.4 mm.
 Twist and tin the ends of the wires.
 
-Tape the stencil to the rotor can's edge and paint the area the black permanent marker.
-The black should be as matte as possible. The blackness will cover a roughly 90° arc of the edge of the can.
+Put the stencil on the rotor can and paint the area matt black.
+One way to do this is to spray primer into a plastic cup then dip a fine paintbrush into the primer and paint it onto the can.
+Once the primer has dried the matt black paint can be applied on top of it.
+The black paint should cover roughly a 90° arc of the edge of the can.
 
 Use a small semi-round file to grind away the perforation remains in the middle hole of the PCB,
 so that a motor will fit loosely.
@@ -175,9 +186,21 @@ Carefully test that pulling on the reflex coupler doesn't cause it to come out.
 Screw the motor + PCB assembly to the aluminium plate using the M2 screws for the motor and silver plated M3 screws, washers and nuts for the PCB.
 First screw in the screws lightly, then tighten using the torque wrench. Use 0.3 Nm for the M2 screws and 0.8 Nm for the M3 nuts.
 
+Use a toothpick to paint the motor bearing with SCP03G silver paint.
+There should be a slight resistance in the bearings which will go away after the first initial minutes of operation.
+
+Use Loctite 603 to glue the M4 screw to the motor axis.
+Mount the screw so that the head points downward, toward the instrument.
+When the glue has dried, put a shutter plate on the M4 screw and fasten it using the M4 flange nut.
+Torque to ?? Nm.
+Drop some SCP03G silver paint into the top of the screw so that it gets a good electrical connection to the motor shaft.
+
 Screw each module to the skeleton using M3 screws, 0.8 Nm.
 
 Perform power-on test and motor test.
+Measure the resistance between motor axis and instrument ground after running the motor for a few minutes.
+The resistance should be less than 10 $\Omega$.
+
 
 \subsection{credits}
 
@@ -247,6 +270,7 @@ K & 0 &                     & Set motor speeds to 50\% \\ \hline
   & 0 &                     & Measure motor speeds in RPM \\ \hline
   & 1 &                     & Measure specific motor speed in RPM \\ \hline
 1 & 0 &                     & List 1-wire device ROMs \\ \hline
+! & 0 &                     & Search for 1-wire devices \\ \hline
   &   &                     & Measure temperatures \\ \hline
   &   &                     & Configure ADC \\ \hline
   &   &                     & Read ADC configuration \\ \hline
