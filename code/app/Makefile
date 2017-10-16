@@ -98,8 +98,3 @@ pdf: $(PRG).pdf
 %.png: %.fig
 	$(FIG2DEV) -L png $< $@
 
-manual.pdf: manual.tex
-	pdflatex manual.tex
-	pdflatex manual.tex
-	rm manual.aux manual.log manual.lof manual.lot manual.toc
-

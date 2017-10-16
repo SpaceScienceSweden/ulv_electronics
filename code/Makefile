@@ -12,7 +12,7 @@ all:
 	make -C app clean all
 	WAIT_VALUE=0 make -C avr109 clean all
 
-.PHONY: flight programserial
+.PHONY: flight programserial manual
 flight:
 	make -C app clean all
 	WAIT_VALUE=300 make -C avr109 clean all
@@ -37,3 +37,6 @@ programserial:
 	sleep 0.1
 	# Don't touch EEPROM -> motors keep spinning if spun up
 	avrdude -b $(BAUD) -c avr109 -p atmega128 -P /dev/ttyUSB0 -U flash:w:app/app.hex
+
+manual:
+	make -C manual manual.pdf
