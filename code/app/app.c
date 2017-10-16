@@ -381,7 +381,7 @@ int main(void)
             templo = (-temp) & 15;
           }
           temp /= 16;
-          printf_P(PSTR(" %i.%04i\r\n"), temp, 625*templo);
+          printf_P(PSTR(" %i.%02i\r\n"), temp, (625*templo)/100);
         }
         disable_tx();
       } else if (c == '?') {
