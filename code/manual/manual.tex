@@ -3,6 +3,7 @@
 \usepackage[table]{xcolor}
 \usepackage{varioref}
 \usepackage{float}
+\usepackage{graphicx}
 \begin{document}
 
 \title{KUB manual}
@@ -168,13 +169,28 @@ Parts needed:
 
 Cut motor wires to 6-7 mm length.
 Strip so that 3 mm of insulation remains, with the wire stripper set to 0.4 mm.
-Twist and tin the ends of the wires.
+Twist and tin the ends of the wires. See figure \vref{motorwires}.
+
+\begin{figure}
+\centering
+\includegraphics[width=12cm]{3mm7mm}
+\caption{Motor wires soldered to their pads. Wire and insulation lengths marked.}
+\label{motorwires}
+\end{figure}
 
 Put the stencil on the rotor can, tape it down using masking tape and paint the area matt black.
 One way to do this is to spray primer into a glass or glazed ceramic cup then dip a fine paintbrush into the primer and paint it onto the can.
 DO NOT USE A PLASTIC CUP TO HOLD THE PRIMER - IT WILL MELT.
 Wait at least 30 minutes for the primer to dry, then apply the matt black paint on top of it.
 The black painted area should cover roughly a 90° arc of the edge of the can.
+See figure \vref{reflectometer}.
+
+\begin{figure}
+\centering
+\includegraphics[width=12cm]{reflectometer}
+\caption{Reflex coupler and motor can. Black paint also visible on motor can.}
+\label{reflectometer}
+\end{figure}
 
 Use a small semi-round file to grind away the perforation remains in the middle hole of the PCB,
 so that a motor will fit loosely.
@@ -183,7 +199,7 @@ Mount the Maxon EC motor in the motor hole with two motor shims inbetween.
 The shims should raise the motor enough that a small lip / edge can be felt on the top side of the assembly between the motor housing and the fieldmill\_top\_plate4 PCB.
 Solder the five motor wires to the motor wire pads on the PCB.
 
-Bend and cut the IR reflex coupler leads so that the reflex coupler looks directly at the EC motor's rotor can when inserted into its 2x3 socket (IR2 reference on PCB).
+Bend and cut the IR reflex coupler leads so that the reflex coupler looks directly at the EC motor's rotor can when inserted into its 2x3 socket (IR2 reference on PCB). See figure \vref{reflectometer}.
 Bending then trimming all leads to the same length as the shortest lead will accomplish this,
 The resulting lead length should be 7 mm from the bottom of the reflex coupler.
 Insert the reflex coupler into its socket.
