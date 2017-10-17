@@ -1,7 +1,7 @@
 // Overview of the sample packet format:
 //
 // +---------------------------------------+
-// | Header                (18 bytes)      |
+// | Header                (19 bytes)      |
 // +---------------------------------------+
 // | Tachometer timestamps (variable size) |
 // +---------------------------------------+
@@ -10,7 +10,8 @@
 //
 // The size of the packet can be summarized as:
 //
-//   packet_size = 18 + sum(num_tachs)*3 +
+//   packet_size = 19 + sum(num_tachs)*3 +
+//     num_temps*4 +
 //     num_frames*popcount(channel_conf)*
 //     bytes_per_sample(sample_fmt)
 //
@@ -22,6 +23,7 @@ typedef struct sample_packet_header_s {
   char      header[2];    // "SP"
   uint8_t   version;      // format version
   uint24_t  first_frame;  // timestamp of first frame
+  uint8_t   num_temps;    // DS18B20Z outputs (0..6)
   uint16_t  num_tachs[3]; // tach impulses per channel
   uint16_t  num_frames;   // number of frames
   uint16_t  gap;          // gap between packets
@@ -64,10 +66,38 @@ typedef struct sample_packet_header_s {
   uint24_t  scale;
 } sample_packet_header_s;
 
+// Temperature reading structure.
+// Since temperature conversions take around 750 ms
+// not every sample packet will have temperatures.
+typedef struct temperature_s {
+  // Bytes 1-2 of DS18B20Z ROM is enough to uniquely
+  // identify the ones we have:
+  //
+  //  286a1a690900005e -> 6a 1a
+  //  28f72a6909000021 -> f7 2a
+  uint8_t   rom12[2];
+
+  // Temperature in degrees Celsius * 16
+  int16_t   temp;
+} temperature_s;
+
+
 // Sample packet itself is variable size.
 typedef struct sample_packet_s {
   // Header defined above
   sample_packet_header_s header;
+
+  // Temperatures with structures defined above.
+  // A reading like:
+  //
+  //  286a1a690900005e 23.12
+  //  28f72a6909000021 -3.87
+  //
+  // will be encoded as:
+  //
+  //  6a 1a 71 01 f7 2a c2 ff
+  //
+  temperature_s *temps;
 
   // Tachometer timestamps.
   // Number of entries is sum(num_tachs).
