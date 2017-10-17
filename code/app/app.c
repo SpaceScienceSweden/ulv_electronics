@@ -13,6 +13,14 @@
 #include <ds18b20/ds18b20.h>
 #include <ds18b20/romsearch.h>
 
+#define BS  '\x08'  //backspace
+#define DEL '\x7F'  //delete - treat same as backspace
+#define ESC '\x1B'
+#define START_WAIT_UARTCHAR 'S'
+//if non-zero, reset watchdog periodically in recvline()
+//this makes it possible to type commands in manually without the watchdog tripping the user up
+#define WDR_IN_RECVLINE 1
+
 /* RS-485 needs a DE pin */
 #define RS485_DE_PORT PORTD
 #define RS485_DE_DDR  DDRD
@@ -22,8 +30,6 @@
 #define ONEWIRE_PIN   PING
 #define ONEWIRE_DDR   DDRG
 #define ONEWIRE_MASK  (1<<4)
-
-#define START_WAIT_UARTCHAR 'S'
 
 //bootloader address in bytes
 #define BOOTLOADER_ADDRESS (0x20000 - 2*BOOTSIZE)
@@ -90,25 +96,56 @@ static uint8_t recvchar(void)
 //can't get scanf() to work, so read lines and run sscanf() on them
 //purposefully hangs if the user inputs too much data
 //returns length of the line, excluding terminating NUL
+//returns -1 if the user sent ESC
 char line[256];
 static int recvline(void) {
   int ofs = 0;
-  char comment = 0; //if 1 then the rest of the line is a comment
+  int comment = -1;     //if >= 0 then the rest of the line is a comment starting at ofs=comment
+  int commentofs = -1;  //used to keep track how far into the comment the user is
 
   for (;;) {
+#if WDR_IN_RECVLINE
+    //play nice with users typing things in manually
+    while (!(UART_STATUS & (1<<UART_RXREADY))) {
+      wdt_reset();
+    }
+#endif
     char c = recvchar();
-
-    if (c == '\r' || c == '\n') {
+    if (c == 0) {
+      //picocom sends NUL characters sometimes for some reason
+      continue;
+    } else if (c == BS || c == DEL) {
+      //backspace
+      //exit comment mode if we get that far back
+      if (comment >= 0) {
+        if (commentofs > 0) {
+          commentofs--;
+        } else {
+          comment = -1;
+        }
+      } else if (ofs > 0) {
+        ofs--;
+      }
+    } else if (c == ESC) {
+      line[ofs] = 0;
+      return -1;
+    } else if (c == '\r' || c == '\n') {
       //minicom sends CR
       //linux sends LF
       //windows users will have to set their terminal up to send either one
       line[ofs] = 0;
       return ofs;
+    } else if (comment >= 0) {
+      //inside comment
+      //need to do this before the # check so we don't get
+      //problems with multiple hashes in a row
+      commentofs++;
     } else if (c == '#') {
       //rest of the line is a comment
       line[ofs] = 0;
-      comment = 1;
-    } else if (!comment) {
+      comment = ofs;
+      commentofs = 0;
+    } else {
       if (ofs == sizeof(line)-1) {
         line[ofs] = 0;
         enable_tx();
@@ -216,14 +253,111 @@ static void bsend_P(const char *str) {
   }
 }
 
+//a 32-bit timer is not enough to not overflow over the mission duration
+volatile uint64_t timer1_base = 0;
+
+//used to get view of how much CPU we're using
+//undefine to save some CPU
+#define CPU_USAGE_ON()  do { PORTF |= (1<<6);  } while (0)
+#define CPU_USAGE_OFF() do { PORTF &= ~(1<<6); } while (0)
+
+#define TIMER1_PRESCALER 1  //6% CPU
+//#define TIMER1_PRESCALER 8  //<1% CPU
+
+ISR(TIMER1_OVF_vect) {
+  CPU_USAGE_ON();
+  timer1_base += TIMER1_PRESCALER*(0x3FF + 1 /* TOP + 1 = 1024 */);
+  CPU_USAGE_OFF();
+}
+
+static __uint24 gettime24() {
+  uint16_t t3, t3_2;
+  __uint24 ret;
+
+  CPU_USAGE_ON();
+
+  //be extra paranoid
+  cli();
+  t3 = TCNT1;
+  sei();
+retry24:
+  ret = timer1_base | (t3*TIMER1_PRESCALER);
+  //check that we didn't get an overflow
+  cli();
+  t3_2 = TCNT1;
+  sei();
+  if (t3_2 < t3) {
+    t3 = t3_2;
+    goto retry24;
+  }
+  CPU_USAGE_OFF();
+  return ret;
+}
+
+static uint32_t gettime32() {
+  uint16_t t3, t3_2;
+  uint32_t ret;
+
+  CPU_USAGE_ON();
+
+  //be extra paranoid
+  cli();
+  t3 = TCNT1;
+  sei();
+retry32:
+  ret = timer1_base | (t3*TIMER1_PRESCALER);
+  //check that we didn't get an overflow
+  cli();
+  t3_2 = TCNT1;
+  sei();
+  if (t3_2 < t3) {
+    t3 = t3_2;
+    goto retry32;
+  }
+  CPU_USAGE_OFF();
+  return ret;
+}
+
+static uint64_t gettime64() {
+  uint16_t t3, t3_2;
+  uint64_t ret;
+
+  CPU_USAGE_ON();
+
+  //be extra paranoid
+  cli();
+  t3 = TCNT1;
+  sei();
+retry64:
+  ret = timer1_base | (t3*TIMER1_PRESCALER);
+  //check that we didn't get an overflow
+  cli();
+  t3_2 = TCNT1;
+  sei();
+  if (t3_2 < t3) {
+    t3 = t3_2;
+    goto retry64;
+  }
+  CPU_USAGE_OFF();
+  return ret;
+}
+
+
 static void setup_motor_pwm() {
   //PB5 = OC1A, PB6 = OC1B, PB7 = OC1C. inverted drive signals
   //pwm frequency range is 500 Hz .. 20 kHz
-  //WGM=1 -> TOP=0xFF -> (7372800/256/2) = 14400 Hz (8-bit phase-correct PWM)
-  uint8_t wgm = 1;
+  //WGM=3 -> TOP=0x3FF -> (7372800/1024) = 7200 Hz (10-bit fast PWM)
+  uint8_t wgm = 7;
   TCCR1A = (3<<COM1A0) | (3<<COM1B0) | (3<<COM1C0) | ((wgm&3) << WGM10);
-  //enable clock, no prescaler
-  TCCR1B = (((wgm>>2)&3) << WGM12) | (1<<CS10);
+  //enable clock, set prescaler
+#if TIMER1_PRESCALER == 1
+  int cs = 1;
+#elif TIMER1_PRESCALER == 8
+  int cs = 2;
+#else
+#error Unsupported TIMER1_PRESCALER
+#endif
+  TCCR1B = (((wgm>>2)&3) << WGM12) | (cs<<CS10);
   TCCR1C = 0;
 
   //0% duty to start
@@ -233,13 +367,20 @@ static void setup_motor_pwm() {
 
   //enable outputs
   DDRB |= (1<<5) | (1<<6) | (1<<7);
+
+  //enable TOV1 interrupt
+  TIMSK |= (1<<TOIE1);
+
+  //pre-emptively avoid and clear TOV1
+  //this gives main() a little time to do stuff before the first TOV1 interrupt fires
+  TCNT1 = 0;
+  TIFR |= (1<<TOV1);
 }
 
 int main(void)
 {
   wdt_enable(WDTO_250MS);
 
-  setup_motor_pwm();
   setup_uart1();
   //setup stdout for printf()
   stdout = &mystdout;
@@ -248,13 +389,18 @@ int main(void)
   DDRB |= (1<<0);
   PORTB &= ~(1<<0);
 
+  //CPU utilization on PF6
+  DDRF |= (1<<6);
+  CPU_USAGE_OFF();
+
+  //setup Timer1 + motor PWM just before enabling interrupts
+  setup_motor_pwm();
+  sei();
+
   //search for 1-wire devices
   uint8_t roms[6*8];
   uint8_t romcnt = 0;
   ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
-
-  //enable interrupts
-  sei();
 
   enable_tx();
   bsend_P(PSTR("\r\nHello, Earth!\r\n"));
@@ -277,6 +423,16 @@ int main(void)
           //set motor speeds
           int pwm0, pwm1, pwm2;
           int len = recvline();
+          if (len < 0) {
+            enable_tx();
+            printf_P(PSTR("\r\nESC\r\n"));
+            disable_tx();
+            continue;
+          }
+
+          enable_tx();
+          printf_P(PSTR("line: %s\r\n"), line);
+          disable_tx();
 
           int n = sscanf(line, "%i %i %i", &pwm0, &pwm1, &pwm2);
           if (n == 3) {
@@ -384,6 +540,49 @@ int main(void)
           printf_P(PSTR(" %i.%02i\r\n"), temp, (625*templo)/100);
         }
         disable_tx();
+      } else if (c == ':') {
+        //test timer1
+        __uint24 last = gettime24();
+        for (uint32_t x = 0; x < (1ULL<<24); x++) {
+          __uint24 t = gettime24();
+          if (x > 0) {
+            __int24 dt = (__int24)(t - last);
+            if (dt > 700 || dt < 0) {
+              enable_tx();
+              printf_P(PSTR("\r\nx = %lu "), x);
+              printf_P(PSTR("%9lu %9lu"), (uint32_t)last, (uint32_t)t);
+              printf_P(PSTR(" (dt = %li)\r\n"), (int32_t)dt);
+              disable_tx();
+              break;
+            } else if ((x & 65535) == 65535) {
+              enable_tx();
+              printf_P(PSTR("."));
+              disable_tx();
+              //avoid bork here too
+              last = gettime24();
+            } else {
+              last = t;
+            }
+          } else {
+            enable_tx();
+            printf_P(PSTR("%9lu\r\n"), (uint32_t)t);
+            disable_tx();
+            //avoid bork the first time around due to the printing
+            last = gettime24();
+          }
+          wdt_reset();
+
+          //check for escape
+          if (UART_STATUS & (1<<UART_RXREADY)) {
+            char c = recvchar();
+            if (c == ESC) {
+              enable_tx();
+              printf_P(PSTR("\r\nESC\r\n"));
+              disable_tx();
+              break;
+            }
+          }
+        }
       } else if (c == '?') {
         //print help
         enable_tx();
@@ -399,6 +598,7 @@ int main(void)
         "K - set motor speeds to 50%%\r\n"
         "1 - list 1-wire device ROMs\r\n"
         "! - search for 1-wire devices\r\n"
+        ": - perform Timer1 test (~5 min)\r\n"
         ));
         disable_tx();
       }

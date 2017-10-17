@@ -258,9 +258,12 @@ Perform a power-on test and a thermometer test.
 \section{Commands}
 
 All commands are human-readable, start with a single ASCII character and are termianted with a line ending.
-If the command takes no parameters then the line ending is optional.
+If the command takes no parameters then the line ending is optional (the instrument will react immediately to the first character).
 Comments may be added by inserting a hash sign ('\#').
 This causes the rest of the line to be ignored (characters are consumed and discarded until end-of-line).
+Mistakes can be corrected with backspace (BS, ASCII code 8) or delete (DEL, ASCII code 127), both of which are treated as a backspace.
+Line reading also understands escape (ESC, ASCII code 27), which aborts the current command.
+
 Parameter parsing is handled by sscanf(), which allows for the same command character to take a varying number
 of parameters. An example of this is the 'M' command which exists in two-parameter and three-parameter forms:
 
@@ -272,8 +275,8 @@ of parameters. An example of this is the 'M' command which exists in two-paramet
 
 Line endings can either be carriage return ('{\textbackslash}r', ASCII code 13) or linefeed ('{\textbackslash}n', ASCII code 10), but never both in the same line.
 In other words both Unix and Mac line endings are OK, but Windows line endings ("{\textbackslash}r{\textbackslash}n") are not.
-This ensures both {\it echo} and {\it minicom} works as expected.
-Output from the instrument is terminated by Windows line endings however, in order to work well with {\it minicom}.
+This ensures that {\it echo}, {\it minicom} and {\it picocom} work as expected.
+Output from the instrument is terminated by Windows line endings however, in order to play nice with {\it minicom} and {\it picocom}.
 
 Table \vref{command_table} summarizes all commands and their parameters.
 More detailed descriptions of each command are given in the subsections that follow.
@@ -316,7 +319,7 @@ K & 0 &                     & Set motor speeds to 50\% \\ \hline
   &   &                     & Configure measurement (block size + gap) \\ \hline
   &   &                     & Read measurement configuration \\ \hline
   &   &                     & Start measurement \\ \hline
-{\textbackslash}x1B (ESC)  &   &                     & Stop measurement \\ \hline
+{\textbackslash}x1B (ESC)  &   &                     & Stop measurement, abort current recvline() \\ \hline
 \end{tabular}
 \caption{Command table}
 \label{command_table}
