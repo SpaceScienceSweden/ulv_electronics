@@ -263,10 +263,11 @@ volatile uint64_t timer1_base = 0;
 
 #define TIMER1_PRESCALER 1  //6% CPU
 //#define TIMER1_PRESCALER 8  //<1% CPU
+#define MOTOR_TOP        0x3FF
 
 ISR(TIMER1_OVF_vect) {
   CPU_USAGE_ON();
-  timer1_base += TIMER1_PRESCALER*(0x3FF + 1 /* TOP + 1 = 1024 */);
+  timer1_base += TIMER1_PRESCALER*(MOTOR_TOP + 1 /* TOP + 1 = 1024 */);
   CPU_USAGE_OFF();
 }
 
@@ -461,9 +462,9 @@ int main(void)
           }
         } else if (c == 'K') {
           //start motors with default speed (50%)
-          OCR1A = 128;
-          OCR1B = 128;
-          OCR1C = 128;
+          OCR1A = MOTOR_TOP/2;
+          OCR1B = MOTOR_TOP/2;
+          OCR1C = MOTOR_TOP/2;
         }
 
         //report motor speeds
@@ -583,6 +584,52 @@ int main(void)
             }
           }
         }
+      } else if (c == 'r') {
+        //measure motor speeds
+        enable_tx();
+        printf_P(PSTR("Measuring motor speeds\r\n"));
+        disable_tx();
+
+        //set up TACH mux pins
+        DDRD = (DDRD & ~(1<<4)) | (1<<6) | (1<<7);
+
+        uint32_t t0 = gettime32();
+
+        int ntachs[3] = {0,0,0};
+        uint32_t firsttach[3];
+        uint32_t lasttach[3];
+        int lastpin[3] = {0,0,0};
+
+        //sample for one second
+        while (gettime32() - t0 < F_CPU) {
+          for (uint8_t x = 0; x < 3; x++) {
+            PORTD = (PORTD & ~((1<<6)|(1<<7))) | (x << 6);
+            _delay_us(10);
+            int p = PIND & (1<<4);
+            if (p && !lastpin[x]) {
+              //rising edge
+              uint32_t t = gettime32();
+              if (ntachs[x] == 0) {
+                firsttach[x] = t;
+              }
+              lasttach[x] = t;
+              ntachs[x]++;
+            }
+            lastpin[x] = p;
+          }
+          wdt_reset();
+        }
+
+        enable_tx();
+        for (uint8_t x = 0; x < 3; x++) {
+          int rpm = 0;
+          if (ntachs[x] >= 2) {
+            uint32_t period = (lasttach[x] - firsttach[x]) / (ntachs[x]-1);
+            rpm = F_CPU * 60 / period;
+          }
+          printf_P(PSTR("Motor %i: %i tachs (%i RPM)\r\n"), (int)x, ntachs[x], rpm);
+        }
+        disable_tx();
       } else if (c == '?') {
         //print help
         enable_tx();
@@ -593,9 +640,10 @@ int main(void)
         "v - measure system voltages\r\n"
         "V - enable +24V and +-5V\r\n"
         "B - disable +24V and +-5V\r\n"
-        "m - report motor speeds\r\n"
-        "M - set motor speeds\r\n"
-        "K - set motor speeds to 50%%\r\n"
+        "m - report motor PWMs\r\n"
+        "M - set motor PWMs\r\n"
+        "K - set motor PWMs to 50%%\r\n"
+        "r - measure motor speeds in RPM\r\n"
         "1 - list 1-wire device ROMs\r\n"
         "! - search for 1-wire devices\r\n"
         ": - perform Timer1 test (~5 min)\r\n"
