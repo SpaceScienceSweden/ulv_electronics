@@ -378,6 +378,83 @@ static void setup_motor_pwm() {
   TIFR |= (1<<TOV1);
 }
 
+static void setup_spi(void) {
+  //set MOSI and SCK as output, obviously
+  //but also set /SS as output or a low input will put us in SPI slave mode
+  //incidentally this also asserts EN_APWR
+  PORTB |= (1<<0);
+  DDRB |= (1<<0) | (1<<1) | (1<<2);
+
+  //enable spi, run at fck/2 (3.7 Mbps)
+  SPCR = (1<<SPE) | (1<<MSTR);
+  SPSR |= (1<<SPI2X); //double speed (vroom!)
+  //CPOL=0, CPHA=1
+  SPCR |= 1<<CPHA;
+}
+
+static inline uint8_t spi_comm_byte(uint8_t in) {
+  //we could write this in asm
+  //16 cy delay between setting and reading SPDR should be enough
+  SPDR = in;
+  while(!(SPSR & (1<<SPIF)));
+  return SPDR;
+}
+
+static void set_vgnd(uint16_t codein) {
+  uint8_t spcr_before = SPCR;
+
+  //set all DACs to -1.024 V, enable ADG601's
+  DDRE |= (1<<2) | (1<<3) | (1<<4);
+  PORTE |= (1<<2) | (1<<3) | (1<<4); //de-assert /CS
+
+  //CPOL=0, CPHA=0
+  SPCR &= ~(1<<CPHA);
+
+  for (uint8_t x = 0; x < 3; x++) {
+    PORTE &= ~(1<<(x+2));
+
+    //   0 = -2.048 V
+    // 256 = -1.024 V
+    // 512 =  0.000 V
+    // 768 =  1.024 V
+    //1023 =  2.046 V
+    uint16_t code = codein;
+
+    //from the MAX504 datasheet:
+    //16 bits of serial data are
+    //clocked into the DAC in the following order: 4 fill (dummy)
+    //bits, 10 data bits, and 2 sub-LSB 0s.
+    code <<= 2; //dddd CCCC CCCC CC00
+
+    //from the ATmega128 datasheet:
+    //When the DORD bit is written to zero, the MSB of the data word is transmitted first.
+    //SPCR &= ~(1<<DORD); //just to be sure
+    //SPCR |= (1<<DORD);
+
+    spi_comm_byte(code >> 8);
+    spi_comm_byte(code);
+
+    //de-assert all /CS
+    PORTE |= (1<<2) | (1<<3) | (1<<4);
+  }
+
+  //enable ADG601s
+  DDRE |= (1<<5);
+  PORTE |= (1<<5);
+  //DDRF |= (1<<5) | (1<<6);
+  //PORTF |= (1<<5) | (1<<6);
+
+  //restore SPCR
+  SPCR = spcr_before;
+}
+
+static void disable_vgnd(void) {
+  DDRE |= (1<<5);
+  PORTE &= ~(1<<5);
+  //DDRF |= (1<<5) | (1<<6);
+  //PORTF &= ~((1<<5) | (1<<6));
+}
+
 int main(void)
 {
   wdt_enable(WDTO_250MS);
@@ -393,6 +470,8 @@ int main(void)
   //CPU utilization on PF6
   DDRF |= (1<<6);
   CPU_USAGE_OFF();
+
+  setup_spi();
 
   //setup Timer1 + motor PWM just before enabling interrupts
   setup_motor_pwm();
@@ -630,6 +709,36 @@ int main(void)
           printf_P(PSTR("Motor %i: %i tachs (%i RPM)\r\n"), (int)x, ntachs[x], rpm);
         }
         disable_tx();
+      } else if (c == ';') {
+        for (;;) {
+          //stuff for testing MAX504 + ADG601
+          uint16_t a = 0;
+          uint16_t b = 1024;
+          uint16_t step = 64;
+          for (uint16_t x = a; x < b; x += step) {
+            //set_vgnd(x);
+            _delay_ms(100);
+            wdt_reset();
+            //set_vgnd(512);
+            //_delay_ms(100);
+            //wdt_reset();
+            set_vgnd(512 + (111-8)/4);
+            //disable_vgnd();
+            _delay_ms(100);
+            wdt_reset();
+            //check for escape
+            if (UART_STATUS & (1<<UART_RXREADY)) {
+              char c = recvchar();
+              if (c == ESC) {
+                enable_tx();
+                printf_P(PSTR("\r\nESC\r\n"));
+                disable_tx();
+                goto escapeit;
+              }
+            }
+          }
+        }
+        escapeit:;
       } else if (c == '?') {
         //print help
         enable_tx();
@@ -647,6 +756,7 @@ int main(void)
         "1 - list 1-wire device ROMs\r\n"
         "! - search for 1-wire devices\r\n"
         ": - perform Timer1 test (~5 min)\r\n"
+        "; - MAX504 + ADG601 test\r\n"
         ));
         disable_tx();
       }
