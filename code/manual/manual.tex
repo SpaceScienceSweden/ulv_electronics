@@ -82,6 +82,14 @@ then the cpu3 and credits modules can be mounted, and finally the fieldmill9 mod
 It's useful to mount the credits module last so that the mating of the fieldmill9 and cpu3 modules can be checked,
 and power-on tests performed.
 
+In order to figure out what ID each DS18B20Z 1-wire temperature sensor has
+the instrument should be powered on after each module has been installed and
+a temperature measurement performed.
+The exception to this is when installing power4 and cpu3,
+since both are required to get an initial reading and both have a temperature sensor.
+Touching the DS18B20Z IC on the power4 board at this phase, thus warming it,
+should be enough to distinguish the two at that phase.
+
 Use white gloves when handling any silver parts, to prevent them from being contaminated.
 Each aluminium plate requires 16 silver plates M3 screws (?? mm long, Torx T10) to mount it to the skeleton, 96 total.
 
@@ -145,6 +153,8 @@ Screw in place using M3 screws, 0.8 Nm.
 Screw the finished module to the skeleton using M3 screws, 0.8 Nm.
 
 Perform a power-on test.
+Distinguish the two DS18B20Z temperature sensors now in the instrument by touching one of them, thus warming it.
+Write down which ID corresponds to which of the two sensors.
 
 \subsection{fieldmill9}
 
@@ -229,7 +239,8 @@ Screw each module to the skeleton using M3 screws, 0.8 Nm.
 Perform power-on test and motor test.
 Measure the resistance between motor axis and instrument ground after running the motor for a few minutes.
 The resistance should be less than 10 $\Omega$.
-
+Take a temperature reading after each fieldmill9 module has been inserted,
+and make a note of the new sensor ID each time and what module it corresponds to.
 
 \subsection{credits}
 
@@ -253,7 +264,8 @@ Screw in place using M3 screws, 0.8 Nm.
 
 Screw the finished module to the skeleton using M3 screws, 0.8 Nm.
 
-Perform a power-on test and a thermometer test.
+Perform a power-on test and a temperature test.
+Take note of the new temperature sensor ID.
 
 \section{Commands}
 
