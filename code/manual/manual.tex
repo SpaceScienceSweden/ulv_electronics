@@ -311,8 +311,7 @@ M & 3 & spd spd spd         & Set motor speeds \\ \hline
 K & 0 &                     & Set motor speeds to 50\% \\ \hline
   & 0 &                     & Stop all motors \\ \hline
   & 1 & ID                  & Stop specific motor \\ \hline
-  & 0 &                     & Measure motor speeds in RPM \\ \hline
-  & 1 &                     & Measure specific motor speed in RPM \\ \hline
+r & 0 &                     & Measure motor speeds in RPM \\ \hline
 1 & 0 &                     & List 1-wire device ROMs \\ \hline
 ! & 0 &                     & Search for 1-wire devices \\ \hline
   &   &                     & Measure temperatures \\ \hline
@@ -326,8 +325,9 @@ K & 0 &                     & Set motor speeds to 50\% \\ \hline
   &   &                     & Write EEPROM (\$000 - \$FFF) \\ \hline
   &   &                     & Read ROM (\$00000 - \$1FFFF) \\ \hline
   &   &                     & Read fuses \\ \hline
-  &   &                     & Read clock \\ \hline
-  &   &                     & Set clock \\ \hline
+c & 0 &                     & Read clock in cycles \\ \hline
+C & 1 & cycles              & Set clock in cycles \\ \hline
+w & 1 & cycles              & Wait given number of cycles \\ \hline
   &   &                     & Configure measurement (block size + gap) \\ \hline
   &   &                     & Read measurement configuration \\ \hline
   &   &                     & Start measurement \\ \hline

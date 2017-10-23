@@ -347,6 +347,15 @@ retry64:
   return ret;
 }
 
+static void settime64(uint64_t t) {
+  cli();
+  //set timer base, ensure TOV1 ISR won't happen for a while
+  timer1_base = t;
+  TCNT1 = 0;
+  TIFR |= (1<<TOV1);
+  sei();
+}
+
 
 static void setup_motor_pwm() {
   //PB5 = OC1A, PB6 = OC1B, PB7 = OC1C. inverted drive signals
@@ -565,6 +574,57 @@ static char add_program_line(const char *line) {
   programs[x].end += sz;
 
   return 0;
+}
+
+static inline uint8_t have_esc(void) {
+  //check for escape
+  if (UART_STATUS & (1<<UART_RXREADY)) {
+    char c = recvchar();
+    if (c == ESC) {
+      enable_tx();
+      printf_P(PSTR("\r\nESC\r\n"));
+      disable_tx();
+      return 1;
+    }
+  }
+  return 0;
+}
+
+//avr-libc doesn't support %llu, implement our own crappy versions
+//both have been tested with 18446744073709551615, seem to work fine
+static uint64_t parse64(const char *line) {
+  uint64_t ret = 0;
+  uint8_t started = 0;
+
+  for (; *line; line++) {
+    if (*line >= '0' && *line <= '9') {
+      started = 1;
+      ret *= 10;
+      ret += *line - '0';
+    } else {
+      if (started) {
+        break;
+      }
+    }
+  }
+
+  return ret;
+}
+
+static void print64(uint64_t i) {
+  uint64_t digit = 10000000000000000000ULL;
+  uint8_t printing = 0;
+  for (; digit > 0; digit /= 10) {
+    char c = '0';
+    while (i >= digit) {
+      printing = 1;
+      i -= digit;
+      c++;
+    }
+    if (printing) {
+      sendchar(c);
+    }
+  }
 }
 
 int main(void)
@@ -835,15 +895,8 @@ int main(void)
             //disable_vgnd();
             _delay_ms(100);
             wdt_reset();
-            //check for escape
-            if (UART_STATUS & (1<<UART_RXREADY)) {
-              char c = recvchar();
-              if (c == ESC) {
-                enable_tx();
-                printf_P(PSTR("\r\nESC\r\n"));
-                disable_tx();
-                goto escapeit;
-              }
+            if (have_esc()) {
+              goto escapeit;
             }
           }
         }
@@ -917,6 +970,54 @@ int main(void)
             }
           }
         }
+      } else if (c == 'w') {
+        if (recvline() > 0) {
+          uint32_t delay, t0, t1;
+          if (sscanf(line, "%lu", &delay) != 1) {
+            continue;
+          }
+
+          /*enable_tx();
+          printf_P(PSTR("Waiting %lu cycles\r\n"), delay);
+          disable_tx();*/
+
+          //resolution is roughly 78 cycles = 11 µs
+          //measurements show that the actual delay is 0-281 cycles off from the requested value,
+          //with 78 being the average
+          t0 = gettime32();
+          for (;;) {
+            t1 = gettime32();
+            if (t1 - t0 >= delay || have_esc()) {
+              break;
+            }
+            wdt_reset();
+          }
+
+          /*enable_tx();
+          printf_P(PSTR("Done. Waited %lu cycles\r\n"), t1-t0);
+          disable_tx();*/
+          enable_tx();
+          printf_P(PSTR("%lu\r\n"), t1-t0);
+          disable_tx();
+        }
+      } else if (c == 'c') {
+        enable_tx();
+        uint64_t t = gettime64();
+        //printf_P(PSTR("derp\r\n"));
+        //printf_P(PSTR("%llu\r\n"), t);
+        print64(t);
+        printf_P(PSTR("\r\n"));
+        disable_tx();
+      } else if (c == 'C') {
+        if (recvline() > 0) {
+          uint64_t t = parse64(line);
+          settime64(t);
+
+          enable_tx();
+          print64(t);
+          printf_P(PSTR("\r\n"));
+          disable_tx();
+        }
       } else if (c == '?') {
         //print help
         enable_tx();
@@ -938,6 +1039,9 @@ int main(void)
         "p - list program\r\n"
         "D - delete program\r\n"
         "P - add program\r\n"
+        "c - get clock\r\n"
+        "C - set clock\r\n"
+        "w - wait given number of cycles\r\n"
         ));
         disable_tx();
       }
