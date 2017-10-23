@@ -16,7 +16,7 @@ CC             = avr-gcc
 #freeRam() needs -Wno-return-local-addr
 #LDFLAGS enable float functionality in printf()
 CFLAGS  = $(CFLAGS_ROOT) -g -Werror -Wno-unused -Wno-return-local-addr -Wno-stringop-overflow \
-  -Wall $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) -std=gnu99
+  -Wall -pedantic $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) -std=gnu99
 LDFLAGS = -Wl,-Map,$(PRG).map -Wl,-u,vfprintf -lprintf_flt -lm \
 	-Wl,--section-start,.bss=0x801100,--defsym=__heap_end=0x80ffff
 # ^ Put .data and stack in SRAM, .bss and heap in XRAM

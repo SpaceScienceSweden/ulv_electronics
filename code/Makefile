@@ -9,8 +9,7 @@ export
 # We could have some different options when developing,
 # like faster boot time
 all:
-	make -C app clean all
-	WAIT_VALUE=0 make -C avr109 clean all
+	make -C app all
 
 .PHONY: flight programserial manual
 flight:
@@ -29,6 +28,7 @@ flight:
 
 programserial:
 	make -C app all
+	killall picocom minicom || true
 	# Send ESC in case we're doing something
 	/bin/echo -en \\x1b > /dev/ttyUSB0
 	sleep 0.1

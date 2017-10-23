@@ -127,6 +127,10 @@ static int recvline(void) {
         ofs--;
       }
     } else if (c == ESC) {
+      enable_tx();
+      printf_P(PSTR("\r\nESC\r\n"));
+      disable_tx();
+
       line[ofs] = 0;
       return -1;
     } else if (c == '\r' || c == '\n') {
@@ -455,6 +459,114 @@ static void disable_vgnd(void) {
   //PORTF &= ~((1<<5) | (1<<6));
 }
 
+//each program consists of a number of lines
+//each line is NUL terminated
+char program_store[4096];
+
+struct {
+  char name[16];      //"" = free slot
+  char *start, *end;  //pointers into program_store
+} programs[16];
+static const int max_programs = sizeof(programs)/sizeof(programs[0]);
+
+static size_t free_program_space(void) {
+  if (programs[0].name[0] == 0) {
+    return sizeof(program_store);
+  }
+  uint8_t x;
+  for (x = 0; x < max_programs - 1 && programs[x+1].name[0]; x++);
+  return &program_store[sizeof(program_store)] - programs[x].end;
+}
+
+static void list_programs(void) {
+  enable_tx();
+  uint8_t x;
+  for (x = 0; x < max_programs; x++) {
+    if (!programs[x].name[0]) {
+      break;
+    }
+    printf_P(PSTR("%i: %s\r\n"), (int)x, programs[x].name);
+    char *ptr = programs[x].start;
+    while (ptr < programs[x].end) {
+      size_t sz = strlen(ptr)+1;
+      printf_P(PSTR("%s\r\n"), ptr);
+      ptr += sz;
+      wdt_reset();
+    }
+    printf_P(PSTR("\r\n"));
+  }
+  printf_P(PSTR("%i/%i programs (%u B free)\r\n"), (int)x, max_programs, free_program_space());
+  disable_tx();
+}
+
+static void delete_program_slot(uint8_t x) {
+  uint16_t sz = programs[x].end - programs[x].start;
+  memmove(programs[x].start, programs[x].end, &program_store[sizeof(program_store)] - programs[x].end);
+  memmove(&programs[x], &programs[x+1], (max_programs-x-1)*sizeof(programs[0]));
+
+  for (; x < max_programs; x++) {
+    programs[x].start -= sz;
+    programs[x].end -= sz;
+  }
+
+  //last slot is always free
+  programs[max_programs-1].name[0] = 0;
+}
+
+static char delete_program(const char *name) {
+  //delete program if we can find it
+  //then memmove() program data and pointers around
+  uint8_t x;
+  for (x = 0; x < max_programs; x++) {
+    if (!strcmp(programs[x].name, name)) {
+      delete_program_slot(x);
+      return 0;
+    }
+  }
+  //no such program found
+  return -1;
+}
+
+static char add_program(const char *name) {
+  size_t l = strlen(name);
+  if (l <= 0 || l > 15) {
+    return -1;
+  }
+  //find a free spot
+  for (uint8_t x = 0; x < max_programs; x++) {
+    if (programs[x].name[0] == 0) {
+      strcpy(programs[x].name, name);
+      if (x == 0) {
+        programs[x].end = programs[x].start = program_store;
+      } else {
+        programs[x].end = programs[x].start = programs[x-1].end;
+      }
+      return x;
+    }
+  }
+  return -2;
+}
+
+//adds line to last program
+static char add_program_line(const char *line) {
+  //include NUL in size
+  size_t sz = strlen(line) + 1;
+  uint8_t x;
+  for (x = 0; x < max_programs - 1 && programs[x+1].name[0]; x++);
+
+  //how much space have we got?
+  size_t maxsz = &program_store[sizeof(program_store)] - programs[x].end;
+
+  if (sz > maxsz) {
+    return -1;
+  }
+
+  memcpy(programs[x].end, line, sz);
+  programs[x].end += sz;
+
+  return 0;
+}
+
 int main(void)
 {
   wdt_enable(WDTO_250MS);
@@ -504,9 +616,6 @@ int main(void)
           int pwm0, pwm1, pwm2;
           int len = recvline();
           if (len < 0) {
-            enable_tx();
-            printf_P(PSTR("\r\nESC\r\n"));
-            disable_tx();
             continue;
           }
 
@@ -739,6 +848,75 @@ int main(void)
           }
         }
         escapeit:;
+      } else if (c == 'p') {
+        //list programs
+        list_programs();
+      } else if (c == 'D') {
+        //delete program
+        int len = recvline();
+        if (len <= 0) {
+          continue;
+        }
+
+        enable_tx();
+        if (delete_program(line) < 0) {
+          printf_P(PSTR("Found no program called \"%s\"\r\n"), line);
+        } else {
+          printf_P(PSTR("Program \"%s\" deleted (%u B free)\r\n"), line, free_program_space());
+        }
+        disable_tx();
+      } else if (c == 'P') {
+        //add/relace program
+        int len = recvline();
+        if (len < 0) {
+          continue;
+        }
+        //delete program if it exists
+        delete_program(line);
+        char slot = add_program(line);
+
+        if (slot == -1) {
+          enable_tx();
+          printf_P(PSTR("\r\nProgram name too long or too short: %s\r\n"), line);
+          disable_tx();
+        } else if (slot == -2) {
+          enable_tx();
+          printf_P(PSTR("\r\nNo free program slots (%i max)\r\n"), max_programs);
+          disable_tx();
+        } else {
+          enable_tx();
+          printf_P(PSTR("\r\nProgram \"%s\" will be added in slot %i\r\nEnter program below, terminate with empty line:\r\n"), line, (int)slot);
+          disable_tx();
+
+          for (;;) {
+            enable_tx();
+            printf_P(PSTR("%u B left\r\n"), free_program_space());
+            disable_tx();
+
+            len = recvline();
+            if (len == 0) {
+              enable_tx();
+              printf_P(PSTR("Done.\r\n"));
+              disable_tx();
+              break;
+            } else if (len < 0) {
+              enable_tx();
+              printf_P(PSTR("Deleted program.\r\n"));
+              disable_tx();
+              delete_program_slot(slot);
+              break;
+            } else {
+              char ret = add_program_line(line);
+              if (ret < 0) {
+                enable_tx();
+                printf_P(PSTR("Not enough memory.\r\n"));
+                disable_tx();
+                delete_program_slot(slot);
+                break;
+              }
+            }
+          }
+        }
       } else if (c == '?') {
         //print help
         enable_tx();
@@ -757,6 +935,9 @@ int main(void)
         "! - search for 1-wire devices\r\n"
         ": - perform Timer1 test (~5 min)\r\n"
         "; - MAX504 + ADG601 test\r\n"
+        "p - list program\r\n"
+        "D - delete program\r\n"
+        "P - add program\r\n"
         ));
         disable_tx();
       }
