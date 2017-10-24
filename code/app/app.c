@@ -879,22 +879,31 @@ int main(void)
         }
         disable_tx();
       } else if (c == ';') {
+        uint16_t sintab[1024];
+
+        enable_tx();
+        for (uint16_t x = 0; x <1024; x++) {
+          sintab[x] = (1+sin(x*2*M_PI / 1024))*512 - 0.5;
+          wdt_reset();
+          printf_P(PSTR("%u: %u\r\n"), x, sintab[x]);
+        }
+        disable_tx();
         for (;;) {
           //stuff for testing MAX504 + ADG601
           uint16_t a = 0;
           uint16_t b = 1024;
-          uint16_t step = 64;
+          uint16_t step = 1;
           for (uint16_t x = a; x < b; x += step) {
-            //set_vgnd(x);
+            set_vgnd(sintab[x]);
+            _delay_us(600);
+            wdt_reset();
+            /*set_vgnd(512);
             _delay_ms(100);
             wdt_reset();
-            //set_vgnd(512);
-            //_delay_ms(100);
-            //wdt_reset();
-            set_vgnd(512 + (111-8)/4);
-            //disable_vgnd();
+            //set_vgnd(512 + (111-8)/4);
+            disable_vgnd();
             _delay_ms(100);
-            wdt_reset();
+            wdt_reset();*/
             if (have_esc()) {
               goto escapeit;
             }

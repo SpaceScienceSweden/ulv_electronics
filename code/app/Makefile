@@ -15,7 +15,7 @@ CC             = avr-gcc
 #commenting a bunch of things out
 #freeRam() needs -Wno-return-local-addr
 #LDFLAGS enable float functionality in printf()
-CFLAGS  = $(CFLAGS_ROOT) -g -Werror -Wno-unused -Wno-return-local-addr -Wno-stringop-overflow \
+CFLAGS  = $(CFLAGS_ROOT) -Werror -Wno-unused -Wno-return-local-addr -Wno-stringop-overflow \
   -Wall -pedantic $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) -std=gnu99
 LDFLAGS = -Wl,-Map,$(PRG).map -Wl,-u,vfprintf -lprintf_flt -lm \
 	-Wl,--section-start,.bss=0x801100,--defsym=__heap_end=0x80ffff

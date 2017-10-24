@@ -11,7 +11,7 @@ export
 all:
 	make -C app all
 
-.PHONY: flight programserial manual
+.PHONY: flight programserial manual clean
 flight:
 	make -C app clean all
 	WAIT_VALUE=300 make -C avr109 clean all
@@ -45,3 +45,7 @@ programserial:
 
 manual:
 	make -C manual manual.pdf
+
+clean:
+	make -C avr109 clean
+	make -C app clean
