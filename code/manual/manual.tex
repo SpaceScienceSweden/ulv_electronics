@@ -249,11 +249,16 @@ Drop some SCP03G silver paint into the top of the screw so that it gets a good e
 
 Screw each module to the skeleton using M3 screws, 0.8 Nm.
 
-Perform power-on test and motor test.
-Measure the resistance between motor axis and instrument ground after running the motor for a few minutes.
-The resistance should be less than 10 $\Omega$.
+Perform a power-on test.
+Check that the +5V, -5V and +3.3V rails, and every +2.5V and every -2.5V rail are as expected.
+Measure the output of every channel while VGND = 0 V. The average voltage of each output should be within +- 200 mV of VGND.
+
 Take a temperature reading after each fieldmill9 module has been inserted,
 and make a note of the new sensor ID each time and what module it corresponds to.
+
+Start the motors and run them for at least five minutes.
+Measure the resistance between motor axis and instrument ground.
+The resistance should be less than 10 $\Omega$.
 
 \subsection{credits}
 
