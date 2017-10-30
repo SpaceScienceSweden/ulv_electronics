@@ -883,7 +883,8 @@ int main(void)
 
         enable_tx();
         for (uint16_t x = 0; x <1024; x++) {
-          sintab[x] = (1+sin(x*2*M_PI / 1024))*512 - 0.5;
+          //sintab[x] = (1+sin(x*2*M_PI / 1024))*512 - 0.5; //-2 .. +2 V
+          sintab[x] = sin(x*2*M_PI / 1024)*128 + 512 - 0.5; //-0.5 .. +0.5 V
           wdt_reset();
           printf_P(PSTR("%u: %u\r\n"), x, sintab[x]);
         }
@@ -909,7 +910,9 @@ int main(void)
             }
           }
         }
-        escapeit:;
+      escapeit:
+        //leave with VGND=0
+        set_vgnd(512);
       } else if (c == 'p') {
         //list programs
         list_programs();
