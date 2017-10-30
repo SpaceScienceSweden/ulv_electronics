@@ -177,6 +177,19 @@ Parts needed:
 \item One (1) silver plated M4 flange nut
 \end{itemize}
 
+Before doing anything else, perform the following electrical tests using a multimeter
+
+\begin{itemize}
+\item Check connections to every +2.5V and -2.5V regulator. There's eight ($4 + 4 = 8$) regulators per board
+\item Measure resistance from GND to every rail; +3.3V, +24V, +5V, -5V, every +2.5V and every -2.5V. Measure in both directions. Values should all be at least 1 k$\Omega$
+\item Measure resistance from either side of R56 to GND. Measure in both directions. Value should be at least 8 k$\Omega$
+\item Measure resistance across every NANOSMD PTC. Direction is not important. Values should be no more than 10 $\Omega$. Each board has thirteen (13) PTCs
+\end{itemize}
+
+Applying power while these values are out of spec may cause PERMANENT DAMAGE to op-amps, DACs and/or linear regulators.
+In the worst case the +-5V regulator (TMR 6-2421WI) may also become damaged.
+Once checked and within spec the assembly process may continue:
+
 Cut motor wires to 6-7 mm length.
 Strip so that 3 mm of insulation remains, with the wire stripper set to 0.4 mm.
 Twist and tin the ends of the wires. See figure \vref{motorwires}.
