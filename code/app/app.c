@@ -262,8 +262,8 @@ volatile uint64_t timer1_base = 0;
 
 //used to get view of how much CPU we're using
 //undefine to save some CPU
-#define CPU_USAGE_ON()  do { PORTF |= (1<<6);  } while (0)
-#define CPU_USAGE_OFF() do { PORTF &= ~(1<<6); } while (0)
+#define CPU_USAGE_ON()  do { /*PORTF |= (1<<6);*/  } while (0)
+#define CPU_USAGE_OFF() do { /*PORTF &= ~(1<<6);*/ } while (0)
 
 #define TIMER1_PRESCALER 1  //6% CPU
 //#define TIMER1_PRESCALER 8  //<1% CPU
@@ -961,6 +961,8 @@ restart:
   adc_state[id].nchan = popcount(rreg(id, ADC_ENA));
 
   adc_comm(id, RESET);
+  //spec says to wait at least 4.5 ms
+  _delay_ms(5);
   x = 0;
   while ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0xFF04) {
     if (++x >= 10) {
@@ -1111,6 +1113,9 @@ int main(void)
   PORTB &= ~(1<<0);
 
   //CPU utilization on PF6
+  //FIXME: this is the same as /CS_ADC1
+  //       we don't have any LED installed, so we could use a different pin for CPU
+  //       PD0 or PD1 may be suitable
   DDRF |= (1<<6);
   CPU_USAGE_OFF();
 
