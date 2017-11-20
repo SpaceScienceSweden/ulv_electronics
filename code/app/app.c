@@ -1153,7 +1153,15 @@ int main(void)
     //take a peek at the USART
     //commands are single bytes
     if (UART_STATUS & (1<<UART_RXREADY)) {
-      char c = recvchar();
+      int len = recvline();
+      if (len < 1) {
+        continue;
+      }
+      char c = line[0];
+      //shift line by one character
+      memmove(&line[0], &line[1], len);
+      len--;
+
       if (c == START_WAIT_UARTCHAR) {
         //go to bootloader
         //stupid and simple, therefore the best way:
@@ -1164,11 +1172,6 @@ int main(void)
         if (c == 'M') {
           //set motor speeds
           unsigned pwm0, pwm1, pwm2;
-          int len = recvline();
-          if (len < 0) {
-            continue;
-          }
-
           int n = sscanf(line, "%u %u %u", &pwm0, &pwm1, &pwm2);
           if (n == 3) {
             if (pwm0 > MOTOR_TOP || pwm1 > MOTOR_TOP || pwm2 > MOTOR_TOP) {
@@ -1412,11 +1415,6 @@ int main(void)
         list_programs();
       } else if (c == 'D') {
         //delete program
-        int len = recvline();
-        if (len <= 0) {
-          continue;
-        }
-
         if (delete_program(line) < 0) {
           start_transfer("ERROR");
           printf_P(PSTR("Found no program called \"%s\"\r\n"), line);
@@ -1428,10 +1426,6 @@ int main(void)
         }
       } else if (c == 'P') {
         //add/relace program
-        int len = recvline();
-        if (len < 0) {
-          continue;
-        }
         //delete program if it exists
         delete_program(line);
         char slot = add_program(line);
@@ -1479,7 +1473,7 @@ int main(void)
           }
         }
       } else if (c == 'w') {
-        if (recvline() > 0) {
+        if (len > 0) {
           uint32_t delay, t0, t1;
           if (sscanf(line, "%lu", &delay) != 1) {
             continue;
@@ -1510,7 +1504,7 @@ int main(void)
         }
       } else if (c == 'c' || c == 'C') {
         if (c == 'C') {
-          if (recvline() > 0) {
+          if (len > 0) {
             uint64_t t = parse64(line);
             settime64(t);
           }
@@ -1523,11 +1517,6 @@ int main(void)
         end_transfer();
       } else if (c == 'R') {
         //adc_reset_all();
-        int len = recvline();
-        if (len < 0) {
-          continue;
-        }
-
         uint8_t adcmask = 0, maskin;
         int n = sscanf(line, "%hhu", &maskin);
         if (n != 1) maskin = 1;
