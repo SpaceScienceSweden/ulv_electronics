@@ -1218,7 +1218,7 @@ int main(void)
         int pwm0 = OCR1A;
         int pwm1 = OCR1B;
         int pwm2 = OCR1C;
-        start_transfer("MOTOR_PWMS");
+        start_transfer("MTR_PWM");
         printf_P(PSTR("%i %i %i\r\n"), pwm0, pwm1, pwm2);
         end_transfer();
 
@@ -1235,12 +1235,12 @@ int main(void)
         end_transfer();
       } else if (c == 'V') {
         PORTB |= (1<<0);
-        start_transfer("SET_VOLTAGE");
+        start_transfer("INFO");
         printf_P(PSTR("+24V and +-5V ON\r\n"));
         end_transfer();
       } else if (c == 'B') {
         PORTB &= ~(1<<0);
-        start_transfer("SET_VOLTAGE");
+        start_transfer("INFO");
         printf_P(PSTR("+24V and +-5V OFF\r\n"));
         end_transfer();
       } else if (c == '1' || c == '!') {
@@ -1249,7 +1249,7 @@ int main(void)
           romcnt = 0;
           ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
         }
-        start_transfer("1-Wire");
+        start_transfer("ONEWIRE");
         for (uint8_t x = 0; x < romcnt; x++) {
           for (uint8_t y = 0; y < 8; y++) {
             printf_P(PSTR("%02x"), roms[x*8+y]);
@@ -1271,7 +1271,7 @@ int main(void)
           wdt_reset();
         }
 
-        start_transfer("TEMPERATURES");
+        start_transfer("TEMPS");
         for (uint8_t x = 0; x < romcnt; x++) {
           for (uint8_t y = 0; y < 8; y++) {
             printf_P(PSTR("%02x"), roms[x*8+y]);
@@ -1362,7 +1362,7 @@ int main(void)
           wdt_reset();
         }
 
-        start_transfer("MOTOR_RPMS");
+        start_transfer("MTR_SPD");
         for (uint8_t x = 0; x < 3; x++) {
           int rpm = 0;
           if (ntachs[x] >= 2) {

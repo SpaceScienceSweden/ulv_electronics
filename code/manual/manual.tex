@@ -5,9 +5,10 @@
 \usepackage{float}
 \usepackage{graphicx}
 \begin{document}
+\lstset{basicstyle=\ttfamily} % fixed-width listings
 
 \title{KUB manual}
-\date{October 15, 2017}
+\date{\today}
 \author{Tomas H\"ardin}
 
 \maketitle
@@ -285,10 +286,9 @@ Screw the finished module to the skeleton using M3 screws, 0.8 Nm.
 Perform a power-on test and a temperature test.
 Take note of the new temperature sensor ID.
 
-\section{Commands}
+\section{Command and response summary}
 
 All commands are human-readable, start with a single ASCII character and are termianted with a line ending.
-If the command takes no parameters then the line ending is optional (the instrument will react immediately to the first character).
 Comments may be added by inserting a hash sign ('\#').
 This causes the rest of the line to be ignored (characters are consumed and discarded until end-of-line).
 Mistakes can be corrected with backspace (BS, ASCII code 8) or delete (DEL, ASCII code 127), both of which are treated as a backspace.
@@ -306,10 +306,25 @@ of parameters. An example of this is the 'M' command which exists in two-paramet
 Line endings can either be carriage return ('{\textbackslash}r', ASCII code 13) or linefeed ('{\textbackslash}n', ASCII code 10), but never both in the same line.
 In other words both Unix and Mac line endings are OK, but Windows line endings ("{\textbackslash}r{\textbackslash}n") are not.
 This ensures that {\it echo}, {\it minicom} and {\it picocom} work as expected.
-Output from the instrument is terminated by Windows line endings however, in order to play nice with {\it minicom} and {\it picocom}.
+Output from the instrument is however terminated by Windows line endings ("{\textbackslash}r{\textbackslash}n"), in order to play nice with {\it minicom} and {\it picocom}.
+An ESC ('{\textbackslash}x1B', ASCII code 27) anywhere in a line aborts that command.
+The instrument will respond to ESC immediately.
+There is no need to terminate ESC with newline.
 
-Table \vref{command_table} summarizes all commands and their parameters.
-More detailed descriptions of each command are given in the subsections that follow.
+Output from the instrument is delimited into frames.
+A frame start with the string "BEGIN{\textbackslash}r{\textbackslash}n" and ends with the string "END{\textbackslash}r{\textbackslash}n".
+Each frame is of a specific type, which is given on the line after BEGIN and preceded by a start (*) and terminated by {\textbackslash}r{\textbackslash}n.
+For example, the reply to the "M10 10 10" command example given earlier is of type MTR\_PWM and would therefore be:
+
+\begin{lstlisting}
+    BEGIN
+    *MTR_PWM
+    10 10 10
+    END
+\end{lstlisting}
+
+Tables \ref{command_table_0} and \ref{command_table} summarize all commands and their parameters.
+More detailed descriptions of each command and response are given in the sections that follow.
 
 \definecolor{lgray}{gray}{0.95}
 \definecolor{dgray}{gray}{0.90}
@@ -317,55 +332,209 @@ More detailed descriptions of each command are given in the subsections that fol
 \begin{table}[H]
 \begin{centering}
 \rowcolors{1}{lgray}{dgray}
-\begin{tabular}{|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{5cm}|}
+\begin{tabular}{|p{1.0cm}|p{7.8cm}|p{2.0cm}|}
 \hline
-{\bf Command} & {\bf Parameter count} & {\bf Parameter syntax} & {\bf Description} \\ \hline
-v & 0 &                     & Measure system voltages \\ \hline
-V & 0 &                     & Enable 24V and +-5V \\ \hline
-B & 0 &                     & Disable 24V and +-5V \\ \hline
-m & 0 &                     & Read motor speeds \\ \hline
-M & 2 & ID spd              & Set motor speed \\ \hline
-M & 3 & spd spd spd         & Set motor speeds \\ \hline
-K & 0 &                     & Set motor speeds to 50\% \\ \hline
-  & 0 &                     & Stop all motors \\ \hline
-  & 1 & ID                  & Stop specific motor \\ \hline
-r & 0 &                     & Measure motor speeds in RPM \\ \hline
-1 & 0 &                     & List 1-wire device ROMs \\ \hline
-! & 0 &                     & Search for 1-wire devices \\ \hline
-  &   &                     & Measure temperatures \\ \hline
-  &   &                     & Configure ADC \\ \hline
-  &   &                     & Read ADC configuration \\ \hline
-  &   &                     & Read registers (\$0000 - \$00FF) \\ \hline
-  &   &                     & Write registers (\$0000 - \$00FF) \\ \hline
-  &   &                     & Read RAM (\$0100 - \$FFFF) \\ \hline
-  &   &                     & Write RAM (\$0100 - \$FFFF) \\ \hline
-  &   &                     & Read EEPROM (\$000 - \$FFF) \\ \hline
-  &   &                     & Write EEPROM (\$000 - \$FFF) \\ \hline
-  &   &                     & Read ROM (\$00000 - \$1FFFF) \\ \hline
-  &   &                     & Read fuses \\ \hline
-c & 0 &                     & Read clock in cycles \\ \hline
-C & 1 & cycles              & Set clock in cycles \\ \hline
-w & 1 & cycles              & Wait given number of cycles \\ \hline
-  &   &                     & Configure measurement (block size + gap) \\ \hline
-  &   &                     & Read measurement configuration \\ \hline
-  &   &                     & Start measurement \\ \hline
-{\textbackslash}x1B (ESC)  &   &                     & Stop measurement, abort current recvline() \\ \hline
+{\bf Char} & {\bf Description}    & {\bf Response}\\ \hline
+v & Measure system voltages       & VOLTAGES      \\ \hline
+V & Enable 24V and +-5V           & VOLTAGES      \\ \hline
+B & Disable 24V and +-5V          & VOLTAGES      \\ \hline
+m & Read motor PWMs               & MTR\_PWM      \\ \hline
+K & Set motor PWMs to 50\%        & MTR\_PWM      \\ \hline
+r & Measure motor speeds in RPM   & MTR\_SPD      \\ \hline
+1 & List 1-wire device ROMs       & ONEWIRE       \\ \hline
+! & Search for 1-wire devices     & ONEWIRE       \\ \hline
+t & Measure temperatures          & TEMPS         \\ \hline
+c & Read clock in cycles          & CLOCK         \\ \hline
+? & Print help                    & INFO          \\ \hline
+{\textbackslash}x1B (ESC)  &   Stop measurement, abort current recvline().
+Can occur anywhere in a line, does not have to be terminated with newline. & ESC \\ \hline
 \end{tabular}
-\caption{Command table}
+\caption{Command table, parameterless commands}
+\label{command_table_0}
+\end{centering}
+\end{table}
+
+\begin{table}[H]
+\begin{centering}
+\rowcolors{1}{lgray}{dgray}
+\begin{tabular}{|p{0.8cm}|p{2.6cm}|p{4.9cm}|p{2.0cm}|}
+\hline
+{\bf Char} & {\bf Parameter syntax} & {\bf Description} & {\bf Response} \\ \hline
+M & id pwm              & Set motor PWM                       & MTR\_PWM      \\ \hline
+M & pwm0 pwm1 pwm2      & Set all motor PWMs                  & MTR\_PWM      \\ \hline
+  &                     & Configure ADC                       &               \\ \hline
+  &                     & Read ADC configuration              &               \\ \hline
+  &                     & Read registers (\$0000 - \$00FF)    &               \\ \hline
+  &                     & Write registers (\$0000 - \$00FF)   &               \\ \hline
+  &                     & Read RAM (\$0100 - \$FFFF)          &               \\ \hline
+  &                     & Write RAM (\$0100 - \$FFFF)         &               \\ \hline
+  &                     & Read EEPROM (\$000 - \$FFF)         &               \\ \hline
+  &                     & Write EEPROM (\$000 - \$FFF)        &               \\ \hline
+  &                     & Read ROM (\$00000 - \$1FFFF)        &               \\ \hline
+  &                     & Read fuses                          &               \\ \hline
+C & cycles              & Set clock in cycles                 & CLOCK         \\ \hline
+w & cycles              & Wait given number of cycles         &               \\ \hline
+  &                     & Configure measurement (block size + gap) &               \\ \hline
+  &                     & Read measurement configuration      &               \\ \hline
+  &                     & Start measurement                   &               \\ \hline
+\end{tabular}
+\caption{Command table, commands with parameters}
 \label{command_table}
 \end{centering}
 \end{table}
 
-\subsection{Read motor speed ('m')}
+\section{Responses}
 
-Prints three integers containing OCR1A, OCR1B and OCR1C respectively.
-0 - 255 roughly corresponding to 0 - 100\% or 0 - 6000 RPM.
+Responses given before commands since many commands share response format.
 
-\subsection{Set motor speed(s) ('M')}
+\subsection{INFO}
 
-Hardware will refuse if values are so low that they risk turning the motors off.
+Informative text.
+Display contents in text window or terminal.
+Should be displayed with normal colors.
+Example:
+
+\begin{lstlisting}
+    BEGIN
+    *INFO
+    Starting temperature conversion...
+    END
+\end{lstlisting}
+
+
+\subsection{WARNING}
+
+Warning.
+Should be displayed with a yellowish or maybe orange color.
+
+\begin{lstlisting}
+    BEGIN
+    *WARNING
+    Instrument issues no warnings currently,
+    but may in the future.
+    END
+\end{lstlisting}
+
+
+\subsection{ERROR}
+
+Some kind of error.
+Should be displayed with a reddish color.
+
+\begin{lstlisting}
+    BEGIN
+    *ERROR
+    One or more of PWMS 1111, 2222, and 3333
+    is greater than MOTOR_TOP = 1023
+    END
+\end{lstlisting}
+
+
+\subsection{VOLTAGES}
+
+TODO
+
+\subsection{MTR\_PWM}
+
+PWM value for each of the three motors, as integers between 0 - 1023.
+These correspond roughly to 0 - 6000 RPM, but not exactly.
+For more information see EC20 datasheet.
+Example response after issuing a "K" command:
+
+\begin{lstlisting}
+    BEGIN
+    *MTR_PWM
+    511 511 511
+    END
+\end{lstlisting}
+
+\subsection{MTR\_SPD}
+
+Motor speeds in RPM, and the number of tachometer impulses detected.
+For a sensible output at least two tachs must have been seen for each motor.
+Exact format isn't finalized, so display output as if it were INFO for now.
+
+\begin{lstlisting}
+    BEGIN
+    *MTR_SPD
+    Motor 0: 0 tachs (0 RPM)
+    Motor 1: 1 tachs (0 RPM)
+    Motor 2: 2 tachs (1234 RPM)
+    END
+\end{lstlisting}
+
+\subsection{ONEWIRE}
+
+1-Wire devices.
+One line per device containing a 64-bit hexadecimal ROM string (16 characters).
+
+\begin{lstlisting}
+    BEGIN
+    *ONEWIRE
+    28d09948090000ec
+    286a1a690900005e
+    28ad7548090000c5
+    END
+\end{lstlisting}
+
+\subsection{TEMPS}
+
+Temperature readings.
+One line per DS18B20Z device with 64-bit hexadecimal ROM and decimal temperature values in degrees Celsius.
+Range is -40..+125 with a resolution of 1/16 degrees Celsius.
+
+\begin{lstlisting}
+    BEGIN
+    *TEMPS
+    28d09948090000ec 24.12
+    286a1a690900005e 24.62
+    28ad7548090000c5 -18.56
+    END
+\end{lstlisting}
+
+\subsection{CLOCK}
+
+Current time in CPU cycles as a 64-bit decimal value.
+May roll over in theory, but it would take 79,000 years unless the user
+specifically set the clock to something close to the maximum value (18446744073709551615).
+
+\begin{lstlisting}
+    BEGIN
+    *CLOCK
+    3702994144
+    END
+\end{lstlisting}
+
+\subsection{SAMPLES}
+
+Sample data.
+This response is binary.
+It is possible, but very unlikely, that the binary data contains the string "END{\textbackslash}r{\textbackslash}n".
+To avoid trouble it is best to compute the exact number of bytes in the sample data by following listing \vref{sample_packet_s}.
+
+\begin{lstlisting}
+    BEGIN
+    *SAMPLES
+    [sample_packet_s]
+    END
+\end{lstlisting}
+
+
+\section{Commands}
+
+All commands here are those that take parameters.
+
+\subsection{Set motor PWMs ('M')}
+
+Set one or more OCR1x.
+PWM values must be between 0 - 1023.
+
+\subsubsection{Two parameter form (id pwm)}
+
+\subsubsection{Three parameter form (pwm0 pwm1 pwm2)}
 
 \section{Listing}
+\label{sample_packet_s}
 
 \lstinputlisting{../app/sample_packet_s.h}
 
