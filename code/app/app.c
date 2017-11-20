@@ -64,6 +64,11 @@
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
   RS485_DE_PORT |= RS485_DE_BIT;
+  //a bit higher delay than disable_tx
+  //without this we get a whole bunch of crap out
+  //4 bits (35 µs) was too little, 10 bits (87 µs) is enough
+  //we might get away with less, this will do for now
+  _delay_us(10*1000000 / BAUD);
 }
 
 static void disable_tx(void) {
@@ -76,6 +81,16 @@ static void disable_tx(void) {
   _delay_us(4*1000000 / BAUD);
   //_delay_us(100);
   UART_CTRL = UART_CTRL_DATA_RX;
+}
+
+static void start_transfer(const char *section_name) {
+  enable_tx();
+  printf_P(PSTR("BEGIN\r\n*%s\r\n"), section_name);
+}
+
+static void end_transfer(void) {
+  printf_P(PSTR("END\r\n"));
+  disable_tx();
 }
 
 static void sendchar(uint8_t data)
@@ -127,9 +142,8 @@ static int recvline(void) {
         ofs--;
       }
     } else if (c == ESC) {
-      enable_tx();
-      printf_P(PSTR("\r\nESC\r\n"));
-      disable_tx();
+      start_transfer("ESC");
+      end_transfer();
 
       line[ofs] = 0;
       return -1;
@@ -152,9 +166,9 @@ static int recvline(void) {
     } else {
       if (ofs == sizeof(line)-1) {
         line[ofs] = 0;
-        enable_tx();
+        start_transfer("ERROR");
         printf_P(PSTR("Buffer overflow in recvline()\r\n"));
-        disable_tx();
+        end_transfer();
         for (;;);
       }
       line[ofs++] = c;
@@ -491,7 +505,7 @@ static size_t free_program_space(void) {
 }
 
 static void list_programs(void) {
-  enable_tx();
+  start_transfer("PROGRAMS");
   uint8_t x;
   for (x = 0; x < max_programs; x++) {
     if (!programs[x].name[0]) {
@@ -508,7 +522,7 @@ static void list_programs(void) {
     printf_P(PSTR("\r\n"));
   }
   printf_P(PSTR("%i/%i programs (%u B free)\r\n"), (int)x, max_programs, free_program_space());
-  disable_tx();
+  end_transfer();
 }
 
 static void delete_program_slot(uint8_t x) {
@@ -584,9 +598,8 @@ static inline uint8_t have_esc(void) {
   if (UART_STATUS & (1<<UART_RXREADY)) {
     char c = recvchar();
     if (c == ESC) {
-      enable_tx();
-      printf_P(PSTR("\r\nESC\r\n"));
-      disable_tx();
+      start_transfer("ESC");
+      end_transfer();
       return 1;
     }
   }
@@ -1131,10 +1144,10 @@ int main(void)
   uint8_t romcnt = 0;
   ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
 
-  enable_tx();
-  bsend_P(PSTR("\r\nHello, Earth!\r\n"));
+  start_transfer("INFO");
+  bsend_P(PSTR("Hello, Earth!\r\n"));
   bwait();
-  disable_tx();
+  end_transfer();
 
   for (;;) {
     //take a peek at the USART
@@ -1150,40 +1163,46 @@ int main(void)
         //get/set motor speeds
         if (c == 'M') {
           //set motor speeds
-          int pwm0, pwm1, pwm2;
+          unsigned pwm0, pwm1, pwm2;
           int len = recvline();
           if (len < 0) {
             continue;
           }
 
-          enable_tx();
-          printf_P(PSTR("line: %s\r\n"), line);
-          disable_tx();
-
-          int n = sscanf(line, "%i %i %i", &pwm0, &pwm1, &pwm2);
+          int n = sscanf(line, "%u %u %u", &pwm0, &pwm1, &pwm2);
           if (n == 3) {
-            OCR1A = pwm0;
-            OCR1B = pwm1;
-            OCR1C = pwm2;
+            if (pwm0 > MOTOR_TOP || pwm1 > MOTOR_TOP || pwm2 > MOTOR_TOP) {
+              start_transfer("ERROR");
+              printf_P(PSTR("One or more of PWMS %u, %u, and %u is greater than MOTOR_TOP = %u\r\n"), pwm0, pwm1, pwm2, MOTOR_TOP);
+              end_transfer();
+            } else {
+              OCR1A = pwm0;
+              OCR1B = pwm1;
+              OCR1C = pwm2;
+            }
           } else if (n == 2) {
             //set some specific motor
             //pwm0 = motor index
             //pwm1 = value
-            if (pwm0 == 0) {
+            if (pwm1 > MOTOR_TOP) {
+              start_transfer("ERROR");
+              printf_P(PSTR("PWM %u greater than MOTOR_TOP = %u\r\n"), pwm1, MOTOR_TOP);
+              end_transfer();
+            } else if (pwm0 == 0) {
               OCR1A = pwm1;
             } else if (pwm0 == 1) {
               OCR1B = pwm1;
             } else if (pwm0 == 2) {
               OCR1C = pwm1;
             } else {
-              enable_tx();
-              printf_P(PSTR("bad motor ID: %i\r\n"), pwm0);
-              disable_tx();
+              start_transfer("ERROR");
+              printf_P(PSTR("bad motor ID: %u\r\n"), pwm0);
+              end_transfer();
             }
           } else {
-            enable_tx();
+            start_transfer("ERROR");
             printf_P(PSTR("sscanf: n=%i\r\n"), n);
-            disable_tx();
+            end_transfer();
           }
         } else if (c == 'K') {
           //start motors with default speed (50%)
@@ -1196,49 +1215,50 @@ int main(void)
         int pwm0 = OCR1A;
         int pwm1 = OCR1B;
         int pwm2 = OCR1C;
-        enable_tx();
-        printf_P(PSTR("m %i %i %i\r\n"), pwm0, pwm1, pwm2);
+        start_transfer("MOTOR_PWMS");
+        printf_P(PSTR("%i %i %i\r\n"), pwm0, pwm1, pwm2);
+        end_transfer();
 
         //be helpful if motor power is off
         if (!(PORTB & (1<<0))) {
+          start_transfer("INFO");
           printf_P(PSTR("+24V and +-5V OFF\r\n"));
+          end_transfer();
         }
-        disable_tx();
       } else if (c == 'v') {
         //measure system voltages
-        enable_tx();
+        start_transfer("ERROR");
         printf_P(PSTR("TODO\r\n"));
-        disable_tx();
+        end_transfer();
       } else if (c == 'V') {
         PORTB |= (1<<0);
-        enable_tx();
+        start_transfer("SET_VOLTAGE");
         printf_P(PSTR("+24V and +-5V ON\r\n"));
-        disable_tx();
+        end_transfer();
       } else if (c == 'B') {
         PORTB &= ~(1<<0);
-        enable_tx();
+        start_transfer("SET_VOLTAGE");
         printf_P(PSTR("+24V and +-5V OFF\r\n"));
-        disable_tx();
+        end_transfer();
       } else if (c == '1' || c == '!') {
         if (c == '!') {
           //search for ROMs again
           romcnt = 0;
           ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
         }
-        enable_tx();
-        printf_P(PSTR("%i 1-wire ROMs:\r\n"), (int)romcnt);
+        start_transfer("1-Wire");
         for (uint8_t x = 0; x < romcnt; x++) {
           for (uint8_t y = 0; y < 8; y++) {
             printf_P(PSTR("%02x"), roms[x*8+y]);
           }
           printf_P(PSTR("\r\n"));
         }
-        disable_tx();
+        end_transfer();
       } else if (c == 't') {
         //measure and send temperatures
-        enable_tx();
+        start_transfer("INFO");
         printf_P(PSTR("Starting temperature conversion...\r\n"));
-        disable_tx();
+        end_transfer();
 
         //tell all devices to do a temperature conversion
         ds18b20convert( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, NULL );
@@ -1248,7 +1268,7 @@ int main(void)
           wdt_reset();
         }
 
-        enable_tx();
+        start_transfer("TEMPERATURES");
         for (uint8_t x = 0; x < romcnt; x++) {
           for (uint8_t y = 0; y < 8; y++) {
             printf_P(PSTR("%02x"), roms[x*8+y]);
@@ -1265,7 +1285,7 @@ int main(void)
           temp /= 16;
           printf_P(PSTR(" %i.%02i\r\n"), temp, (625*templo)/100);
         }
-        disable_tx();
+        end_transfer();
       } else if (c == ':') {
         //test timer1
         __uint24 last = gettime24();
@@ -1299,21 +1319,15 @@ int main(void)
           wdt_reset();
 
           //check for escape
-          if (UART_STATUS & (1<<UART_RXREADY)) {
-            char c = recvchar();
-            if (c == ESC) {
-              enable_tx();
-              printf_P(PSTR("\r\nESC\r\n"));
-              disable_tx();
-              break;
-            }
+          if (have_esc()) {
+            break;
           }
         }
       } else if (c == 'r') {
         //measure motor speeds
-        enable_tx();
+        start_transfer("INFO");
         printf_P(PSTR("Measuring motor speeds\r\n"));
-        disable_tx();
+        end_transfer();
 
         //set up TACH mux pins
         DDRD = (DDRD & ~(1<<4)) | (1<<6) | (1<<7);
@@ -1345,7 +1359,7 @@ int main(void)
           wdt_reset();
         }
 
-        enable_tx();
+        start_transfer("MOTOR_RPMS");
         for (uint8_t x = 0; x < 3; x++) {
           int rpm = 0;
           if (ntachs[x] >= 2) {
@@ -1354,11 +1368,11 @@ int main(void)
           }
           printf_P(PSTR("Motor %i: %i tachs (%i RPM)\r\n"), (int)x, ntachs[x], rpm);
         }
-        disable_tx();
+        end_transfer();
       } else if (c == ';') {
         uint16_t sintab[1024];
 
-        enable_tx();
+        start_transfer("INFO");
         for (uint16_t x = 0; x <1024; x++) {
           //sintab[x] = (1+sin(x*2*M_PI / 1024))*512 - 0.5; //-2 .. +2 V
           //sintab[x] = sin(x*2*M_PI / 1024)*128 + 512 - 0.5; //-0.5 .. +0.5 V
@@ -1367,7 +1381,8 @@ int main(void)
           wdt_reset();
           printf_P(PSTR("%u: %u\r\n"), x, sintab[x]);
         }
-        disable_tx();
+        end_transfer();
+
         for (;;) {
           //stuff for testing MAX504 + ADG601
           uint16_t a = 0;
@@ -1402,13 +1417,15 @@ int main(void)
           continue;
         }
 
-        enable_tx();
         if (delete_program(line) < 0) {
+          start_transfer("ERROR");
           printf_P(PSTR("Found no program called \"%s\"\r\n"), line);
+          end_transfer();
         } else {
+          start_transfer("INFO");
           printf_P(PSTR("Program \"%s\" deleted (%u B free)\r\n"), line, free_program_space());
+          end_transfer();
         }
-        disable_tx();
       } else if (c == 'P') {
         //add/relace program
         int len = recvline();
@@ -1420,41 +1437,41 @@ int main(void)
         char slot = add_program(line);
 
         if (slot == -1) {
-          enable_tx();
+          start_transfer("ERROR");
           printf_P(PSTR("\r\nProgram name too long or too short: %s\r\n"), line);
-          disable_tx();
+          end_transfer();
         } else if (slot == -2) {
-          enable_tx();
+          start_transfer("ERROR");
           printf_P(PSTR("\r\nNo free program slots (%i max)\r\n"), max_programs);
-          disable_tx();
+          end_transfer();
         } else {
-          enable_tx();
+          start_transfer("INFO");
           printf_P(PSTR("\r\nProgram \"%s\" will be added in slot %i\r\nEnter program below, terminate with empty line:\r\n"), line, (int)slot);
-          disable_tx();
+          end_transfer();
 
           for (;;) {
-            enable_tx();
+            start_transfer("INFO");
             printf_P(PSTR("%u B left\r\n"), free_program_space());
-            disable_tx();
+            end_transfer();
 
             len = recvline();
             if (len == 0) {
-              enable_tx();
+              start_transfer("INFO");
               printf_P(PSTR("Done.\r\n"));
-              disable_tx();
+              end_transfer();
               break;
             } else if (len < 0) {
-              enable_tx();
+              start_transfer("INFO");
               printf_P(PSTR("Deleted program.\r\n"));
-              disable_tx();
+              end_transfer();
               delete_program_slot(slot);
               break;
             } else {
               char ret = add_program_line(line);
               if (ret < 0) {
-                enable_tx();
+                start_transfer("ERROR");
                 printf_P(PSTR("Not enough memory.\r\n"));
-                disable_tx();
+                end_transfer();
                 delete_program_slot(slot);
                 break;
               }
@@ -1487,46 +1504,41 @@ int main(void)
           /*enable_tx();
           printf_P(PSTR("Done. Waited %lu cycles\r\n"), t1-t0);
           disable_tx();*/
-          enable_tx();
-          printf_P(PSTR("%lu\r\n"), t1-t0);
-          disable_tx();
+          start_transfer("INFO");
+          printf_P(PSTR("Delayed %lu cycles\r\n"), t1-t0);
+          end_transfer();
         }
-      } else if (c == 'c') {
-        enable_tx();
+      } else if (c == 'c' || c == 'C') {
+        if (c == 'C') {
+          if (recvline() > 0) {
+            uint64_t t = parse64(line);
+            settime64(t);
+          }
+        }
         uint64_t t = gettime64();
-        //printf_P(PSTR("derp\r\n"));
-        //printf_P(PSTR("%llu\r\n"), t);
+
+        start_transfer("CLOCK");
         print64(t);
         printf_P(PSTR("\r\n"));
-        disable_tx();
-      } else if (c == 'C') {
-        if (recvline() > 0) {
-          uint64_t t = parse64(line);
-          settime64(t);
-
-          enable_tx();
-          print64(t);
-          printf_P(PSTR("\r\n"));
-          disable_tx();
-        }
+        end_transfer();
       } else if (c == 'R') {
         //adc_reset_all();
         int len = recvline();
         if (len < 0) {
           continue;
         }
-        enable_tx();
+
         uint8_t adcmask = 0, maskin;
         int n = sscanf(line, "%hhu", &maskin);
         if (n != 1) maskin = 1;
 
-        _delay_ms(10);
-        printf_P(PSTR("Woop woop: %i\r\n"), maskin);
-        _delay_ms(10);
-
+        start_transfer("RESET_ADCS");
         for (uint8_t x = 0; adcmask != maskin; x++) {
           if (x >= 3) {
+            end_transfer();
+            start_transfer("ERROR");
             printf_P(PSTR("Failed to bring all ADCs online\r\n"));
+            end_transfer();
             break;
           }
 
@@ -1538,12 +1550,11 @@ int main(void)
           }
           wdt_reset();
         }
-        disable_tx();
+        end_transfer();
       } else if (c == '?') {
         //print help
-        enable_tx();
+        start_transfer("INFO");
         printf_P(PSTR(
-        "\r\n"
         "Commands:\r\n"
         "t - measure temperature\r\n"
         "v - measure system voltages\r\n"
@@ -1565,7 +1576,7 @@ int main(void)
         "w - wait given number of cycles\r\n"
         "R - reset ADCs\r\n"
         ));
-        disable_tx();
+        end_transfer();
       }
     }
     wdt_reset();
