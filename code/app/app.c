@@ -959,158 +959,71 @@ static uint8_t popcount(uint8_t a) {
   return ret;
 }
 
-void config_adc(uint8_t id) {
-  uint8_t msb, lsb, gain, x;
-  uint32_t word;
+void adc_regs(void) {
+  start_transfer("ADC_REGS");
+  for (uint8_t id = 0; id < 3; id++) {
+    printf_P(PSTR("%i"), id);
+    for (uint8_t a = 0; a <= 0x14; a++) {
+      uint8_t r = rreg(id,a);
+      printf_P(PSTR(" %02x"), r);
+    }
+    printf_P(PSTR("\r\n"));
+  }
+  end_transfer();
+}
 
-restart:
-  printf_P(PSTR("Resetting ADC %i (nchan = %i)\r\n"), id, adc_state[id].nchan);
-  //reset procedure:
-  //- reset
-  //- figure out how large frame size we have (since dynamic)
-  //- ensure there are no faults
-  adc_comm(id, STANDBY);
-  //count active channels (some may be active after a reset, and we have to get the frame size right)
-  adc_state[id].nchan = popcount(rreg(id, ADC_ENA));
 
-  adc_comm(id, RESET);
-  //spec says to wait at least 4.5 ms
-  _delay_ms(5);
-  x = 0;
-  while ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0xFF04) {
-    if (++x >= 10) {
-      printf_P(PSTR("Giving up\r\n"));
+//wait for RESET, then UNLOCK
+void unlock_adcs(void) {
+  for (uint8_t id = 0; id < 3; id++) {
+    uint32_t word;
+
+    //spec says to wait at least 4.5 ms
+    _delay_ms(5);
+
+    int x = 0;
+    while ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0xFF04) {
+      if (++x >= 3) {
+        start_transfer("ERROR");
+        printf_P(PSTR("ADC %hhu seems to be offline\r\n"), id);
+        end_transfer();
+        goto next_adc;
+      }
+
+      //check if we're already unlocked, by inspecting ID_MSB and ID_LSB
+      if (rreg(id, ID_MSB) == 4 && rreg(id, ID_LSB) == 3) {
+        goto adc_ok;
+      }
+
+      start_transfer("INFO");
+      printf_P(PSTR("ADC %hhu: Got %04lX, sending RESET\r\n"), id, word);
+      end_transfer();
+
+      //send RESET, wait some more
+      adc_comm(id, RESET);
+      _delay_ms(5);
+    }
+
+    adc_comm(id, UNLOCK);
+
+    if ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0x0655) {
+      start_transfer("ERROR");
+      printf_P(PSTR("ADC %hhu UNLOCK got %04lXh, not 0655h\r\n"), id, word);
+      end_transfer();
       return;
     }
-    //printf_P(PSTR("Waiting for FF04, got %08lX\r\n"), word);
-    if ((word >> 8) == 0x22) {
-      if (word & 0x10) {
-        printf_P(PSTR("STAT_N: %02X\r\n"), rreg(id, STAT_N));
-        printf_P(PSTR("STAT_P: %02X\r\n"), rreg(id, STAT_P));
-      }
-      if (word & 0x20) {
-        printf_P(PSTR("STAT_S: %02X\r\n"), rreg(id, STAT_S));
-      }
-      if (word == 0x2200 || word == 0x2210) {
-        //probably did a soft reset
-        //ignore threshold errors
-        break;
-      }
-    }
+
+  adc_ok:
+    start_transfer("INFO");
+    printf_P(PSTR("ADC %hhu up\r\n"), id);
+    end_transfer();
+  next_adc:
+    ;
   }
 
-  //count active channels (some may be active after a reset, and we have to get the frame size right)
-  adc_state[id].nchan = popcount(rreg(id, ADC_ENA));
-  printf_P(PSTR("STAT_S: %02X\r\n"), rreg(id, STAT_S));
-  printf_P(PSTR("STAT_1: %02X\r\n"), rreg(id, STAT_1));
-  printf_P(PSTR("ADC_ENA during startup: %02X\r\n"), rreg(id, ADC_ENA));
-
-  //unlock
-  adc_comm(id, UNLOCK);
-  int w = 0;
-  while ((adc_comm(id, 0) >> (WORDSZ-16)) != 0x0655) {
-    printf_P(PSTR("Waiting for UNLOCK\r\n"));
-    if (++w >= 10) {
-      goto restart;
-    }
-  }
-
-#if 0
-  printf_P(PSTR("STAT_1: %02X\r\n"), rreg(id, STAT_1));
-  msb = rreg(id, ID_MSB);
-  lsb = rreg(id, ID_LSB);
-
-  printf_P(PSTR("ID_MSB: %02X, ADS131A%02i\r\n"), msb, msb);
-  printf_P(PSTR("ID_LSB: %02X, rev. %i\r\n"), lsb, lsb);
-  printf_P(PSTR("STAT_1: %02X\r\n"), rreg(id, STAT_1));
-
-  //configure analog stuff
-  //VNCP disabled
-  //high-resolution mode (HRM) on
-  //reserved = 1
-  //internal VREF used and enabled
-  //comp_th = 95%
-  wreg(id, A_SYS_CFG, (1<<6) | (1<<5) | (1<<3));
-
-  //digital stuff
-  //WDT off
-  //CRC off
-  // /DONE delay = 12ns
-  //hi-Z delay = 12ns
-  //dynamic wod size
-  wreg(id, D_SYS_CFG, (3<<4) | (3<<2));
-
-  //setup f_mod and f_data
-  //CLKSRC = external
-  wreg(id, CLK1, CLK_DIV/2);
-  wreg(id, CLK2, ((ICLK_DIV/2)<<5) | OSR);
-
-  //printit();
-  wreg(id, ADC1, GAIN);
-  wreg(id, ADC2, GAIN);
-  wreg(id, ADC3, GAIN);
-  printf_P(PSTR("ADCn STAT_1: %02X\r\n"), rreg(id, STAT_1));
-
-  printf_P(PSTR("STAT_1: %02X\r\n"), rreg(id, STAT_1));
-  printf_P(PSTR("STAT_S: %02X\r\n"), rreg(id, STAT_S));
-  printf_P(PSTR("STAT_M2: %02X\r\n"), rreg(id, STAT_M2));
-  printf_P(PSTR("Final STAT_1: %02X\r\n\r\n"), rreg(id, STAT_1));
-
-  //enable channels 0..2
-  adc_state[id].nchan = 3;
-  wreg(id, ADC_ENA, 0x07);
-  //printf_P(PSTR("ADC_ENA STAT_1: %02X\r\n"), rreg(id, STAT_1));
-
-  adc_comm(id, WAKEUP);
-  while ((adc_comm(id, 0) >> (WORDSZ-16)) != 0x0033) {
-    printf_P(PSTR("Waiting for WAKEUP\r\n"));
-  }
-
-  adc_comm(id, LOCK);
-  //wait for ACK (0x0555)
-  while ((adc_comm(id, 0) >> (WORDSZ-16)) != 0x0555) {
-    printf_P(PSTR("Waiting for LOCK\r\n"));
-  }
-#else
-  rreg(id, STAT_1);
-  rreg(id, STAT_S);
-#endif
+  adc_regs();
 }
 
-static void poll_adcs(uint8_t *mask, uint8_t maskin) {
-  static const uint8_t default_conf[] = {
-  0x04 ,0x03 ,0x00 ,0x00 ,
-  0x00 ,0x00 ,0x00 , WORDSZ == 24 ? 0x01 : 0x05,
-  0x00 ,0x00 ,0x00 ,0x60 ,
-  0x3c ,0x08 ,0x86 ,0x00 ,
-  0x00 ,0x00 ,0x00 ,0x00 ,
-  0x00
-  };
-
-  for (uint8_t id = 0; id < 3; id++) {
-    if (!(maskin & (1<<id))) {
-      continue;
-    }
-    //adc_comm(id, STANDBY);
-    //adc_comm(id, RESET);
-
-    uint8_t ok = 1;
-    printf_P(PSTR("ADC %i: "), id);
-    for (uint8_t a = 0; a <= 0x14; a++) {
-      //rreg(id,a);
-      uint8_t r = rreg(id,a);
-      printf_P(PSTR("%02x "), r);
-      if (r != default_conf[a]) {
-        ok = 0;
-      }
-    }
-    printf_P(ok ? PSTR("Online\r\n") : PSTR("OFF\r\n"));
-
-    if (ok) {
-      *mask |= 1<<id;
-    }
-  }
-}
 #endif
 
 int main(void)
@@ -1516,31 +1429,6 @@ retry:
         print64(t);
         printf_P(PSTR("\r\n"));
         end_transfer();
-      } else if (c == 'R') {
-        //adc_reset_all();
-        uint8_t adcmask = 0, maskin;
-        int n = sscanf(line, "%hhu", &maskin);
-        if (n != 1) maskin = 1;
-
-        start_transfer("RESET_ADCS");
-        for (uint8_t x = 0; adcmask != maskin; x++) {
-          if (x >= 3) {
-            end_transfer();
-            start_transfer("ERROR");
-            printf_P(PSTR("Failed to bring all ADCs online\r\n"));
-            end_transfer();
-            break;
-          }
-
-          poll_adcs(&adcmask, maskin);
-          for (uint8_t id = 0; id < 2; id++) {
-            if (!(adcmask & (1<<id)) && (maskin & (1<<id)) ) {
-              config_adc(id);
-            }
-          }
-          wdt_reset();
-        }
-        end_transfer();
       } else if (c == 'q' || c == 'Q') {
         if (c == 'Q') {
           do {
@@ -1563,16 +1451,9 @@ retry:
             }
           } while (1);
         }
-        start_transfer("ADC_REGS");
-        for (uint8_t id = 0; id < 3; id++) {
-          printf_P(PSTR("%i"), id);
-          for (uint8_t a = 0; a <= 0x14; a++) {
-            uint8_t r = rreg(id,a);
-            printf_P(PSTR(" %02x"), r);
-          }
-          printf_P(PSTR("\r\n"));
-        }
-        end_transfer();
+        adc_regs();
+      } else if (c == 'U') {
+        unlock_adcs();
       } else if (c == '?') {
         //print help
         start_transfer("INFO");
