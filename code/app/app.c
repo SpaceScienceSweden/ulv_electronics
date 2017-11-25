@@ -1145,11 +1145,12 @@ int main(void)
   ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
 
   start_transfer("INFO");
-  bsend_P(PSTR("Hello, Earth!\r\n"));
+  bsend_P(PSTR("Hello, Earth! 👽\r\n"));
   bwait();
   end_transfer();
 
   for (;;) {
+retry:
     //take a peek at the USART
     //commands are single bytes
     if (UART_STATUS & (1<<UART_RXREADY)) {
@@ -1540,31 +1541,42 @@ int main(void)
           wdt_reset();
         }
         end_transfer();
+      } else if (c == 'q' || c == 'Q') {
+        if (c == 'Q') {
+          do {
+            uint8_t id, index, value;
+            int n = sscanf(line, "%hhu %hhx %hhx", &id, &index, &value);
+            if (n != 3) {
+              start_transfer("ERROR");
+              printf_P(PSTR("sscanf(\"%s\") = %i, expected 3\r\n"), line, n);
+              end_transfer();
+              goto retry;
+            }
+
+            wreg(id, index, value);
+            n = recvline();
+            if (n < 0) {
+              goto retry;
+            } else if (n == 0) {
+              //empty line = done
+              break;
+            }
+          } while (1);
+        }
+        start_transfer("ADC_REGS");
+        for (uint8_t id = 0; id < 3; id++) {
+          printf_P(PSTR("%i"), id);
+          for (uint8_t a = 0; a <= 0x14; a++) {
+            uint8_t r = rreg(id,a);
+            printf_P(PSTR(" %02x"), r);
+          }
+          printf_P(PSTR("\r\n"));
+        }
+        end_transfer();
       } else if (c == '?') {
         //print help
         start_transfer("INFO");
-        printf_P(PSTR(
-        "Commands:\r\n"
-        "t - measure temperature\r\n"
-        "v - measure system voltages\r\n"
-        "V - enable +24V and +-5V\r\n"
-        "B - disable +24V and +-5V\r\n"
-        "m - report motor PWMs\r\n"
-        "M - set motor PWMs\r\n"
-        "K - set motor PWMs to 50%%\r\n"
-        "r - measure motor speeds in RPM\r\n"
-        "1 - list 1-wire device ROMs\r\n"
-        "! - search for 1-wire devices\r\n"
-        ": - perform Timer1 test (~5 min)\r\n"
-        "; - MAX504 + ADG601 test\r\n"
-        "p - list program\r\n"
-        "D - delete program\r\n"
-        "P - add program\r\n"
-        "c - get clock\r\n"
-        "C - set clock\r\n"
-        "w - wait given number of cycles\r\n"
-        "R - reset ADCs\r\n"
-        ));
+        printf_P(PSTR("Read manual.pdf 😉\r\n"));
         end_transfer();
       }
     }
