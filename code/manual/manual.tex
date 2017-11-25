@@ -347,6 +347,7 @@ r & Measure motor speeds in RPM   & MTR\_SPD      \\ \hline
 t & Measure temperatures          & TEMPS         \\ \hline
 c & Read clock in cycles          & CLOCK         \\ \hline
 q & Read ADS131A04 registers      & ADS\_REGS     \\ \hline
+S & Reboot                        & {\emph None}  \\ \hline
 ? & Print help                    & INFO          \\ \hline
 {\textbackslash}x1B (ESC)  &   Stop measurement, abort current recvline().
 Can occur anywhere in a line, does not have to be terminated with newline. & ESC \\ \hline
@@ -545,7 +546,24 @@ All our chips have ID\_MSB = 04h (for ADS131A{\emph 04}) and ID\_LSB = 03h (revi
 
 \section{Commands}
 
-All commands here are those that take parameters.
+\subsection{Reboot ('S')}
+
+Takes no parameters and no prisoners.
+Hangs the user program, inducing the WDT to cause a software reset.
+After the reset the CPU enters the bootloader.
+This allows a serial programmer to keep sending 'S' to get the device into a known state,
+since the AVR109 bootloader merely responds to 'S' with 'AVRBOOT'.
+If no programming is performed then the user program is re-entered after the bootloader wait time has elapsed (typically three seconds).
+
+\begin{lstlisting}
+    S
+    S
+    AVRBOOT[three second delay]BEGIN
+    *INFO
+    Hello, Earth! 👽
+    END
+\end{lstlisting}
+
 
 \subsection{Set motor PWMs ('M')}
 
