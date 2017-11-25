@@ -12,6 +12,7 @@
 #include "../eeprom.h"
 #include <ds18b20/ds18b20.h>
 #include <ds18b20/romsearch.h>
+#include "sample_packet_s.h"
 
 #define BS  '\x08'  //backspace
 #define DEL '\x7F'  //delete - treat same as backspace
@@ -227,6 +228,12 @@ uint8_t bsend_buf[16384];
 //using two pointers is slightly faster than offset + size
 uint8_t *bsend_ptr;
 uint8_t *bsend_end;
+
+uint16_t measurement_num_frames = 0;
+uint16_t measurement_gap = 0;
+sample_packet_s packet;
+uint8_t sample_data[2][4096];
+
 
 ISR(USART1_UDRE_vect) {
   //send data, clear TXC1
@@ -1024,6 +1031,77 @@ void unlock_adcs(void) {
   adc_regs();
 }
 
+uint32_t adc_cycles_per_sample(void) {
+  uint32_t cycles_per_sample = 0;
+
+  for (uint8_t id = 0; id < 3; id++) {
+    if (rreg(id, ID_MSB) == 4 && rreg(id, ID_LSB) == 3) {
+      uint8_t ena = rreg(id, ADC_ENA);
+      if (ena == 0) {
+        continue;
+      }
+      uint8_t clk1 = rreg(id, CLK1);
+      uint8_t clk2 = rreg(id, CLK2);
+      uint32_t cycles_per_sample2 = (clk1 & 0x0E) * ((clk2 >> 4) & 0x0E) * osrtab[clk2 & 0x0F];
+
+      if (cycles_per_sample == 0) {
+        cycles_per_sample = cycles_per_sample2;
+      } else if (cycles_per_sample != cycles_per_sample2) {
+        start_transfer("ERROR");
+        printf_P(PSTR("ADC %hhu: cycles_per_sample inconsistent: %llu vs %llu\n"), cycles_per_sample, cycles_per_sample2);
+        end_transfer();
+        return 0;
+      }
+    }
+  }
+  return cycles_per_sample;
+}
+
+//returns total number of enabled channels
+uint8_t adc_popcount(void) {
+  uint8_t ret = 0;
+  for (uint8_t id = 0; id < 3; id++) {
+    if (rreg(id, ID_MSB) == 4 && rreg(id, ID_LSB) == 3) {
+      uint8_t ena = rreg(id, ADC_ENA);
+      ret += popcount(ena & 0xF);
+    }
+  }
+  return ret;
+}
+
+void adc_wakeup(void) {
+  //cli();
+
+  uint32_t cycles_per_sample = adc_cycles_per_sample();
+
+  for (uint8_t id = 0; id < 3; id++) {
+    if (rreg(id, ID_MSB) == 4 && rreg(id, ID_LSB) == 3) {
+      uint8_t ena = rreg(id, ADC_ENA);
+      if (ena == 0) {
+        continue;
+      }
+
+      //syncing all ADCs: wait for timer modulo cycles_per_sample to roll over
+      //FIXME: the accuracy of this thing is only 1000 or so cycles. use a timer instead
+      uint64_t t = gettime64() % cycles_per_sample, tlast;
+      do {
+        tlast = t;
+        t = gettime64() % cycles_per_sample;
+      } while (t > tlast);
+
+      //adc_comm(id, WAKEUP);
+      //adc_comm(id, LOCK);
+      start_transfer("INFO");
+      printf_P(PSTR("ADC %hhu: cycles_per_sample = %i, t = %li -> %li\r\n"), id, cycles_per_sample, (uint32_t)tlast, (uint32_t)t);
+      end_transfer();
+    }
+  }
+
+  //set up interrupt
+
+  //sei();
+}
+
 #endif
 
 int main(void)
@@ -1068,6 +1146,9 @@ retry:
     //commands are single bytes
     if (UART_STATUS & (1<<UART_RXREADY)) {
       int len = recvline();
+      if (len < 0) {
+        //ESC -> stop measurement, if any
+      }
       if (len < 1) {
         continue;
       }
@@ -1454,12 +1535,72 @@ retry:
         adc_regs();
       } else if (c == 'U') {
         unlock_adcs();
+      } else if (c == 'e' || c == 'E') {
+        if (c == 'E') {
+          //measurement configuration
+          int n = sscanf(line, "%u %u\n", &measurement_num_frames, &measurement_gap);
+          if (n != 2) {
+            start_transfer("ERROR");
+            printf_P(PSTR("sscanf(\"%s\") = %i, expected 2\r\n"), line, n);
+            end_transfer();
+            goto retry;
+          }
+
+          uint32_t cycles_per_sample = adc_cycles_per_sample();
+          uint8_t pc = adc_popcount();
+
+          //sanity check frame size
+          uint32_t sample_data_size = pc*measurement_num_frames*3;
+          if (sample_data_size > sizeof(sample_data[0])) {
+            measurement_num_frames = 0;
+            start_transfer("ERROR");
+            printf_P(PSTR("sample_data_size = %lu larger than maximum %u\r\n"), sample_data_size, (uint16_t)sizeof(sample_data[0]));
+            end_transfer();
+            goto retry;
+          }
+
+          //maximum expected packet size
+          uint32_t bytes = sizeof(sample_packet_header_s) +
+            6*sizeof(temperature_s) +
+            //tach can't be faster than sample_rate/4
+            measurement_num_frames/4*sizeof(((sample_packet_s*)0)->tachs[0]) +
+            sample_data_size;
+
+          //number of cycles needed to collect data from ADCs
+          uint32_t cycles_in  = (measurement_num_frames+measurement_gap)*cycles_per_sample;
+
+          //number of cycles needed to transmit data
+          //must be less than cycles_in
+          //1000 = number of microseconds between packets
+          uint32_t cycles_out = bytes*10*F_CPU/BAUD + 1000*F_CPU/1000000;
+
+          start_transfer(cycles_in > cycles_out ? "INFO" : "ERROR");
+          printf_P(PSTR("bytes = %lu, cpc = %lu, pc = %hhu\r\n"), bytes, cycles_per_sample, pc);
+          printf_P(PSTR("cycles_out = %12lu\r\n"), cycles_out);
+          printf_P(PSTR(" cycles_in = %12lu (%s)\r\n"), cycles_in, cycles_in > cycles_out ? "OK" : "not OK");
+          end_transfer();
+
+          if (cycles_in < cycles_out) {
+            measurement_num_frames = 0;
+            goto retry;
+          }
+        }
+      } else if (c == 'W') {
+        if (measurement_num_frames == 0) {
+          start_transfer("ERROR");
+          printf_P(PSTR("Bad/missing measurement configuration - can't wake up\r\n"));
+          end_transfer();
+          goto retry;
+        }
+        adc_wakeup();
       } else if (c == '?') {
         //print help
         start_transfer("INFO");
         printf_P(PSTR("Read manual.pdf 😉\r\n"));
         end_transfer();
       }
+
+      //check if we have sample data to output
     }
     wdt_reset();
   }
