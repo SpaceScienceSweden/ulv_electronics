@@ -807,38 +807,13 @@ static const uint16_t osrtab[16] = {
   4096, 2048, 1024, 800, 768, 512, 400, 384, 256, 200, 192, 128, 96, 64, 48, 32
 };
 
-typedef struct {
-  uint8_t nchan;
-  uint16_t stat_1;
-  uint16_t stat_s;
-} adc_state_t;
-
-static adc_state_t adc_state[3] = {
-  {
-    .nchan = 0,
-    .stat_1 = 0,
-    .stat_s = 0,
-  },
-  {
-    .nchan = 0,
-    .stat_1 = 0,
-    .stat_s = 0,
-  },
-  {
-    .nchan = 0,
-    .stat_1 = 0,
-    .stat_s = 0,
-  },
-};
+static uint8_t adc_popcount[3] = {0,0,0};
 
 static void adc_end_frame2() {
   PORTF |= (1<<5) | (1<<6) | (1<<7);
 }
 
-static inline void adc_start_frame2(uint8_t id) {
-  //end last frame, if any
-  adc_end_frame2();
-
+static inline void adc_select(uint8_t id) {
   //assert relevant /CS pin
   if (id == 0) {
     PORTF &= ~(1 << PF5);
@@ -850,6 +825,12 @@ static inline void adc_start_frame2(uint8_t id) {
 
   //t_d(CSSC) = 16 ns, each instruction takes 135 ns
   //hence no need to delay further after asserting /CS
+}
+
+static inline void adc_start_frame2(uint8_t id) {
+  //end last frame, if any
+  adc_end_frame2();
+  adc_select(id);
 }
 
 #if 0
@@ -885,6 +866,22 @@ static void setup_adc_pins() {
   //EICRB |= (2<<ISC60) | (2<<ISC70);
 }
 
+
+static uint32_t adc_comm_inner(uint8_t pc, uint32_t cmd) {
+  uint8_t x;
+  uint32_t out;
+
+  out = spi_comm_word(cmd);
+
+  for (x = 0; x < pc; x++) {
+    //ignore data
+    spi_comm_word(0);
+  }
+  //printf_P(PSTR("%08lX -> %08lX\r\n"), cmd, out);
+
+  return out;
+}
+
 /**
  * Communicate with ADC. Ignores measurement data
  * id: ADC ID
@@ -892,19 +889,9 @@ static void setup_adc_pins() {
  * return: device word out
  */
 static uint32_t adc_comm(uint8_t id, uint32_t cmd) {
-  uint8_t x;
-  uint32_t out;
-
   adc_start_frame2(id);
-  out = spi_comm_word(cmd);
-
-  for (x = 0; x < adc_state[id].nchan; x++) {
-    //ignore data
-    spi_comm_word(0);
-  }
-  //printf_P(PSTR("%08lX -> %08lX\r\n"), cmd, out);
+  uint32_t out = adc_comm_inner(adc_popcount[id], cmd);
   adc_end_frame2();
-
   return out;
 }
 
@@ -939,12 +926,24 @@ static uint32_t adc_comm(uint8_t id, uint32_t cmd) {
 #define ADC3      0x13
 #define ADC4      0x14
 
+static uint8_t popcount(uint8_t a) {
+  uint8_t ret = 0;
+  while (a) {
+    ret += a&1;
+    a >>= 1;
+  }
+  return ret;
+}
+
 static void wreg(uint8_t id, uint8_t a, uint8_t d) {
   for (;;) {
     uint32_t word;
     adc_comm(id, WREG(a,d));
     word = adc_comm(id, 0);
     if (((word >> (WORDSZ-16)) & 0x1FFF) == ((a<<8) | d)) {
+      if (a == ADC_ENA) {
+        adc_popcount[id] = d < 0x10 ? popcount(d) : 0;
+      }
       break;
     } else {
       printf_P(PSTR("wreg having problems (a=%02x, d=%02x vs %08lX)\r\n"), a, d, word);
@@ -954,16 +953,12 @@ static void wreg(uint8_t id, uint8_t a, uint8_t d) {
 
 static uint8_t rreg(uint8_t id, uint8_t a) {
   adc_comm(id, RREG(a));
-  return (adc_comm(id, 0) >> (WORDSZ-16)) & 0xFF;
-}
-
-static uint8_t popcount(uint8_t a) {
-  uint8_t ret = 0;
-  while (a) {
-    ret += a&1;
-    a >>= 1;
+  uint8_t d = (adc_comm(id, 0) >> (WORDSZ-16)) & 0xFF;
+  if (a == ADC_ENA) {
+    //0xFF is a bad value, consider such to mean no ADC present
+    adc_popcount[id] = d < 0x10 ? popcount(d) : 0;
   }
-  return ret;
+  return d;
 }
 
 void adc_regs(void) {
@@ -997,7 +992,7 @@ void unlock_adcs(void) {
         goto next_adc;
       }
 
-      //check if we're already unlocked, by inspecting ID_MSB and ID_LSB
+      //check if we're already reset, by inspecting ID_MSB and ID_LSB
       if (rreg(id, ID_MSB) == 4 && rreg(id, ID_LSB) == 3) {
         goto adc_ok;
       }
@@ -1011,6 +1006,8 @@ void unlock_adcs(void) {
       _delay_ms(5);
     }
 
+  adc_ok:
+    //unlock and enter standby, halting any ongoing conversion
     adc_comm(id, UNLOCK);
 
     if ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0x0655) {
@@ -1020,7 +1017,16 @@ void unlock_adcs(void) {
       return;
     }
 
-  adc_ok:
+    adc_comm(id, STANDBY);
+
+    if ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0x0022) {
+      start_transfer("ERROR");
+      printf_P(PSTR("ADC %hhu STANDBY got %04lXh, not 0022h\r\n"), id, word);
+      end_transfer();
+      return;
+    }
+
+    //everything looks OK
     start_transfer("INFO");
     printf_P(PSTR("ADC %hhu up\r\n"), id);
     end_transfer();
@@ -1058,12 +1064,13 @@ uint32_t adc_cycles_per_sample(void) {
 }
 
 //returns total number of enabled channels
-uint8_t adc_popcount(void) {
+uint8_t adc_total_popcount(void) {
   uint8_t ret = 0;
   for (uint8_t id = 0; id < 3; id++) {
     if (rreg(id, ID_MSB) == 4 && rreg(id, ID_LSB) == 3) {
-      uint8_t ena = rreg(id, ADC_ENA);
-      ret += popcount(ena & 0xF);
+      //let rreg() logic set adc_popcount
+      rreg(id, ADC_ENA);
+      ret += adc_popcount[id];
     }
   }
   return ret;
@@ -1071,31 +1078,61 @@ uint8_t adc_popcount(void) {
 
 void adc_wakeup(void) {
   //cli();
+  uint8_t portf = PORTF;
+  uint8_t lastena = 0, pc = 0;
 
-  uint32_t cycles_per_sample = adc_cycles_per_sample();
-
+  //WAKEUP all ADCs that have valid ADC_ENA != 0
   for (uint8_t id = 0; id < 3; id++) {
-    if (rreg(id, ID_MSB) == 4 && rreg(id, ID_LSB) == 3) {
-      uint8_t ena = rreg(id, ADC_ENA);
-      if (ena == 0) {
-        continue;
+    uint8_t ena = rreg(id, ADC_ENA);
+    if (ena > 0x00 && ena < 0x10 && rreg(id, ID_MSB) == 4 && rreg(id, ID_LSB) == 3) {
+      portf &= ~(1<<(PF5+id));
+      if (pc == 0) {
+        lastena = ena;
+        pc = popcount(ena);
+      } else if (pc != popcount(ena)) {
+        start_transfer("ERROR");
+        printf_P(PSTR("ADC %hhu: Inconsistent ADC_ENA: %hhx vs %hhx\r\n"), id, lastena, ena);
+        end_transfer();
+        return;
       }
-
-      //syncing all ADCs: wait for timer modulo cycles_per_sample to roll over
-      //FIXME: the accuracy of this thing is only 1000 or so cycles. use a timer instead
-      uint64_t t = gettime64() % cycles_per_sample, tlast;
-      do {
-        tlast = t;
-        t = gettime64() % cycles_per_sample;
-      } while (t > tlast);
-
-      //adc_comm(id, WAKEUP);
-      //adc_comm(id, LOCK);
-      start_transfer("INFO");
-      printf_P(PSTR("ADC %hhu: cycles_per_sample = %i, t = %li -> %li\r\n"), id, cycles_per_sample, (uint32_t)tlast, (uint32_t)t);
-      end_transfer();
     }
   }
+
+  //select all ADCs at the same time
+  //this works because MISO is open collector
+  PORTF = portf;
+  adc_comm_inner(pc, WAKEUP);
+  adc_end_frame2();
+
+  PORTF = portf;
+  uint32_t wakeup_res = adc_comm_inner(pc, 0) >> (WORDSZ-16);
+  adc_end_frame2();
+
+  if (wakeup_res != 0x0033) {
+    start_transfer("ERROR");
+    printf_P(PSTR("wakeup_res = %04lX, expected 0033h\r\n"), wakeup_res);
+    end_transfer();
+    return;
+  }
+
+  PORTF = portf;
+  adc_comm_inner(pc, LOCK);
+  adc_end_frame2();
+
+  PORTF = portf;
+  uint32_t lock_res = adc_comm_inner(pc, 0) >> (WORDSZ-16);
+  adc_end_frame2();
+
+  if (lock_res != 0x0555) {
+    start_transfer("ERROR");
+    printf_P(PSTR("lock_res = %04lX, expected 0555h\r\n"), lock_res);
+    end_transfer();
+    return;
+  }
+
+  start_transfer("INFO");
+  printf_P(PSTR("wakeup_res = %08lX, lock_res = %08lX\r\n"), wakeup_res, lock_res);
+  end_transfer();
 
   //set up interrupt
 
@@ -1547,7 +1584,7 @@ retry:
           }
 
           uint32_t cycles_per_sample = adc_cycles_per_sample();
-          uint8_t pc = adc_popcount();
+          uint8_t pc = adc_total_popcount();
 
           //sanity check frame size
           uint32_t sample_data_size = pc*measurement_num_frames*3;

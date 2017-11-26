@@ -346,10 +346,10 @@ r & Measure motor speeds in RPM   & MTR\_SPD      \\ \hline
 ! & Search for 1-wire devices     & ONEWIRE       \\ \hline
 t & Measure temperatures          & TEMPS         \\ \hline
 c & Read clock in cycles          & CLOCK         \\ \hline
-U & UNLOCK all ADS131A04          & ADC\_REGS     \\ \hline
+U & UNLOCK + STANDBY all ADS131A04& ADC\_REGS     \\ \hline
 q & Read ADS131A04 registers      & ADC\_REGS     \\ \hline
 e & Read measurement config       &               \\ \hline
-W & Wakeup, start measuring       & SAMPLES [...] \\ \hline
+W & WAKEUP + LOCK, start measuring& SAMPLES [...] \\ \hline
 S & Reboot                        & {\emph None}  \\ \hline
 ? & Print help                    & INFO          \\ \hline
 {\textbackslash}x1B (ESC)  &   Stop measurement, abort current recvline().
@@ -369,7 +369,7 @@ Can occur anywhere in a line, does not have to be terminated with newline. & ESC
 M & id pwm              & Set motor PWM                       & MTR\_PWM      \\ \hline
 M & pwm0 pwm1 pwm2      & Set all motor PWMs                  & MTR\_PWM      \\ \hline
 Q & id addr val [...]   & Set ADS131A04 registers             & ADC\_REGS     \\ \hline
-E & frame\_size gap     & Configure measurement               &               \\ \hline
+E & frame\_size gap     & Configure measurement               & INFO or ERROR \\ \hline
   &                     & Read CPU regs (\$0000 - \$00FF)     &               \\ \hline
   &                     & Write CPU regs (\$0000 - \$00FF)    &               \\ \hline
   &                     & Read RAM (\$0100 - \$FFFF)          &               \\ \hline
@@ -576,6 +576,10 @@ PWM values must be between 0 - 1023.
 
 \subsubsection{Three parameter form (pwm0 pwm1 pwm2)}
 
+\subsection{UNLOCK + STANDBY all ADS131A04 ('U')}
+
+Bring ADCs out of reset, halting any ongoing conversions and allowing registers to be modified.
+
 \subsection{Set ADS131A04 registers ('Q')}
 
 The 'Q' command can set one or more registers in one or more of the ADCs.
@@ -605,10 +609,29 @@ The following example sets COMP\_TH = 111b and enables fixed word size (6 device
 Set number of frames per packet and gap between packets.
 Given values will be sanity checked.
 
-\subsection{Wakeup, start measuring ('W')}
+\begin{lstlisting}
+    E100 0
+    BEGIN
+    *INFO
+    bytes = 420, cpc = 25600, pc = 1
+    cycles_out =       276172
+     cycles_in =      2560000 (OK)
+    END
+\end{lstlisting}
+
+\begin{lstlisting}
+    E10000 0
+    BEGIN
+    *ERROR
+    sample_data_size = 30000 larger than maximum 4096
+    END
+\end{lstlisting}
+
+
+\subsection{Wakeup + LOCK, start measuring ('W')}
 
 Sends WAKEUP and LOCK to all ADCs configured with ADC\_ENA != 0,
-then outputs SAMPLES until the user sends ESC.
+then outputs SAMPLES until the user sends ESC or 'U'.
 
 \begin{lstlisting}
     W
@@ -620,7 +643,7 @@ then outputs SAMPLES until the user sends ESC.
     *SAMPLES
     [sample_packet_s]
     END
-    [..]
+    [...]
     ^[
     BEGIN
     *ESC
