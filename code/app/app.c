@@ -86,11 +86,14 @@ static void disable_tx(void) {
 
 static void start_transfer(const char *section_name) {
   enable_tx();
-  printf_P(PSTR("BEGIN\r\n*%s\r\n"), section_name);
+  //trickery to prevent programming from interfering with labview
+  //"BEGIN" -> "BEGI" + 'N'
+  printf_P(PSTR("BEGI%c\r\n*%s\r\n"), 'N', section_name);
 }
 
 static void end_transfer(void) {
-  printf_P(PSTR("END\r\n"));
+  //same here, "END" -> "EN" + 'D'
+  printf_P(PSTR("EN%c\r\n"), 'D');
   disable_tx();
 }
 
@@ -228,12 +231,6 @@ uint8_t bsend_buf[16384];
 //using two pointers is slightly faster than offset + size
 uint8_t *bsend_ptr;
 uint8_t *bsend_end;
-
-uint16_t measurement_num_frames = 0;
-uint16_t measurement_gap = 0;
-sample_packet_s packet;
-uint8_t sample_data[2][4096];
-
 
 ISR(USART1_UDRE_vect) {
   //send data, clear TXC1
@@ -679,28 +676,16 @@ static const uint16_t osrtab[16] = {
 
 static uint8_t adc_popcount[3] = {0,0,0};
 
-static void adc_end_frame2() {
+static inline void adc_deselect(void) {
   PORTF |= (1<<5) | (1<<6) | (1<<7);
 }
 
 static inline void adc_select(uint8_t id) {
   //assert relevant /CS pin
-  if (id == 0) {
-    PORTF &= ~(1 << PF5);
-  } else if (id == 1) {
-    PORTF &= ~(1 << PF6);
-  } else {
-    PORTF &= ~(1 << PF7);
-  }
+  PORTF &= ~(1<<(PF5+id));
 
   //t_d(CSSC) = 16 ns, each instruction takes 135 ns
   //hence no need to delay further after asserting /CS
-}
-
-static inline void adc_start_frame2(uint8_t id) {
-  //end last frame, if any
-  adc_end_frame2();
-  adc_select(id);
 }
 
 #if 0
@@ -728,7 +713,7 @@ static uint32_t spi_comm_word(uint32_t in) {
 static void setup_adc_pins() {
   //PF5..7 = /CS_ADC0..2
   DDRF |= (1<<5) | (1<<6) | (1<<7);
-  adc_end_frame2();
+  adc_deselect();
 
   //TODO: input capture + interrupt for Timer3 (/DRDYn) and Timer1 (TACHn)
   //tach interrupt = falling edge
@@ -759,9 +744,9 @@ static uint32_t adc_comm_inner(uint8_t pc, uint32_t cmd) {
  * return: device word out
  */
 static uint32_t adc_comm(uint8_t id, uint32_t cmd) {
-  adc_start_frame2(id);
+  adc_select(id);
   uint32_t out = adc_comm_inner(adc_popcount[id], cmd);
-  adc_end_frame2();
+  adc_deselect();
   return out;
 }
 
@@ -946,10 +931,32 @@ uint8_t adc_total_popcount(void) {
   return ret;
 }
 
-void adc_wakeup(void) {
-  //cli();
+uint8_t measurement_on = 0;
+uint16_t measurement_num_frames = 0;
+uint16_t measurement_gap = 0;
+
+uint8_t sample_data_idx = 0;  //which of the two buffers are currently being used for the ISR?
+volatile uint8_t sample_data[2][4096];
+volatile uint8_t *sample_ptr;
+uint8_t *sample_end;
+sample_packet_s packet;
+
+static void sample_setup(uint8_t idx) {
+  sample_data_idx = idx;
+  sample_ptr = sample_data[sample_data_idx];
+  //assume 24-bit samples
+  sample_end = (uint8_t*)sample_ptr + 3*measurement_num_frames*(adc_popcount[0] + adc_popcount[1] + adc_popcount[2]);
+}
+
+static void stop_measurement(void) {
+  EIMSK &= ~(1<<INT7);
+  measurement_on = 0;
+}
+
+static void adc_wakeup(void) {
   uint8_t portf = PORTF;
   uint8_t lastena = 0, pc = 0;
+  uint8_t someid = 0; //ID of any enabled ADC, for configuring 74153
 
   //WAKEUP all ADCs that have valid ADC_ENA != 0
   for (uint8_t id = 0; id < 3; id++) {
@@ -959,6 +966,7 @@ void adc_wakeup(void) {
       if (pc == 0) {
         lastena = ena;
         pc = popcount(ena);
+        someid = id;
       } else if (pc != popcount(ena)) {
         start_transfer("ERROR");
         printf_P(PSTR("ADC %hhu: Inconsistent ADC_ENA: %hhx vs %hhx\r\n"), id, lastena, ena);
@@ -968,17 +976,41 @@ void adc_wakeup(void) {
     }
   }
 
+  if (pc == 0) {
+    start_transfer("ERROR");
+    printf_P(PSTR("No ADCs online or all ADC_ENA = 0. Can't WAKEUP (wake me up inside)\r\n"));
+    end_transfer();
+    return;
+  }
+
+  //74153
+  DDRD |= (1<<PD6) | (1<<PD7);
+  PORTD = (PORTD & ~((1<<PD6) | (1<<PD7))) | (someid << PD6);
+
+  sample_setup(sample_data_idx);
+
+  //set up interrupt before WAKEUP, so we don't miss the falling edge
+
+  //interrupt on falling edge of INT7
+  EICRB |= (1<<ISC71);
+  //clear INT7 flag
+  EIFR  |= (1<<INTF7);
+  //enable the interrupt
+  EIMSK |= (1<<INT7);
+  measurement_on = 1;
+
   //select all ADCs at the same time
   //this works because MISO is open collector
   PORTF = portf;
   adc_comm_inner(pc, WAKEUP);
-  adc_end_frame2();
+  adc_deselect();
 
   PORTF = portf;
   uint32_t wakeup_res = adc_comm_inner(pc, 0) >> (WORDSZ-16);
-  adc_end_frame2();
+  adc_deselect();
 
   if (wakeup_res != 0x0033) {
+    stop_measurement();
     start_transfer("ERROR");
     printf_P(PSTR("wakeup_res = %04lX, expected 0033h\r\n"), wakeup_res);
     end_transfer();
@@ -987,13 +1019,14 @@ void adc_wakeup(void) {
 
   PORTF = portf;
   adc_comm_inner(pc, LOCK);
-  adc_end_frame2();
+  adc_deselect();
 
   PORTF = portf;
   uint32_t lock_res = adc_comm_inner(pc, 0) >> (WORDSZ-16);
-  adc_end_frame2();
+  adc_deselect();
 
   if (lock_res != 0x0555) {
+    stop_measurement();
     start_transfer("ERROR");
     printf_P(PSTR("lock_res = %04lX, expected 0555h\r\n"), lock_res);
     end_transfer();
@@ -1001,12 +1034,38 @@ void adc_wakeup(void) {
   }
 
   start_transfer("INFO");
-  printf_P(PSTR("wakeup_res = %08lX, lock_res = %08lX\r\n"), wakeup_res, lock_res);
+  printf_P(PSTR("Measurement started\r\n"));
   end_transfer();
+}
 
-  //set up interrupt
+// /DRDY ISR
+// also IC3
+ISR(INT7_vect) {
+  for (uint8_t id = 0; id < 3; id++) {
+    if (adc_popcount[id]) {
+      adc_select(id);
+#if WORDSZ != 24
+#error WORDSZ != 24 not supported currently
+#endif
+      //skip status
+      spi_comm_byte(0);
+      spi_comm_byte(0);
+      spi_comm_byte(0);
 
-  //sei();
+      for (uint8_t x = 0; x < adc_popcount[id]; x++) {
+        sample_ptr[0] = spi_comm_byte(0);
+        sample_ptr[1] = spi_comm_byte(0);
+        sample_ptr[2] = spi_comm_byte(0);
+        sample_ptr += 3;
+      }
+
+      adc_deselect();
+    }
+  }
+}
+
+// TACH ISR
+ISR(TIMER1_CAPT_vect) {
 }
 
 int main(void)
@@ -1053,6 +1112,7 @@ retry:
       int len = recvline();
       if (len < 0) {
         //ESC -> stop measurement, if any
+        stop_measurement();
       }
       if (len < 1) {
         continue;
@@ -1439,6 +1499,7 @@ retry:
         }
         adc_regs();
       } else if (c == 'U') {
+        stop_measurement();
         unlock_adcs();
       } else if (c == 'e' || c == 'E') {
         if (c == 'E') {
@@ -1504,10 +1565,26 @@ retry:
         printf_P(PSTR("Read manual.pdf 😉\r\n"));
         end_transfer();
       }
-
-      //check if we have sample data to output
     }
     wdt_reset();
+
+    if (measurement_on) {
+      cli();
+      if (sample_ptr >= sample_end) {
+        //swap buffers
+        uint8_t old_idx = sample_data_idx;
+        sample_setup(!sample_data_idx);
+        sei();
+
+        start_transfer("INFO");
+        printf_P(PSTR("would have output SAMPLES here\r\n"));
+        end_transfer();
+        measurement_on = 0;
+
+      } else {
+        sei();
+      }
+    }
   }
 
   return 0;
