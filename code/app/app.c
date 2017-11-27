@@ -839,11 +839,37 @@ void adc_regs(void) {
   end_transfer();
 }
 
+static uint8_t adc_unlock_standby(uint8_t id) {
+  uint32_t word;
+
+  //unlock and enter standby, halting any ongoing conversion
+  adc_comm(id, UNLOCK);
+
+  if ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0x0655) {
+    start_transfer("ERROR");
+    printf_P(PSTR("ADC %hhu UNLOCK got %04lXh, not 0655h\r\n"), id, word);
+    end_transfer();
+    return 1;
+  }
+
+  adc_comm(id, STANDBY);
+
+  if ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0x0022) {
+    start_transfer("ERROR");
+    printf_P(PSTR("ADC %hhu STANDBY got %04lXh, not 0022h\r\n"), id, word);
+    end_transfer();
+    return 1;
+  }
+
+  return 0;
+}
 
 //wait for RESET, then UNLOCK
 void unlock_adcs(void) {
   for (uint8_t id = 0; id < 3; id++) {
     uint32_t word;
+    adc_ena[id] = 0;
+    adc_popcount[id] = 0;
 
     //spec says to wait at least 4.5 ms
     _delay_ms(5);
@@ -872,22 +898,7 @@ void unlock_adcs(void) {
     }
 
   adc_ok:
-    //unlock and enter standby, halting any ongoing conversion
-    adc_comm(id, UNLOCK);
-
-    if ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0x0655) {
-      start_transfer("ERROR");
-      printf_P(PSTR("ADC %hhu UNLOCK got %04lXh, not 0655h\r\n"), id, word);
-      end_transfer();
-      return;
-    }
-
-    adc_comm(id, STANDBY);
-
-    if ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0x0022) {
-      start_transfer("ERROR");
-      printf_P(PSTR("ADC %hhu STANDBY got %04lXh, not 0022h\r\n"), id, word);
-      end_transfer();
+    if (adc_unlock_standby(id)) {
       return;
     }
 
@@ -967,9 +978,25 @@ static size_t sample_setup(uint8_t idx) {
 static void stop_measurement(void) {
   EIMSK &= ~(1<<INT7);
   measurement_on = 0;
+
+  //put ADCs back in STANDBY mode
+  for (uint8_t id = 0; id < 3; id++) {
+    if (adc_ena[id]) {
+      adc_unlock_standby(id);
+    }
+  }
+}
+
+static void set_74153(uint8_t ch) {
+  DDRD |= (1<<PD6) | (1<<PD7);
+  PORTD = (PORTD & ~((1<<PD6) | (1<<PD7))) | (ch << PD6);
 }
 
 static void adc_wakeup(void) {
+  //we shouldn't be having any interrupts going that can mess with this,
+  //but apparently we do
+  cli();
+
   uint8_t portf = PORTF;
   uint8_t lastena = 0, pc = 0;
   uint8_t someid = 0; //ID of any enabled ADC, for configuring 74153
@@ -987,7 +1014,7 @@ static void adc_wakeup(void) {
         start_transfer("ERROR");
         printf_P(PSTR("ADC %hhu: Inconsistent ADC_ENA: %hhx vs %hhx\r\n"), id, lastena, ena);
         end_transfer();
-        return;
+        goto finish_wakeup;
       }
     }
   }
@@ -996,12 +1023,11 @@ static void adc_wakeup(void) {
     start_transfer("ERROR");
     printf_P(PSTR("No ADCs online or all ADC_ENA = 0. Can't WAKEUP (wake me up inside)\r\n"));
     end_transfer();
-    return;
+    goto finish_wakeup;
   }
 
   //74153
-  DDRD |= (1<<PD6) | (1<<PD7);
-  PORTD = (PORTD & ~((1<<PD6) | (1<<PD7))) | (someid << PD6);
+  set_74153(someid);
 
   sample_setup(sample_data_idx);
 
@@ -1030,7 +1056,7 @@ static void adc_wakeup(void) {
     start_transfer("ERROR");
     printf_P(PSTR("wakeup_res = %04lX, expected 0033h\r\n"), wakeup_res);
     end_transfer();
-    return;
+    goto finish_wakeup;
   }
 
   PORTF = portf;
@@ -1046,12 +1072,15 @@ static void adc_wakeup(void) {
     start_transfer("ERROR");
     printf_P(PSTR("lock_res = %04lX, expected 0555h\r\n"), lock_res);
     end_transfer();
-    return;
+    goto finish_wakeup;
   }
 
   start_transfer("INFO");
   printf_P(PSTR("Measurement started\r\n"));
   end_transfer();
+
+finish_wakeup:
+  sei();
 }
 
 // /DRDY ISR
@@ -1138,11 +1167,15 @@ int main(void)
   uint8_t roms[6*8];
   uint8_t romcnt = 0;
   ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
+  if (romcnt > 6) romcnt = 6; //just to be sure
 
   start_transfer("INFO");
   bsend_P(PSTR("Hello, Earth! 👽\r\n"));
   bwait();
   end_transfer();
+
+  uint8_t temp_conversion_in_progress = 0;
+  uint8_t num_measurements = 0;
 
   for (;;) {
 retry:
@@ -1248,6 +1281,7 @@ retry:
           //search for ROMs again
           romcnt = 0;
           ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
+          if (romcnt > 6) romcnt = 6; //just to be sure
         }
         start_transfer("ONEWIRE");
         for (uint8_t x = 0; x < romcnt; x++) {
@@ -1539,7 +1573,10 @@ retry:
         }
         adc_regs();
       } else if (c == 'U') {
-        stop_measurement();
+        //stop_measurement() 'lite'
+        EIMSK &= ~(1<<INT7);
+        measurement_on = 0;
+
         unlock_adcs();
       } else if (c == 'e' || c == 'E') {
         if (c == 'E') {
@@ -1598,6 +1635,11 @@ retry:
           end_transfer();
           goto retry;
         }
+        int n = sscanf(line, "%hhu", &num_measurements);
+        if (n != 1) {
+          num_measurements = 255;
+        }
+
         adc_wakeup();
       } else if (c == '?') {
         //print help
@@ -1614,13 +1656,39 @@ retry:
         //swap buffers
         uint8_t old_idx = sample_data_idx;
         size_t nbytes = sample_setup(!sample_data_idx);
-        stop_measurement(); //for now
+
+        if (--num_measurements == 0) {
+          stop_measurement();
+        }
         sei();
 
         sample_packet_header_s header;
         header.version = 1;                         // format version
         header.first_frame = 0;                     // timestamp of first frame
         header.num_temps = 0;                       // DS18B20Z outputs (0..6)
+
+        //maybe we have some data? :>
+        temperature_s temps[6];
+        if (temp_conversion_in_progress) {
+          //every device transmitting 1?
+          if (onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK )) {
+            //hooray!
+            header.num_temps = romcnt;
+            for (uint8_t x = 0; x < romcnt; x++) {
+              temps[x].rom12[0] = roms[x*8+1];
+              temps[x].rom12[1] = roms[x*8+2];
+              ds18b20read( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &roms[x*8], &temps[x].temp );
+            }
+            temp_conversion_in_progress = 0;
+          }
+        }
+
+        if (!temp_conversion_in_progress) {
+          //tell all devices to do a temperature conversion
+          ds18b20convert( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, NULL );
+          temp_conversion_in_progress = 1;
+        }
+
         header.num_tachs[0] = 0;                    // tach impulses per channel
         header.num_tachs[1] = 0;
         header.num_tachs[2] = 0;
@@ -1635,6 +1703,9 @@ retry:
         //TODO: transfer in background
         start_transfer("SAMPLES");
         sendbuf(&header, sizeof(header));
+        if (header.num_temps) {
+          sendbuf(temps, header.num_temps*sizeof(temps[0]));
+        }
         sendbuf((void*)sample_data[old_idx], nbytes);
         end_transfer();
       } else {
