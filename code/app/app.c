@@ -1175,7 +1175,7 @@ int main(void)
   end_transfer();
 
   uint8_t temp_conversion_in_progress = 0;
-  uint8_t num_measurements = 0;
+  uint16_t num_measurements = 0;
 
   for (;;) {
 retry:
@@ -1581,10 +1581,12 @@ retry:
       } else if (c == 'e' || c == 'E') {
         if (c == 'E') {
           //measurement configuration
-          int n = sscanf(line, "%u %u\n", &measurement_num_frames, &measurement_gap);
-          if (n != 2) {
+          int n = sscanf(line, "%u %u %u", &measurement_num_frames, &measurement_gap, &num_measurements);
+          if (n == 2) {
+            num_measurements = 65535;
+          } else if (n != 3) {
             start_transfer("ERROR");
-            printf_P(PSTR("sscanf(\"%s\") = %i, expected 2\r\n"), line, n);
+            printf_P(PSTR("sscanf(\"%s\") = %i, expected 2 or 3\r\n"), line, n);
             end_transfer();
             goto retry;
           }
@@ -1628,6 +1630,9 @@ retry:
             goto retry;
           }
         }
+        start_transfer("CONFIG");
+        printf_P(PSTR("%u %u %u\r\n"), measurement_num_frames, measurement_gap, num_measurements);
+        end_transfer();
       } else if (c == 'W') {
         if (measurement_num_frames == 0) {
           start_transfer("ERROR");
@@ -1635,11 +1640,6 @@ retry:
           end_transfer();
           goto retry;
         }
-        int n = sscanf(line, "%hhu", &num_measurements);
-        if (n != 1) {
-          num_measurements = 255;
-        }
-
         adc_wakeup();
       } else if (c == '?') {
         //print help
@@ -1657,7 +1657,7 @@ retry:
         uint8_t old_idx = sample_data_idx;
         size_t nbytes = sample_setup(!sample_data_idx);
 
-        if (--num_measurements == 0) {
+        if (num_measurements != 65535 && --num_measurements == 0) {
           stop_measurement();
         }
         sei();

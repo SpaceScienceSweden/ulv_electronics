@@ -22,21 +22,6 @@
 
 \newpage
 
-\section{Greeting}
-Hello world!
-
-
-
-Culpa aliquid aperiam consequatur iste aut corrupti. Eos non harum dolor corrupti magnam consequuntur quod. Eos et quam culpa asperiores inventore ad distinctio sunt. Non in alias facilis quam quis vero quod dignissimos. Culpa ipsam velit quia. Ipsa eum enim repudiandae ut sunt doloribus.
-
-Aut assumenda aut asperiores. Rerum ut nihil quisquam et. Quia et tempora vel. Illo excepturi soluta repellendus id debitis. Totam fuga doloribus exercitationem eius.
-
-Et dolores amet id velit. Et ab saepe suscipit temporibus iusto. Odio dicta error voluptas veritatis ab ut aut doloribus. Et facere illo autem ea saepe accusantium eos minus.
-
-Quis quidem porro tempora consequatur. Voluptatibus adipisci quibusdam illo magnam. Ut consequatur quia ipsum. Enim ea tenetur mollitia sed quaerat et neque officiis. Nostrum harum explicabo ut.
-
-Culpa quia voluptas cumque officia. Impedit est ad et assumenda dolorem ex et. Voluptatem atque alias dicta ratione laborum modi rem.
-
 \section{Assembly}
 
 
@@ -287,9 +272,10 @@ Screw the finished module to the skeleton using M3 screws, 0.8 Nm.
 Perform a power-on test and a temperature test.
 Take note of the new temperature sensor ID.
 
+\newpage
 \section{Command and response summary}
 
-All commands are human-readable, start with a single ASCII character and are termianted with a line ending.
+All commands are human-readable, start with a single ASCII character and are terminated with a line ending.
 Comments may be added by inserting a hash sign ('\#').
 This causes the rest of the line to be ignored (characters are consumed and discarded until end-of-line).
 Mistakes can be corrected with backspace (BS, ASCII code 8) or delete (DEL, ASCII code 127), both of which are treated as a backspace.
@@ -348,7 +334,7 @@ t & Measure temperatures          & TEMPS         \\ \hline
 c & Read clock in cycles          & CLOCK         \\ \hline
 U & UNLOCK + STANDBY all ADS131A04& ADC\_REGS     \\ \hline
 q & Read ADS131A04 registers      & ADC\_REGS     \\ \hline
-e & Read measurement config       &               \\ \hline
+e & Read measurement config       & CONFIG        \\ \hline
 W & WAKEUP + LOCK, start measuring& SAMPLES [...] \\ \hline
 S & Reboot                        & {\emph None}  \\ \hline
 ? & Print help                    & INFO          \\ \hline
@@ -369,7 +355,7 @@ Can occur anywhere in a line, does not have to be terminated with newline. & ESC
 M & id pwm              & Set motor PWM                       & MTR\_PWM      \\ \hline
 M & pwm0 pwm1 pwm2      & Set all motor PWMs                  & MTR\_PWM      \\ \hline
 Q & id addr val [...]   & Set ADS131A04 registers             & ADC\_REGS     \\ \hline
-E & frame\_size gap     & Configure measurement               & INFO or ERROR \\ \hline
+E & frame\_size gap [num\_packets] & Configure measurement    & CONFIG        \\ \hline
   &                     & Read CPU regs (\$0000 - \$00FF)     &               \\ \hline
   &                     & Write CPU regs (\$0000 - \$00FF)    &               \\ \hline
   &                     & Read RAM (\$0100 - \$FFFF)          &               \\ \hline
@@ -386,6 +372,89 @@ w & cycles              & Wait given number of cycles         & INFO          \\
 \label{command_table}
 \end{centering}
 \end{table}
+
+\subsection{Short example}
+
+To get the instrument into a useable state at least the following commands have to be issued:
+
+\begin{itemize}
+\item Start motors ('M')
+\item RESET+UNLOCK+STANDBY ADS131A04s ('U')
+\item Configure ADS131A04s ('Q')
+\item Configure measurement ('E')
+\item WAKEUP+LOCK ADS131A04s ('W')
+\end{itemize}
+
+What follows is a slightly edited session (for brevity) with only one fieldmill mounted.
+First just the commands are listed, then the full session (input and output):
+
+\begin{lstlisting}
+    M1 1023     # Motors 1 at full speed
+    U           # UNLOCK ADCs
+    Q1 0F 01    # Activate channel 1 on ADC 1
+                # End of Q command
+    E100 0      # 100 frames per packet, no gap, run endlessly
+    W           # WAKEUP ADCs, output SAMPLES
+\end{lstlisting}
+
+Full session:
+
+\begin{lstlisting}
+    BEGIN
+    *INFO
+    Hello, Earth! 👽
+    END
+    M1023 1023 1023
+    BEGIN
+    *MTR_PWM
+    1023 1023 1023
+    END
+    U
+    [...]
+    BEGIN
+    *ERROR
+    ADC 0 seems to be offline
+    END
+    BEGIN
+    *INFO
+    ADC 1 up
+    END
+    [...]
+    BEGIN
+    *ERROR
+    ADC 2 seems to be offline
+    END
+    BEGIN
+    *ADC_REGS
+    0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+    1 04 03 00 00 00 00 00 01 00 00 00 60 3c 08 86 00 00 00 00 00 00
+    2 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+    END
+    Q1 0F 01
+
+    BEGIN
+    *ADC_REGS
+    0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+    1 04 03 20 00 00 01 00 01 00 00 00 60 3c 08 86 01 00 00 00 00 00
+    2 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+    END
+    E100 0
+    BEGIN
+    *INFO
+    bytes = 420, cpc = 25600, pc = 1
+    cycles_out =       276172
+     cycles_in =      2560000 (OK)
+    END
+    W3
+    BEGIN
+    *INFO
+    Measurement started
+    END
+    BEGIN
+    *SAMPLES
+    [...]
+\end{lstlisting}
+
 
 \section{Responses}
 
@@ -546,6 +615,27 @@ The first two registers (ID\_MSB and ID\_LSB) can be used to detect that an ADC 
 since they are read-only and of known value.
 All our chips have ID\_MSB = 04h (for ADS131A{\emph 04}) and ID\_LSB = 03h (revision 3).
 
+\subsection{CONFIG}
+
+Measurement configuration. Three integers.
+The first integer is the number of frames in each SAMPLES packet.
+Zero means no configuration yet, or there was some error with the attempted configuration.
+In short, if the first integer is zero then WAKEUP ('W') cannot be issued.
+The second iteger is the gap in frames between SAMPLES packets.
+It may be zero, and must be non-zero if the total sample bitrate is higher than the UART bitrate.
+So a non-zero value provides a longer pause between SAMPLES packets.
+The third integer is the number of SAMPLES packets that will be output.
+A value of 65535 means SAMPLES will be output indefinitely.
+
+The following example has 100 frames per packet, no gap between packets and will run indefinitely:
+
+\begin{lstlisting}
+    BEGIN
+    *CONFIG
+    100 0 1000
+    END
+\end{lstlisting}
+
 \section{Commands}
 
 \subsection{Reboot ('S')}
@@ -574,7 +664,27 @@ PWM values must be between 0 - 1023.
 
 \subsubsection{Two parameter form (id pwm)}
 
+Set PWM duty rate for motor with given ID (0..2). Example:
+
+\begin{lstlisting}
+    M1 800
+    BEGIN
+    *MTR_PWM
+    0 800 0
+    END
+\end{lstlisting}
+
 \subsubsection{Three parameter form (pwm0 pwm1 pwm2)}
+
+Set PWM duty rate for all three motors in one go.
+
+\begin{lstlisting}
+    M200 400 600
+    BEGIN
+    *MTR_PWM
+    200 400 600
+    END
+\end{lstlisting}
 
 \subsection{UNLOCK + STANDBY all ADS131A04 ('U')}
 
@@ -607,23 +717,30 @@ The following example sets COMP\_TH = 111b and enables fixed word size (6 device
 \subsection{Configure measurement ('E')}
 
 Set number of frames per packet and gap between packets.
+Optionally also set the number of SAMPLES packets that will be captured and output (0..65534).
 Given values will be sanity checked.
 
 \begin{lstlisting}
-    E100 0
+    E100 0 1000
     BEGIN
     *INFO
     bytes = 420, cpc = 25600, pc = 1
     cycles_out =       276172
      cycles_in =      2560000 (OK)
     END
-\end{lstlisting}
-
-\begin{lstlisting}
+    BEGIN
+    *CONFIG
+    100 0 1000
+    END
     E10000 0
     BEGIN
     *ERROR
     sample_data_size = 30000 larger than maximum 4096
+    END
+    e
+    BEGIN
+    *CONFIG
+    0 0 65535
     END
 \end{lstlisting}
 
