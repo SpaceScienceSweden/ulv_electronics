@@ -106,6 +106,13 @@ static void sendchar(uint8_t data)
   UART_DATA = data;
 }
 
+static void sendbuf(void *buf, size_t len) {
+  for (size_t x = 0; x < len; x++) {
+    sendchar(((uint8_t*)buf)[x]);
+    wdt_reset();
+  }
+}
+
 static uint8_t recvchar(void)
 {
   while (!(UART_STATUS & (1<<UART_RXREADY)));
@@ -675,6 +682,7 @@ static const uint16_t osrtab[16] = {
 };
 
 static uint8_t adc_popcount[3] = {0,0,0};
+static uint8_t adc_ena[3] = {0,0,0};
 
 static inline void adc_deselect(void) {
   PORTF |= (1<<5) | (1<<6) | (1<<7);
@@ -797,6 +805,7 @@ static void wreg(uint8_t id, uint8_t a, uint8_t d) {
     word = adc_comm(id, 0);
     if (((word >> (WORDSZ-16)) & 0x1FFF) == ((a<<8) | d)) {
       if (a == ADC_ENA) {
+        adc_ena[id]      = d < 0x10 ? d : 0;
         adc_popcount[id] = d < 0x10 ? popcount(d) : 0;
       }
       break;
@@ -811,6 +820,7 @@ static uint8_t rreg(uint8_t id, uint8_t a) {
   uint8_t d = (adc_comm(id, 0) >> (WORDSZ-16)) & 0xFF;
   if (a == ADC_ENA) {
     //0xFF is a bad value, consider such to mean no ADC present
+    adc_ena[id]      = d < 0x10 ? d : 0;
     adc_popcount[id] = d < 0x10 ? popcount(d) : 0;
   }
   return d;
@@ -939,13 +949,19 @@ uint8_t sample_data_idx = 0;  //which of the two buffers are currently being use
 volatile uint8_t sample_data[2][4096];
 volatile uint8_t *sample_ptr;
 uint8_t *sample_end;
-sample_packet_s packet;
+volatile uint16_t gap_left = 0;
+volatile uint8_t sample_overflow = 0; //whether we got a sample beyond sample_end
 
-static void sample_setup(uint8_t idx) {
+//returns size of sample buffer
+static size_t sample_setup(uint8_t idx) {
   sample_data_idx = idx;
   sample_ptr = sample_data[sample_data_idx];
   //assume 24-bit samples
-  sample_end = (uint8_t*)sample_ptr + 3*measurement_num_frames*(adc_popcount[0] + adc_popcount[1] + adc_popcount[2]);
+  size_t nbytes = 3*measurement_num_frames*(adc_popcount[0] + adc_popcount[1] + adc_popcount[2]);
+  sample_end = (uint8_t*)sample_ptr + nbytes;
+  gap_left = measurement_gap;
+  sample_overflow = 0;
+  return nbytes;
 }
 
 static void stop_measurement(void) {
@@ -1041,6 +1057,24 @@ static void adc_wakeup(void) {
 // /DRDY ISR
 // also IC3
 ISR(INT7_vect) {
+  uint8_t do_store = 1;
+
+  //in gap or overflow?
+  if (gap_left > 0 || sample_ptr >= sample_end) {
+    //talk to the ADCs but don't store the sample data anywhere
+    do_store = 0;
+
+    if (gap_left > 0) {
+      //being in the gap is perfectly OK
+      gap_left--;
+    } else {
+      //getting samples beyond sample_end is not
+      if (sample_overflow < 255) {
+        sample_overflow++;
+      }
+    }
+  }
+
   for (uint8_t id = 0; id < 3; id++) {
     if (adc_popcount[id]) {
       adc_select(id);
@@ -1053,10 +1087,16 @@ ISR(INT7_vect) {
       spi_comm_byte(0);
 
       for (uint8_t x = 0; x < adc_popcount[id]; x++) {
+       if (do_store) {
         sample_ptr[0] = spi_comm_byte(0);
         sample_ptr[1] = spi_comm_byte(0);
         sample_ptr[2] = spi_comm_byte(0);
         sample_ptr += 3;
+       } else {
+        spi_comm_byte(0);
+        spi_comm_byte(0);
+        spi_comm_byte(0);
+       }
       }
 
       adc_deselect();
@@ -1573,14 +1613,30 @@ retry:
       if (sample_ptr >= sample_end) {
         //swap buffers
         uint8_t old_idx = sample_data_idx;
-        sample_setup(!sample_data_idx);
+        size_t nbytes = sample_setup(!sample_data_idx);
+        stop_measurement(); //for now
         sei();
 
-        start_transfer("INFO");
-        printf_P(PSTR("would have output SAMPLES here\r\n"));
-        end_transfer();
-        measurement_on = 0;
+        sample_packet_header_s header;
+        header.version = 1;                         // format version
+        header.first_frame = 0;                     // timestamp of first frame
+        header.num_temps = 0;                       // DS18B20Z outputs (0..6)
+        header.num_tachs[0] = 0;                    // tach impulses per channel
+        header.num_tachs[1] = 0;
+        header.num_tachs[2] = 0;
+        header.num_frames = measurement_num_frames; // number of frames
+        header.gap = measurement_gap;               // gap between packets
+        header.channel_conf =  adc_ena[0] |         // channel bitmap. 3 nybbles
+                              (adc_ena[1] << 4) |
+                              (adc_ena[2] << 8);
+        header.sample_fmt = 0;                      // Sample format.
+        header.scale = 0x800000;
 
+        //TODO: transfer in background
+        start_transfer("SAMPLES");
+        sendbuf(&header, sizeof(header));
+        sendbuf((void*)sample_data[old_idx], nbytes);
+        end_transfer();
       } else {
         sei();
       }
