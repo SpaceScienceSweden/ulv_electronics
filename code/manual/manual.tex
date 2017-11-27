@@ -183,7 +183,8 @@ Twist and tin the ends of the wires. See figure \vref{motorwires}.
 
 \begin{figure}
 \centering
-\includegraphics[width=12cm]{3mm7mm}
+% Cut down on PDF size in git for now
+%\includegraphics[width=12cm]{3mm7mm}
 \caption{Motor wires soldered to their pads. Wire and insulation lengths marked.}
 \label{motorwires}
 \end{figure}
@@ -197,7 +198,8 @@ See figure \vref{reflectometer}.
 
 \begin{figure}
 \centering
-\includegraphics[width=12cm]{reflectometer}
+% Cut down on PDF size in git for now
+%\includegraphics[width=12cm]{reflectometer}
 \caption{Reflex coupler and motor can. Black paint also visible on motor can.}
 \label{reflectometer}
 \end{figure}
@@ -299,15 +301,15 @@ The instrument will respond to ESC immediately.
 There is no need to terminate ESC with newline.
 
 Output from the instrument is delimited into frames.
-A frame start with the string "BEGIN{\textbackslash}r{\textbackslash}n" and ends with the string "END{\textbackslash}r{\textbackslash}n".
-Each frame is of a specific type, which is given on the line after BEGIN and preceded by a start (*) and terminated by {\textbackslash}r{\textbackslash}n.
+A frame starts with the string "BUSY{\textbackslash}r{\textbackslash}n" and ends with the string "READY{\textbackslash}r{\textbackslash}n".
+Each frame contains one or more sections, each of which is started by a star (*) followed by the name of the section terminated by {\textbackslash}r{\textbackslash}n.
 For example, the reply to the "M10 10 10" command example given earlier is of type MTR\_PWM and would therefore be:
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *MTR_PWM
     10 10 10
-    END
+    READY
 \end{lstlisting}
 
 Tables \ref{command_table_0} and \ref{command_table} summarize all commands and their parameters.
@@ -389,68 +391,64 @@ What follows is a slightly edited session (for brevity) with only one fieldmill 
 First just the commands are listed, then the full session (input and output):
 
 \begin{lstlisting}
-    M1 1023     # Motors 1 at full speed
+    M1 1023     # Motor 1 at full speed
     U           # UNLOCK ADCs
     Q1 0F 01    # Activate channel 1 on ADC 1
-                # End of Q command
-    E100 0      # 100 frames per packet, no gap, run endlessly
+
+    E100 0 3    # 100 frames per packet, no gap, 3 SAMPLES
     W           # WAKEUP ADCs, output SAMPLES
 \end{lstlisting}
 
 Full session:
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *INFO
     Hello, Earth! 👽
-    END
-    M1023 1023 1023
-    BEGIN
+    READY
+    M1 1023     # Motor 1 at full speed
+    BUSY
     *MTR_PWM
-    1023 1023 1023
-    END
-    U
+    0 1023 0
+    READY
+    U           # UNLOCK ADCs
+    BUSY
     [...]
-    BEGIN
     *ERROR
     ADC 0 seems to be offline
-    END
-    BEGIN
     *INFO
     ADC 1 up
-    END
     [...]
-    BEGIN
     *ERROR
     ADC 2 seems to be offline
-    END
-    BEGIN
     *ADC_REGS
     0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
     1 04 03 00 00 00 00 00 01 00 00 00 60 3c 08 86 00 00 00 00 00 00
     2 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-    END
-    Q1 0F 01
+    READY
+    Q1 0F 01    # Activate channel 1 on ADC 1
 
-    BEGIN
+    BUSY
     *ADC_REGS
     0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
     1 04 03 20 00 00 01 00 01 00 00 00 60 3c 08 86 01 00 00 00 00 00
     2 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-    END
-    E100 0
-    BEGIN
+    READY
+    E100 0 3    # 100 frames per packet, no gap, 3 SAMPLES
+    BUSY
     *INFO
     bytes = 420, cpc = 25600, pc = 1
     cycles_out =       276172
      cycles_in =      2560000 (OK)
-    END
-    W3
-    BEGIN
+    *CONFIG
+    100 0 3
+    READY
+    W           # WAKEUP ADCs, output SAMPLES
+    BUSY
     *INFO
     Measurement started
-    END
-    BEGIN
+    READY
+    BUSY
     *SAMPLES
     [...]
 \end{lstlisting}
@@ -468,10 +466,10 @@ Should be displayed with normal colors.
 Example:
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *INFO
     Starting temperature conversion...
-    END
+    READY
 \end{lstlisting}
 
 
@@ -481,11 +479,11 @@ Warning.
 Should be displayed with a yellowish or maybe orange color.
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *WARNING
     Instrument issues no warnings currently,
     but may in the future.
-    END
+    READY
 \end{lstlisting}
 
 
@@ -495,11 +493,11 @@ Some kind of error.
 Should be displayed with a reddish color.
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *ERROR
     One or more of PWMS 1111, 2222, and 3333
     is greater than MOTOR_TOP = 1023
-    END
+    READY
 \end{lstlisting}
 
 
@@ -515,10 +513,10 @@ For more information see EC20 datasheet.
 Example response after issuing a "K" command:
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *MTR_PWM
     511 511 511
-    END
+    READY
 \end{lstlisting}
 
 \subsection{MTR\_SPD}
@@ -528,12 +526,12 @@ For a sensible output at least two tachs must have been seen for each motor.
 Exact format isn't finalized, so display output as if it were INFO for now.
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *MTR_SPD
     Motor 0: 0 tachs (0 RPM)
     Motor 1: 1 tachs (0 RPM)
     Motor 2: 2 tachs (1234 RPM)
-    END
+    READY
 \end{lstlisting}
 
 \subsection{ONEWIRE}
@@ -542,12 +540,12 @@ Exact format isn't finalized, so display output as if it were INFO for now.
 One line per device containing a 64-bit hexadecimal ROM string (16 characters).
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *ONEWIRE
     28d09948090000ec
     286a1a690900005e
     28ad7548090000c5
-    END
+    READY
 \end{lstlisting}
 
 \subsection{TEMPS}
@@ -557,12 +555,12 @@ One line per DS18B20Z device with 64-bit hexadecimal ROM and decimal temperature
 Range is -40..+125 with a resolution of 1/16 degrees Celsius.
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *TEMPS
     28d09948090000ec 24.12
     286a1a690900005e 24.62
     28ad7548090000c5 -18.56
-    END
+    READY
 \end{lstlisting}
 
 \subsection{CLOCK}
@@ -572,24 +570,24 @@ May roll over in theory, but it would take 79,000 years unless the user
 specifically set the clock to something close to the maximum value (18446744073709551615).
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *CLOCK
     3702994144
-    END
+    READY
 \end{lstlisting}
 
 \subsection{SAMPLES}
 
 Sample data.
 This response is binary.
-It is possible, but very unlikely, that the binary data contains the string "END{\textbackslash}r{\textbackslash}n".
+It is possible, but very unlikely, that the binary data contains the string "READY{\textbackslash}r{\textbackslash}n".
 To avoid trouble it is best to compute the exact number of bytes in the sample data by following listing \vref{sample_packet_s}.
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *SAMPLES
     [sample_packet_s]
-    END
+    READY
 \end{lstlisting}
 
 \subsection{ADC\_REGS}
@@ -603,12 +601,12 @@ This example has one fieldmill installed in position 1.
 Therefore only the middle line (ID=1) has valid data:
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *ADC_REGS
     0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
     1 04 03 00 00 00 00 00 01 00 00 00 60 3c 08 86 00 00 00 00 00 00
     2 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-    END
+    READY
 \end{lstlisting}
 
 The first two registers (ID\_MSB and ID\_LSB) can be used to detect that an ADC is working,
@@ -630,10 +628,10 @@ A value of 65535 means SAMPLES will be output indefinitely.
 The following example has 100 frames per packet, no gap between packets and will run indefinitely:
 
 \begin{lstlisting}
-    BEGIN
+    BUSY
     *CONFIG
     100 0 1000
-    END
+    READY
 \end{lstlisting}
 
 \section{Commands}
@@ -650,10 +648,10 @@ If no programming is performed then the user program is re-entered after the boo
 \begin{lstlisting}
     S
     S
-    AVRBOOT[three second delay]BEGIN
+    AVRBOOT[three second delay]BUSY
     *INFO
     Hello, Earth! 👽
-    END
+    READY
 \end{lstlisting}
 
 
@@ -668,10 +666,10 @@ Set PWM duty rate for motor with given ID (0..2). Example:
 
 \begin{lstlisting}
     M1 800
-    BEGIN
+    BUSY
     *MTR_PWM
     0 800 0
-    END
+    READY
 \end{lstlisting}
 
 \subsubsection{Three parameter form (pwm0 pwm1 pwm2)}
@@ -680,10 +678,10 @@ Set PWM duty rate for all three motors in one go.
 
 \begin{lstlisting}
     M200 400 600
-    BEGIN
+    BUSY
     *MTR_PWM
     200 400 600
-    END
+    READY
 \end{lstlisting}
 
 \subsection{UNLOCK + STANDBY all ADS131A04 ('U')}
@@ -706,12 +704,12 @@ The following example sets COMP\_TH = 111b and enables fixed word size (6 device
     Q1 0B 67
     1 0C 3E
 
-    BEGIN
+    BUSY
     *ADC_REGS
     0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
     1 04 03 00 00 00 00 00 01 00 00 00 67 3e 08 86 00 00 00 00 00 00
     2 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-    END
+    READY
 \end{lstlisting}
 
 \subsection{Configure measurement ('E')}
@@ -722,26 +720,24 @@ Given values will be sanity checked.
 
 \begin{lstlisting}
     E100 0 1000
-    BEGIN
+    BUSY
     *INFO
     bytes = 420, cpc = 25600, pc = 1
     cycles_out =       276172
      cycles_in =      2560000 (OK)
-    END
-    BEGIN
     *CONFIG
     100 0 1000
-    END
+    READY
     E10000 0
-    BEGIN
+    BUSY
     *ERROR
     sample_data_size = 30000 larger than maximum 4096
-    END
+    READY
     e
-    BEGIN
+    BUSY
     *CONFIG
     0 0 65535
-    END
+    READY
 \end{lstlisting}
 
 
@@ -752,22 +748,22 @@ then outputs SAMPLES until the user sends ESC or 'U'.
 
 \begin{lstlisting}
     W
-    BEGIN
+    BUSY
     *SAMPLES
     [sample_packet_s]
-    END
-    BEGIN
+    READY
+    BUSY
     *SAMPLES
     [sample_packet_s]
-    END
+    READY
     [...]
     ^[
-    BEGIN
+    BUSY
     *ESC
-    END
+    READY
 \end{lstlisting}
 
-
+\newpage
 \section{Listing}
 \label{sample_packet_s}
 

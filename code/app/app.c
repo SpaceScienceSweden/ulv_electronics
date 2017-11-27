@@ -84,17 +84,17 @@ static void disable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_RX;
 }
 
-static void start_transfer(const char *section_name) {
-  enable_tx();
-  //trickery to prevent programming from interfering with labview
-  //"BEGIN" -> "BEGI" + 'N'
-  printf_P(PSTR("BEGI%c\r\n*%s\r\n"), 'N', section_name);
-}
+uint8_t is_busy = 0; //have we sent BUSY?
 
-static void end_transfer(void) {
-  //same here, "END" -> "EN" + 'D'
-  printf_P(PSTR("EN%c\r\n"), 'D');
-  disable_tx();
+static void start_section(const char *section_name) {
+  if (!is_busy) {
+    enable_tx();
+    //trickery to prevent programming from interfering with labview
+    //"BUSY" -> "BUS" + 'Y'
+    printf_P(PSTR("BUS%c\r\n"), 'Y');
+  }
+  printf_P(PSTR("*%s\r\n"), section_name);
+  is_busy = 1;
 }
 
 static void sendchar(uint8_t data)
@@ -153,9 +153,7 @@ static int recvline(void) {
         ofs--;
       }
     } else if (c == ESC) {
-      start_transfer("ESC");
-      end_transfer();
-
+      start_section("ESC");
       line[ofs] = 0;
       return -1;
     } else if (c == '\r' || c == '\n') {
@@ -177,9 +175,8 @@ static int recvline(void) {
     } else {
       if (ofs == sizeof(line)-1) {
         line[ofs] = 0;
-        start_transfer("ERROR");
+        start_section("ERROR");
         printf_P(PSTR("Buffer overflow in recvline()\r\n"));
-        end_transfer();
         for (;;);
       }
       line[ofs++] = c;
@@ -516,7 +513,7 @@ static size_t free_program_space(void) {
 }
 
 static void list_programs(void) {
-  start_transfer("PROGRAMS");
+  start_section("PROGRAMS");
   uint8_t x;
   for (x = 0; x < max_programs; x++) {
     if (!programs[x].name[0]) {
@@ -533,7 +530,6 @@ static void list_programs(void) {
     printf_P(PSTR("\r\n"));
   }
   printf_P(PSTR("%i/%i programs (%u B free)\r\n"), (int)x, max_programs, free_program_space());
-  end_transfer();
 }
 
 static void delete_program_slot(uint8_t x) {
@@ -609,8 +605,7 @@ static inline uint8_t have_esc(void) {
   if (UART_STATUS & (1<<UART_RXREADY)) {
     char c = recvchar();
     if (c == ESC) {
-      start_transfer("ESC");
-      end_transfer();
+      start_section("ESC");
       return 1;
     }
   }
@@ -827,7 +822,7 @@ static uint8_t rreg(uint8_t id, uint8_t a) {
 }
 
 void adc_regs(void) {
-  start_transfer("ADC_REGS");
+  start_section("ADC_REGS");
   for (uint8_t id = 0; id < 3; id++) {
     printf_P(PSTR("%i"), id);
     for (uint8_t a = 0; a <= 0x14; a++) {
@@ -836,7 +831,6 @@ void adc_regs(void) {
     }
     printf_P(PSTR("\r\n"));
   }
-  end_transfer();
 }
 
 static uint8_t adc_unlock_standby(uint8_t id) {
@@ -846,18 +840,16 @@ static uint8_t adc_unlock_standby(uint8_t id) {
   adc_comm(id, UNLOCK);
 
   if ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0x0655) {
-    start_transfer("ERROR");
+    start_section("ERROR");
     printf_P(PSTR("ADC %hhu UNLOCK got %04lXh, not 0655h\r\n"), id, word);
-    end_transfer();
     return 1;
   }
 
   adc_comm(id, STANDBY);
 
   if ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0x0022) {
-    start_transfer("ERROR");
+    start_section("ERROR");
     printf_P(PSTR("ADC %hhu STANDBY got %04lXh, not 0022h\r\n"), id, word);
-    end_transfer();
     return 1;
   }
 
@@ -877,9 +869,8 @@ void unlock_adcs(void) {
     int x = 0;
     while ((word = adc_comm(id, 0) >> (WORDSZ-16)) != 0xFF04) {
       if (++x >= 3) {
-        start_transfer("ERROR");
+        start_section("ERROR");
         printf_P(PSTR("ADC %hhu seems to be offline\r\n"), id);
-        end_transfer();
         goto next_adc;
       }
 
@@ -888,9 +879,8 @@ void unlock_adcs(void) {
         goto adc_ok;
       }
 
-      start_transfer("INFO");
+      start_section("INFO");
       printf_P(PSTR("ADC %hhu: Got %04lX, sending RESET\r\n"), id, word);
-      end_transfer();
 
       //send RESET, wait some more
       adc_comm(id, RESET);
@@ -903,9 +893,8 @@ void unlock_adcs(void) {
     }
 
     //everything looks OK
-    start_transfer("INFO");
+    start_section("INFO");
     printf_P(PSTR("ADC %hhu up\r\n"), id);
-    end_transfer();
   next_adc:
     ;
   }
@@ -929,9 +918,8 @@ uint32_t adc_cycles_per_sample(void) {
       if (cycles_per_sample == 0) {
         cycles_per_sample = cycles_per_sample2;
       } else if (cycles_per_sample != cycles_per_sample2) {
-        start_transfer("ERROR");
+        start_section("ERROR");
         printf_P(PSTR("ADC %hhu: cycles_per_sample inconsistent: %llu vs %llu\n"), cycles_per_sample, cycles_per_sample2);
-        end_transfer();
         return 0;
       }
     }
@@ -1011,18 +999,16 @@ static void adc_wakeup(void) {
         pc = popcount(ena);
         someid = id;
       } else if (pc != popcount(ena)) {
-        start_transfer("ERROR");
+        start_section("ERROR");
         printf_P(PSTR("ADC %hhu: Inconsistent ADC_ENA: %hhx vs %hhx\r\n"), id, lastena, ena);
-        end_transfer();
         goto finish_wakeup;
       }
     }
   }
 
   if (pc == 0) {
-    start_transfer("ERROR");
+    start_section("ERROR");
     printf_P(PSTR("No ADCs online or all ADC_ENA = 0. Can't WAKEUP (wake me up inside)\r\n"));
-    end_transfer();
     goto finish_wakeup;
   }
 
@@ -1053,9 +1039,8 @@ static void adc_wakeup(void) {
 
   if (wakeup_res != 0x0033) {
     stop_measurement();
-    start_transfer("ERROR");
+    start_section("ERROR");
     printf_P(PSTR("wakeup_res = %04lX, expected 0033h\r\n"), wakeup_res);
-    end_transfer();
     goto finish_wakeup;
   }
 
@@ -1069,15 +1054,13 @@ static void adc_wakeup(void) {
 
   if (lock_res != 0x0555) {
     stop_measurement();
-    start_transfer("ERROR");
+    start_section("ERROR");
     printf_P(PSTR("lock_res = %04lX, expected 0555h\r\n"), lock_res);
-    end_transfer();
     goto finish_wakeup;
   }
 
-  start_transfer("INFO");
+  start_section("INFO");
   printf_P(PSTR("Measurement started\r\n"));
-  end_transfer();
 
 finish_wakeup:
   sei();
@@ -1169,16 +1152,21 @@ int main(void)
   ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
   if (romcnt > 6) romcnt = 6; //just to be sure
 
-  start_transfer("INFO");
-  bsend_P(PSTR("Hello, Earth! 👽\r\n"));
-  bwait();
-  end_transfer();
+  start_section("INFO");
+  printf_P(PSTR("Hello, Earth! 👽\r\n"));
 
   uint8_t temp_conversion_in_progress = 0;
   uint16_t num_measurements = 0;
 
   for (;;) {
 retry:
+    if (is_busy) {
+      //READY
+      printf_P(PSTR("READ%c\r\n"), 'Y');
+      disable_tx();
+      is_busy = 0;
+    }
+
     //take a peek at the USART
     //commands are single bytes
     if (UART_STATUS & (1<<UART_RXREADY)) {
@@ -1208,9 +1196,8 @@ retry:
           int n = sscanf(line, "%u %u %u", &pwm0, &pwm1, &pwm2);
           if (n == 3) {
             if (pwm0 > MOTOR_TOP || pwm1 > MOTOR_TOP || pwm2 > MOTOR_TOP) {
-              start_transfer("ERROR");
+              start_section("ERROR");
               printf_P(PSTR("One or more of PWMS %u, %u, and %u is greater than MOTOR_TOP = %u\r\n"), pwm0, pwm1, pwm2, MOTOR_TOP);
-              end_transfer();
             } else {
               OCR1A = pwm0;
               OCR1B = pwm1;
@@ -1221,9 +1208,8 @@ retry:
             //pwm0 = motor index
             //pwm1 = value
             if (pwm1 > MOTOR_TOP) {
-              start_transfer("ERROR");
+              start_section("ERROR");
               printf_P(PSTR("PWM %u greater than MOTOR_TOP = %u\r\n"), pwm1, MOTOR_TOP);
-              end_transfer();
             } else if (pwm0 == 0) {
               OCR1A = pwm1;
             } else if (pwm0 == 1) {
@@ -1231,14 +1217,12 @@ retry:
             } else if (pwm0 == 2) {
               OCR1C = pwm1;
             } else {
-              start_transfer("ERROR");
+              start_section("ERROR");
               printf_P(PSTR("bad motor ID: %u\r\n"), pwm0);
-              end_transfer();
             }
           } else {
-            start_transfer("ERROR");
+            start_section("ERROR");
             printf_P(PSTR("sscanf: n=%i\r\n"), n);
-            end_transfer();
           }
         } else if (c == 'K') {
           //start motors with default speed (50%)
@@ -1251,31 +1235,26 @@ retry:
         int pwm0 = OCR1A;
         int pwm1 = OCR1B;
         int pwm2 = OCR1C;
-        start_transfer("MTR_PWM");
+        start_section("MTR_PWM");
         printf_P(PSTR("%i %i %i\r\n"), pwm0, pwm1, pwm2);
-        end_transfer();
 
         //be helpful if motor power is off
         if (!(PORTB & (1<<0))) {
-          start_transfer("INFO");
+          start_section("INFO");
           printf_P(PSTR("+24V and +-5V OFF\r\n"));
-          end_transfer();
         }
       } else if (c == 'v') {
         //measure system voltages
-        start_transfer("ERROR");
+        start_section("ERROR");
         printf_P(PSTR("TODO\r\n"));
-        end_transfer();
       } else if (c == 'V') {
         PORTB |= (1<<0);
-        start_transfer("INFO");
+        start_section("INFO");
         printf_P(PSTR("+24V and +-5V ON\r\n"));
-        end_transfer();
       } else if (c == 'B') {
         PORTB &= ~(1<<0);
-        start_transfer("INFO");
+        start_section("INFO");
         printf_P(PSTR("+24V and +-5V OFF\r\n"));
-        end_transfer();
       } else if (c == '1' || c == '!') {
         if (c == '!') {
           //search for ROMs again
@@ -1283,19 +1262,17 @@ retry:
           ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
           if (romcnt > 6) romcnt = 6; //just to be sure
         }
-        start_transfer("ONEWIRE");
+        start_section("ONEWIRE");
         for (uint8_t x = 0; x < romcnt; x++) {
           for (uint8_t y = 0; y < 8; y++) {
             printf_P(PSTR("%02x"), roms[x*8+y]);
           }
           printf_P(PSTR("\r\n"));
         }
-        end_transfer();
       } else if (c == 't') {
         //measure and send temperatures
-        start_transfer("INFO");
+        start_section("INFO");
         printf_P(PSTR("Starting temperature conversion...\r\n"));
-        end_transfer();
 
         //tell all devices to do a temperature conversion
         ds18b20convert( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, NULL );
@@ -1305,7 +1282,7 @@ retry:
           wdt_reset();
         }
 
-        start_transfer("TEMPS");
+        start_section("TEMPS");
         for (uint8_t x = 0; x < romcnt; x++) {
           for (uint8_t y = 0; y < 8; y++) {
             printf_P(PSTR("%02x"), roms[x*8+y]);
@@ -1322,7 +1299,6 @@ retry:
           temp /= 16;
           printf_P(PSTR(" %i.%02i\r\n"), temp, (625*templo)/100);
         }
-        end_transfer();
       } else if (c == ':') {
         //test timer1
         __uint24 last = gettime24();
@@ -1362,9 +1338,8 @@ retry:
         }
       } else if (c == 'r') {
         //measure motor speeds
-        start_transfer("INFO");
+        start_section("INFO");
         printf_P(PSTR("Measuring motor speeds\r\n"));
-        end_transfer();
 
         //set up TACH mux pins
         DDRD = (DDRD & ~(1<<4)) | (1<<6) | (1<<7);
@@ -1396,7 +1371,7 @@ retry:
           wdt_reset();
         }
 
-        start_transfer("MTR_SPD");
+        start_section("MTR_SPD");
         for (uint8_t x = 0; x < 3; x++) {
           int rpm = 0;
           if (ntachs[x] >= 2) {
@@ -1405,11 +1380,10 @@ retry:
           }
           printf_P(PSTR("Motor %i: %i tachs (%i RPM)\r\n"), (int)x, ntachs[x], rpm);
         }
-        end_transfer();
       } else if (c == ';') {
         uint16_t sintab[1024];
 
-        start_transfer("INFO");
+        start_section("INFO");
         for (uint16_t x = 0; x <1024; x++) {
           //sintab[x] = (1+sin(x*2*M_PI / 1024))*512 - 0.5; //-2 .. +2 V
           //sintab[x] = sin(x*2*M_PI / 1024)*128 + 512 - 0.5; //-0.5 .. +0.5 V
@@ -1418,7 +1392,6 @@ retry:
           wdt_reset();
           printf_P(PSTR("%u: %u\r\n"), x, sintab[x]);
         }
-        end_transfer();
 
         for (;;) {
           //stuff for testing MAX504 + ADG601
@@ -1450,13 +1423,11 @@ retry:
       } else if (c == 'D') {
         //delete program
         if (delete_program(line) < 0) {
-          start_transfer("ERROR");
+          start_section("ERROR");
           printf_P(PSTR("Found no program called \"%s\"\r\n"), line);
-          end_transfer();
         } else {
-          start_transfer("INFO");
+          start_section("INFO");
           printf_P(PSTR("Program \"%s\" deleted (%u B free)\r\n"), line, free_program_space());
-          end_transfer();
         }
       } else if (c == 'P') {
         //add/relace program
@@ -1465,41 +1436,34 @@ retry:
         char slot = add_program(line);
 
         if (slot == -1) {
-          start_transfer("ERROR");
+          start_section("ERROR");
           printf_P(PSTR("\r\nProgram name too long or too short: %s\r\n"), line);
-          end_transfer();
         } else if (slot == -2) {
-          start_transfer("ERROR");
+          start_section("ERROR");
           printf_P(PSTR("\r\nNo free program slots (%i max)\r\n"), max_programs);
-          end_transfer();
         } else {
-          start_transfer("INFO");
+          start_section("INFO");
           printf_P(PSTR("\r\nProgram \"%s\" will be added in slot %i\r\nEnter program below, terminate with empty line:\r\n"), line, (int)slot);
-          end_transfer();
 
           for (;;) {
-            start_transfer("INFO");
+            start_section("INFO");
             printf_P(PSTR("%u B left\r\n"), free_program_space());
-            end_transfer();
 
             len = recvline();
             if (len == 0) {
-              start_transfer("INFO");
+              start_section("INFO");
               printf_P(PSTR("Done.\r\n"));
-              end_transfer();
               break;
             } else if (len < 0) {
-              start_transfer("INFO");
+              start_section("INFO");
               printf_P(PSTR("Deleted program.\r\n"));
-              end_transfer();
               delete_program_slot(slot);
               break;
             } else {
               char ret = add_program_line(line);
               if (ret < 0) {
-                start_transfer("ERROR");
+                start_section("ERROR");
                 printf_P(PSTR("Not enough memory.\r\n"));
-                end_transfer();
                 delete_program_slot(slot);
                 break;
               }
@@ -1532,9 +1496,8 @@ retry:
           /*enable_tx();
           printf_P(PSTR("Done. Waited %lu cycles\r\n"), t1-t0);
           disable_tx();*/
-          start_transfer("INFO");
+          start_section("INFO");
           printf_P(PSTR("Delayed %lu cycles\r\n"), t1-t0);
-          end_transfer();
         }
       } else if (c == 'c' || c == 'C') {
         if (c == 'C') {
@@ -1545,19 +1508,17 @@ retry:
         }
         uint64_t t = gettime64();
 
-        start_transfer("CLOCK");
+        start_section("CLOCK");
         print64(t);
         printf_P(PSTR("\r\n"));
-        end_transfer();
       } else if (c == 'q' || c == 'Q') {
         if (c == 'Q') {
           do {
             uint8_t id, index, value;
             int n = sscanf(line, "%hhu %hhx %hhx", &id, &index, &value);
             if (n != 3) {
-              start_transfer("ERROR");
+              start_section("ERROR");
               printf_P(PSTR("sscanf(\"%s\") = %i, expected 3\r\n"), line, n);
-              end_transfer();
               goto retry;
             }
 
@@ -1585,9 +1546,8 @@ retry:
           if (n == 2) {
             num_measurements = 65535;
           } else if (n != 3) {
-            start_transfer("ERROR");
+            start_section("ERROR");
             printf_P(PSTR("sscanf(\"%s\") = %i, expected 2 or 3\r\n"), line, n);
-            end_transfer();
             goto retry;
           }
 
@@ -1598,9 +1558,8 @@ retry:
           uint32_t sample_data_size = pc*measurement_num_frames*3;
           if (sample_data_size > sizeof(sample_data[0])) {
             measurement_num_frames = 0;
-            start_transfer("ERROR");
+            start_section("ERROR");
             printf_P(PSTR("sample_data_size = %lu larger than maximum %u\r\n"), sample_data_size, (uint16_t)sizeof(sample_data[0]));
-            end_transfer();
             goto retry;
           }
 
@@ -1619,33 +1578,30 @@ retry:
           //1000 = number of microseconds between packets
           uint32_t cycles_out = bytes*10*F_CPU/BAUD + 1000*F_CPU/1000000;
 
-          start_transfer(cycles_in > cycles_out ? "INFO" : "ERROR");
+          start_section(cycles_in > cycles_out ? "INFO" : "ERROR");
           printf_P(PSTR("bytes = %lu, cpc = %lu, pc = %hhu\r\n"), bytes, cycles_per_sample, pc);
           printf_P(PSTR("cycles_out = %12lu\r\n"), cycles_out);
           printf_P(PSTR(" cycles_in = %12lu (%s)\r\n"), cycles_in, cycles_in > cycles_out ? "OK" : "not OK");
-          end_transfer();
 
           if (cycles_in < cycles_out) {
             measurement_num_frames = 0;
             goto retry;
           }
         }
-        start_transfer("CONFIG");
+        start_section("CONFIG");
         printf_P(PSTR("%u %u %u\r\n"), measurement_num_frames, measurement_gap, num_measurements);
-        end_transfer();
       } else if (c == 'W') {
         if (measurement_num_frames == 0) {
-          start_transfer("ERROR");
+          start_section("ERROR");
           printf_P(PSTR("Bad/missing measurement configuration - can't wake up\r\n"));
-          end_transfer();
           goto retry;
         }
         adc_wakeup();
       } else if (c == '?') {
         //print help
-        start_transfer("INFO");
+        start_section("INFO");
         printf_P(PSTR("Read manual.pdf 😉\r\n"));
-        end_transfer();
+        goto retry;
       }
     }
     wdt_reset();
@@ -1701,13 +1657,12 @@ retry:
         header.scale = 0x800000;
 
         //TODO: transfer in background
-        start_transfer("SAMPLES");
+        start_section("SAMPLES");
         sendbuf(&header, sizeof(header));
         if (header.num_temps) {
           sendbuf(temps, header.num_temps*sizeof(temps[0]));
         }
         sendbuf((void*)sample_data[old_idx], nbytes);
-        end_transfer();
       } else {
         sei();
       }
