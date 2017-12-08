@@ -1565,10 +1565,10 @@ retry:
 
           //maximum expected packet size
           uint32_t bytes = sizeof(sample_packet_header_s) +
-            6*sizeof(temperature_s) +
+            4 + 6*sizeof(temperature_s) +
             //tach can't be faster than sample_rate/4
-            measurement_num_frames/4*sizeof(((sample_packet_s*)0)->tachs[0]) +
-            sample_data_size;
+            4 + measurement_num_frames/4*sizeof(((sample_packet_s*)0)->tachs[0]) +
+            4 + sample_data_size;
 
           //number of cycles needed to collect data from ADCs
           uint32_t cycles_in  = (measurement_num_frames+measurement_gap)*cycles_per_sample;
@@ -1581,9 +1581,10 @@ retry:
           start_section(cycles_in > cycles_out ? "INFO" : "ERROR");
           printf_P(PSTR("bytes = %lu, cpc = %lu, pc = %hhu\r\n"), bytes, cycles_per_sample, pc);
           printf_P(PSTR("cycles_out = %12lu\r\n"), cycles_out);
-          printf_P(PSTR(" cycles_in = %12lu (%s)\r\n"), cycles_in, cycles_in > cycles_out ? "OK" : "not OK");
+          printf_P(PSTR(" cycles_in = %12lu (%s)\r\n"), cycles_in, cycles_in > cycles_out || num_measurements == 1 ? "OK" : "not OK");
 
-          if (cycles_in < cycles_out) {
+          //a single long measurement is OK
+          if (cycles_in < cycles_out && num_measurements != 1) {
             measurement_num_frames = 0;
             goto retry;
           }
@@ -1619,7 +1620,7 @@ retry:
         sei();
 
         sample_packet_header_s header;
-        header.version = 1;                         // format version
+        header.version = 2;                         // format version
         header.first_frame = 0;                     // timestamp of first frame
         header.num_temps = 0;                       // DS18B20Z outputs (0..6)
 
@@ -1659,9 +1660,12 @@ retry:
         //TODO: transfer in background
         start_section("SAMPLES");
         sendbuf(&header, sizeof(header));
+        sendbuf("TEMP", 4);
         if (header.num_temps) {
           sendbuf(temps, header.num_temps*sizeof(temps[0]));
         }
+        sendbuf("TACH", 4);
+        sendbuf("SAMP", 4);
         sendbuf((void*)sample_data[old_idx], nbytes);
       } else {
         sei();

@@ -1,26 +1,32 @@
 // Overview of the sample packet format:
 //
 // +---------------------------------------+
-// | Header                (17 bytes)      |
+// | Header                (21 bytes)      |
 // +---------------------------------------+
+// | "TEMP"                (4 bytes)       |
+// | Temperature values    (variable size) |
+// +---------------------------------------+
+// | "TACH"                (4 bytes)       |
 // | Tachometer timestamps (variable size) |
 // +---------------------------------------+
+// | "SAMP"                (4 bytes)       |
 // | Sample data           (variable size) |
 // +---------------------------------------+
 //
 // The size of the packet can be summarized as:
 //
-//   packet_size = 17 + sum(num_tachs)*3 +
-//     num_temps*4 +
-//     num_frames*popcount(channel_conf)*
-//     bytes_per_sample(sample_fmt)
+//   packet_size = 21 +
+//     4 + num_temps*4 +
+//     4 + sum(num_tachs)*3 +
+//     4 + num_frames*popcount(channel_conf)*
+//         bytes_per_sample(sample_fmt)
 //
 // A more detailed view follows, in the form of C
 // structs which are shared between code and manual.
 
 // Sample packet header. Fixed size.
 typedef struct sample_packet_header_s {
-  uint8_t   version;      // format version
+  uint8_t   version;      // format version (2)
   __uint24  first_frame;  // timestamp of first frame
   uint8_t   num_temps;    // DS18B20Z outputs (0..6)
   uint16_t  num_tachs[3]; // tach impulses per channel
@@ -96,6 +102,7 @@ typedef struct sample_packet_s {
   //
   //  6a 1a 71 01 f7 2a c2 ff
   //
+  char temp_marker[4];  //TEMP
   temperature_s *temps;
 
   // Tachometer timestamps.
@@ -111,6 +118,7 @@ typedef struct sample_packet_s {
   //
   //   0 0 0 2 2 2 2
   //
+  char tach_marker[4];  //TACH
   __uint24  *tachs;
 
   // Sample data is stored as a series of frames.
@@ -133,6 +141,7 @@ typedef struct sample_packet_s {
   //
   // In the example above, if we have 1000 frames then
   // the size of the sample data is 1000*9*3 = 27000 B.
+  char samp_marker[4];  //SAMP
   uint8_t   *sample_data;
 
 } sample_packet_s;
