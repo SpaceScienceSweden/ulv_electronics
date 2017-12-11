@@ -231,51 +231,56 @@ static unsigned freeRam () {
   return 0xffff - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
 
-uint8_t bsend_buf[16384];
-//using two pointers is slightly faster than offset + size
-uint8_t *bsend_ptr;
-uint8_t *bsend_end;
+#define MAX_BSENDS 7
+struct {
+  //using two pointers is slightly faster than offset + size
+  const uint8_t *ptr, *end;
+  //uint16_t len;
+} bsends[MAX_BSENDS];
+volatile uint8_t cur_bsend = 0;
 
 ISR(USART1_UDRE_vect) {
-  //send data, clear TXC1
-  UART_DATA = *bsend_ptr++;
-  UART_STATUS |= (1<<UART_TXCOMPLETE);
+  for (; cur_bsend < MAX_BSENDS; cur_bsend++) {
+    if (bsends[cur_bsend].ptr < bsends[cur_bsend].end) {
+      //send data, clear TXC1
+      UART_DATA = *bsends[cur_bsend].ptr++;
+      UART_STATUS |= (1<<UART_TXCOMPLETE);
+      return;
+    }
+  }
 
-  if (bsend_ptr == bsend_end) {
+  if (cur_bsend >= MAX_BSENDS) {
     //disable USART1 interrupt
     UCSR1B &= ~(1<<UDRIE1);
   }
 }
 
-static void bwait() {
-  //wait for last bsend to finish
-  while (UCSR1B & (1<<UDRIE1));
+static inline uint8_t bsend_busy(void) {
+  return UCSR1B & (1<<UDRIE1);
 }
 
+static void bwait(void) {
+  //wait for last bsend to finish
+  while (bsend_busy());
+}
 
-//send PSTR in background
-static void bsend_P(const char *str) {
+//starts prepared background send
+static void bsend_start(void) {
   if (!(SREG & (1<<7))) {
+    start_section("ERROR");
     printf_P(PSTR("Can't bsend() without sei()..\r\n"));
     for(;;);
   }
 
-  size_t len = strlen_P(str);
-
-  if (len == 0) {
-    return;
-  }
-
   bwait();
-  memcpy_P(bsend_buf, str, len);
-  bsend_ptr = &bsend_buf[1];
-  bsend_end = &bsend_buf[len];
 
-  sendchar(bsend_buf[0]);
-
-  if (len > 1) {
-    //enable USART1 interrupt
-    UCSR1B |= (1<<UDRIE1);
+  for (cur_bsend = 0; cur_bsend < MAX_BSENDS; cur_bsend++) {
+    if (bsends[cur_bsend].ptr < bsends[cur_bsend].end) {
+      sendchar(*bsends[cur_bsend].ptr++);
+      //enable USART1 interrupt
+      UCSR1B |= (1<<UDRIE1);
+      break;
+    }
   }
 }
 
@@ -951,11 +956,19 @@ uint16_t measurement_num_frames = 0;
 uint16_t measurement_gap = 0;
 
 uint8_t sample_data_idx = 0;  //which of the two buffers are currently being used for the ISR?
-volatile uint8_t sample_data[2][4096];
+volatile uint8_t sample_data[2][16383];
 volatile uint8_t *sample_ptr;
 uint8_t *sample_end;
 volatile uint16_t gap_left = 0;
 volatile uint8_t sample_overflow = 0; //whether we got a sample beyond sample_end
+
+//header, for bsend()
+sample_packet_header_s header;
+temperature_s temps[6];
+
+const char *TEMP = "TEMP";
+const char *TACH = "TACH";
+const char *SAMP = "SAMP";
 
 //returns size of sample buffer
 static size_t sample_setup(uint8_t idx) {
@@ -1179,6 +1192,11 @@ int main(void)
 
   for (;;) {
 retry:
+   if (bsend_busy()) {
+    //capture TACH and such
+    //but also capture TACH in main logic
+    wdt_reset();
+   } else {
     if (is_busy) {
       //READY
       printf_P(PSTR("READ%c\r\n"), 'Y');
@@ -1629,13 +1647,11 @@ retry:
         }
         sei();
 
-        sample_packet_header_s header;
         header.version = 2;                         // format version
         header.first_frame = 0;                     // timestamp of first frame
         header.num_temps = 0;                       // DS18B20Z outputs (0..6)
 
         //maybe we have some data? :>
-        temperature_s temps[6];
         if (temp_conversion_in_progress) {
           //every device transmitting 1?
           if (onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK )) {
@@ -1667,20 +1683,31 @@ retry:
         header.sample_fmt = 0;                      // Sample format.
         header.scale = 0x800000;
 
-        //TODO: transfer in background
-        start_section("SAMPLES");
-        sendbuf(&header, sizeof(header));
-        sendbuf("TEMP", 4);
+        memset(bsends, 0, sizeof(bsends));
+        bsends[0].ptr = (const uint8_t*)&header;
+        bsends[0].end = (const uint8_t*)(&header + 1);
+        bsends[1].ptr = (const uint8_t*)TEMP;
+        bsends[1].end = (const uint8_t*)(TEMP + 4);
         if (header.num_temps) {
-          sendbuf(temps, header.num_temps*sizeof(temps[0]));
+          bsends[2].ptr = (const uint8_t*)&temps[0];
+          bsends[2].end = (const uint8_t*)(&temps[header.num_temps]);
         }
-        sendbuf("TACH", 4);
-        sendbuf("SAMP", 4);
-        sendbuf((void*)sample_data[old_idx], nbytes);
+        bsends[3].ptr = (const uint8_t*)TACH;
+        bsends[3].end = (const uint8_t*)(TACH + 4);
+        //bsends[4] = tachs..
+        bsends[5].ptr = (const uint8_t*)SAMP;
+        bsends[5].end = (const uint8_t*)(SAMP + 4);
+        //cast away volatile - ISR won't touch old data
+        bsends[6].ptr = (const uint8_t*)(sample_data[old_idx]);
+        bsends[6].end = (const uint8_t*)(sample_data[old_idx] + nbytes);
+
+        start_section("SAMPLES");
+        bsend_start();
       } else {
         sei();
       }
     }
+   }
   }
 
   return 0;
