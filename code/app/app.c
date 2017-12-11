@@ -1532,7 +1532,6 @@ retry:
         printf_P(PSTR("\r\n"));
       } else if (c == 'q' || c == 'Q') {
         if (c == 'Q') {
-          do {
             uint8_t id, index, value;
             int n = sscanf(line, "%hhu %hhx %hhx", &id, &index, &value);
             if (n != 3) {
@@ -1542,14 +1541,6 @@ retry:
             }
 
             wreg(id, index, value);
-            n = recvline();
-            if (n < 0) {
-              goto retry;
-            } else if (n == 0) {
-              //empty line = done
-              break;
-            }
-          } while (1);
         }
         adc_regs();
       } else if (c == 'U') {

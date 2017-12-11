@@ -356,7 +356,7 @@ Can occur anywhere in a line, does not have to be terminated with newline. & ESC
 {\bf Char} & {\bf Parameter syntax} & {\bf Description} & {\bf Response} \\ \hline
 M & id pwm              & Set motor PWM                       & MTR\_PWM      \\ \hline
 M & pwm0 pwm1 pwm2      & Set all motor PWMs                  & MTR\_PWM      \\ \hline
-Q & id addr val [...]   & Set ADS131A04 registers             & ADC\_REGS     \\ \hline
+Q & id addr val         & Set ADS131A04 register              & ADC\_REGS     \\ \hline
 E & frame\_size gap [num\_packets] & Configure measurement    & CONFIG        \\ \hline
   &                     & Read CPU regs (\$0000 - \$00FF)     &               \\ \hline
   &                     & Write CPU regs (\$0000 - \$00FF)    &               \\ \hline
@@ -394,7 +394,6 @@ First just the commands are listed, then the full session (input and output):
     M1 1023     # Motor 1 at full speed
     U           # UNLOCK ADCs
     Q1 0F 01    # Activate channel 1 on ADC 1
-
     E100 0 3    # 100 frames per packet, no gap, 3 SAMPLES
     W           # WAKEUP ADCs, output SAMPLES
 \end{lstlisting}
@@ -427,7 +426,6 @@ Full session:
     2 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
     READY
     Q1 0F 01    # Activate channel 1 on ADC 1
-
     BUSY
     *ADC_REGS
     0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
@@ -690,20 +688,22 @@ Bring ADCs out of reset, halting any ongoing conversions and allowing registers 
 
 \subsection{Set ADS131A04 registers ('Q')}
 
-The 'Q' command can set one or more registers in one or more of the ADCs.
-It is given as a series of lines and terminated by a blank line.
-Each line must contain three values: an integer specifying the ADC ID,
+The 'Q' command sets the value of one register in one of the ADCs.
+After the 'Q the line must contain three values: an integer specifying the ADC ID,
 a hexadecimal value specifying the register address and a hexadecimal value specifying the value.
 In C formatting parlance it should be "\%i \%x \%x".
-The first line should also begin with 'Q'.
-There can be any number of lines.
 
 The following example sets COMP\_TH = 111b and enables fixed word size (6 device words per frame regardless of ADC\_ENA):
 
 \begin{lstlisting}
     Q1 0B 67
-    1 0C 3E
-
+    BUSY
+    *ADC_REGS
+    0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+    1 04 03 00 00 00 00 00 01 00 00 00 67 3c 08 86 00 00 00 00 00 00
+    2 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+    READY
+    Q1 0C 3E
     BUSY
     *ADC_REGS
     0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
