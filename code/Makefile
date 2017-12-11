@@ -40,6 +40,8 @@ programserial:
 	# Tell application to enter bootloader
 	# Send twice, sometimes it borks
 	echo "SSSSSSS" > /dev/ttyUSB0
+	sleep 0.1
+	echo "SSSSSSS" > /dev/ttyUSB0
 	# Don't touch EEPROM -> motors keep spinning if spun up
 	avrdude -b $(BAUD) -c avr109 -p atmega128 -P /dev/ttyUSB0 -U flash:w:app/app.hex
 

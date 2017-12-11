@@ -834,7 +834,7 @@ void adc_regs(void) {
   }
 }
 
-static uint8_t adc_unlock_standby(uint8_t id) {
+static uint8_t adc_unlock_standby_disable(uint8_t id) {
   uint32_t word;
 
   //unlock and enter standby, halting any ongoing conversion
@@ -853,6 +853,11 @@ static uint8_t adc_unlock_standby(uint8_t id) {
     printf_P(PSTR("ADC %hhu STANDBY got %04lXh, not 0022h\r\n"), id, word);
     return 1;
   }
+
+  //9.4.3 Standby and Wake-Up Mode
+  //To enter standby mode again, send the STANDBY command and
+  //disable all ADC channels by writing to the ADC_ENA register.
+  wreg(id, ADC_ENA, 0);
 
   return 0;
 }
@@ -889,7 +894,7 @@ void unlock_adcs(void) {
     }
 
   adc_ok:
-    if (adc_unlock_standby(id)) {
+    if (adc_unlock_standby_disable(id)) {
       return;
     }
 
@@ -971,9 +976,12 @@ static void stop_measurement(void) {
   //put ADCs back in STANDBY mode
   for (uint8_t id = 0; id < 3; id++) {
     if (adc_ena[id]) {
-      adc_unlock_standby(id);
+      adc_unlock_standby_disable(id);
     }
   }
+
+  start_section("INFO");
+  printf_P(PSTR("Measurement stopped\r\n"));
 }
 
 static void set_74153(uint8_t ch) {
@@ -1005,7 +1013,7 @@ static void adc_wakeup(void) {
       } else if (pc != popcount(ena)) {
         start_section("ERROR");
         printf_P(PSTR("ADC %hhu: Inconsistent ADC_ENA: %hhx vs %hhx\r\n"), id, lastena, ena);
-        goto finish_wakeup;
+        goto abort_wakeup;
       }
     }
   }
@@ -1013,7 +1021,7 @@ static void adc_wakeup(void) {
   if (pc == 0) {
     start_section("ERROR");
     printf_P(PSTR("No ADCs online or all ADC_ENA = 0. Can't WAKEUP (wake me up inside)\r\n"));
-    goto finish_wakeup;
+    goto abort_wakeup;
   }
 
   //74153
@@ -1031,8 +1039,6 @@ static void adc_wakeup(void) {
   EIMSK |= (1<<INT7);
   measurement_on = 1;
 
-  sei();
-
   //select all ADCs at the same time
   //this works because MISO is open collector
   PORTF = portf;
@@ -1047,13 +1053,10 @@ static void adc_wakeup(void) {
     stop_measurement();
     start_section("ERROR");
     printf_P(PSTR("wakeup_res = %04lX, expected 0033h\r\n"), wakeup_res);
-    goto finish_wakeup;
+    goto abort_wakeup;
   }
 
-  start_section("INFO");
-  printf_P(PSTR("WAKEUP OK\r\n"));
-
-  PORTF = portf;
+  /*PORTF = portf;
   adc_comm_inner(pc, LOCK);
   adc_deselect();
 
@@ -1065,16 +1068,18 @@ static void adc_wakeup(void) {
     stop_measurement();
     start_section("ERROR");
     printf_P(PSTR("lock_res = %04lX, expected 0555h\r\n"), lock_res);
-    goto finish_wakeup;
-  }
+    goto abort_wakeup;
+  }*/
+
+  sei();
 
   start_section("INFO");
-  printf_P(PSTR("LOCK OK\r\n"));
-
+  printf_P(PSTR("sei()\r\n"));
   start_section("INFO");
   printf_P(PSTR("Measurement started\r\n"));
+  return;
 
-finish_wakeup:
+abort_wakeup:
   sei();
 }
 
@@ -1169,6 +1174,8 @@ int main(void)
 
   uint8_t temp_conversion_in_progress = 0;
   uint16_t num_measurements = 0;
+
+  unlock_adcs();
 
   for (;;) {
 retry:
