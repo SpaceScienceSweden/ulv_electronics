@@ -26,7 +26,7 @@
 
 // Sample packet header. Fixed size.
 typedef struct sample_packet_header_s {
-  uint8_t   version;      // format version (2)
+  uint8_t   version;      // format version (3)
   __uint24  first_frame;  // timestamp of first frame
   uint8_t   num_temps;    // DS18B20Z outputs (0..6)
   uint16_t  num_tachs[3]; // tach impulses per channel
@@ -34,41 +34,25 @@ typedef struct sample_packet_header_s {
   uint16_t  gap;          // gap between packets
   uint16_t  channel_conf; // channel bitmap. 3 nybbles
 
-  // Sample format. There are currently several ideas
-  // for sample formats:
-  //
-  // * 16-bit signed integer
-  // * 24-bit signed integer
-  // * 16-bit half-float with 3- or 4-bit exponent
-  //
-  // 16-bit integers will likely not have enough
-  // dynamic range to be useful. Companding 24-bit to
-  // less than 16-bit may also be possible, say 12-bit.
-  // This complicates packet formatting somewhat, but
-  // may be worth it for somewhat higher sample rates.
-  // Finally, A-law and mu-law are 8-bit compandings
-  // which may be useful if we need to sample around
-  // 8 kHz or more continuously.
+  // Sample format
+  enum {
+    SAMPLE_FMT_S24 = 0,   // raw 24-bit
+    SAMPLE_FMT_S8  = 1,   // signed 8-bit with shift
+  } sample_fmt_e;
   uint8_t   sample_fmt;
 
-  // For some sample formats it might be useful to
-  // rescale the data. This value says what the full
-  // scale of the data is. In other words, where 0 dB
-  // is.
-  //
-  // To decode say an 8-bit sample to its original
-  // 24-bit range you would do this:
-  //
-  //   out24 = in8 * scale / 128
-  //
-  // You would have to be careful to use appropriate
-  // data types so the computation doesn't overflow.
-  //
-  // Whether or not scale is used should be indicated
-  // in sample_fmt.
-  //
-  // The maximum value of scale is 2^23.
-  __uint24  scale;
+  // If SAMPLE_FMT_S8, multiply each sample by
+  // (1<<sample_shift)
+  uint8_t   sample_shift;
+
+  // If gap was insufficient than overflow says many
+  // frames had to be thrown away. In other words
+  // overflow represents "unplanned" gap.
+  // Value is capped at 255, which may mean "255 or more".
+  uint8_t   overflow;
+
+  // Reserved to keep the struct 21 bytes
+  uint8_t   reserved;
 } sample_packet_header_s;
 
 // Temperature reading structure.

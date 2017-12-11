@@ -789,7 +789,7 @@ static uint32_t adc_comm(uint8_t id, uint32_t cmd) {
 #define ADC3      0x13
 #define ADC4      0x14
 
-static uint8_t popcount(uint8_t a) {
+static uint8_t popcount(uint16_t a) {
   uint8_t ret = 0;
   while (a) {
     ret += a&1;
@@ -954,6 +954,8 @@ uint8_t adc_total_popcount(void) {
 uint8_t measurement_on = 0;
 uint16_t measurement_num_frames = 0;
 uint16_t measurement_gap = 0;
+uint8_t measurement_sample_fmt = 0;
+uint16_t num_measurements = 0;
 
 uint8_t sample_data_idx = 0;  //which of the two buffers are currently being used for the ISR?
 volatile uint8_t sample_data[2][16383];
@@ -1150,6 +1152,53 @@ ISR(INT7_vect) {
 ISR(TIMER1_CAPT_vect) {
 }
 
+//in-place compress 24-bit samples to 8-bit, update header
+static void compress_24bit_to_8bit(sample_packet_header_s *header, void *data) {
+  uint16_t num_samples;
+  __int24 *samples_in;
+  int8_t *samples_out = (int8_t*)data;
+
+  __uint24 smax = 0;
+  num_samples = header->num_frames * popcount(header->channel_conf);
+  samples_in = (__int24*)data;
+  for (; num_samples > 0; num_samples--) {
+    __int24 s = *samples_in++;
+    if (s < 0) {
+      //-1 -> 0
+      //-8 -> 7 etc
+      s = -1 - s;
+    }
+    if ((__uint24)s > smax) {
+      smax = s;
+    }
+  }
+
+  //compute shift needed
+  //shift is needed until value range falls within [-128,127],
+  //in other words until smax <= 127
+  uint8_t shift = 0;
+  while (smax >= 128) {
+    shift++;
+    smax >>= 1;
+  }
+
+  //do the compressilating
+  header->sample_shift = shift;
+  num_samples = header->num_frames * popcount(header->channel_conf);
+  samples_in = (__int24*)data;
+  for (; num_samples > 0; num_samples--) {
+    *samples_out++ = *samples_in++ / ((__int24)1 << (__int24)shift);
+  }
+}
+
+static void reset_measurement(void) {
+  measurement_on = 0;
+  measurement_num_frames = 0;
+  measurement_gap = 0;
+  num_measurements = 0;
+  measurement_sample_fmt = 0;
+}
+
 int main(void)
 {
   wdt_enable(WDTO_250MS);
@@ -1186,7 +1235,6 @@ int main(void)
   printf_P(PSTR("Hello, Earth! 👽\r\n"));
 
   uint8_t temp_conversion_in_progress = 0;
-  uint16_t num_measurements = 0;
 
   unlock_adcs();
 
@@ -1570,12 +1618,21 @@ retry:
       } else if (c == 'e' || c == 'E') {
         if (c == 'E') {
           //measurement configuration
-          int n = sscanf(line, "%u %u %u", &measurement_num_frames, &measurement_gap, &num_measurements);
+          int n = sscanf(line, "%u %u %u %hhu", &measurement_num_frames, &measurement_gap, &num_measurements, &measurement_sample_fmt);
           if (n == 2) {
             num_measurements = 65535;
+            measurement_sample_fmt = 0;
+          } else if (n == 4) {
+            if (measurement_sample_fmt > 1) {
+              reset_measurement();
+              start_section("ERROR");
+              printf_P(PSTR("sample_fmt = %hhu invalid\r\n"), measurement_sample_fmt);
+              goto retry;
+            }
           } else if (n != 3) {
+            reset_measurement();
             start_section("ERROR");
-            printf_P(PSTR("sscanf(\"%s\") = %i, expected 2 or 3\r\n"), line, n);
+            printf_P(PSTR("sscanf(\"%s\") = %i, expected 2, 3 or 4\r\n"), line, n);
             goto retry;
           }
 
@@ -1583,9 +1640,9 @@ retry:
           uint8_t pc = adc_total_popcount();
 
           //sanity check frame size
-          uint32_t sample_data_size = pc*measurement_num_frames*3;
+          uint32_t sample_data_size = pc*measurement_num_frames * (measurement_sample_fmt == 1 ? 1 : 3);
           if (sample_data_size > sizeof(sample_data[0])) {
-            measurement_num_frames = 0;
+            reset_measurement();
             start_section("ERROR");
             printf_P(PSTR("sample_data_size = %lu larger than maximum %u\r\n"), sample_data_size, (uint16_t)sizeof(sample_data[0]));
             goto retry;
@@ -1613,12 +1670,12 @@ retry:
 
           //a single long measurement is OK
           if (cycles_in < cycles_out && num_measurements != 1) {
-            measurement_num_frames = 0;
+            reset_measurement();
             goto retry;
           }
         }
         start_section("CONFIG");
-        printf_P(PSTR("%u %u %u\r\n"), measurement_num_frames, measurement_gap, num_measurements);
+        printf_P(PSTR("%u %u %u %hhu\r\n"), measurement_num_frames, measurement_gap, num_measurements, measurement_sample_fmt);
       } else if (c == 'W') {
         if (measurement_num_frames == 0) {
           start_section("ERROR");
@@ -1647,7 +1704,8 @@ retry:
         }
         sei();
 
-        header.version = 2;                         // format version
+        memset(&header, 0, sizeof(header));
+        header.version = 3;                         // format version
         header.first_frame = 0;                     // timestamp of first frame
         header.num_temps = 0;                       // DS18B20Z outputs (0..6)
 
@@ -1680,8 +1738,13 @@ retry:
         header.channel_conf =  adc_ena[0] |         // channel bitmap. 3 nybbles
                               (adc_ena[1] << 4) |
                               (adc_ena[2] << 8);
-        header.sample_fmt = 0;                      // Sample format.
-        header.scale = 0x800000;
+        header.sample_fmt = measurement_sample_fmt; // Sample format.
+        header.sample_shift = 0;
+
+        if (measurement_sample_fmt == 1) {
+          compress_24bit_to_8bit(&header, (void*)sample_data[old_idx]);
+          nbytes /= 3;
+        }
 
         memset(bsends, 0, sizeof(bsends));
         bsends[0].ptr = (const uint8_t*)&header;

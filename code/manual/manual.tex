@@ -714,8 +714,17 @@ The following example sets COMP\_TH = 111b and enables fixed word size (6 device
 
 \subsection{Configure measurement ('E')}
 
-Set number of frames per packet and gap between packets.
-Optionally also set the number of SAMPLES packets that will be captured and output (0..65534).
+Takes between two and four integer arguments.
+The first integer sets the number of frames per packet.
+The second integer sets the gap between packets.
+The third integer, if present, sets the number of SAMPLES packets that will be captured and output (0..65534).
+The fourth integer, if present, sets the sample format to one of the following:
+
+\begin{itemize}
+\item 0: Signed 24-bit samples
+\item 1: Signed 8-bit samples. Full (quantized) 24-bit samples can be recovered by multiplying values by $2^{sample\_shift}$
+\end{itemize}
+
 Given values will be sanity checked.
 
 \begin{lstlisting}
