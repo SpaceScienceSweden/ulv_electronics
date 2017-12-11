@@ -805,6 +805,7 @@ static void wreg(uint8_t id, uint8_t a, uint8_t d) {
       }
       break;
     } else {
+      start_section("ERROR");
       printf_P(PSTR("wreg having problems (a=%02x, d=%02x vs %08lX)\r\n"), a, d, word);
     }
   }
@@ -993,6 +994,9 @@ static void adc_wakeup(void) {
   for (uint8_t id = 0; id < 3; id++) {
     uint8_t ena = rreg(id, ADC_ENA);
     if (ena > 0x00 && ena < 0x10 && rreg(id, ID_MSB) == 4 && rreg(id, ID_LSB) == 3) {
+      start_section("INFO");
+      printf_P(PSTR("ADC %hhu: ADC_ENA=%hhx\r\n"), id, ena);
+
       portf &= ~(1<<(PF5+id));
       if (pc == 0) {
         lastena = ena;
@@ -1027,6 +1031,8 @@ static void adc_wakeup(void) {
   EIMSK |= (1<<INT7);
   measurement_on = 1;
 
+  sei();
+
   //select all ADCs at the same time
   //this works because MISO is open collector
   PORTF = portf;
@@ -1044,6 +1050,9 @@ static void adc_wakeup(void) {
     goto finish_wakeup;
   }
 
+  start_section("INFO");
+  printf_P(PSTR("WAKEUP OK\r\n"));
+
   PORTF = portf;
   adc_comm_inner(pc, LOCK);
   adc_deselect();
@@ -1058,6 +1067,9 @@ static void adc_wakeup(void) {
     printf_P(PSTR("lock_res = %04lX, expected 0555h\r\n"), lock_res);
     goto finish_wakeup;
   }
+
+  start_section("INFO");
+  printf_P(PSTR("LOCK OK\r\n"));
 
   start_section("INFO");
   printf_P(PSTR("Measurement started\r\n"));
