@@ -35,10 +35,8 @@ typedef struct sample_packet_header_s {
   uint16_t  channel_conf; // channel bitmap. 3 nybbles
 
   // Sample format
-  enum {
-    SAMPLE_FMT_S24 = 0,   // raw 24-bit
-    SAMPLE_FMT_S8  = 1,   // signed 8-bit with shift
-  } sample_fmt_e;
+#define SAMPLE_FMT_S24 0  // raw 24-bit
+#define SAMPLE_FMT_S8  1  // signed 8-bit with shift
   uint8_t   sample_fmt;
 
   // If SAMPLE_FMT_S8, multiply each sample by
