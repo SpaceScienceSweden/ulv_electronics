@@ -62,6 +62,12 @@
 #define UART_CTRL2_DATA  ((1<<UCSZ11) | (1<<UCSZ10))
 #define UART_DATA  UDR1
 
+
+//1-wire stuff
+uint8_t roms[6*8];
+uint8_t romcnt = 0;
+
+
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
   RS485_DE_PORT |= RS485_DE_BIT;
@@ -1158,6 +1164,7 @@ static void compress_24bit_to_8bit(sample_packet_header_s *header, void *data) {
   __int24 *samples_in;
   int8_t *samples_out = (int8_t*)data;
 
+  //TODO: compute mean square instead, removes crappiness due to peaking
   __uint24 smax = 0;
   num_samples = header->num_frames * popcount(header->channel_conf);
   samples_in = (__int24*)data;
@@ -1199,69 +1206,14 @@ static void reset_measurement(void) {
   measurement_sample_fmt = 0;
 }
 
-int main(void)
-{
-  wdt_enable(WDTO_250MS);
-
-  setup_uart1();
-  //setup stdout for printf()
-  stdout = &mystdout;
-
-  //disable 24V and +-5V
-  DDRB |= (1<<0);
-  PORTB &= ~(1<<0);
-
-  //CPU utilization on PF6
-  //FIXME: this is the same as /CS_ADC1
-  //       we don't have any LED installed, so we could use a different pin for CPU
-  //       PD0 or PD1 may be suitable
-  DDRF |= (1<<6);
-  CPU_USAGE_OFF();
-
-  setup_spi();
-  setup_adc_pins();
-
-  //setup Timer1 + motor PWM just before enabling interrupts
-  setup_motor_pwm();
-  sei();
-
-  //search for 1-wire devices
-  uint8_t roms[6*8];
-  uint8_t romcnt = 0;
-  ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
-  if (romcnt > 6) romcnt = 6; //just to be sure
-
-  start_section("INFO");
-  printf_P(PSTR("Hello, Earth! 👽\r\n"));
-
-  uint8_t temp_conversion_in_progress = 0;
-
-  unlock_adcs();
-
-  for (;;) {
-retry:
-   if (bsend_busy()) {
-    //capture TACH and such
-    //but also capture TACH in main logic
-    wdt_reset();
-   } else {
-    if (is_busy) {
-      //READY
-      printf_P(PSTR("READ%c\r\n"), 'Y');
-      disable_tx();
-      is_busy = 0;
-    }
-
-    //take a peek at the USART
-    //commands are single bytes
-    if (UART_STATUS & (1<<UART_RXREADY)) {
+static void handle_input(void) {
       int len = recvline();
       if (len < 0) {
         //ESC -> stop measurement, if any
         stop_measurement();
       }
       if (len < 1) {
-        continue;
+        return;
       }
       char c = line[0];
       //shift line by one character
@@ -1559,7 +1511,7 @@ retry:
         if (len > 0) {
           uint32_t delay, t0, t1;
           if (sscanf(line, "%lu", &delay) != 1) {
-            continue;
+            return;
           }
 
           /*enable_tx();
@@ -1603,7 +1555,7 @@ retry:
             if (n != 3) {
               start_section("ERROR");
               printf_P(PSTR("sscanf(\"%s\") = %i, expected 3\r\n"), line, n);
-              goto retry;
+              return;
             }
 
             wreg(id, index, value);
@@ -1627,13 +1579,13 @@ retry:
               reset_measurement();
               start_section("ERROR");
               printf_P(PSTR("sample_fmt = %hhu invalid\r\n"), measurement_sample_fmt);
-              goto retry;
+              return;
             }
           } else if (n != 3) {
             reset_measurement();
             start_section("ERROR");
             printf_P(PSTR("sscanf(\"%s\") = %i, expected 2, 3 or 4\r\n"), line, n);
-            goto retry;
+            return;
           }
 
           uint32_t cycles_per_sample = adc_cycles_per_sample();
@@ -1645,7 +1597,7 @@ retry:
             reset_measurement();
             start_section("ERROR");
             printf_P(PSTR("sample_data_size = %lu larger than maximum %u\r\n"), sample_data_size, (uint16_t)sizeof(sample_data[0]));
-            goto retry;
+            return;
           }
 
           //maximum expected packet size
@@ -1671,7 +1623,7 @@ retry:
           //a single long measurement is OK
           if (cycles_in < cycles_out && num_measurements != 1) {
             reset_measurement();
-            goto retry;
+            return;
           }
         }
         start_section("CONFIG");
@@ -1680,15 +1632,72 @@ retry:
         if (measurement_num_frames == 0) {
           start_section("ERROR");
           printf_P(PSTR("Bad/missing measurement configuration - can't wake up\r\n"));
-          goto retry;
+          return;
         }
         adc_wakeup();
       } else if (c == '?') {
         //print help
         start_section("INFO");
         printf_P(PSTR("Read manual.pdf 😉\r\n"));
-        goto retry;
+        return;
       }
+}
+
+int main(void)
+{
+  wdt_enable(WDTO_250MS);
+
+  setup_uart1();
+  //setup stdout for printf()
+  stdout = &mystdout;
+
+  //disable 24V and +-5V
+  DDRB |= (1<<0);
+  PORTB &= ~(1<<0);
+
+  //CPU utilization on PF6
+  //FIXME: this is the same as /CS_ADC1
+  //       we don't have any LED installed, so we could use a different pin for CPU
+  //       PD0 or PD1 may be suitable
+  DDRF |= (1<<6);
+  CPU_USAGE_OFF();
+
+  setup_spi();
+  setup_adc_pins();
+
+  //setup Timer1 + motor PWM just before enabling interrupts
+  setup_motor_pwm();
+  sei();
+
+  //search for 1-wire devices
+  ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
+  if (romcnt > 6) romcnt = 6; //just to be sure
+
+  start_section("INFO");
+  printf_P(PSTR("Hello, Earth! 👽\r\n"));
+
+  uint8_t temp_conversion_in_progress = 0;
+
+  unlock_adcs();
+
+  for (;;) {
+retry:
+   if (bsend_busy()) {
+    //capture TACH and such
+    //but also capture TACH in main logic
+    wdt_reset();
+   } else {
+    if (is_busy) {
+      //READY
+      printf_P(PSTR("READ%c\r\n"), 'Y');
+      disable_tx();
+      is_busy = 0;
+    }
+
+    //take a peek at the USART
+    //commands are single bytes
+    if (UART_STATUS & (1<<UART_RXREADY)) {
+      handle_input();
     }
     wdt_reset();
 
