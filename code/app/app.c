@@ -62,10 +62,57 @@
 #define UART_CTRL2_DATA  ((1<<UCSZ11) | (1<<UCSZ10))
 #define UART_DATA  UDR1
 
+//a 32-bit timer is not enough to not overflow over the mission duration
+volatile uint64_t timer1_base = 0;
+
+uint8_t is_busy = 0; //have we sent BUSY?
+char line[256];
 
 //1-wire stuff
 uint8_t roms[6*8];
 uint8_t romcnt = 0;
+
+uint8_t measurement_on = 0;
+uint16_t measurement_num_frames = 0;
+uint16_t measurement_gap = 0;
+uint8_t measurement_sample_fmt = 0;
+uint16_t num_measurements = 0;
+
+uint8_t sample_data_idx = 0;  //which of the two buffers are currently being used for the ISR?
+volatile uint8_t sample_data[2][16383];
+volatile uint8_t *sample_ptr;
+uint8_t *sample_end;
+volatile uint16_t gap_left = 0;
+volatile uint8_t sample_overflow = 0; //whether we got a sample beyond sample_end
+
+//header, for bsend()
+sample_packet_header_s header;
+temperature_s temps[6];
+
+#define MAX_BSENDS 7
+struct {
+  //using two pointers is slightly faster than offset + size
+  const uint8_t *ptr, *end;
+  //uint16_t len;
+} bsends[MAX_BSENDS];
+volatile uint8_t cur_bsend = 0;
+
+const char *TEMP = "TEMP";
+const char *TACH = "TACH";
+const char *SAMP = "SAMP";
+
+//each program consists of a number of lines
+//each line is NUL terminated
+char program_store[4096];
+
+struct {
+  char name[16];      //"" = free slot
+  char *start, *end;  //pointers into program_store
+} programs[16];
+static const int max_programs = sizeof(programs)/sizeof(programs[0]);
+
+static uint8_t adc_popcount[3] = {0,0,0};
+static uint8_t adc_ena[3] = {0,0,0};
 
 
 static void enable_tx(void) {
@@ -89,8 +136,6 @@ static void disable_tx(void) {
   //_delay_us(100);
   UART_CTRL = UART_CTRL_DATA_RX;
 }
-
-uint8_t is_busy = 0; //have we sent BUSY?
 
 static void start_section(const char *section_name) {
   if (!is_busy) {
@@ -129,7 +174,6 @@ static uint8_t recvchar(void)
 //purposefully hangs if the user inputs too much data
 //returns length of the line, excluding terminating NUL
 //returns -1 if the user sent ESC
-char line[256];
 static int recvline(void) {
   int ofs = 0;
   int comment = -1;     //if >= 0 then the rest of the line is a comment starting at ofs=comment
@@ -237,14 +281,6 @@ static unsigned freeRam () {
   return 0xffff - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
 
-#define MAX_BSENDS 7
-struct {
-  //using two pointers is slightly faster than offset + size
-  const uint8_t *ptr, *end;
-  //uint16_t len;
-} bsends[MAX_BSENDS];
-volatile uint8_t cur_bsend = 0;
-
 ISR(USART1_UDRE_vect) {
   for (; cur_bsend < MAX_BSENDS; cur_bsend++) {
     if (bsends[cur_bsend].ptr < bsends[cur_bsend].end) {
@@ -289,9 +325,6 @@ static void bsend_start(void) {
     }
   }
 }
-
-//a 32-bit timer is not enough to not overflow over the mission duration
-volatile uint64_t timer1_base = 0;
 
 //used to get view of how much CPU we're using
 //undefine to save some CPU
@@ -504,16 +537,6 @@ static void disable_vgnd(void) {
   //PORTF &= ~((1<<5) | (1<<6));
 }
 
-//each program consists of a number of lines
-//each line is NUL terminated
-char program_store[4096];
-
-struct {
-  char name[16];      //"" = free slot
-  char *start, *end;  //pointers into program_store
-} programs[16];
-static const int max_programs = sizeof(programs)/sizeof(programs[0]);
-
 static size_t free_program_space(void) {
   if (programs[0].name[0] == 0) {
     return sizeof(program_store);
@@ -686,9 +709,6 @@ static void print64(uint64_t i) {
 static const uint16_t osrtab[16] = {
   4096, 2048, 1024, 800, 768, 512, 400, 384, 256, 200, 192, 128, 96, 64, 48, 32
 };
-
-static uint8_t adc_popcount[3] = {0,0,0};
-static uint8_t adc_ena[3] = {0,0,0};
 
 static inline void adc_deselect(void) {
   PORTF |= (1<<5) | (1<<6) | (1<<7);
@@ -956,27 +976,6 @@ uint8_t adc_total_popcount(void) {
   }
   return ret;
 }
-
-uint8_t measurement_on = 0;
-uint16_t measurement_num_frames = 0;
-uint16_t measurement_gap = 0;
-uint8_t measurement_sample_fmt = 0;
-uint16_t num_measurements = 0;
-
-uint8_t sample_data_idx = 0;  //which of the two buffers are currently being used for the ISR?
-volatile uint8_t sample_data[2][16383];
-volatile uint8_t *sample_ptr;
-uint8_t *sample_end;
-volatile uint16_t gap_left = 0;
-volatile uint8_t sample_overflow = 0; //whether we got a sample beyond sample_end
-
-//header, for bsend()
-sample_packet_header_s header;
-temperature_s temps[6];
-
-const char *TEMP = "TEMP";
-const char *TACH = "TACH";
-const char *SAMP = "SAMP";
 
 //returns size of sample buffer
 static size_t sample_setup(uint8_t idx) {
