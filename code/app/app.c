@@ -114,6 +114,12 @@ static const int max_programs = sizeof(programs)/sizeof(programs[0]);
 static uint8_t adc_popcount[3] = {0,0,0};
 static uint8_t adc_ena[3] = {0,0,0};
 
+//these are used in compress_24bit_to_8bit()
+//for some reason having these local would make the flip-all-bits-if-negative
+//logic not work
+static __int24 compress_s;      //current sample value (big-endian)
+static __uint24 compress_smax;  //maximum sample value (after bit flip)
+
 
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
@@ -1174,40 +1180,52 @@ ISR(TIMER1_CAPT_vect) {
 //in-place compress 24-bit samples to 8-bit, update header
 static void compress_24bit_to_8bit(sample_packet_header_s *header, void *data) {
   uint16_t num_samples;
-  __int24 *samples_in;
-  int8_t *samples_out = (int8_t*)data;
+  uint8_t *data_in;
+  int8_t *samples_out = data;
 
   //TODO: compute mean square instead, removes crappiness due to peaking
-  __uint24 smax = 0;
   num_samples = header->num_frames * popcount(header->channel_conf);
-  samples_in = (__int24*)data;
+  data_in = data;
+  compress_smax = 0;
+
   for (; num_samples > 0; num_samples--) {
-    __int24 s = *samples_in++;
-    if (s < 0) {
-      //-1 -> 0
-      //-8 -> 7 etc
-      s = -1 - s;
+    //big endian
+    compress_s = (__int24)(data_in[0]*(__int24)65536) |
+                 (__int24)(data_in[1]*256) |
+                           data_in[2];
+    if (compress_s < 0) {
+      compress_s = ~compress_s;
     }
-    if ((__uint24)s > smax) {
-      smax = s;
+    if (compress_s > compress_smax) {
+      compress_smax = compress_s;
     }
+
+    data_in += 3;
+    wdt_reset();
   }
+
 
   //compute shift needed
   //shift is needed until value range falls within [-128,127],
-  //in other words until smax <= 127
+  //in other words until compress_smax <= 127
   uint8_t shift = 0;
-  while (smax >= 128) {
+  while (compress_smax >= 128) {
     shift++;
-    smax >>= 1;
+    compress_smax >>= 1;
   }
 
   //do the compressilating
   header->sample_shift = shift;
   num_samples = header->num_frames * popcount(header->channel_conf);
-  samples_in = (__int24*)data;
+  data_in = data;
+
   for (; num_samples > 0; num_samples--) {
-    *samples_out++ = *samples_in++ / ((__int24)1 << (__int24)shift);
+    compress_s = (__int24)(data_in[0]*(__int24)65536) |
+                 (__int24)(data_in[1]*256) |
+                           data_in[2];
+    data_in += 3;
+    *samples_out++ = compress_s >> shift;
+    wdt_reset();
   }
 }
 
@@ -1727,12 +1745,17 @@ retry:
         uint8_t old_idx = sample_data_idx;
         size_t nbytes = sample_setup(!sample_data_idx);
 
+        memset(&header, 0, sizeof(header));
+        //we need to compute channel_conf up here since stop_measurement() clears all ADC_ENA
+        header.channel_conf =  adc_ena[0] |         // channel bitmap. 3 nybbles
+                              (adc_ena[1] << 4) |
+                              (adc_ena[2] << 8);
+
         if (num_measurements != 65535 && --num_measurements == 0) {
           stop_measurement();
         }
         sei();
 
-        memset(&header, 0, sizeof(header));
         header.version = 3;                         // format version
         header.first_frame = 0;                     // timestamp of first frame
         header.num_temps = 0;                       // DS18B20Z outputs (0..6)
@@ -1763,9 +1786,6 @@ retry:
         header.num_tachs[2] = 0;
         header.num_frames = measurement_num_frames; // number of frames
         header.gap = measurement_gap;               // gap between packets
-        header.channel_conf =  adc_ena[0] |         // channel bitmap. 3 nybbles
-                              (adc_ena[1] << 4) |
-                              (adc_ena[2] << 8);
         header.sample_fmt = measurement_sample_fmt; // Sample format.
         header.sample_shift = 0;
 
