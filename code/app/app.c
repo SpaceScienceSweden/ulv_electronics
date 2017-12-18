@@ -1615,9 +1615,17 @@ static void handle_input(void) {
           uint32_t cycles_out = bytes*10*F_CPU/BAUD + 1000*F_CPU/1000000;
 
           start_section(cycles_in > cycles_out ? "INFO" : "ERROR");
-          printf_P(PSTR("bytes = %lu, cpc = %lu, pc = %hhu\r\n"), bytes, cycles_per_sample, pc);
+          printf_P(PSTR("      packet size = %lu (upper limit)\r\n"), bytes);
+          printf_P(PSTR("      sample rate = %lu Hz\r\n"), 7372800UL/cycles_per_sample);
+          printf_P(PSTR("cycles per sample = %lu\r\n"), cycles_per_sample);
+          printf_P(PSTR("         popcount = %hhu\r\n"), pc);
+          printf_P(PSTR("--------------------------\r\n"));
           printf_P(PSTR("cycles_out = %12lu\r\n"), cycles_out);
-          printf_P(PSTR(" cycles_in = %12lu (%s)\r\n"), cycles_in, cycles_in > cycles_out || num_measurements == 1 ? "OK" : "not OK");
+          printf_P(PSTR(" cycles_in = %12lu (%s)\r\n"),
+            cycles_in,
+            cycles_in > cycles_out ? "OK" :
+              (num_measurements == 1 ? "OK (only one measurement)" : "not OK")
+          );
 
           //a single long measurement is OK
           if (cycles_in < cycles_out && num_measurements != 1) {
