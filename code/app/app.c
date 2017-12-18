@@ -114,13 +114,6 @@ static const int max_programs = sizeof(programs)/sizeof(programs[0]);
 static uint8_t adc_popcount[3] = {0,0,0};
 static uint8_t adc_ena[3] = {0,0,0};
 
-//these are used in compress_24bit_to_8bit()
-//for some reason having these local would make the flip-all-bits-if-negative
-//logic not work
-static __int24 compress_s;      //current sample value (big-endian)
-static __uint24 compress_smax;  //maximum sample value (after bit flip)
-
-
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
   RS485_DE_PORT |= RS485_DE_BIT;
@@ -1182,6 +1175,9 @@ static void compress_24bit_to_8bit(sample_packet_header_s *header, void *data) {
   uint16_t num_samples;
   uint8_t *data_in;
   int8_t *samples_out = data;
+  __int24 compress_s;      //current sample value (big-endian)
+  __uint24 compress_smax;  //maximum sample value (after bit flip)
+
 
   //TODO: compute mean square instead, removes crappiness due to peaking
   num_samples = header->num_frames * popcount(header->channel_conf);
@@ -1190,9 +1186,9 @@ static void compress_24bit_to_8bit(sample_packet_header_s *header, void *data) {
 
   for (; num_samples > 0; num_samples--) {
     //big endian
-    compress_s = (__int24)(data_in[0]*(__int24)65536) |
-                 (__int24)(data_in[1]*256) |
-                           data_in[2];
+    compress_s = ((__int24)(int8_t)data_in[0]<<16) |
+                                  (data_in[1]<<8) |
+                                   data_in[2];
     if (compress_s < 0) {
       compress_s = ~compress_s;
     }
@@ -1220,9 +1216,9 @@ static void compress_24bit_to_8bit(sample_packet_header_s *header, void *data) {
   data_in = data;
 
   for (; num_samples > 0; num_samples--) {
-    compress_s = (__int24)(data_in[0]*(__int24)65536) |
-                 (__int24)(data_in[1]*256) |
-                           data_in[2];
+    compress_s = ((__int24)(int8_t)data_in[0]<<16) |
+                                  (data_in[1]<<8) |
+                                   data_in[2];
     data_in += 3;
     *samples_out++ = compress_s >> shift;
     wdt_reset();
