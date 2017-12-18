@@ -137,6 +137,12 @@ static void disable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_RX;
 }
 
+static void READY(void) {
+  printf_P(PSTR("READ%c\r\n"), 'Y');
+  disable_tx();
+  is_busy = 0;
+}
+
 static void start_section(const char *section_name) {
   if (!is_busy) {
     enable_tx();
@@ -1065,6 +1071,9 @@ static void adc_wakeup(void) {
   adc_comm_inner(pc, WAKEUP);
   adc_deselect();
 
+  //free up serial before waking up
+  READY();
+
   PORTF = portf;
   uint32_t wakeup_res = adc_comm_inner(pc, 0) >> (WORDSZ-16);
   adc_deselect();
@@ -1093,10 +1102,10 @@ static void adc_wakeup(void) {
 
   sei();
 
-  start_section("INFO");
+  /*start_section("INFO");
   printf_P(PSTR("sei()\r\n"));
   start_section("INFO");
-  printf_P(PSTR("Measurement started\r\n"));
+  printf_P(PSTR("Measurement started\r\n"));*/
   return;
 
 abort_wakeup:
@@ -1107,9 +1116,11 @@ abort_wakeup:
 // also IC3
 ISR(INT7_vect) {
   uint8_t do_store = 1;
+  //cast away volatile
+  uint8_t *ptr = (uint8_t*)sample_ptr;
 
   //in gap or overflow?
-  if (gap_left > 0 || sample_ptr >= sample_end) {
+  if (gap_left > 0 || ptr >= sample_end) {
     //talk to the ADCs but don't store the sample data anywhere
     do_store = 0;
 
@@ -1137,10 +1148,9 @@ ISR(INT7_vect) {
 
       for (uint8_t x = 0; x < adc_popcount[id]; x++) {
        if (do_store) {
-        sample_ptr[0] = spi_comm_byte(0);
-        sample_ptr[1] = spi_comm_byte(0);
-        sample_ptr[2] = spi_comm_byte(0);
-        sample_ptr += 3;
+        *ptr++ = spi_comm_byte(0);
+        *ptr++ = spi_comm_byte(0);
+        *ptr++ = spi_comm_byte(0);
        } else {
         spi_comm_byte(0);
         spi_comm_byte(0);
@@ -1150,6 +1160,10 @@ ISR(INT7_vect) {
 
       adc_deselect();
     }
+  }
+
+  if (do_store) {
+    sample_ptr = ptr;
   }
 }
 
@@ -1696,9 +1710,7 @@ retry:
    } else {
     if (is_busy) {
       //READY
-      printf_P(PSTR("READ%c\r\n"), 'Y');
-      disable_tx();
-      is_busy = 0;
+      READY();
     }
 
     //take a peek at the USART
