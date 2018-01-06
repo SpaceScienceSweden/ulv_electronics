@@ -1081,11 +1081,10 @@ static void stop_measurement(void) {
   printf_P(PSTR("Measurement stopped\r\n"));
 }
 
-static void adc_wakeup(void) {
-  //we shouldn't be having any interrupts going that can mess with this,
-  //but apparently we do
-  cli();
-
+//cli() must be done prior to calling adc_wakeup()
+//doing sei() afterward is optional
+//int7 says whether to enable INT7 ISR or not
+static uint8_t adc_wakeup(uint8_t int7) {
   uint8_t portf = PORTF;
   uint8_t lastena = 0, pc = 0;
   uint8_t someid = 0; //ID of any enabled ADC, for configuring 74153
@@ -1105,7 +1104,7 @@ static void adc_wakeup(void) {
       } else if (pc != popcount(ena)) {
         start_section("ERROR");
         printf_P(PSTR("ADC %hhu: Inconsistent ADC_ENA: %hhx vs %hhx\r\n"), id, lastena, ena);
-        goto abort_wakeup;
+        return 1;
       }
     }
   }
@@ -1113,7 +1112,7 @@ static void adc_wakeup(void) {
   if (pc == 0) {
     start_section("ERROR");
     printf_P(PSTR("No ADCs online or all ADC_ENA = 0. Can't WAKEUP (wake me up inside)\r\n"));
-    goto abort_wakeup;
+    return 1;
   }
 
   //74153
@@ -1121,14 +1120,21 @@ static void adc_wakeup(void) {
 
   sample_setup(sample_data_idx);
 
-  //set up interrupt before WAKEUP, so we don't miss the falling edge
+  if (int7) {
+    //set up interrupt before WAKEUP, so we don't miss the falling edge
 
-  //interrupt on falling edge of INT7
-  EICRB |= (1<<ISC71);
-  //clear INT7 flag
-  EIFR  |= (1<<INTF7);
-  //enable the interrupt
-  EIMSK |= (1<<INT7);
+    //interrupt on falling edge of INT7
+    EICRB |= (1<<ISC71);
+    //clear INT7 flag
+    EIFR  |= (1<<INTF7);
+    //enable the interrupt
+    EIMSK |= (1<<INT7);
+  } else {
+    //disable the interrupt
+    EIMSK &= ~(1<<INT7);
+    //clear flag just in case
+    EIFR  |= (1<<INTF7);
+  }
   measurement_on = 1;
 
   //select all ADCs at the same time
@@ -1148,7 +1154,7 @@ static void adc_wakeup(void) {
     stop_measurement();
     start_section("ERROR");
     printf_P(PSTR("wakeup_res = %04lX, expected 0033h\r\n"), wakeup_res);
-    goto abort_wakeup;
+    return 1;
   }
 
   /*PORTF = portf;
@@ -1163,19 +1169,14 @@ static void adc_wakeup(void) {
     stop_measurement();
     start_section("ERROR");
     printf_P(PSTR("lock_res = %04lX, expected 0555h\r\n"), lock_res);
-    goto abort_wakeup;
+    return 1;
   }*/
-
-  sei();
 
   /*start_section("INFO");
   printf_P(PSTR("sei()\r\n"));
   start_section("INFO");
   printf_P(PSTR("Measurement started\r\n"));*/
-  return;
-
-abort_wakeup:
-  sei();
+  return 0;
 }
 
 // /DRDY ISR
@@ -1371,6 +1372,370 @@ static void reset_measurement(void) {
   num_measurements = 0;
   measurement_sample_fmt = 0;
 }
+
+// If >= 0, exactly that ADC is enabled
+// IF <  0, not exactly one ADC enabled
+static int8_t exactly_one_adc(void) {
+  if (adc_ena[0]) {
+    if (adc_ena[1] || adc_ena[2]) {
+      return -1;
+    }
+    return 0;
+  } else if (adc_ena[1]) {
+    if (adc_ena[2]) {
+      return -1;
+    }
+    return 1;
+  } else if (adc_ena[2]) {
+    return 2;
+  } else {
+    return -1;
+  }
+}
+
+// General idea is to sample as fast as possible (57.6 kHz)
+// Makes use of input capture, no interrupts
+// Highest speed this can capture four channels is 14400 Hz @ 14 MHz
+void square_demod_tach(void) {
+  //exactly one FM must be enabled
+  int8_t id1 = exactly_one_adc();
+  if (id1 < 0) {
+    start_section("ERROR");
+    printf_P(PSTR("Must have exactly one ADC enabled to run square_demod_tach\n"));
+    return;
+  }
+  uint8_t id = (uint8_t)id1;
+
+  cli();
+
+  //WAKEUP without INT7 ISR
+  if (adc_wakeup(0)) {
+    //fail
+    goto square_demod_tach_done;
+  }
+  
+#if WORDSZ != 24
+#error WORDSZ != 24 not supported currently
+#endif
+
+  uint8_t pc = adc_popcount[id];
+  uint32_t cycles_per_sample = adc_cycles_per_sample();
+
+  //note that this makes use of the entire sample_data array
+  //we're not doing any double buffering here,
+  //and we're not indexing into the array
+  //this makes it possible to make use of all 32k of it
+  uint16_t max_frames = sizeof(sample_data)/(3*pc);
+  //measure no longer than one second
+  uint32_t max_frames2 = F_CPU / cycles_per_sample;
+  //try to not capture more than we can TX in one second
+  //11520 bytes per second over 3 bytes per sample
+  //uint16_t max_frames3 = BAUD/10/(3*pc);
+
+  if (max_frames2 < max_frames) {
+    max_frames = max_frames2;
+  }
+  /*if (max_frames3 < max_frames) {
+    max_frames = max_frames3;
+  }*/
+
+  start_section("INFO");
+  printf_P(PSTR("max_frames = %i\n"), max_frames);
+
+  __uint24 time_base = 0;
+
+  for (;;) {
+    //discard the first bunch of samples
+    //partly to deal with initial F_DRDY
+    //but also to allow the sinc3 filter to warm up
+    //experiments show that five samples are about the right amount to discard
+    uint8_t discard_samples = 5;
+    uint16_t num_frames = 0;
+    uint16_t num_tachs = 0;
+
+    uint8_t *ptr = (uint8_t*)&sample_data[0][0];
+
+    //pre-clear both ICF bits by writing ones
+    TIFR |= 1<<ICF1;
+    ETIFR |= 1<<ICF3;
+
+    set_74153(id);
+
+    //sync up Timer1 and Timer3
+    TCNT1 = 0;
+    //setting TCNT3 is 2x ldi followed by 2x sts = 6 cy
+    //a smarter compiler would just sts TCNT3H, r1 (avoiding one ldi) but gcc is not smart
+    TCNT3 = 6;
+
+    uint16_t last10 = 0;  //last time 10-bit time
+    __uint24 sample_time_base = 0;
+
+    while (num_tachs < MAX_TACHS && num_frames < max_frames) {
+      //we have to be careful here since we're doing mod-1024 time
+      uint8_t ic1 = TIFR & (1<<ICF1);
+      uint8_t ic3 = ETIFR & (1<<ICF3);
+      uint16_t cur10 = TCNT1;
+
+      if (ic1) {
+        //IC1 is tachometer
+        //don't bother until we've gone through the discard samples
+        if (discard_samples == 0) {
+          uint16_t delta = (ICR1 - last10) & TIMER1_TOP;
+          tachs[0][0][num_tachs++] = time_base + last10 + delta;
+        }
+        //clear by writing a one
+        TIFR |= 1<<ICF1;
+      }
+      if (ic3) {
+        //IC3 is /DRDY
+        adc_select(id);
+
+        //001a aaaa
+        uint8_t stat1_addr;
+        //dddd dddd
+        uint8_t stat1_data;
+
+        SPDR = 0; while(!(SPSR & (1<<SPIF)));
+        SPDR = 0; stat1_addr = SPDR; while(!(SPSR & (1<<SPIF)));
+        SPDR = 0; stat1_data = SPDR;
+
+        if (!discard_samples) {
+          while(!(SPSR & (1<<SPIF)));
+          SPDR = 0; while(!(SPSR & (1<<SPIF)));
+          //grab samples in big endian order, store as little endian
+          SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+          SPDR = 0; ptr[1] = SPDR;
+          if (pc < 3) {
+            if (pc == 1) {
+              while(!(SPSR & (1<<SPIF)));
+            } else { // 2
+              while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+            }
+          } else {
+            if (pc == 3) {
+              while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+            } else { // 4
+              while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+            }
+          }
+          ptr[0] = SPDR; ptr += 3;
+        } else {
+          //discard
+          while(!(SPSR & (1<<SPIF)));
+          SPDR = 0; while(!(SPSR & (1<<SPIF)));
+          SPDR = 0; while(!(SPSR & (1<<SPIF)));
+          SPDR = 0;
+          if (pc < 3) {
+            if (pc == 1) {
+              while(!(SPSR & (1<<SPIF)));
+            } else { // 2
+              while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            }
+          } else {
+            if (pc == 3) {
+              while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            } else { // 4
+              while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+              SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            }
+          }
+        }
+
+        adc_deselect();
+
+        //clear by writing a one
+        ETIFR |= 1<<ICF3;
+
+        if (discard_samples > 0) {
+          uint16_t delta = (ICR3 - last10) & TIMER1_TOP;
+          //compute sample_time_base such that it will point to the time of sample zero
+          sample_time_base = time_base + last10 + delta + cycles_per_sample;
+
+          discard_samples--;
+        } else {
+          if (stat1_data) {
+            start_section("ERROR");
+            printf_P(PSTR("Got STAT_1 = %02hhx\n"), stat1_data);
+            goto square_demod_tach_done;
+          }
+
+          /*start_section("INFO");
+          printf_P(PSTR("Got a frame woo\n"));
+          break;*/
+          num_frames++;
+        }
+      }
+
+      if (cur10 < last10) {
+        time_base += TIMER1_TOP+1;
+      }
+      last10 = cur10;
+      wdt_reset();
+    }
+
+    //done capturing. swap buffers and set up bsend
+    //size_t nbytes = sample_setup(!sample_data_idx);
+    //start_section("INFO");
+    //printf_P(PSTR("would have sent %i bytes\n"), nbytes);
+
+    uint16_t cur_frame = 0;
+    uint16_t cur_tach = 0;
+
+    int64_t Q1[4] = {0};
+    int64_t Q2[4] = {0};
+    int64_t Q3[4] = {0};
+    int64_t Q4[4] = {0};
+    uint16_t NQ1[4] = {0};
+    uint16_t NQ2[4] = {0};
+    uint16_t NQ3[4] = {0};
+    uint16_t NQ4[4] = {0};
+
+    //skip any tach(s) which are before the first sample
+    //printf_P(PSTR("%u tachs\n"), num_tachs);
+    while (tachs[0][0][cur_tach] < sample_time_base && cur_tach < num_tachs-1) {
+      //printf_P(PSTR("skip %u\n"), cur_tach);
+      cur_tach++;
+    }
+    //keep going while we're between two tach pulses
+    for (; cur_tach < num_tachs-1; cur_tach++) {
+      //sample_time_base is the time of the first sample
+      //compute at each sample each quadrant ends
+      //just averaging the indices should be good enough,
+      //but a more accurate computation might reduce jitter
+      uint16_t q0 = (tachs[0][0][cur_tach]   - sample_time_base + cycles_per_sample-1) / cycles_per_sample;
+      uint16_t q4 = (tachs[0][0][cur_tach+1] - sample_time_base + cycles_per_sample-1) / cycles_per_sample;
+
+      if (q4 > num_frames) {
+        //printf_P(PSTR("tach %u skipped, done\n"), cur_tach);
+        break;
+      }
+      //printf_P(PSTR("\rcompute tach %u, %lu cycles     "), cur_tach, (uint32_t)(tachs[0][0][cur_tach+1] - tachs[0][0][cur_tach]));
+
+      uint16_t q2 = (q4 + q0) / 2;
+      uint16_t q1 = (q2 + q0) / 2;
+      uint16_t q3 = (q4 + q2) / 2;
+
+      __int24 *data_ptr = q0*pc + (__int24*)&sample_data[0][0];
+      uint16_t i = q0;
+#define DO_QUADRANT(q, Q)\
+      do {\
+        N##Q[0] += q-i;\
+        N##Q[1] += q-i;\
+        N##Q[2] += q-i;\
+        N##Q[3] += q-i;\
+        for (; i < q; i++) {\
+          for (uint8_t j = 0; j < pc; j++) {\
+            Q[j] += *data_ptr++;\
+          }\
+          wdt_reset();\
+        }\
+      } while (0)
+      DO_QUADRANT(q1, Q1);
+      DO_QUADRANT(q2, Q2);
+      DO_QUADRANT(q3, Q3);
+      DO_QUADRANT(q4, Q4);
+
+      wdt_reset();
+    }
+    //printf_P(PSTR("\n"));
+
+    if (have_esc()) {
+      goto square_demod_tach_done;
+    }
+
+    start_section("INFO");
+    for (uint8_t j = 0; j < pc; j++) {
+      //j should really print as channel indices
+      //so if we only have channel 3 enabled it'll print the first column as "3" not "0"
+      printf_P(PSTR("%hhu %5u %5u %5u %5u "), j, NQ1[j], NQ2[j], NQ3[j], NQ4[j]);
+      //make sure we have enough samples for form averages
+      if (NQ1[j] && NQ2[j] && NQ3[j] && NQ4[j]) {
+        // This diagram illustrates how the different quadrant values get summed into I and Q respectively:
+        //
+        // I:‾__‾
+        // Q:‾‾__
+        // q:1234
+        //
+        // In other words:
+        //
+        // I = q1-q2-q3+q4
+        // Q = q1+q2-q3-q4
+        float q1 = Q1[j] / (float)NQ1[j];
+        float q2 = Q2[j] / (float)NQ2[j];
+        float q3 = Q3[j] / (float)NQ3[j];
+        float q4 = Q4[j] / (float)NQ4[j];
+        //4 << 23 to get the result in [-1,1]
+        float I = (q1-q2-q3+q4) / (float)(4L << 23);
+        float Q = (q1+q2-q3-q4) / (float)(4L << 23);
+        printf_P(PSTR("%+.5f %+.5f\n"), I, Q);
+      } else {
+        //print zeros
+        printf_P(PSTR("0 0\n"));
+      }
+      wdt_reset();
+    }
+    READY();
+  }
+
+square_demod_tach_done:
+  stop_measurement();
+  sei();
+  return;
+}
+
+/*
+void square_demodulator(void) {
+  //each sample is added to the corresponding quadrant accumulator
+  //later I and Q are formed by combining average q1..4 like this:
+  //
+  //  I[x] = q1[x]/nq1 + q2[x]/nq2 - q3[x]/nq3 - q4[x]/nq4
+  //  Q[x] = q1[x]/nq1 - q2[x]/nq2 - q3[x]/nq3 + q4[x]/nq4
+  //
+  int64_t q1[3] = {0};
+  int64_t q2[3] = {0};
+  int64_t q3[3] = {0};
+  int64_t q4[3] = {0};
+  int16_t nq1 = 0;
+  int16_t nq2 = 0;
+  int16_t nq3 = 0;
+  int16_t nq4 = 0;
+}
+*/
 
 static void handle_input(void) {
       int len = recvline();
@@ -1859,7 +2224,8 @@ static void handle_input(void) {
           printf_P(PSTR("Bad/missing measurement configuration - can't wake up\r\n"));
           return;
         }
-        adc_wakeup();
+        cli();
+        adc_wakeup(1);
       } else if (c == 'o' || c == 'O') {
         //get/set offset voltages
         if (c == 'O') {
@@ -1897,6 +2263,8 @@ static void handle_input(void) {
         //report voltages
         start_section("VGNDS");
         printf_P(PSTR("%u %u %u\r\n"), vgnds[0], vgnds[1], vgnds[2]);
+      } else if (c == 'G') {
+        square_demod_tach();
       } else if (c == '?') {
         //print help
         start_section("INFO");
