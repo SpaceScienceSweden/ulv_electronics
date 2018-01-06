@@ -85,11 +85,19 @@ uint8_t *sample_end;
 volatile uint16_t gap_left = 0;
 volatile uint8_t sample_overflow = 0; //whether we got a sample beyond sample_end
 
+#define MAX_TACHS 512
+uint8_t last_tach_pin[3];   //last tachometer pin value, for detecting rising edge
+//num_tachs and tachs are [2] for double buffering, just like sample_data
+uint16_t num_tachs[2][3];
+__uint24 tachs[2][3][MAX_TACHS];
+volatile uint8_t first_sample;  //if 1, DRDY ISR is seeing the first sample in the current packet
+volatile __uint24 first_frame;  //set to gettime24() if first_sample == 1
+
 //header, for bsend()
 sample_packet_header_s header;
 temperature_s temps[6];
 
-#define MAX_BSENDS 7
+#define MAX_BSENDS 9
 struct {
   //using two pointers is slightly faster than offset + size
   const uint8_t *ptr, *end;
@@ -982,8 +990,32 @@ uint8_t adc_total_popcount(void) {
   return ret;
 }
 
+//returns number of active adcs
+//assumes adc_ena has been set up already
+uint8_t num_active_adcs(void) {
+  uint8_t ret = 0;
+  for (uint8_t id = 0; id < 3; id++) {
+    if (adc_ena[id]) {
+      ret++;
+    }
+  }
+  return ret;
+}
+
+static void set_74153(uint8_t ch) {
+  DDRD |= (1<<PD6) | (1<<PD7);
+  PORTD = (PORTD & ~((1<<PD6) | (1<<PD7))) | (ch << PD6);
+}
+
+//must be called with an id of an ADC which is active
+static uint8_t get_tach_pin(uint8_t id) {
+  set_74153(id);
+  return PIND & (1<<PD4);
+}
+
 //returns size of sample buffer
 static size_t sample_setup(uint8_t idx) {
+  first_sample = 1;
   sample_data_idx = idx;
   sample_ptr = sample_data[sample_data_idx];
   //assume 24-bit samples
@@ -991,6 +1023,14 @@ static size_t sample_setup(uint8_t idx) {
   sample_end = (uint8_t*)sample_ptr + nbytes;
   gap_left = measurement_gap;
   sample_overflow = 0;
+  num_tachs[idx][0] = 0;
+  num_tachs[idx][1] = 0;
+  num_tachs[idx][2] = 0;
+  for (uint8_t x = 0; x < 3; x++) {
+    if (adc_ena[x]) {
+      last_tach_pin[x] = get_tach_pin(x);
+    }
+  }
   return nbytes;
 }
 
@@ -1007,11 +1047,6 @@ static void stop_measurement(void) {
 
   start_section("INFO");
   printf_P(PSTR("Measurement stopped\r\n"));
-}
-
-static void set_74153(uint8_t ch) {
-  DDRD |= (1<<PD6) | (1<<PD7);
-  PORTD = (PORTD & ~((1<<PD6) | (1<<PD7))) | (ch << PD6);
 }
 
 static void adc_wakeup(void) {
@@ -1131,6 +1166,11 @@ ISR(INT7_vect) {
       if (sample_overflow < 255) {
         sample_overflow++;
       }
+    }
+  } else {
+    if (first_sample) {
+      first_frame = gettime24();
+      first_sample = 0;
     }
   }
 
@@ -1630,8 +1670,7 @@ static void handle_input(void) {
           //maximum expected packet size
           uint32_t bytes = sizeof(sample_packet_header_s) +
             4 + 6*sizeof(temperature_s) +
-            //tach can't be faster than sample_rate/4
-            4 + measurement_num_frames/4*sizeof(((sample_packet_s*)0)->tachs[0]) +
+            4 + sizeof(tachs[0][0])*num_active_adcs() +
             4 + sample_data_size;
 
           //number of cycles needed to collect data from ADCs
@@ -1735,17 +1774,37 @@ retry:
     wdt_reset();
 
     if (measurement_on) {
+      //check tachometers
+      uint8_t tachs_done = 0; //if 1 then tachs are full
+      if (first_sample == 0) {  //ensure tachs come after first_frame
+        for (uint8_t x = 0; x < 3; x++) {
+          if (adc_ena[x]) {
+            uint8_t pin = get_tach_pin(x);
+            if (pin > last_tach_pin[x]) { //rising edge
+              uint8_t idx = sample_data_idx;
+              tachs[idx][x][num_tachs[idx][x]] = gettime24();
+              if (++num_tachs[idx][x] >= MAX_TACHS) {
+                tachs_done = 1;
+              }
+            }
+            last_tach_pin[x] = pin;
+          }
+        }
+      }
+
       cli();
-      if (sample_ptr >= sample_end) {
+      if (sample_ptr >= sample_end || tachs_done) {
         //swap buffers
         uint8_t old_idx = sample_data_idx;
         size_t nbytes = sample_setup(!sample_data_idx);
 
+        //bleh
+        uint8_t adc_ena_copy[3];
+        adc_ena_copy[0] = adc_ena[0];
+        adc_ena_copy[1] = adc_ena[1];
+        adc_ena_copy[2] = adc_ena[2];
+
         memset(&header, 0, sizeof(header));
-        //we need to compute channel_conf up here since stop_measurement() clears all ADC_ENA
-        header.channel_conf =  adc_ena[0] |         // channel bitmap. 3 nybbles
-                              (adc_ena[1] << 4) |
-                              (adc_ena[2] << 8);
 
         if (num_measurements != 65535 && --num_measurements == 0) {
           stop_measurement();
@@ -1753,7 +1812,7 @@ retry:
         sei();
 
         header.version = 3;                         // format version
-        header.first_frame = 0;                     // timestamp of first frame
+        header.first_frame = first_frame;           // timestamp of first frame
         header.num_temps = 0;                       // DS18B20Z outputs (0..6)
 
         //maybe we have some data? :>
@@ -1777,11 +1836,14 @@ retry:
           temp_conversion_in_progress = 1;
         }
 
-        header.num_tachs[0] = 0;                    // tach impulses per channel
-        header.num_tachs[1] = 0;
-        header.num_tachs[2] = 0;
+        header.num_tachs[0] = num_tachs[old_idx][0];// tach impulses per channel
+        header.num_tachs[1] = num_tachs[old_idx][1];
+        header.num_tachs[2] = num_tachs[old_idx][2];
         header.num_frames = measurement_num_frames; // number of frames
         header.gap = measurement_gap;               // gap between packets
+        header.channel_conf =  adc_ena_copy[0] |         // channel bitmap. 3 nybbles
+                              (adc_ena_copy[1] << 4) |
+                              (adc_ena_copy[2] << 8);
         header.sample_fmt = measurement_sample_fmt; // Sample format.
         header.sample_shift = 0;
 
@@ -1801,12 +1863,23 @@ retry:
         }
         bsends[3].ptr = (const uint8_t*)TACH;
         bsends[3].end = (const uint8_t*)(TACH + 4);
-        //bsends[4] = tachs..
-        bsends[5].ptr = (const uint8_t*)SAMP;
-        bsends[5].end = (const uint8_t*)(SAMP + 4);
+        if (num_tachs[old_idx][0]) {
+          bsends[4].ptr = (const uint8_t*)&tachs[old_idx][0][0];
+          bsends[4].end = (const uint8_t*)&tachs[old_idx][0][num_tachs[old_idx][0]];
+        }
+        if (num_tachs[old_idx][1]) {
+          bsends[5].ptr = (const uint8_t*)&tachs[old_idx][1][0];
+          bsends[5].end = (const uint8_t*)&tachs[old_idx][1][num_tachs[old_idx][1]];
+        }
+        if (num_tachs[old_idx][2]) {
+          bsends[6].ptr = (const uint8_t*)&tachs[old_idx][2][0];
+          bsends[6].end = (const uint8_t*)&tachs[old_idx][2][num_tachs[old_idx][2]];
+        }
+        bsends[7].ptr = (const uint8_t*)SAMP;
+        bsends[7].end = (const uint8_t*)(SAMP + 4);
         //cast away volatile - ISR won't touch old data
-        bsends[6].ptr = (const uint8_t*)(sample_data[old_idx]);
-        bsends[6].end = (const uint8_t*)(sample_data[old_idx] + nbytes);
+        bsends[8].ptr = (const uint8_t*)(sample_data[old_idx]);
+        bsends[8].end = (const uint8_t*)(sample_data[old_idx] + nbytes);
 
         start_section("SAMPLES");
         bsend_start();
