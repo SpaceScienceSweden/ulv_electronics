@@ -1807,13 +1807,14 @@ retry:
         adc_ena_copy[1] = adc_ena[1];
         adc_ena_copy[2] = adc_ena[2];
 
-        memset(&header, 0, sizeof(header));
-
         if (num_measurements != 65535 && --num_measurements == 0) {
           stop_measurement();
         }
         sei();
 
+        bwait();
+
+        memset(&header, 0, sizeof(header));
         header.version = 3;                         // format version
         header.first_frame = first_frame;           // timestamp of first frame
         header.num_temps = 0;                       // DS18B20Z outputs (0..6)
