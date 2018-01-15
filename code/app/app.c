@@ -352,6 +352,11 @@ static void bsend_start(void) {
 #define TIMER3_PRESCALER 1
 #define TIMER3_TOP        0xFFFF
 
+//when doing TCNT1 = 0, what value should we give TCNT3 for them both to line up?
+//because gcc is not very smart it turns out that the answer is six
+//2x ldi followed by 2x sts = 6 cy
+#define TIMER3_OFS    6
+
 ISR(TIMER1_OVF_vect) {
   CPU_USAGE_ON();
   timer1_base += TIMER1_PRESCALER*(TIMER1_TOP + 1 /* TOP + 1 = 1024 */);
@@ -435,6 +440,7 @@ static void settime64(uint64_t t) {
   //set timer base, ensure TOV1 ISR won't happen for a while
   timer1_base = t;
   TCNT1 = 0;
+  TCNT3 = TIMER3_OFS;
   TIFR |= (1<<TOV1);
   sei();
 }
@@ -484,6 +490,7 @@ static void setup_timers() {
   //pre-emptively avoid and clear TOV1
   //this gives main() a little time to do stuff before the first TOV1 interrupt fires
   TCNT1 = 0;
+  TCNT3 = TIMER3_OFS;
   TIFR |= (1<<TOV1);
 }
 
