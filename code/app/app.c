@@ -90,6 +90,7 @@ uint8_t last_tach_pin[3];   //last tachometer pin value, for detecting rising ed
 //num_tachs and tachs are [2] for double buffering, just like sample_data
 uint16_t num_tachs[2][3];
 __uint24 tachs[2][3][MAX_TACHS];
+uint8_t last_first_sample;
 volatile uint8_t first_sample;  //if 1, DRDY ISR is seeing the first sample in the current packet
 volatile __uint24 first_frame;  //set to gettime24() if first_sample == 1
 
@@ -1015,6 +1016,7 @@ static uint8_t get_tach_pin(uint8_t id) {
 
 //returns size of sample buffer
 static size_t sample_setup(uint8_t idx) {
+  last_first_sample = 1;
   first_sample = 1;
   sample_data_idx = idx;
   sample_ptr = sample_data[sample_data_idx];
@@ -1168,10 +1170,7 @@ ISR(INT7_vect) {
       }
     }
   } else {
-    if (first_sample) {
-      first_frame = gettime24();
-      first_sample = 0;
-    }
+    first_sample = 0;
   }
 
   for (uint8_t id = 0; id < 3; id++) {
@@ -1776,11 +1775,16 @@ retry:
     if (measurement_on) {
       //check tachometers
       uint8_t tachs_done = 0; //if 1 then tachs are full
-      if (first_sample == 0) {  //ensure tachs come after first_frame
+      //detect first_sample falling edge
+      if (!first_sample && last_first_sample) {
+        first_frame = gettime24();
+        last_first_sample = 0;
+      }
+
         for (uint8_t x = 0; x < 3; x++) {
           if (adc_ena[x]) {
             uint8_t pin = get_tach_pin(x);
-            if (pin > last_tach_pin[x]) { //rising edge
+            if (pin > last_tach_pin[x] && first_sample == 0) { //rising edge, after first_frame
               uint8_t idx = sample_data_idx;
               tachs[idx][x][num_tachs[idx][x]] = gettime24();
               if (++num_tachs[idx][x] >= MAX_TACHS) {
@@ -1790,7 +1794,6 @@ retry:
             last_tach_pin[x] = pin;
           }
         }
-      }
 
       cli();
       if (sample_ptr >= sample_end || tachs_done) {
