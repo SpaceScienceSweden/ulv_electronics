@@ -347,11 +347,14 @@ static void bsend_start(void) {
 
 #define TIMER1_PRESCALER 1  //6% CPU
 //#define TIMER1_PRESCALER 8  //<1% CPU
-#define MOTOR_TOP        0x3FF
+#define TIMER1_TOP        0x03FF
+
+#define TIMER3_PRESCALER 1
+#define TIMER3_TOP        0xFFFF
 
 ISR(TIMER1_OVF_vect) {
   CPU_USAGE_ON();
-  timer1_base += TIMER1_PRESCALER*(MOTOR_TOP + 1 /* TOP + 1 = 1024 */);
+  timer1_base += TIMER1_PRESCALER*(TIMER1_TOP + 1 /* TOP + 1 = 1024 */);
   CPU_USAGE_OFF();
 }
 
@@ -437,7 +440,7 @@ static void settime64(uint64_t t) {
 }
 
 
-static void setup_motor_pwm() {
+static void setup_timers() {
   //PB5 = OC1A, PB6 = OC1B, PB7 = OC1C. inverted drive signals
   //pwm frequency range is 500 Hz .. 20 kHz
   //WGM=3 -> TOP=0x3FF -> (7372800/1024) = 7200 Hz (10-bit fast PWM)
@@ -451,8 +454,21 @@ static void setup_motor_pwm() {
 #else
 #error Unsupported TIMER1_PRESCALER
 #endif
+  //ICESn = 0 (falling edge)
   TCCR1B = (((wgm>>2)&3) << WGM12) | (cs<<CS10);
   TCCR1C = 0;
+
+  //run timer3 at same speed as timer1, don't do any PWM stuff
+  TCCR3A = 0;
+#if TIMER3_PRESCALER == 1
+  cs = 1;
+#elif TIMER3_PRESCALER == 8
+  cs = 2;
+#else
+#error Unsupported TIMER3_PRESCALER
+#endif
+  TCCR3B = (cs<<CS30);
+  TCCR3C = 0;
 
   //0% duty to start
   OCR1A = 0;
@@ -1298,9 +1314,9 @@ static void handle_input(void) {
           unsigned pwm0, pwm1, pwm2;
           int n = sscanf(line, "%u %u %u", &pwm0, &pwm1, &pwm2);
           if (n == 3) {
-            if (pwm0 > MOTOR_TOP || pwm1 > MOTOR_TOP || pwm2 > MOTOR_TOP) {
+            if (pwm0 > TIMER1_TOP || pwm1 > TIMER1_TOP || pwm2 > TIMER1_TOP) {
               start_section("ERROR");
-              printf_P(PSTR("One or more of PWMS %u, %u, and %u is greater than MOTOR_TOP = %u\r\n"), pwm0, pwm1, pwm2, MOTOR_TOP);
+              printf_P(PSTR("One or more of PWMS %u, %u, and %u is greater than TIMER1_TOP = %u\r\n"), pwm0, pwm1, pwm2, TIMER1_TOP);
             } else {
               OCR1A = pwm0;
               OCR1B = pwm1;
@@ -1310,9 +1326,9 @@ static void handle_input(void) {
             //set some specific motor
             //pwm0 = motor index
             //pwm1 = value
-            if (pwm1 > MOTOR_TOP) {
+            if (pwm1 > TIMER1_TOP) {
               start_section("ERROR");
-              printf_P(PSTR("PWM %u greater than MOTOR_TOP = %u\r\n"), pwm1, MOTOR_TOP);
+              printf_P(PSTR("PWM %u greater than TIMER1_TOP = %u\r\n"), pwm1, TIMER1_TOP);
             } else if (pwm0 == 0) {
               OCR1A = pwm1;
             } else if (pwm0 == 1) {
@@ -1329,9 +1345,9 @@ static void handle_input(void) {
           }
         } else if (c == 'K') {
           //start motors with default speed (50%)
-          OCR1A = MOTOR_TOP/2;
-          OCR1B = MOTOR_TOP/2;
-          OCR1C = MOTOR_TOP/2;
+          OCR1A = TIMER1_TOP/2;
+          OCR1B = TIMER1_TOP/2;
+          OCR1C = TIMER1_TOP/2;
         }
 
         //report motor speeds
@@ -1739,7 +1755,7 @@ int main(void)
   setup_adc_pins();
 
   //setup Timer1 + motor PWM just before enabling interrupts
-  setup_motor_pwm();
+  setup_timers();
   sei();
 
   //search for 1-wire devices
