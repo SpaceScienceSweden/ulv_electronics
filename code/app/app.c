@@ -62,6 +62,9 @@
 #define UART_CTRL2_DATA  ((1<<UCSZ11) | (1<<UCSZ10))
 #define UART_DATA  UDR1
 
+#define SPI_SPEED (1<<(SPI2X+2))              //f_osc/2 -> 3.7 Mbps
+//#define SPI_SPEED ((1<<SPR0) | (1<<SPR1)) //1/128 speed (57600 bps)
+
 //a 32-bit timer is not enough to not overflow over the mission duration
 volatile uint64_t timer1_base = 0;
 
@@ -74,6 +77,7 @@ uint8_t romcnt = 0;
 
 uint8_t measurement_on = 0;
 uint16_t measurement_num_frames = 0;
+volatile uint16_t num_captured_frames = 0;
 uint16_t measurement_gap = 0;
 uint8_t measurement_sample_fmt = 0;
 uint16_t num_measurements = 0;
@@ -90,9 +94,7 @@ uint8_t last_tach_pin[3];   //last tachometer pin value, for detecting rising ed
 //num_tachs and tachs are [2] for double buffering, just like sample_data
 uint16_t num_tachs[2][3];
 __uint24 tachs[2][3][MAX_TACHS];
-uint8_t last_first_sample;
-volatile uint8_t first_sample;  //if 1, DRDY ISR is seeing the first sample in the current packet
-volatile __uint24 first_frame;  //set to gettime24() if first_sample == 1
+__uint24 first_frame;  //set to gettime24() while we're  the first sample
 
 //header, for bsend()
 sample_packet_header_s header;
@@ -312,12 +314,14 @@ ISR(USART1_UDRE_vect) {
 }
 
 static inline uint8_t bsend_busy(void) {
-  return UCSR1B & (1<<UDRIE1);
+  return (UCSR1B & (1<<UDRIE1)) || !(UART_STATUS & (1<<UART_TXREADY));
 }
 
 static void bwait(void) {
   //wait for last bsend to finish
-  while (bsend_busy());
+  while (bsend_busy()) {
+    wdt_reset();
+  }
 }
 
 //starts prepared background send
@@ -349,13 +353,17 @@ static void bsend_start(void) {
 //#define TIMER1_PRESCALER 8  //<1% CPU
 #define TIMER1_TOP        0x03FF
 
-#define TIMER3_PRESCALER 1
+#define TIMER3_PRESCALER TIMER1_PRESCALER
 #define TIMER3_TOP        0xFFFF
 
 //when doing TCNT1 = 0, what value should we give TCNT3 for them both to line up?
 //because gcc is not very smart it turns out that the answer is six
 //2x ldi followed by 2x sts = 6 cy
+#if TIMER1_PRESCALER == 1
 #define TIMER3_OFS    6
+#else
+#define TIMER3_OFS    1
+#endif
 
 ISR(TIMER1_OVF_vect) {
   CPU_USAGE_ON();
@@ -502,13 +510,10 @@ static void setup_spi(void) {
   PORTB |= (1<<0) | (1<<3);
   DDRB |= (1<<0) | (1<<1) | (1<<2);
 
-  //enable spi, run at fck/2 (3.7 Mbps)
-  SPCR = (1<<SPE) | (1<<MSTR);
-  //SPSR |= (1<<SPI2X); //double speed (vroom!)
-  //1/128 speed (57600 bps)
-  SPCR |= (1<<SPR0) | (1<<SPR1);
+  //enable spi, run at SPI_SPEED (3.7 Mbps or 57.6 kbps)
   //CPOL=0, CPHA=1
-  SPCR |= 1<<CPHA;
+  SPCR = (1<<SPE) | (1<<MSTR) | (1<<CPHA) | (SPI_SPEED & 3);
+  SPSR = (SPI_SPEED >> 2); //double speed, possibly
 }
 
 static inline uint8_t spi_comm_byte(uint8_t in) {
@@ -1039,8 +1044,7 @@ static uint8_t get_tach_pin(uint8_t id) {
 
 //returns size of sample buffer
 static size_t sample_setup(uint8_t idx) {
-  last_first_sample = 1;
-  first_sample = 1;
+  num_captured_frames = 0;
   sample_data_idx = idx;
   sample_ptr = sample_data[sample_data_idx];
   //assume 24-bit samples
@@ -1051,11 +1055,6 @@ static size_t sample_setup(uint8_t idx) {
   num_tachs[idx][0] = 0;
   num_tachs[idx][1] = 0;
   num_tachs[idx][2] = 0;
-  for (uint8_t x = 0; x < 3; x++) {
-    if (adc_ena[x]) {
-      last_tach_pin[x] = get_tach_pin(x);
-    }
-  }
   return nbytes;
 }
 
@@ -1174,9 +1173,15 @@ abort_wakeup:
 // /DRDY ISR
 // also IC3
 ISR(INT7_vect) {
+  sei();
+
   uint8_t do_store = 1;
   //cast away volatile
   uint8_t *ptr = (uint8_t*)sample_ptr;
+
+  if (num_captured_frames == 0) {
+    first_frame = gettime24();
+  }
 
   //in gap or overflow?
   if (gap_left > 0 || ptr >= sample_end) {
@@ -1192,8 +1197,6 @@ ISR(INT7_vect) {
         sample_overflow++;
       }
     }
-  } else {
-    first_sample = 0;
   }
 
   for (uint8_t id = 0; id < 3; id++) {
@@ -1225,6 +1228,7 @@ ISR(INT7_vect) {
 
   if (do_store) {
     sample_ptr = ptr;
+    num_captured_frames++;
   }
 }
 
@@ -1798,16 +1802,11 @@ retry:
     if (measurement_on) {
       //check tachometers
       uint8_t tachs_done = 0; //if 1 then tachs are full
-      //detect first_sample falling edge
-      if (!first_sample && last_first_sample) {
-        first_frame = gettime24();
-        last_first_sample = 0;
-      }
-
         for (uint8_t x = 0; x < 3; x++) {
           if (adc_ena[x]) {
             uint8_t pin = get_tach_pin(x);
-            if (pin > last_tach_pin[x] && first_sample == 0) { //rising edge, after first_frame
+            //look for rising edge after we have captured a couple of frames
+            if (pin > last_tach_pin[x] && num_captured_frames > 5) {
               uint8_t idx = sample_data_idx;
               tachs[idx][x][num_tachs[idx][x]] = gettime24();
               if (++num_tachs[idx][x] >= MAX_TACHS) {
@@ -1838,9 +1837,10 @@ retry:
         bwait();
 
         memset(&header, 0, sizeof(header));
-        header.version = 3;                         // format version
+        header.version = 4;                         // format version
         header.first_frame = first_frame;           // timestamp of first frame
         header.num_temps = 0;                       // DS18B20Z outputs (0..6)
+        header.prescaler = TIMER1_PRESCALER;
 
         //maybe we have some data? :>
         if (temp_conversion_in_progress) {

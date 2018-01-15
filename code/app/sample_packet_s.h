@@ -26,7 +26,7 @@
 
 // Sample packet header. Fixed size.
 typedef struct sample_packet_header_s {
-  uint8_t   version;      // format version (3)
+  uint8_t   version;      // format version (4)
   __uint24  first_frame;  // timestamp of first frame
   uint8_t   num_temps;    // DS18B20Z outputs (0..6)
   uint16_t  num_tachs[3]; // tach impulses per channel
@@ -49,8 +49,10 @@ typedef struct sample_packet_header_s {
   // Value is capped at 255, which may mean "255 or more".
   uint8_t   overflow;
 
-  // Reserved to keep the struct 21 bytes
-  uint8_t   reserved;
+  // Prescaler used for timers. Multiply timers
+  // by this value to get time in clock cycles.
+  // Typical values: 1 or 8.
+  uint8_t   prescaler;
 } sample_packet_header_s;
 
 // Temperature reading structure.
