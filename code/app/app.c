@@ -1173,7 +1173,8 @@ abort_wakeup:
 // /DRDY ISR
 // also IC3
 ISR(INT7_vect) {
-  sei();
+  //sei();  //only 14.4 kHz max of we enable interrupts inside
+            //without interrupts we can do up to 19.2 kHz
 
   uint8_t do_store = 1;
   //cast away volatile
@@ -1206,20 +1207,84 @@ ISR(INT7_vect) {
 #error WORDSZ != 24 not supported currently
 #endif
       //skip status
-      spi_comm_byte(0);
-      spi_comm_byte(0);
-      spi_comm_byte(0);
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0;
 
-      for (uint8_t x = 0; x < adc_popcount[id]; x++) {
-       if (do_store) {
-        *ptr++ = spi_comm_byte(0);
-        *ptr++ = spi_comm_byte(0);
-        *ptr++ = spi_comm_byte(0);
-       } else {
-        spi_comm_byte(0);
-        spi_comm_byte(0);
-        spi_comm_byte(0);
-       }
+      if (do_store) {
+        while(!(SPSR & (1<<SPIF)));
+        SPDR = 0; while(!(SPSR & (1<<SPIF)));
+        SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+        SPDR = 0; *ptr++ = SPDR;
+        if (adc_popcount[id] < 3) {
+          if (adc_popcount[id] == 1) {
+            while(!(SPSR & (1<<SPIF)));
+          } else { // 2
+            while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+          }
+        } else {
+          if (adc_popcount[id] == 3) {
+            while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+          } else { // 4
+            while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+          }
+        }
+        *ptr++ = SPDR;
+      } else {
+        //discard
+        while(!(SPSR & (1<<SPIF)));
+        SPDR = 0; while(!(SPSR & (1<<SPIF)));
+        SPDR = 0; while(!(SPSR & (1<<SPIF)));
+        SPDR = 0;
+        if (adc_popcount[id] < 3) {
+          if (adc_popcount[id] == 1) {
+            while(!(SPSR & (1<<SPIF)));
+          } else { // 2
+            while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+          }
+        } else {
+          if (adc_popcount[id] == 3) {
+            while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+          } else { // 4
+            while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+            SPDR = 0; while(!(SPSR & (1<<SPIF)));
+          }
+        }
       }
 
       adc_deselect();
