@@ -1,9 +1,9 @@
-(kicad_pcb (version 4) (host pcbnew 4.0.7+dfsg1-1)
+(kicad_pcb (version 4) (host pcbnew 4.0.5+dfsg1-4)
 
   (general
     (links 390)
     (no_connects 0)
-    (area 56.5 56.5 143.500001 143.500001)
+    (area 57.499499 57.499499 142.500501 142.500501)
     (thickness 1.6)
     (drawings 117)
     (tracks 2405)
@@ -14,7 +14,7 @@
 
   (page A4)
   (layers
-    (0 F.Cu signal hide)
+    (0 F.Cu signal)
     (31 B.Cu signal)
     (32 B.Adhes user)
     (33 F.Adhes user)
@@ -23,7 +23,7 @@
     (36 B.SilkS user)
     (37 F.SilkS user)
     (38 B.Mask user)
-    (39 F.Mask user hide)
+    (39 F.Mask user)
     (40 Dwgs.User user)
     (41 Cmts.User user)
     (42 Eco1.User user)
@@ -10432,6 +10432,66 @@
     (polygon
       (pts
         (xy 130.9 92.6) (xy 130.9 97.6) (xy 128.2 97.6) (xy 128.2 92.6)
+      )
+    )
+  )
+  (zone (net 0) (net_name "") (layer F.Mask) (tstamp 0) (hatch edge 0.508)
+    (connect_pads (clearance 0))
+    (min_thickness 0.254)
+    (fill yes (arc_segments 16) (thermal_gap 0.508) (thermal_bridge_width 0.508))
+    (polygon
+      (pts
+        (xy 130 70) (xy 130 57.5) (xy 142.5 57.5) (xy 142.5 70)
+      )
+    )
+    (filled_polygon
+      (pts
+        (xy 142.373 69.873) (xy 130.127 69.873) (xy 130.127 57.627) (xy 142.373 57.627)
+      )
+    )
+  )
+  (zone (net 0) (net_name "") (layer F.Mask) (tstamp 0) (hatch edge 0.508)
+    (connect_pads (clearance 0))
+    (min_thickness 0.254)
+    (fill yes (arc_segments 16) (thermal_gap 0.508) (thermal_bridge_width 0.508))
+    (polygon
+      (pts
+        (xy 130 130) (xy 142.5 130) (xy 142.5 142.5) (xy 130 142.5)
+      )
+    )
+    (filled_polygon
+      (pts
+        (xy 142.373 142.373) (xy 130.127 142.373) (xy 130.127 130.127) (xy 142.373 130.127)
+      )
+    )
+  )
+  (zone (net 0) (net_name "") (layer F.Mask) (tstamp 0) (hatch edge 0.508)
+    (connect_pads (clearance 0))
+    (min_thickness 0.254)
+    (fill yes (arc_segments 16) (thermal_gap 0.508) (thermal_bridge_width 0.508))
+    (polygon
+      (pts
+        (xy 70 130) (xy 70 142.5) (xy 57.5 142.5) (xy 57.5 130)
+      )
+    )
+    (filled_polygon
+      (pts
+        (xy 69.873 142.373) (xy 57.627 142.373) (xy 57.627 130.127) (xy 69.873 130.127)
+      )
+    )
+  )
+  (zone (net 0) (net_name "") (layer F.Mask) (tstamp 0) (hatch edge 0.508)
+    (connect_pads (clearance 0))
+    (min_thickness 0.254)
+    (fill yes (arc_segments 16) (thermal_gap 0.508) (thermal_bridge_width 0.508))
+    (polygon
+      (pts
+        (xy 70 70) (xy 57.5 70) (xy 57.5 57.5) (xy 70 57.5)
+      )
+    )
+    (filled_polygon
+      (pts
+        (xy 69.873 69.873) (xy 57.627 69.873) (xy 57.627 57.627) (xy 69.873 57.627)
       )
     )
   )
