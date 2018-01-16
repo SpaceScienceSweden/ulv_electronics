@@ -1745,11 +1745,23 @@ static void handle_input(void) {
             return;
           }
 
+          if (num_measurements == 0) {
+            num_measurements = 65535;
+          }
+
           uint32_t cycles_per_sample = adc_cycles_per_sample();
           uint8_t pc = adc_total_popcount();
 
+          if (pc == 0) {
+            reset_measurement();
+            start_section("ERROR");
+            printf_P(PSTR("no channels enabled\n"));
+            return;
+          }
+
           //sanity check frame size
-          uint32_t sample_data_size = pc*measurement_num_frames * (measurement_sample_fmt == 1 ? 1 : 3);
+          uint32_t sample_data_size = pc*measurement_num_frames*3;
+          uint32_t compressed_data_size = pc*measurement_num_frames * (measurement_sample_fmt == 1 ? 1 : 3);
           if (sample_data_size > sizeof(sample_data[0])) {
             reset_measurement();
             start_section("ERROR");
@@ -1761,7 +1773,7 @@ static void handle_input(void) {
           uint32_t bytes = sizeof(sample_packet_header_s) +
             4 + 6*sizeof(temperature_s) +
             4 + sizeof(tachs[0][0])*num_active_adcs() +
-            4 + sample_data_size;
+            4 + compressed_data_size;
 
           //number of cycles needed to collect data from ADCs
           uint32_t cycles_in  = (measurement_num_frames+measurement_gap)*cycles_per_sample;
@@ -1772,6 +1784,7 @@ static void handle_input(void) {
           uint32_t cycles_out = bytes*10*F_CPU/BAUD + 1000*F_CPU/1000000;
 
           start_section(cycles_in > cycles_out ? "INFO" : "ERROR");
+          printf_P(PSTR(" sample data size = %lu / %u\r\n"), sample_data_size, (uint16_t)sizeof(sample_data[0]));
           printf_P(PSTR("      packet size = %lu (upper limit)\r\n"), bytes);
           printf_P(PSTR("      sample rate = %lu Hz\r\n"), 7372800UL/cycles_per_sample);
           printf_P(PSTR("cycles per sample = %lu\r\n"), cycles_per_sample);
@@ -1846,12 +1859,7 @@ int main(void)
 
   for (;;) {
 retry:
-   if (bsend_busy()) {
-    //capture TACH and such
-    //but also capture TACH in main logic
-    wdt_reset();
-   } else {
-    if (is_busy) {
+    if (is_busy && !bsend_busy()) {
       //READY
       READY();
     }
@@ -1898,6 +1906,11 @@ retry:
         }
         sei();
 
+        if (measurement_sample_fmt == 1) {
+          compress_24bit_to_8bit(&header, (void*)sample_data[old_idx]);
+          nbytes /= 3;
+        }
+
         bwait();
 
         memset(&header, 0, sizeof(header));
@@ -1938,11 +1951,6 @@ retry:
         header.sample_fmt = measurement_sample_fmt; // Sample format.
         header.sample_shift = 0;
 
-        if (measurement_sample_fmt == 1) {
-          compress_24bit_to_8bit(&header, (void*)sample_data[old_idx]);
-          nbytes /= 3;
-        }
-
         memset(bsends, 0, sizeof(bsends));
         bsends[0].ptr = (const uint8_t*)&header;
         bsends[0].end = (const uint8_t*)(&header + 1);
@@ -1970,7 +1978,7 @@ retry:
         bsends[7].end = (const uint8_t*)(SAMP + 4);
         //cast away volatile - ISR won't touch old data
         bsends[8].ptr = (const uint8_t*)(sample_data[old_idx]);
-        bsends[8].end = (const uint8_t*)(sample_data[old_idx] + nbytes);
+        bsends[8].end = (const uint8_t*)(&sample_data[old_idx][nbytes]);
 
         start_section("SAMPLES");
         bsend_start();
@@ -1978,7 +1986,6 @@ retry:
         sei();
       }
     }
-   }
   }
 
   return 0;
