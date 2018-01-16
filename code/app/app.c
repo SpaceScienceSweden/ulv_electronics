@@ -867,20 +867,19 @@ static uint8_t popcount(uint16_t a) {
 }
 
 static void wreg(uint8_t id, uint8_t a, uint8_t d) {
-  for (;;) {
-    uint32_t word;
-    adc_comm(id, WREG(a,d));
-    word = adc_comm(id, 0);
-    if (((word >> (WORDSZ-16)) & 0x1FFF) == ((a<<8) | d)) {
-      if (a == ADC_ENA) {
-        adc_ena[id]      = d < 0x10 ? d : 0;
-        adc_popcount[id] = d < 0x10 ? popcount(d) : 0;
-      }
-      break;
-    } else {
-      start_section("ERROR");
-      printf_P(PSTR("wreg having problems (a=%02x, d=%02x vs %08lX)\r\n"), a, d, word);
-    }
+  uint32_t word;
+  adc_comm(id, WREG(a,d));
+
+  //if we change ADC_ENA then we need to update popcount since we use dynamic framing
+  if (a == ADC_ENA) {
+    adc_ena[id]      = d < 0x10 ? d : 0;
+    adc_popcount[id] = d < 0x10 ? popcount(d) : 0;
+  }
+
+  word = adc_comm(id, 0);
+  if (((word >> (WORDSZ-16)) & 0x1FFF) != ((a<<8) | d)) {
+    start_section("ERROR");
+    printf_P(PSTR("wreg having problems (a=%02x, d=%02x vs %08lX)\r\n"), a, d, word);
   }
 }
 
