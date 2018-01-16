@@ -329,6 +329,7 @@ V & Enable 24V and +-5V           & VOLTAGES      \\ \hline
 B & Disable 24V and +-5V          & VOLTAGES      \\ \hline
 m & Read motor PWMs               & MTR\_PWM      \\ \hline
 K & Set motor PWMs to 50\%        & MTR\_PWM      \\ \hline
+o & Read VGND DAC values          & VGNDS         \\ \hline
 r & Measure motor speeds in RPM   & MTR\_SPD      \\ \hline
 1 & List 1-wire device ROMs       & ONEWIRE       \\ \hline
 ! & Search for 1-wire devices     & ONEWIRE       \\ \hline
@@ -356,6 +357,8 @@ Can occur anywhere in a line, does not have to be terminated with newline. & ESC
 {\bf Char} & {\bf Parameter syntax} & {\bf Description} & {\bf Response} \\ \hline
 M & id pwm              & Set motor PWM                       & MTR\_PWM      \\ \hline
 M & pwm0 pwm1 pwm2      & Set all motor PWMs                  & MTR\_PWM      \\ \hline
+O & id vgnd             & Set VGND DAC value                  & VGNDS         \\ \hline
+O & vgnd0 vgnd1 vgnd2   & Set all VGND DAC values             & VGNDS         \\ \hline
 Q & id addr val         & Set ADS131A04 register              & ADC\_REGS     \\ \hline
 E & frame\_size gap [num\_packets] & Configure measurement    & CONFIG        \\ \hline
   &                     & Read CPU regs (\$0000 - \$00FF)     &               \\ \hline
@@ -514,6 +517,24 @@ Example response after issuing a "K" command:
     BUSY
     *MTR_PWM
     511 511 511
+    READY
+\end{lstlisting}
+
+\subsection{VGNDS}
+
+10-bit DAC values for each MAX504 (0 - 1023), which are used for the input stages' virtual grounds (VGND).
+The MAX504s are in bipolar configuration,
+so a value of 0 gives -2.048 V out, 512 gives 0 V out and 1023 gives 2.044 V out.
+In other words the output voltage is $-2.048 + value*0.004$.
+See also Table 3 in the MAX504 datasheet.
+
+The instrument is initialized so that all MAX504s output zero volts.
+Example response to an 'o' command after initialization:
+
+\begin{lstlisting}
+    BUSY
+    *VGNDS
+    512 512 512
     READY
 \end{lstlisting}
 
@@ -679,6 +700,35 @@ Set PWM duty rate for all three motors in one go.
     BUSY
     *MTR_PWM
     200 400 600
+    READY
+\end{lstlisting}
+
+\subsection{Set VGND DAC values ('O')}
+
+Set one or more inputs to the MAX504s.
+Values must be between 0 - 1023.
+
+\subsubsection{Two parameter form (id vgnd)}
+
+Set DAC value for MAX504 with given ID (0..2). Example:
+
+\begin{lstlisting}
+    O1 900
+    BUSY
+    *VGNDS
+    512 900 512
+    READY
+\end{lstlisting}
+
+\subsubsection{Three parameter form (vgnd0 vgnd1 vgnd2)}
+
+Set DAC value for all MAX504s:
+
+\begin{lstlisting}
+    M300 400 500
+    BUSY
+    *VGNDS
+    300 400 500
     READY
 \end{lstlisting}
 

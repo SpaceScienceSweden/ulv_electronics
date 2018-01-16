@@ -125,6 +125,9 @@ static const int max_programs = sizeof(programs)/sizeof(programs[0]);
 static uint8_t adc_popcount[3] = {0,0,0};
 static uint8_t adc_ena[3] = {0,0,0};
 
+//initialize MAX504s to 0 V
+static uint16_t vgnds[3] = {512, 512, 512};
+
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
   RS485_DE_PORT |= RS485_DE_BIT;
@@ -524,8 +527,10 @@ static inline uint8_t spi_comm_byte(uint8_t in) {
   return SPDR;
 }
 
-static void set_vgnd(uint16_t codein) {
+static void set_vgnd(uint8_t x, uint16_t codein) {
   uint8_t spcr_before = SPCR;
+
+  vgnds[x] = codein;
 
   //set all DACs to -1.024 V, enable ADG601's
   DDRE |= (1<<2) | (1<<3) | (1<<4);
@@ -534,7 +539,6 @@ static void set_vgnd(uint16_t codein) {
   //CPOL=0, CPHA=0
   SPCR &= ~(1<<CPHA);
 
-  for (uint8_t x = 0; x < 3; x++) {
     PORTE &= ~(1<<(x+2));
 
     //   0 = -2.048 V
@@ -560,7 +564,6 @@ static void set_vgnd(uint16_t codein) {
 
     //de-assert all /CS
     PORTE |= (1<<2) | (1<<3) | (1<<4);
-  }
 
   //enable ADG601s
   DDRE |= (1<<5);
@@ -570,6 +573,12 @@ static void set_vgnd(uint16_t codein) {
 
   //restore SPCR
   SPCR = spcr_before;
+}
+
+static void set_vgnds(uint16_t codein) {
+  for (uint8_t id = 0; id < 3; id++) {
+    set_vgnd(id, codein);
+  }
 }
 
 static void disable_vgnd(void) {
@@ -1593,13 +1602,13 @@ static void handle_input(void) {
           uint16_t b = 1024;
           uint16_t step = 1;
           for (uint16_t x = a; x < b; x += step) {
-            set_vgnd(sintab[x]);
+            set_vgnds(sintab[x]);
             _delay_us(600);
             wdt_reset();
-            /*set_vgnd(512);
+            /*set_vgnds(512);
             _delay_ms(100);
             wdt_reset();
-            //set_vgnd(512 + (111-8)/4);
+            //set_vgnds(512 + (111-8)/4);
             disable_vgnd();
             _delay_ms(100);
             wdt_reset();*/
@@ -1610,7 +1619,7 @@ static void handle_input(void) {
         }
       escapeit:
         //leave with VGND=0
-        set_vgnd(512);
+        set_vgnds(512);
       } else if (c == 'p') {
         //list programs
         list_programs();
@@ -1812,6 +1821,43 @@ static void handle_input(void) {
           return;
         }
         adc_wakeup();
+      } else if (c == 'o' || c == 'O') {
+        //get/set offset voltages
+        if (c == 'O') {
+          //set voltages
+          unsigned vgnd0, vgnd1, vgnd2;
+          int n = sscanf(line, "%u %u %u", &vgnd0, &vgnd1, &vgnd2);
+          if (n == 3) {
+            if (vgnd0 > 1023 || vgnd1 > 1023 || vgnd2 > 1023) {
+              start_section("ERROR");
+              printf_P(PSTR("One or more of VGNDs %u, %u, and %u is greater than 1023\r\n"), vgnd0, vgnd1, vgnd2);
+            } else {
+              set_vgnd(0, vgnd0);
+              set_vgnd(1, vgnd1);
+              set_vgnd(2, vgnd2);
+            }
+          } else if (n == 2) {
+            //set some specific offset
+            //vgnd0 = MAX504 index
+            //vgnd1 = value
+            if (vgnd1 > 1023) {
+              start_section("ERROR");
+              printf_P(PSTR("VGND %u greater than 1023\r\n"), vgnd1);
+            } else if (vgnd0 >= 0 && vgnd0 <= 2) {
+              set_vgnd(vgnd0, vgnd1);
+            } else {
+              start_section("ERROR");
+              printf_P(PSTR("bad VGND ID: %u\r\n"), vgnd0);
+            }
+          } else {
+            start_section("ERROR");
+            printf_P(PSTR("sscanf: n=%i\r\n"), n);
+          }
+        }
+
+        //report voltages
+        start_section("VGNDS");
+        printf_P(PSTR("%u %u %u\r\n"), vgnds[0], vgnds[1], vgnds[2]);
       } else if (c == '?') {
         //print help
         start_section("INFO");
@@ -1849,6 +1895,10 @@ int main(void)
   //search for 1-wire devices
   ds18b20search( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &romcnt, roms, sizeof(roms) );
   if (romcnt > 6) romcnt = 6; //just to be sure
+
+  set_vgnd(0, vgnds[0]);
+  set_vgnd(1, vgnds[1]);
+  set_vgnd(2, vgnds[2]);
 
   start_section("INFO");
   printf_P(PSTR("Hello, Earth! 👽\r\n"));
