@@ -496,7 +496,6 @@ F0 "Tachometers" 60
 F1 "tachs.sch" 60
 F2 "ITACH" I L 7800 6050 60 
 F3 "RAW_ITACH" I L 7800 6150 60 
-F4 "DIN" I L 7800 5950 60 
 $EndSheet
 Text Label 6700 2450 0    60   ~ 0
 ITACH
@@ -993,8 +992,6 @@ Text GLabel 5450 2800 1    60   Input ~ 0
 SCLK
 Text GLabel 7700 3500 0    60   Input ~ 0
 SCLK
-Text GLabel 7350 3700 3    60   Input ~ 0
-/CS_DACS
 $Comp
 L R_Small R38
 U 1 1 58D40091
@@ -1154,8 +1151,6 @@ F 3 "" H 10750 4450 50  0000 C CNN
 	1    10750 4450
 	1    0    0    -1  
 $EndComp
-Text Notes 7550 5550 1    39   ~ 0
-Daisy chain with optional MAX504 in tachometer circuit.
 Text Notes 8400 5150 0    60   ~ 0
 Capacitance between VGND and GND is 77 pF (measured)\nMAX504 can drive this quite comfortably\nIf more capacitance is needed, populate\nR56 with 100k and C52..54 with 1 nF
 $Comp
@@ -1496,9 +1491,9 @@ Wire Wire Line
 Wire Wire Line
 	10300 3300 10350 3300
 Wire Wire Line
-	10350 3300 10350 2650
+	10350 2650 10350 3300
 Wire Wire Line
-	10350 2650 6150 2650
+	6150 2650 10350 2650
 Wire Wire Line
 	5700 5700 5850 5700
 Wire Wire Line
@@ -1621,9 +1616,6 @@ Wire Wire Line
 	5450 3150 5450 2800
 Connection ~ 5450 3150
 Wire Wire Line
-	7600 3700 7950 3700
-Connection ~ 7350 3600
-Wire Wire Line
 	6100 3750 6650 3750
 Wire Wire Line
 	6100 3750 6100 3650
@@ -1639,7 +1631,7 @@ Connection ~ 6650 1550
 Connection ~ 6650 2550
 Connection ~ 6650 2650
 Wire Wire Line
-	7350 2550 7350 3700
+	7350 2550 7350 3600
 Connection ~ 6650 2850
 Wire Wire Line
 	6150 3950 6700 3950
@@ -1664,10 +1656,6 @@ Connection ~ 7250 2050
 Wire Wire Line
 	7650 2250 7650 2350
 Connection ~ 7450 2250
-Wire Wire Line
-	7800 5950 7600 5950
-Wire Wire Line
-	7600 5950 7600 3700
 Wire Wire Line
 	6700 1650 6700 1550
 Wire Wire Line
@@ -1704,4 +1692,5 @@ Connection ~ 10550 4200
 Wire Wire Line
 	10750 4250 10750 4200
 Connection ~ 10750 4200
+NoConn ~ 7950 3700
 $EndSCHEMATC
