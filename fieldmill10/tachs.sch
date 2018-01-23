@@ -508,12 +508,12 @@ Experiment results:\n680 ohm drive, 100k shunt to GND, 3 mm distance -> 0.8 .. 3
 $Comp
 L LM324 U7
 U 3 1 599B1968
-P 8100 3600
-F 0 "U7" H 8150 3800 50  0000 C CNN
-F 1 "MAX44252ASD+" H 8400 3400 50  0000 C CNN
-F 2 "SMD_Packages:SOIC-14_N" H 8050 3700 50  0001 C CNN
-F 3 "" H 8150 3800 50  0000 C CNN
-	3    8100 3600
+P 8100 3550
+F 0 "U7" H 8150 3750 50  0000 C CNN
+F 1 "MAX44252ASD+" H 8400 3350 50  0000 C CNN
+F 2 "SMD_Packages:SOIC-14_N" H 8050 3650 50  0001 C CNN
+F 3 "" H 8150 3750 50  0000 C CNN
+	3    8100 3550
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -706,15 +706,6 @@ Connection ~ 8700 3950
 Wire Wire Line
 	9300 3950 9300 3600
 Wire Wire Line
-	7800 3500 7650 3500
-Wire Wire Line
-	7650 3500 7650 3950
-Connection ~ 7650 3950
-Wire Wire Line
-	7800 3700 7700 3700
-Wire Wire Line
-	7700 3700 7700 3200
-Wire Wire Line
 	7250 3200 8150 3200
 Wire Wire Line
 	7350 3500 7350 3200
@@ -734,7 +725,7 @@ Wire Wire Line
 	7350 3700 7350 3950
 Connection ~ 7350 3950
 Wire Wire Line
-	8000 3900 8000 3950
+	8000 3850 8000 3950
 Connection ~ 8000 3950
 $Comp
 L R_Small R55
@@ -748,14 +739,12 @@ F 3 "" H 8450 3400 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	8450 3500 8450 3600
-Wire Wire Line
-	8450 3600 8400 3600
+	8450 3500 8450 3900
 Wire Wire Line
 	8450 3100 8450 3300
 Connection ~ 8450 3100
 Wire Wire Line
-	8000 1800 8000 3300
+	8000 1800 8000 3250
 Wire Wire Line
 	8700 1800 8700 2700
 Connection ~ 8000 1800
@@ -778,10 +767,23 @@ F 3 "" H 8250 3200 50  0000 C CNN
 	1    8250 3200
 	0    1    1    0   
 $EndComp
-Connection ~ 7700 3200
 Wire Wire Line
 	8350 3200 8450 3200
 Connection ~ 8450 3200
 Text Notes 6700 4500 0    60   ~ 0
 Both Sallen-Key (2nd order) and straight RC (1st order) low-pass possible\nFor S-K, populate R19, R53, C7, C51 and R55. Leave R54 open.\nFor RC, populate, R53, C7 and R54. Replace R19 with 0 Ohm. Leave C51 and R55 open.
+Wire Wire Line
+	8450 3550 8400 3550
+Wire Wire Line
+	8450 3900 7750 3900
+Wire Wire Line
+	7750 3900 7750 3650
+Wire Wire Line
+	7750 3650 7800 3650
+Connection ~ 8450 3550
+Wire Wire Line
+	7800 3450 7750 3450
+Wire Wire Line
+	7750 3450 7750 3200
+Connection ~ 7750 3200
 $EndSCHEMATC
