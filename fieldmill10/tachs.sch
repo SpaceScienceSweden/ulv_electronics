@@ -228,7 +228,7 @@ F 3 "" H 4550 2100 50  0000 C CNN
 $EndComp
 Text Notes 3850 2450 0    60   ~ 0
 -52j Ohm @ 300 Hz
-Text HLabel 9450 2400 2    60   Input ~ 0
+Text HLabel 9450 1900 2    60   Input ~ 0
 RAW_ITACH
 Text Notes 7950 1650 0    60   ~ 0
 TODO: better OP?\nLM324 has 2 mV input offset..\nLTC2052 is auto-zeroing, 2 V/µs\nMAX44252ASD+ 6 µV input offset
@@ -372,6 +372,79 @@ F 3 "" H 7550 3100 50  0000 C CNN
 	1    7550 3100
 	0    -1   -1   0   
 $EndComp
+$Comp
+L R_Small R55
+U 1 1 599B393F
+P 8450 3400
+F 0 "R55" H 8480 3420 50  0000 L CNN
+F 1 "0" H 8480 3360 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 8450 3400 50  0001 C CNN
+F 3 "" H 8450 3400 50  0000 C CNN
+	1    8450 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R54
+U 1 1 599B43EB
+P 8300 3200
+F 0 "R54" H 8330 3220 50  0000 L CNN
+F 1 "open" H 8330 3160 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 8300 3200 50  0001 C CNN
+F 3 "" H 8300 3200 50  0000 C CNN
+	1    8300 3200
+	0    1    1    0   
+$EndComp
+Text Notes 6700 4500 0    60   ~ 0
+Both Sallen-Key (2nd order) and straight RC (1st order) low-pass possible\nFor S-K, populate R19, R53, C7, C51 and R55. Leave R54 open.\nFor RC, populate, R53, C7 and R54. Replace R19 with 0 Ohm. Leave C51 and R55 open.
+Text Notes 5100 2950 0    60   ~ 0
+1.8 mA
+$Comp
+L LM324 U7
+U 4 1 5A682A61
+P 10200 3800
+F 0 "U7" H 10200 4000 50  0000 C CNN
+F 1 "MAX44252ASD+" H 10500 3600 50  0000 C CNN
+F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 10150 3900 50  0001 C CNN
+F 3 "" H 10250 4000 50  0000 C CNN
+	4    10200 3800
+	1    0    0    -1  
+$EndComp
+NoConn ~ 9900 3700
+NoConn ~ 9900 3900
+NoConn ~ 10500 3800
+$Comp
+L R_Small R?
+U 1 1 5A6DE2CA
+P 6900 2450
+F 0 "R?" H 6930 2470 50  0000 L CNN
+F 1 "open" H 6930 2410 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 6900 2450 50  0001 C CNN
+F 3 "" H 6900 2450 50  0000 C CNN
+	1    6900 2450
+	-1   0    0    1   
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 5A6DE375
+P 6900 2150
+F 0 "R?" H 6930 2170 50  0000 L CNN
+F 1 "open" H 6930 2110 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 6900 2150 50  0001 C CNN
+F 3 "" H 6900 2150 50  0000 C CNN
+	1    6900 2150
+	-1   0    0    1   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 5A6DE6AD
+P 6900 2550
+F 0 "#PWR?" H 6900 2300 50  0001 C CNN
+F 1 "GND" H 6900 2400 50  0000 C CNN
+F 2 "" H 6900 2550 50  0000 C CNN
+F 3 "" H 6900 2550 50  0000 C CNN
+	1    6900 2550
+	1    0    0    -1  
+$EndComp
 Wire Wire Line
 	5050 3950 5050 3250
 Wire Wire Line
@@ -379,7 +452,7 @@ Wire Wire Line
 Wire Wire Line
 	6000 3200 6000 3450
 Wire Wire Line
-	6650 2400 6650 3450
+	6650 1900 6650 3450
 Wire Wire Line
 	6650 3100 6600 3100
 Wire Wire Line
@@ -416,7 +489,7 @@ Wire Wire Line
 	4550 1900 4550 1800
 Connection ~ 4550 1800
 Wire Wire Line
-	6650 2400 9450 2400
+	6650 1900 9450 1900
 Wire Wire Line
 	4800 1700 4800 1800
 Connection ~ 4800 1800
@@ -486,17 +559,6 @@ Connection ~ 7350 3950
 Wire Wire Line
 	8000 3850 8000 3950
 Connection ~ 8000 3950
-$Comp
-L R_Small R55
-U 1 1 599B393F
-P 8450 3400
-F 0 "R55" H 8480 3420 50  0000 L CNN
-F 1 "0" H 8480 3360 50  0000 L CNN
-F 2 "Resistors_SMD:R_0805" H 8450 3400 50  0001 C CNN
-F 3 "" H 8450 3400 50  0000 C CNN
-	1    8450 3400
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8450 3500 8450 3900
 Wire Wire Line
@@ -515,22 +577,9 @@ Connection ~ 8450 2900
 Wire Wire Line
 	6150 4050 6150 3950
 Connection ~ 6150 3950
-$Comp
-L R_Small R54
-U 1 1 599B43EB
-P 8300 3200
-F 0 "R54" H 8330 3220 50  0000 L CNN
-F 1 "open" H 8330 3160 50  0000 L CNN
-F 2 "Resistors_SMD:R_0805" H 8300 3200 50  0001 C CNN
-F 3 "" H 8300 3200 50  0000 C CNN
-	1    8300 3200
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	8400 3200 8450 3200
 Connection ~ 8450 3200
-Text Notes 6700 4500 0    60   ~ 0
-Both Sallen-Key (2nd order) and straight RC (1st order) low-pass possible\nFor S-K, populate R19, R53, C7, C51 and R55. Leave R54 open.\nFor RC, populate, R53, C7 and R54. Replace R19 with 0 Ohm. Leave C51 and R55 open.
 Wire Wire Line
 	8450 3550 8400 3550
 Wire Wire Line
@@ -547,20 +596,17 @@ Wire Wire Line
 Connection ~ 7750 3200
 Connection ~ 5300 3950
 Connection ~ 5450 3950
-Text Notes 5100 2950 0    60   ~ 0
-1.8 mA
-$Comp
-L LM324 U7
-U 4 1 5A682A61
-P 10200 3800
-F 0 "U7" H 10200 4000 50  0000 C CNN
-F 1 "MAX44252ASD+" H 10500 3600 50  0000 C CNN
-F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 10150 3900 50  0001 C CNN
-F 3 "" H 10250 4000 50  0000 C CNN
-	4    10200 3800
-	1    0    0    -1  
-$EndComp
-NoConn ~ 9900 3700
-NoConn ~ 9900 3900
-NoConn ~ 10500 3800
+Wire Wire Line
+	6900 2050 6900 1800
+Connection ~ 6900 1800
+Wire Wire Line
+	6900 2250 6900 2350
+Wire Wire Line
+	6900 2300 7850 2300
+Wire Wire Line
+	7850 2300 7850 3100
+Connection ~ 7850 3100
+Connection ~ 6900 2300
+Text Notes 7050 2250 0    60   ~ 0
+Fixed threshold
 $EndSCHEMATC
