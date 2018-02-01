@@ -1693,4 +1693,6 @@ Wire Wire Line
 	10750 4250 10750 4200
 Connection ~ 10750 4200
 NoConn ~ 7950 3700
+Text Notes 600  1450 0    60   ~ 0
+New regulators:\nTLV1117-25 in SOT-223 for +2.5V\nLM337IMP in SOT-223 for -2.5V (adjustable)\nLast one adjustable due to lack of fixed -2.5V\nregs in anything but SOT-23\n
 $EndSCHEMATC
