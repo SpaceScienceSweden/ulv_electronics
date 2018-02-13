@@ -92,20 +92,20 @@ uint8_t ds18b20search( volatile uint8_t *port, volatile uint8_t *direction, vola
 			switch ( bit )
 			{
 				//Received 11 - no sensors connected
-				case 0b11:
+				case 3: //0b11:
 					*romcnt = 0; //Null pointer check is at the begining
 					SREG = sreg;
 					return DS18B20_ERROR_COMM;
 					break;
 
 				//Received 10 or 01 - ROM bits match
-				case 0b10:
-				case 0b01:
+				case 2: //0b10:
+				case 1: //0b01:
 					bit = bit & 1;
 					break;
 
 				//Received 00 - ROM bits differ
-				case 0b00:
+				case 0: //0b00:
 					//Check if there are older junction bits set
 					if ( ckolder( junction, 8, i ) )
 					{
