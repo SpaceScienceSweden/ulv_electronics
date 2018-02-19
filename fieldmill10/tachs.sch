@@ -46,23 +46,17 @@ Comment4 ""
 $EndDescr
 $Comp
 L LM324 U7
-U 1 1 58A66839
-P 8800 3000
-F 0 "U7" H 8850 3200 50  0000 C CNN
-F 1 "MAX44252ASD+" V 8750 2500 50  0000 C CNN
-F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 8750 3100 50  0001 C CNN
-F 3 "" H 8850 3200 50  0000 C CNN
-	1    8800 3000
-	1    0    0    -1  
-$EndComp
-$Comp
-L LM324 U7
 U 2 1 58A66840
 P 6300 3100
 F 0 "U7" H 6350 3300 50  0000 C CNN
 F 1 "MAX44252ASD+" H 6500 2700 50  0000 C CNN
 F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 6250 3200 50  0001 C CNN
 F 3 "" H 6350 3300 50  0000 C CNN
+F 4 "2510952" H 6300 3100 60  0001 C CNN "Farnell PN"
+F 5 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 6300 3100 60  0001 C CNN "Farnell Link"
+F 6 "700-MAX44252ASD+" H 6300 3100 60  0001 C CNN "Mouser PN"
+F 7 "MAX44252ASD+-ND" H 6300 3100 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 6300 3100 60  0001 C CNN "Digikey Link"
 	2    6300 3100
 	1    0    0    -1  
 $EndComp
@@ -334,17 +328,6 @@ Text Notes 9550 3350 0    60   ~ 0
 Text Notes 1350 3700 0    60   ~ 0
 Experiment results:\n680 ohm drive, 100k shunt to GND, 3 mm distance -> 0.8 .. 3.3 V swing\n1k2 drive seems OK too\n470 pF seems a bit on the low side\n47 nF was way too much\ncutoff @ 3rd harmonic, 100 Hz signal:\nC <= 1/(2*pi*100e3*300) = 5.3 n -> 4n7 should be perfect
 $Comp
-L LM324 U7
-U 3 1 599B1968
-P 8100 3550
-F 0 "U7" H 8100 3750 50  0000 C CNN
-F 1 "MAX44252ASD+" H 8400 3350 50  0000 C CNN
-F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 8050 3650 50  0001 C CNN
-F 3 "" H 8150 3750 50  0000 C CNN
-	3    8100 3550
-	1    0    0    -1  
-$EndComp
-$Comp
 L R_Small R53
 U 1 1 599B2A1E
 P 7150 3200
@@ -392,17 +375,6 @@ Text Notes 6700 4500 0    60   ~ 0
 Both Sallen-Key (2nd order) and straight RC (1st order) low-pass possible\nFor S-K, populate R19, R53, C7, C51 and R55. Leave R54 open.\nFor RC, populate, R53, C7 and R54. Replace R19 with 0 Ohm. Leave C51 and R55 open.
 Text Notes 5100 2950 0    60   ~ 0
 1.8 mA
-$Comp
-L LM324 U7
-U 4 1 5A682A61
-P 10200 3800
-F 0 "U7" H 10200 4000 50  0000 C CNN
-F 1 "MAX44252ASD+" H 10500 3600 50  0000 C CNN
-F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 10150 3900 50  0001 C CNN
-F 3 "" H 10250 4000 50  0000 C CNN
-	4    10200 3800
-	1    0    0    -1  
-$EndComp
 NoConn ~ 9900 3700
 NoConn ~ 9900 3900
 NoConn ~ 10500 3800
@@ -603,4 +575,52 @@ Connection ~ 7850 3100
 Connection ~ 6900 2300
 Text Notes 7050 2250 0    60   ~ 0
 Fixed threshold
+$Comp
+L LM324 U7
+U 1 1 5A8C787B
+P 8800 3000
+F 0 "U7" H 8850 3200 50  0000 C CNN
+F 1 "MAX44252ASD+" H 9000 2600 50  0000 C CNN
+F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 8750 3100 50  0001 C CNN
+F 3 "" H 8850 3200 50  0000 C CNN
+F 4 "2510952" H 8800 3000 60  0001 C CNN "Farnell PN"
+F 5 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 8800 3000 60  0001 C CNN "Farnell Link"
+F 6 "700-MAX44252ASD+" H 8800 3000 60  0001 C CNN "Mouser PN"
+F 7 "MAX44252ASD+-ND" H 8800 3000 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 8800 3000 60  0001 C CNN "Digikey Link"
+	1    8800 3000
+	1    0    0    -1  
+$EndComp
+$Comp
+L LM324 U7
+U 3 1 5A8C7A52
+P 8100 3550
+F 0 "U7" H 8150 3750 50  0000 C CNN
+F 1 "MAX44252ASD+" H 8300 3300 50  0000 C CNN
+F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 8050 3650 50  0001 C CNN
+F 3 "" H 8150 3750 50  0000 C CNN
+F 4 "2510952" H 8100 3550 60  0001 C CNN "Farnell PN"
+F 5 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 8100 3550 60  0001 C CNN "Farnell Link"
+F 6 "700-MAX44252ASD+" H 8100 3550 60  0001 C CNN "Mouser PN"
+F 7 "MAX44252ASD+-ND" H 8100 3550 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 8100 3550 60  0001 C CNN "Digikey Link"
+	3    8100 3550
+	1    0    0    -1  
+$EndComp
+$Comp
+L LM324 U7
+U 4 1 5A8C7C01
+P 10200 3800
+F 0 "U7" H 10250 4000 50  0000 C CNN
+F 1 "MAX44252ASD+" H 10400 3400 50  0000 C CNN
+F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 10150 3900 50  0001 C CNN
+F 3 "" H 10250 4000 50  0000 C CNN
+F 4 "2510952" H 10200 3800 60  0001 C CNN "Farnell PN"
+F 5 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 10200 3800 60  0001 C CNN "Farnell Link"
+F 6 "700-MAX44252ASD+" H 10200 3800 60  0001 C CNN "Mouser PN"
+F 7 "MAX44252ASD+-ND" H 10200 3800 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 10200 3800 60  0001 C CNN "Digikey Link"
+	4    10200 3800
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

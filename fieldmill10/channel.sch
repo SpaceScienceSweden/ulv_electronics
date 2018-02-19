@@ -34,7 +34,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 5
+Sheet 4 5
 Title ""
 Date ""
 Rev ""
@@ -77,22 +77,6 @@ F 2 "Capacitors_SMD:C_1206" H 6550 3950 50  0001 C CNN
 F 3 "" H 6550 3950 50  0000 C CNN
 	1    6550 3950
 	0    1    1    0   
-$EndComp
-$Comp
-L OP275 U4
-U 2 1 580610F1
-P 6550 4850
-AR Path="/57B05F2F/580610F1" Ref="U4"  Part="2" 
-AR Path="/57B0A0EC/580610F1" Ref="U6"  Part="2" 
-AR Path="/57B0A102/580610F1" Ref="U8"  Part="2" 
-F 0 "U8" H 6550 5000 50  0000 L CNN
-F 1 "LTC6241IS8#PBF" H 6550 5100 50  0000 L CNN
-F 2 "Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm" H 6450 4900 50  0001 C CNN
-F 3 "" H 6550 5000 50  0000 C CNN
-F 4 "1330969" H 6550 4850 60  0001 C CNN "1st Distrib. PN"
-F 5 "http://se.farnell.com/linear-technology/ltc6241cs8-pbf/ic-sm-op-amp-dual/dp/1330969" H 6550 4850 60  0001 C CNN "1st Distrib. Link"
-	2    6550 4850
-	-1   0    0    -1  
 $EndComp
 $Comp
 L C_Small C30
@@ -151,49 +135,14 @@ F 2 "Capacitors_SMD:C_0603" H 7550 3200 50  0001 C CNN
 F 3 "" H 7550 3200 50  0000 C CNN
 F 4 "Johanson" H 7550 3200 60  0001 C CNN "Mfg. Name"
 F 5 "L-14C56NJV4T" H 7550 3200 60  0001 C CNN "Mfg. Part Number"
-F 6 "712-1443-1-ND" H 7550 3200 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7550 3200 60  0001 C CNN "1st Distrib. Link"
+F 6 "609-L-14C56NJV4T" H 7550 3200 60  0001 C CNN "Mouser PN"
+F 7 "712-1443-1-ND" H 7550 3200 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7550 3200 60  0001 C CNN "Digikey Link"
 	1    7550 3200
 	0    1    1    0   
 $EndComp
 Text Notes 5500 2400 0    60   ~ 0
 VGND must be tied to the guard ring!
-$Comp
-L L L2
-U 1 1 58CE7E67
-P 7950 3200
-AR Path="/57B05F2F/58CE7E67" Ref="L2"  Part="1" 
-AR Path="/57B0A0EC/58CE7E67" Ref="L6"  Part="1" 
-AR Path="/57B0A102/58CE7E67" Ref="L10"  Part="1" 
-F 0 "L10" V 7900 3200 50  0000 C CNN
-F 1 "56n" V 8025 3200 50  0000 C CNN
-F 2 "Capacitors_SMD:C_0603" H 7950 3200 50  0001 C CNN
-F 3 "" H 7950 3200 50  0000 C CNN
-F 4 "Johanson" H 7950 3200 60  0001 C CNN "Mfg. Name"
-F 5 "L-14C56NJV4T" H 7950 3200 60  0001 C CNN "Mfg. Part Number"
-F 6 "712-1443-1-ND" H 7950 3200 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7950 3200 60  0001 C CNN "1st Distrib. Link"
-	1    7950 3200
-	0    1    1    0   
-$EndComp
-$Comp
-L L L4
-U 1 1 58CE80E2
-P 7950 4950
-AR Path="/57B05F2F/58CE80E2" Ref="L4"  Part="1" 
-AR Path="/57B0A0EC/58CE80E2" Ref="L8"  Part="1" 
-AR Path="/57B0A102/58CE80E2" Ref="L12"  Part="1" 
-F 0 "L12" V 7900 4950 50  0000 C CNN
-F 1 "56n" V 8025 4950 50  0000 C CNN
-F 2 "Capacitors_SMD:C_0603" H 7950 4950 50  0001 C CNN
-F 3 "" H 7950 4950 50  0000 C CNN
-F 4 "Johanson" H 7950 4950 60  0001 C CNN "Mfg. Name"
-F 5 "L-14C56NJV4T" H 7950 4950 60  0001 C CNN "Mfg. Part Number"
-F 6 "712-1443-1-ND" H 7950 4950 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7950 4950 60  0001 C CNN "1st Distrib. Link"
-	1    7950 4950
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	8100 4950 8950 4950
 Wire Wire Line
@@ -287,24 +236,6 @@ Connection ~ 7750 4950
 Connection ~ 7750 3200
 Text Notes 8100 4150 0    60   ~ 0
 These caps are optional, but should improve the RFI filter\nThe -6 dB point is placed at 310 MHz\nThe caps create a 100 MOhm path to VGND @ 300 Hz,\nwhich if the 50 µV input offset\nchanges sign would give rise to a 0.5 pA current\nLarger caps may be OK, but may affect source capacitance\nHave ordered 100 pF
-$Comp
-L L L3
-U 1 1 58CEB905
-P 7550 4950
-AR Path="/57B05F2F/58CEB905" Ref="L3"  Part="1" 
-AR Path="/57B0A0EC/58CEB905" Ref="L7"  Part="1" 
-AR Path="/57B0A102/58CEB905" Ref="L11"  Part="1" 
-F 0 "L11" V 7500 4950 50  0000 C CNN
-F 1 "56n" V 7625 4950 50  0000 C CNN
-F 2 "Capacitors_SMD:C_0603" H 7550 4950 50  0001 C CNN
-F 3 "" H 7550 4950 50  0000 C CNN
-F 4 "Johanson" H 7550 4950 60  0001 C CNN "Mfg. Name"
-F 5 "L-14C56NJV4T" H 7550 4950 60  0001 C CNN "Mfg. Part Number"
-F 6 "712-1443-1-ND" H 7550 4950 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7550 4950 60  0001 C CNN "1st Distrib. Link"
-	1    7550 4950
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	7750 4350 7750 4950
 Wire Wire Line
@@ -350,8 +281,9 @@ F 0 "U8" H 6550 3250 50  0000 L CNN
 F 1 "LTC6241IS8#PBF" H 6550 3350 50  0000 L CNN
 F 2 "Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm" H 6450 3150 50  0001 C CNN
 F 3 "" H 6550 3250 50  0000 C CNN
-F 4 "1330969" H 6550 3100 60  0001 C CNN "1st Distrib. PN"
-F 5 "http://se.farnell.com/linear-technology/ltc6241cs8-pbf/ic-sm-op-amp-dual/dp/1330969" H 6550 3100 60  0001 C CNN "1st Distrib. Link"
+F 4 "584-LTC6241IS8#PBF" H 6550 3100 60  0001 C CNN "Mouser PN"
+F 5 "LTC6241IS8#PBF-ND" H 6550 3100 60  0001 C CNN "Digikey PN"
+F 6 "https://www.digikey.se/products/en?keywords=LTC6241IS8%23PBF" H 6550 3100 60  0001 C CNN "Digikey Link"
 	1    6550 3100
 	-1   0    0    -1  
 $EndComp
@@ -464,4 +396,78 @@ Wire Wire Line
 Connection ~ 5450 4250
 Text Notes 4950 3500 0    60   ~ 0
 Shield is\nWürth 36103205S frame\nWürth 36903205S lid
+$Comp
+L OP275 U4
+U 2 1 5A8C8BB2
+P 6550 4850
+AR Path="/57B05F2F/5A8C8BB2" Ref="U4"  Part="2" 
+AR Path="/57B0A0EC/5A8C8BB2" Ref="U6"  Part="2" 
+AR Path="/57B0A102/5A8C8BB2" Ref="U8"  Part="2" 
+F 0 "U8" H 6550 5000 50  0000 L CNN
+F 1 "LTC6241IS8#PBF" H 6550 5100 50  0000 L CNN
+F 2 "Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm" H 6450 4900 50  0001 C CNN
+F 3 "" H 6550 5000 50  0000 C CNN
+F 4 "584-LTC6241IS8#PBF" H 6550 4850 60  0001 C CNN "Mouser PN"
+F 5 "LTC6241IS8#PBF-ND" H 6550 4850 60  0001 C CNN "Digikey PN"
+F 6 "https://www.digikey.se/products/en?keywords=LTC6241IS8%23PBF" H 6550 4850 60  0001 C CNN "Digikey Link"
+	2    6550 4850
+	-1   0    0    -1  
+$EndComp
+$Comp
+L L L2
+U 1 1 5A8C9302
+P 7950 3200
+AR Path="/57B05F2F/5A8C9302" Ref="L2"  Part="1" 
+AR Path="/57B0A0EC/5A8C9302" Ref="L6"  Part="1" 
+AR Path="/57B0A102/5A8C9302" Ref="L10"  Part="1" 
+F 0 "L10" V 7900 3200 50  0000 C CNN
+F 1 "56n" V 8025 3200 50  0000 C CNN
+F 2 "Capacitors_SMD:C_0603" H 7950 3200 50  0001 C CNN
+F 3 "" H 7950 3200 50  0000 C CNN
+F 4 "Johanson" H 7950 3200 60  0001 C CNN "Mfg. Name"
+F 5 "L-14C56NJV4T" H 7950 3200 60  0001 C CNN "Mfg. Part Number"
+F 6 "609-L-14C56NJV4T" H 7950 3200 60  0001 C CNN "Mouser PN"
+F 7 "712-1443-1-ND" H 7950 3200 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7950 3200 60  0001 C CNN "Digikey Link"
+	1    7950 3200
+	0    1    1    0   
+$EndComp
+$Comp
+L L L3
+U 1 1 5A8C9355
+P 7550 4950
+AR Path="/57B05F2F/5A8C9355" Ref="L3"  Part="1" 
+AR Path="/57B0A0EC/5A8C9355" Ref="L7"  Part="1" 
+AR Path="/57B0A102/5A8C9355" Ref="L11"  Part="1" 
+F 0 "L11" V 7500 4950 50  0000 C CNN
+F 1 "56n" V 7625 4950 50  0000 C CNN
+F 2 "Capacitors_SMD:C_0603" H 7550 4950 50  0001 C CNN
+F 3 "" H 7550 4950 50  0000 C CNN
+F 4 "Johanson" H 7550 4950 60  0001 C CNN "Mfg. Name"
+F 5 "L-14C56NJV4T" H 7550 4950 60  0001 C CNN "Mfg. Part Number"
+F 6 "609-L-14C56NJV4T" H 7550 4950 60  0001 C CNN "Mouser PN"
+F 7 "712-1443-1-ND" H 7550 4950 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7550 4950 60  0001 C CNN "Digikey Link"
+	1    7550 4950
+	0    1    1    0   
+$EndComp
+$Comp
+L L L4
+U 1 1 5A8C93DF
+P 7950 4950
+AR Path="/57B05F2F/5A8C93DF" Ref="L4"  Part="1" 
+AR Path="/57B0A0EC/5A8C93DF" Ref="L8"  Part="1" 
+AR Path="/57B0A102/5A8C93DF" Ref="L12"  Part="1" 
+F 0 "L12" V 7900 4950 50  0000 C CNN
+F 1 "56n" V 8025 4950 50  0000 C CNN
+F 2 "Capacitors_SMD:C_0603" H 7950 4950 50  0001 C CNN
+F 3 "" H 7950 4950 50  0000 C CNN
+F 4 "Johanson" H 7950 4950 60  0001 C CNN "Mfg. Name"
+F 5 "L-14C56NJV4T" H 7950 4950 60  0001 C CNN "Mfg. Part Number"
+F 6 "609-L-14C56NJV4T" H 7950 4950 60  0001 C CNN "Mouser PN"
+F 7 "712-1443-1-ND" H 7950 4950 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7950 4950 60  0001 C CNN "Digikey Link"
+	1    7950 4950
+	0    1    1    0   
+$EndComp
 $EndSCHEMATC

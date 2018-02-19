@@ -150,9 +150,14 @@ L ADS131A04 U3
 U 1 1 580644B5
 P 4400 3300
 F 0 "U3" H 4400 3300 60  0000 C CNN
-F 1 "ADS131A04" H 4400 3400 60  0000 C CNN
+F 1 "ADS131A04IPBS" H 4400 3400 60  0000 C CNN
 F 2 "Housings_QFP:LQFP-32_5x5mm_Pitch0.5mm" H 4250 3400 60  0001 C CNN
 F 3 "" H 4250 3400 60  0000 C CNN
+F 4 "2580620" H 4400 3300 60  0001 C CNN "Farnell PN"
+F 5 "https://se.farnell.com/texas-instruments/ads131a04ipbsr/adc-delta-sigma-24bit-128ksps/dp/2580620" H 4400 3300 60  0001 C CNN "Farnell Link"
+F 6 "595-ADS131A04IPBS" H 4400 3300 60  0001 C CNN "Mouser PN"
+F 7 "296-47690-ND" H 4400 3300 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/texas-instruments/ADS131A04IPBS/296-47690-ND/5994569" H 4400 3300 60  0001 C CNN "Digikey Link"
 	1    4400 3300
 	1    0    0    -1  
 $EndComp
@@ -544,9 +549,14 @@ L MAX504 U2
 U 1 1 58BF19BF
 P 8500 4000
 F 0 "U2" H 8500 4500 60  0000 C CNN
-F 1 "MAX504" H 8500 4400 60  0000 C CNN
+F 1 "MAX504ESD" H 8500 4400 60  0000 C CNN
 F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 8500 4000 60  0001 C CNN
 F 3 "" H 8500 4000 60  0000 C CNN
+F 4 "2514723" H 8500 4000 60  0001 C CNN "Farnell PN"
+F 5 "https://se.farnell.com/maxim-integrated-products/max504esd/d-a-omvandlare-10bit-nsoic-14/dp/2514723" H 8500 4000 60  0001 C CNN "Farnell Link"
+F 6 "700-MAX504ESD" H 8500 4000 60  0001 C CNN "Mouser PN"
+F 7 "MAX504ESD+-ND" H 8500 4000 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX504ESD/MAX504ESD-ND/1512537" H 8500 4000 60  0001 C CNN "Digikey Link"
 	1    8500 4000
 	1    0    0    -1  
 $EndComp
@@ -629,9 +639,14 @@ L DS18B20Z U5
 U 1 1 58C3F75A
 P 6250 5550
 F 0 "U5" H 6250 5800 60  0000 C CNN
-F 1 "DS18B20Z" H 6250 5700 39  0000 C CNN
+F 1 "DS18B20Z+" H 6250 5700 39  0000 C CNN
 F 2 "Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm" H 6250 5550 60  0001 C CNN
 F 3 "" H 6250 5550 60  0000 C CNN
+F 4 "2518724" H 6250 5550 60  0001 C CNN "Farnell PN"
+F 5 "https://se.farnell.com/maxim-integrated-products/ds18b20z/ic-thermometer-12bit-0-5degc-soic/dp/2518724" H 6250 5550 60  0001 C CNN "Farnell Link"
+F 6 "700-DS18B20Z" H 6250 5550 60  0001 C CNN "Mouser PN"
+F 7 "DS18B20Z+-ND" H 6250 5550 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/DS18B20Z/DS18B20Z-ND/956982" H 6250 5550 60  0001 C CNN "Digikey Link"
 	1    6250 5550
 	1    0    0    -1  
 $EndComp
@@ -1072,7 +1087,7 @@ F 3 "" H 4750 4400 50  0000 C CNN
 $EndComp
 NoConn ~ 7950 4200
 Text Notes 9000 1050 0    60   ~ 0
-TLV1117-25 or any other -40..+125°C\nSOT-223 +2.5V LDO should be fine
+TLV1117-25IDCY or any other -40..+125°C\nSOT-223 +2.5V LDO should be fine
 $Comp
 L +2V5 #PWR5
 U 1 1 5A79F7CC
@@ -1164,22 +1179,29 @@ $EndComp
 $Comp
 L C_Small C14
 U 1 1 5A7AA774
-P 9600 2100
-F 0 "C14" H 9610 2170 50  0000 L CNN
-F 1 "10u" H 9610 2020 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 9600 2100 50  0001 C CNN
-F 3 "" H 9600 2100 50  0000 C CNN
-	1    9600 2100
+P 9650 2100
+F 0 "C14" H 9660 2170 50  0000 L CNN
+F 1 "10u" H 9660 2020 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 9650 2100 50  0001 C CNN
+F 3 "" H 9650 2100 50  0000 C CNN
+	1    9650 2100
 	1    0    0    -1  
 $EndComp
 $Comp
 L D_Zener D2
 U 1 1 5A7AB472
 P 9850 1750
-F 0 "D2" H 9850 1850 50  0000 C CNN
-F 1 "D_Zener" H 9850 1650 50  0000 C CNN
-F 2 "" H 9850 1750 50  0001 C CNN
+F 0 "D2" H 9850 1650 50  0000 C CNN
+F 1 "1SMA5919BT3G" H 9850 1850 50  0000 C CNN
+F 2 "Diodes_SMD:SMA_Standard" H 9850 1750 50  0001 C CNN
 F 3 "" H 9850 1750 50  0000 C CNN
+F 4 "300-50-189" H 9850 1750 60  0001 C CNN "Elfa PN"
+F 5 "https://www.elfa.se/sv/zenerdiod-sma-on-semiconductor-1sma5919bt3g/p/30050189" H 9850 1750 60  0001 C CNN "Elfa Link"
+F 6 "1431141" H 9850 1750 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/on-semiconductor/1sma5919bt3g/diode-zener-5-6v-1-5w/dp/1431141" H 9850 1750 60  0001 C CNN "Farnell Link"
+F 8 "863-1SMA5919BT3G" H 9850 1750 60  0001 C CNN "Mouser PN"
+F 9 "1SMA5919BT3GOSCT-ND" H 9850 1750 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/on-semiconductor/1SMA5919BT3G/1SMA5919BT3GOSCT-ND/917675" H 9850 1750 60  0001 C CNN "Digikey Link"
 	1    9850 1750
 	0    1    1    0   
 $EndComp
@@ -1199,26 +1221,18 @@ L D D1
 U 1 1 5A7AC670
 P 8600 750
 F 0 "D1" H 8600 850 50  0000 C CNN
-F 1 "SM240" H 8600 650 50  0000 C CNN
-F 2 "Diodes_SMD:MELF_Standard" H 8600 750 50  0001 C CNN
+F 1 "STTH102A" H 8600 650 50  0000 C CNN
+F 2 "Diodes_SMD:SMA_Standard" H 8600 750 50  0001 C CNN
 F 3 "" H 8600 750 50  0000 C CNN
-F 4 "170-02-496" H 8600 750 60  0001 C CNN "1st Distrib. PN"
-F 5 "https://www.elfa.se/sv/schottkydiod-40-melf-diotec-sms240/p/17002496" H 8600 750 60  0001 C CNN "1st Distrib. Link"
+F 4 "170-02-496" H 8600 750 60  0001 C CNN "Elfa PN"
+F 5 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 8600 750 60  0001 C CNN "Elfa Link"
+F 6 "9907874" H 8600 750 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 8600 750 60  0001 C CNN "Farnell Link"
+F 8 "511-STTH102A" H 8600 750 60  0001 C CNN "Mouser PN"
+F 9 "497-2500-1-ND" H 8600 750 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 8600 750 60  0001 C CNN "Digikey Link"
 	1    8600 750 
 	1    0    0    -1  
-$EndComp
-$Comp
-L D D4
-U 1 1 5A7AF2F5
-P 8600 2600
-F 0 "D4" H 8600 2700 50  0000 C CNN
-F 1 "SM240" H 8600 2500 50  0000 C CNN
-F 2 "Diodes_SMD:MELF_Standard" H 8600 2600 50  0001 C CNN
-F 3 "" H 8600 2600 50  0000 C CNN
-F 4 "170-02-496" H 8600 2600 60  0001 C CNN "1st Distrib. PN"
-F 5 "https://www.elfa.se/sv/schottkydiod-40-melf-diotec-sms240/p/17002496" H 8600 2600 60  0001 C CNN "1st Distrib. Link"
-	1    8600 2600
-	-1   0    0    1   
 $EndComp
 Wire Wire Line
 	8750 750  8950 750 
@@ -1227,7 +1241,7 @@ Wire Wire Line
 Wire Wire Line
 	8150 2600 8450 2600
 Wire Wire Line
-	9050 2600 8750 2600
+	8750 2600 9200 2600
 Connection ~ 8650 1600
 Wire Wire Line
 	8650 1600 8650 1650
@@ -1240,13 +1254,13 @@ Wire Wire Line
 Connection ~ 9850 1200
 Wire Wire Line
 	9850 1200 9850 1600
-Connection ~ 9600 2250
+Connection ~ 9650 2250
 Connection ~ 9050 1600
 Wire Wire Line
-	9600 1600 9600 2000
+	9650 1600 9650 2000
 Connection ~ 9050 2250
 Wire Wire Line
-	9600 2250 9600 2200
+	9650 2250 9650 2200
 Connection ~ 8600 1600
 Wire Wire Line
 	8600 1600 8600 1500
@@ -1258,7 +1272,7 @@ Wire Wire Line
 Wire Wire Line
 	8950 1200 10050 1200
 Wire Wire Line
-	7900 1600 9600 1600
+	7900 1600 9650 1600
 Wire Wire Line
 	9050 1600 9050 1650
 Connection ~ 8150 2250
@@ -1268,11 +1282,11 @@ Connection ~ 9050 1900
 Wire Wire Line
 	8600 1900 8600 1950
 Wire Wire Line
-	8600 1900 9350 1900
+	8600 1900 9400 1900
 Wire Wire Line
 	9050 1850 9050 1950
 Wire Wire Line
-	9050 2150 9050 2600
+	9050 2150 9050 2250
 Wire Wire Line
 	9000 2250 10000 2250
 Connection ~ 8250 1200
@@ -1742,7 +1756,7 @@ Connection ~ 8050 2250
 Connection ~ 9950 4700
 Wire Wire Line
 	9050 3800 9950 3800
-Text Notes 9950 1500 0    60   ~ 0
+Text Notes 9950 1400 0    60   ~ 0
 Load is 3*5 + 4 ≃ 20 mA
 Text Notes 8150 3100 0    60   ~ 0
 LM337 is the only SOT-223 negative voltage\nregulator that can do -2.5V.\n1k||18k = 947\n-(1.25*(1+947/1k)+65µA*947) = -2.495 V
@@ -1771,32 +1785,24 @@ Wire Wire Line
 Wire Wire Line
 	9450 3400 9450 3450
 Connection ~ 9450 3450
-$Comp
-L D D3
-U 1 1 5A7C7308
-P 9350 2050
-F 0 "D3" H 9350 2150 50  0000 C CNN
-F 1 "SM240" H 9350 1950 50  0000 C CNN
-F 2 "Diodes_SMD:MELF_Standard" H 9350 2050 50  0001 C CNN
-F 3 "" H 9350 2050 50  0000 C CNN
-F 4 "170-02-496" H 9350 2050 60  0001 C CNN "1st Distrib. PN"
-F 5 "https://www.elfa.se/sv/schottkydiod-40-melf-diotec-sms240/p/17002496" H 9350 2050 60  0001 C CNN "1st Distrib. Link"
-	1    9350 2050
-	0    1    1    0   
-$EndComp
 Wire Wire Line
-	9350 2200 9350 2250
-Connection ~ 9350 2250
-Text Notes 9150 2450 0    60   ~ 0
+	9400 2200 9400 2250
+Connection ~ 9400 2250
+Text Notes 9300 2450 0    60   ~ 0
 Protection diodes per datasheet
 $Comp
 L LM1117-2.5-4PIN U10
 U 1 1 5A79C1FE
 P 8600 1200
 F 0 "U10" H 8700 950 50  0000 C CNN
-F 1 "LM1117-2.5" H 8600 1450 50  0000 C CNN
+F 1 "LDL1117S25R" H 8600 1450 50  0000 C CNN
 F 2 "TO_SOT_Packages_SMD:SOT-223" H 8600 1200 50  0001 C CNN
-F 3 "" H 8600 1200 50  0000 C CNN
+F 3 "http://www.st.com/content/ccc/resource/technical/document/datasheet/group3/0e/5a/00/ca/10/1a/4f/a5/DM00366442/files/DM00366442.pdf/jcr:content/translations/en.DM00366442.pdf" H 8600 1200 50  0001 C CNN
+F 4 "2778100" H 8600 1200 60  0001 C CNN "Farnell PN"
+F 5 "https://se.farnell.com/stmicroelectronics/ldl1117s25r/ldo-fixed-2-5v-1-2a-sot-223-4/dp/2778100" H 8600 1200 60  0001 C CNN "Farnell Link"
+F 6 "511-LDL1117S25R" H 8600 1200 60  0001 C CNN "Mouser PN"
+F 7 "497-17237-1-ND" H 8600 1200 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/stmicroelectronics/LDL1117S25R/497-17237-1-ND/7102077" H 8600 1200 60  0001 C CNN "Digikey Link"
 	1    8600 1200
 	1    0    0    -1  
 $EndComp
@@ -1812,9 +1818,16 @@ L LM337IMP-4PIN U9
 U 1 1 5A79CDB4
 P 8600 2200
 F 0 "U9" H 8400 2000 50  0000 C CNN
-F 1 "LM337IMP" H 8500 2000 50  0000 L CNN
-F 2 "TO_SOT_Packages_SMD:SOT-223" H 8600 2100 50  0000 C CIN
+F 1 "LM337IMP/NOPB" H 8500 2000 50  0000 L CNN
+F 2 "TO_SOT_Packages_SMD:SOT-223" H 8600 2100 50  0001 C CIN
 F 3 "" H 8600 2200 50  0000 C CNN
+F 4 "173-28-875" H 8600 2200 60  0001 C CNN "Elfa PN"
+F 5 "https://www.elfa.se/sv/spaenningsregulator-37-sot-223-lm337-texas-instruments-lm337imp-nopb/p/17328875" H 8600 2200 60  0001 C CNN "Elfa Link"
+F 6 "2781817" H 8600 2200 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/texas-instruments/lm337imp-nopb/linear-volt-reg-1-2-37v-1-5a-sot223/dp/2781817" H 8600 2200 60  0001 C CNN "Farnell Link"
+F 8 "926-LM337IMP/NOPB" H 8600 2200 60  0001 C CNN "Mouser PN"
+F 9 "LM337IMP/NOPBCT-ND" H 8600 2200 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/texas-instruments/LM337IMP-NOPB/LM337IMP-NOPBCT-ND/270746" H 8600 2200 60  0001 C CNN "Digikey Link"
 	1    8600 2200
 	1    0    0    -1  
 $EndComp
@@ -1824,10 +1837,15 @@ $Comp
 L ADG601 U1
 U 1 1 5A82C595
 P 10400 3900
-F 0 "U1" H 10400 4200 60  0000 C CNN
-F 1 "ADG601" H 10400 4100 60  0000 C CNN
-F 2 "" H 10400 3900 60  0000 C CNN
+F 0 "U1" H 10400 4300 60  0000 C CNN
+F 1 "ADG601BRTZ" H 10400 4200 60  0000 C CNN
+F 2 "TO_SOT_Packages_SMD:SOT-23-6" H 10400 3900 60  0001 C CNN
 F 3 "" H 10400 3900 60  0000 C CNN
+F 4 "1661035" H 10400 3900 60  0001 C CNN "Farnell PN"
+F 5 "https://se.farnell.com/analog-devices/adg601brtz-reel7/analogue-switch-spst-2ohm-sot23/dp/1661035" H 10400 3900 60  0001 C CNN "Farnell Link"
+F 6 "584-ADG601BRTZ-R7" H 10400 3900 60  0001 C CNN "Mouser PN"
+F 7 "ADG601BRTZ-REEL7CT-ND" H 10400 3900 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/analog-devices-inc/ADG601BRTZ-REEL7/ADG601BRTZ-REEL7CT-ND/820426" H 10400 3900 60  0001 C CNN "Digikey Link"
 	1    10400 3900
 	1    0    0    -1  
 $EndComp
@@ -1887,4 +1905,47 @@ Connection ~ 9900 3900
 Wire Wire Line
 	10500 4200 11100 4200
 Connection ~ 11100 4200
+Text Notes 8200 600  0    60   ~ 0
+Any SMA diode is fine
+Text Notes 10000 1650 0    60   ~ 0
+Any 5V6 SMA Zener is fine
+Wire Wire Line
+	9200 2600 9200 2250
+Connection ~ 9200 2250
+$Comp
+L D D3
+U 1 1 5A8C26A3
+P 9400 2050
+F 0 "D3" H 9400 1950 50  0000 C CNN
+F 1 "STTH102A" H 9400 2150 50  0000 C CNN
+F 2 "Diodes_SMD:SMA_Standard" H 9400 2050 50  0001 C CNN
+F 3 "" H 9400 2050 50  0000 C CNN
+F 4 "170-02-496" H 9400 2050 60  0001 C CNN "Elfa PN"
+F 5 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 9400 2050 60  0001 C CNN "Elfa Link"
+F 6 "9907874" H 9400 2050 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 9400 2050 60  0001 C CNN "Farnell Link"
+F 8 "511-STTH102A" H 9400 2050 60  0001 C CNN "Mouser PN"
+F 9 "497-2500-1-ND" H 9400 2050 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 9400 2050 60  0001 C CNN "Digikey Link"
+	1    9400 2050
+	0    1    1    0   
+$EndComp
+$Comp
+L D D4
+U 1 1 5A8C2B10
+P 8600 2600
+F 0 "D4" H 8600 2500 50  0000 C CNN
+F 1 "STTH102A" H 8600 2700 50  0000 C CNN
+F 2 "Diodes_SMD:SMA_Standard" H 8600 2600 50  0001 C CNN
+F 3 "" H 8600 2600 50  0000 C CNN
+F 4 "170-02-496" H 8600 2600 60  0001 C CNN "Elfa PN"
+F 5 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 8600 2600 60  0001 C CNN "Elfa Link"
+F 6 "9907874" H 8600 2600 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 8600 2600 60  0001 C CNN "Farnell Link"
+F 8 "511-STTH102A" H 8600 2600 60  0001 C CNN "Mouser PN"
+F 9 "497-2500-1-ND" H 8600 2600 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 8600 2600 60  0001 C CNN "Digikey Link"
+	1    8600 2600
+	-1   0    0    1   
+$EndComp
 $EndSCHEMATC
