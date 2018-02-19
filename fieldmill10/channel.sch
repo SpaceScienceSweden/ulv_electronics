@@ -34,7 +34,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 5
+Sheet 2 5
 Title ""
 Date ""
 Rev ""
@@ -57,10 +57,17 @@ AR Path="/57B0A0EC/58060B75" Ref="R36"  Part="1"
 AR Path="/57B0A102/58060B75" Ref="R42"  Part="1" 
 F 0 "R42" H 6580 3670 50  0000 L CNN
 F 1 "100M" H 6580 3610 50  0000 L CNN
-F 2 "SCUBE:Resistor_2010_2512_combined" H 6550 3650 50  0001 C CNN
+F 2 "Resistors_SMD:R_1206" H 6550 3650 50  0001 C CNN
 F 3 "" H 6550 3650 50  0000 C CNN
-F 4 "9235809" H 6550 3650 60  0001 C CNN "1st Distrib. PN"
-F 5 "http://se.farnell.com/yageo-phycomp/rc2010fk-0710ml/motst-tjockfilm-10m-1-0-5w-2010/dp/9235809" H 6550 3650 60  0001 C CNN "1st Distrib. Link"
+F 4 "Vishay" H 6550 3650 60  0001 C CNN "Mfg. Name"
+F 5 "CRHV1206AF100MFK" H 6550 3650 60  0001 C CNN "Mfg. Part Number"
+F 6 "1109056" H 6550 3650 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/vishay/crhv1206af100mfkft/motst-tunnfilm-100m-1-0-3w-1206/dp/1109056" H 6550 3650 60  0001 C CNN "Farnell Link"
+F 8 "71-CRHV1206AF100MFKF" H 6550 3650 60  0001 C CNN "Mouser PN"
+F 9 "CRHV100MACT-ND" H 6550 3650 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/vishay-dale/CRHV1206AF100MFKE5/CRHV100MACT-ND/2499032" H 6550 3650 60  0001 C CNN "Digikey Link"
+F 11 "9235809" H 6550 3650 60  0001 C CNN "1st Distrib. PN"
+F 12 "http://se.farnell.com/yageo-phycomp/rc2010fk-0710ml/motst-tjockfilm-10m-1-0-5w-2010/dp/9235809" H 6550 3650 60  0001 C CNN "1st Distrib. Link"
 	1    6550 3650
 	0    1    1    0   
 $EndComp
@@ -100,22 +107,6 @@ Text Notes 1850 1200 0    60   ~ 0
 This design is based on the paper "A Highly Sensitive Field Mill for Registering\nWeak and Strong Variations of the Electric-Field Intensity of the Earth’s Atmosphere" by Boldyrev et al.\nSome differences include removing the OPA1632 for lower complexity and power use,\nand lower values on the feedback resistors due to lack of component choices.\nLower values also reduce the noise due to of variable parasitic capacitances (vibrating metal parts)\nVishay's 1G resistors could also work, and can also be stacked to make 500M. With such\na high value oscillation become an issue due to insufficient compensation
 Text Notes 6100 6150 0    60   ~ 0
 1p capacitor serves both to low-pass (1.6 kHz)\nand offer compensation to prevent oscillation\nWithout it oscillation *will* happen
-$Comp
-L R_Small R35
-U 1 1 58085E26
-P 6550 5400
-AR Path="/57B05F2F/58085E26" Ref="R35"  Part="1" 
-AR Path="/57B0A0EC/58085E26" Ref="R41"  Part="1" 
-AR Path="/57B0A102/58085E26" Ref="R47"  Part="1" 
-F 0 "R47" H 6580 5420 50  0000 L CNN
-F 1 "100M" H 6580 5360 50  0000 L CNN
-F 2 "SCUBE:Resistor_2010_2512_combined" H 6550 5400 50  0001 C CNN
-F 3 "" H 6550 5400 50  0000 C CNN
-F 4 "9235809" H 6550 5400 60  0001 C CNN "1st Distrib. PN"
-F 5 "http://se.farnell.com/yageo-phycomp/rc2010fk-0710ml/motst-tjockfilm-10m-1-0-5w-2010/dp/9235809" H 6550 5400 60  0001 C CNN "1st Distrib. Link"
-	1    6550 5400
-	0    1    1    0   
-$EndComp
 Text Notes 7300 2600 0    60   ~ 0
 T filter to block RF but let our 300 Hz signal through\nI would have used a CM choke, but inter-winding leakage may be an issue\nWIth discrete inductors there's nowhere to leak to\nThere's two "layers" of inductors here:\n56 nH to block S-band and X-band (<=23 GHz)\n10-ish nH in the traces
 Text GLabel 7150 2850 1    60   Input ~ 0
@@ -241,15 +232,15 @@ Wire Wire Line
 Wire Wire Line
 	7750 3200 7750 3550
 Text Notes 7000 5550 0    60   ~ 0
-HVCB1206BKE100M is much better\n0.01% tolerance, +-25 ppm/°C\n67 SEK is a bit pricey though\nHVCB2010FKC100M 1% 50 ppm/°C  29 SEK
+HVCB1206BKE100M is much better\n0.01% tolerance, +-25 ppm/°C\n67 SEK is a bit pricey though\nHVCB2010FKC100M 1% 50 ppm/°C  29 SEK\nCRHV1206AF100MFK* 1% 100 ppm/°C 23 SEK, most available
 $Comp
-L +2V5 #PWR35
+L +2V5 #PWR042
 U 1 1 5A7A17A3
 P 6650 2800
-AR Path="/57B05F2F/5A7A17A3" Ref="#PWR35"  Part="1" 
-AR Path="/57B0A0EC/5A7A17A3" Ref="#PWR41"  Part="1" 
-AR Path="/57B0A102/5A7A17A3" Ref="#PWR47"  Part="1" 
-F 0 "#PWR47" H 6650 2650 50  0001 C CNN
+AR Path="/57B05F2F/5A7A17A3" Ref="#PWR042"  Part="1" 
+AR Path="/57B0A0EC/5A7A17A3" Ref="#PWR048"  Part="1" 
+AR Path="/57B0A102/5A7A17A3" Ref="#PWR054"  Part="1" 
+F 0 "#PWR054" H 6650 2650 50  0001 C CNN
 F 1 "+2V5" H 6650 2940 50  0000 C CNN
 F 2 "" H 6650 2800 50  0000 C CNN
 F 3 "" H 6650 2800 50  0000 C CNN
@@ -257,13 +248,13 @@ F 3 "" H 6650 2800 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L -2V5 #PWR36
+L -2V5 #PWR043
 U 1 1 5A7A19AE
 P 6650 3400
-AR Path="/57B05F2F/5A7A19AE" Ref="#PWR36"  Part="1" 
-AR Path="/57B0A0EC/5A7A19AE" Ref="#PWR42"  Part="1" 
-AR Path="/57B0A102/5A7A19AE" Ref="#PWR48"  Part="1" 
-F 0 "#PWR48" H 6650 3250 50  0001 C CNN
+AR Path="/57B05F2F/5A7A19AE" Ref="#PWR043"  Part="1" 
+AR Path="/57B0A0EC/5A7A19AE" Ref="#PWR049"  Part="1" 
+AR Path="/57B0A102/5A7A19AE" Ref="#PWR055"  Part="1" 
+F 0 "#PWR055" H 6650 3250 50  0001 C CNN
 F 1 "-2V5" H 6650 3540 50  0000 C CNN
 F 2 "" H 6650 3400 50  0000 C CNN
 F 3 "" H 6650 3400 50  0000 C CNN
@@ -288,13 +279,13 @@ F 6 "https://www.digikey.se/products/en?keywords=LTC6241IS8%23PBF" H 6550 3100 6
 	-1   0    0    -1  
 $EndComp
 $Comp
-L -2V5 #PWR40
+L -2V5 #PWR044
 U 1 1 5A7A212C
 P 6650 5150
-AR Path="/57B05F2F/5A7A212C" Ref="#PWR40"  Part="1" 
-AR Path="/57B0A0EC/5A7A212C" Ref="#PWR46"  Part="1" 
-AR Path="/57B0A102/5A7A212C" Ref="#PWR52"  Part="1" 
-F 0 "#PWR52" H 6650 5000 50  0001 C CNN
+AR Path="/57B05F2F/5A7A212C" Ref="#PWR044"  Part="1" 
+AR Path="/57B0A0EC/5A7A212C" Ref="#PWR050"  Part="1" 
+AR Path="/57B0A102/5A7A212C" Ref="#PWR056"  Part="1" 
+F 0 "#PWR056" H 6650 5000 50  0001 C CNN
 F 1 "-2V5" H 6650 5290 50  0000 C CNN
 F 2 "" H 6650 5150 50  0000 C CNN
 F 3 "" H 6650 5150 50  0000 C CNN
@@ -302,13 +293,13 @@ F 3 "" H 6650 5150 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L +2V5 #PWR39
+L +2V5 #PWR045
 U 1 1 5A7A218B
 P 6650 4550
-AR Path="/57B05F2F/5A7A218B" Ref="#PWR39"  Part="1" 
-AR Path="/57B0A0EC/5A7A218B" Ref="#PWR45"  Part="1" 
-AR Path="/57B0A102/5A7A218B" Ref="#PWR51"  Part="1" 
-F 0 "#PWR51" H 6650 4400 50  0001 C CNN
+AR Path="/57B05F2F/5A7A218B" Ref="#PWR045"  Part="1" 
+AR Path="/57B0A0EC/5A7A218B" Ref="#PWR051"  Part="1" 
+AR Path="/57B0A102/5A7A218B" Ref="#PWR057"  Part="1" 
+F 0 "#PWR057" H 6650 4400 50  0001 C CNN
 F 1 "+2V5" H 6650 4690 50  0000 C CNN
 F 2 "" H 6650 4550 50  0000 C CNN
 F 3 "" H 6650 4550 50  0000 C CNN
@@ -316,13 +307,13 @@ F 3 "" H 6650 4550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +2V5 #PWR37
+L +2V5 #PWR046
 U 1 1 5A7A2222
 P 5100 4000
-AR Path="/57B05F2F/5A7A2222" Ref="#PWR37"  Part="1" 
-AR Path="/57B0A0EC/5A7A2222" Ref="#PWR43"  Part="1" 
-AR Path="/57B0A102/5A7A2222" Ref="#PWR49"  Part="1" 
-F 0 "#PWR49" H 5100 3850 50  0001 C CNN
+AR Path="/57B05F2F/5A7A2222" Ref="#PWR046"  Part="1" 
+AR Path="/57B0A0EC/5A7A2222" Ref="#PWR052"  Part="1" 
+AR Path="/57B0A102/5A7A2222" Ref="#PWR058"  Part="1" 
+F 0 "#PWR058" H 5100 3850 50  0001 C CNN
 F 1 "+2V5" H 5100 4140 50  0000 C CNN
 F 2 "" H 5100 4000 50  0000 C CNN
 F 3 "" H 5100 4000 50  0000 C CNN
@@ -330,13 +321,13 @@ F 3 "" H 5100 4000 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L -2V5 #PWR38
+L -2V5 #PWR047
 U 1 1 5A7A2281
 P 5100 4500
-AR Path="/57B05F2F/5A7A2281" Ref="#PWR38"  Part="1" 
-AR Path="/57B0A0EC/5A7A2281" Ref="#PWR44"  Part="1" 
-AR Path="/57B0A102/5A7A2281" Ref="#PWR50"  Part="1" 
-F 0 "#PWR50" H 5100 4350 50  0001 C CNN
+AR Path="/57B05F2F/5A7A2281" Ref="#PWR047"  Part="1" 
+AR Path="/57B0A0EC/5A7A2281" Ref="#PWR053"  Part="1" 
+AR Path="/57B0A102/5A7A2281" Ref="#PWR059"  Part="1" 
+F 0 "#PWR059" H 5100 4350 50  0001 C CNN
 F 1 "-2V5" H 5100 4640 50  0000 C CNN
 F 2 "" H 5100 4500 50  0000 C CNN
 F 3 "" H 5100 4500 50  0000 C CNN
@@ -468,6 +459,29 @@ F 6 "609-L-14C56NJV4T" H 7950 4950 60  0001 C CNN "Mouser PN"
 F 7 "712-1443-1-ND" H 7950 4950 60  0001 C CNN "Digikey PN"
 F 8 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893" H 7950 4950 60  0001 C CNN "Digikey Link"
 	1    7950 4950
+	0    1    1    0   
+$EndComp
+$Comp
+L R_Small R32
+U 1 1 5A8CBBE1
+P 6550 5400
+AR Path="/57B05F2F/5A8CBBE1" Ref="R32"  Part="1" 
+AR Path="/57B0A0EC/5A8CBBE1" Ref="R33"  Part="1" 
+AR Path="/57B0A102/5A8CBBE1" Ref="R35"  Part="1" 
+F 0 "R35" H 6580 5420 50  0000 L CNN
+F 1 "100M" H 6580 5360 50  0000 L CNN
+F 2 "Resistors_SMD:R_1206" H 6550 5400 50  0001 C CNN
+F 3 "" H 6550 5400 50  0000 C CNN
+F 4 "Vishay" H 6550 5400 60  0001 C CNN "Mfg. Name"
+F 5 "CRHV1206AF100MFK" H 6550 5400 60  0001 C CNN "Mfg. Part Number"
+F 6 "1109056" H 6550 5400 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/vishay/crhv1206af100mfkft/motst-tunnfilm-100m-1-0-3w-1206/dp/1109056" H 6550 5400 60  0001 C CNN "Farnell Link"
+F 8 "71-CRHV1206AF100MFKF" H 6550 5400 60  0001 C CNN "Mouser PN"
+F 9 "CRHV100MACT-ND" H 6550 5400 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/vishay-dale/CRHV1206AF100MFKE5/CRHV100MACT-ND/2499032" H 6550 5400 60  0001 C CNN "Digikey Link"
+F 11 "9235809" H 6550 5400 60  0001 C CNN "1st Distrib. PN"
+F 12 "http://se.farnell.com/yageo-phycomp/rc2010fk-0710ml/motst-tjockfilm-10m-1-0-5w-2010/dp/9235809" H 6550 5400 60  0001 C CNN "1st Distrib. Link"
+	1    6550 5400
 	0    1    1    0   
 $EndComp
 $EndSCHEMATC
