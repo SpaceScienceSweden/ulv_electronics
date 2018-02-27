@@ -1,31 +1,40 @@
 Kopia av vad jag skrivit i redmine, plus lite mer.
 Flytta färdiga saker från TODO till DONE.
 
-TODO
-----
+TODO .sch
+---------
 
-Allt på ett 3.1 mm 4+ lager kort
-
-Termiska vior på pads slukar lod, vilket orsakar att ben på SOT23:or osv inte löds ordentligt. Undvik
-
-Biffigare 5V6 Zener-kapsel
-
-Mer kapacitans efter NANOSMDs, speciellt på ADS131A04. 100 µF eller mer. Annars måste vi kasta bort den och köra 0 Ohm. C17 -> 10 µF också en möjlighet.
-
-Keramiska kondingar som står på såna där ben vore också lämpligt
-
-AIN4P needs more attenuation
-
-Vi behöver nog också ett lagom filter på 24V till motorn, för minskat brus
-
-Shielding cans över högimpediva delar, eventuellt runt fler grejer också
+Lagom filter på 24V till motorn, för minskat brus?
 
 Stitched vias runt shielding cans så långt ner i kortet som möjligt
 
 Minska R14 till 100k?
 
+Keramiska kondingar som står på såna där ben vore också lämpligt
+- TDK MEGACAP
+- J-lead, L-lead
+- flexi
+- "Soft Termination" under "Features" på digikey finns det flest av
+
+Eventuellt shielding cans runt fler grejer
+
+TODO .brd
+---------
+
+Allt på ett 3.1 mm 4+ lager kort
+
+Termiska vior på pads slukar lod, vilket orsakar att ben på SOT23:or osv inte löds ordentligt. Undvik
+
+
 DONE
 ----
+
+Shielding cans över högimpediva delar
+
+Mer kapacitans efter NANOSMDs, speciellt på ADS131A04. 100 µF eller mer. Annars måste vi kasta bort den och köra 0 Ohm. C17 -> 10 µF också en möjlighet.
+- vi kör 0 Ohm istället
+
+Biffigare 5V6 Zener-kapsel
 
 56 nH-induktorer bör använda 0603 footprint, inte 0805
 
