@@ -32,6 +32,7 @@ flight:
 programserial:
 	make -C app all
 	killall picocom minicom || true
+	stty -F /dev/ttyUSB0 $(BAUD)
 	# Send ESC in case we're doing something
 	/bin/echo -en \\x1b > /dev/ttyUSB0
 	sleep 0.1
@@ -39,9 +40,9 @@ programserial:
 	sleep 0.1
 	# Tell application to enter bootloader
 	# Send twice, sometimes it borks
-	echo "SSSSSSS" > /dev/ttyUSB0
+	echo "S" > /dev/ttyUSB0
 	sleep 0.1
-	echo "SSSSSSS" > /dev/ttyUSB0
+	echo "S" > /dev/ttyUSB0
 	# Don't touch EEPROM -> motors keep spinning if spun up
 	avrdude -b $(BAUD) -c avr109 -p atmega128 -P /dev/ttyUSB0 -U flash:w:app/app.hex
 
