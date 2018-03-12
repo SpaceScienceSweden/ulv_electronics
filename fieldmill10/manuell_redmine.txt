@@ -4,22 +4,9 @@ Flytta färdiga saker från TODO till DONE.
 TODO .sch
 ---------
 
-Lagom filter på 24V till motorn, för minskat brus?
-- https://www.elfa.se/sv/drossel-smd-10-uh-850-ma-20-wuerth-elektronik-74479887310a/p/30063549
-- Capacitors_SMD:C_1210
-- https://www.digikey.se/product-detail/en/bourns-inc/SRU6025A-221Y/SRU6025A-221YCT-ND/4927415
-- https://www.digikey.se/product-detail/en/eaton/SD25-221-R/283-3657-6-ND/3313919
-- https://www.digikey.se/product-detail/en/wurth-electronics-inc/74404043151A/732-10761-1-ND/6598195
-
-Stitched vias runt shielding cans så långt ner i kortet som möjligt
-
 Minska R14 till 100k?
 
-Keramiska kondingar som står på såna där ben vore också lämpligt
-- TDK MEGACAP
-- J-lead, L-lead
-- flexi
-- "Soft Termination" under "Features" på digikey finns det flest av
+Soft termination på alla keramiska kondingar
 
 Eventuellt shielding cans runt fler grejer
 
@@ -30,7 +17,11 @@ TODO .brd
 
 Allt på ett 3.1 mm 4+ lager kort
 
-Termiska vior på pads slukar lod, vilket orsakar att ben på SOT23:or osv inte löds ordentligt. Undvik
+Stitched vias runt shielding cans så långt ner i kortet som möjligt
+
+Termiska vior på pads slukar lod, vilket orsakar att ben på SOT23:or osv inte löds ordentligt. Verboten!
+
+Alla mekaniska hål på hylslister måste vara icke-genomgående (Z-drill). Det borde gå att lura KiCAD att göra såna på nå vis.
 
 
 DONE
@@ -56,4 +47,11 @@ Minska R20 till 10k
 - Öka C6 till 10n för att ha samma cutoff frekvens
 
 Öka C10, C11 och C12 till 10n för 800 Hz low-pass på AIN1..3
+
+Lagom filter på 24V till motorn, för minskat brus?
+- https://www.elfa.se/sv/drossel-smd-10-uh-850-ma-20-wuerth-elektronik-74479887310a/p/30063549
+- Capacitors_SMD:C_1210
+- https://www.digikey.se/product-detail/en/bourns-inc/SRU6025A-221Y/SRU6025A-221YCT-ND/4927415
+- https://www.digikey.se/product-detail/en/eaton/SD25-221-R/283-3657-6-ND/3313919
+- https://www.digikey.se/product-detail/en/wurth-electronics-inc/74404043151A/732-10761-1-ND/6598195
 

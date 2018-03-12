@@ -34,7 +34,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 5
+Sheet 1 6
 Title ""
 Date ""
 Rev ""
@@ -767,36 +767,25 @@ $EndComp
 $Comp
 L +24V #PWR023
 U 1 1 58C75C1D
-P 7400 900
-F 0 "#PWR023" H 7400 750 50  0001 C CNN
-F 1 "+24V" H 7400 1040 50  0000 C CNN
-F 2 "" H 7400 900 50  0000 C CNN
-F 3 "" H 7400 900 50  0000 C CNN
-	1    7400 900 
-	0    1    1    0   
-$EndComp
-Text Label 6800 1750 1    60   ~ 0
-PWM
-$Comp
-L GND #PWR024
-U 1 1 58C75F43
-P 6900 1200
-F 0 "#PWR024" H 6900 950 50  0001 C CNN
-F 1 "GND" H 6900 1050 50  0000 C CNN
-F 2 "" H 6900 1200 50  0000 C CNN
-F 3 "" H 6900 1200 50  0000 C CNN
-	1    6900 1200
+P 6700 1350
+F 0 "#PWR023" H 6700 1200 50  0001 C CNN
+F 1 "+24V" H 6700 1490 50  0000 C CNN
+F 2 "" H 6700 1350 50  0000 C CNN
+F 3 "" H 6700 1350 50  0000 C CNN
+	1    6700 1350
 	1    0    0    -1  
 $EndComp
+Text Label 6050 1750 2    60   ~ 0
+PWM
 $Comp
 L PWR_FLAG #FLG025
 U 1 1 58C76342
-P 7250 800
-F 0 "#FLG025" H 7250 895 50  0001 C CNN
-F 1 "PWR_FLAG" H 7250 980 50  0000 C CNN
-F 2 "" H 7250 800 50  0000 C CNN
-F 3 "" H 7250 800 50  0000 C CNN
-	1    7250 800 
+P 6900 1250
+F 0 "#FLG025" H 6900 1345 50  0001 C CNN
+F 1 "PWR_FLAG" H 6900 1430 50  0000 C CNN
+F 2 "" H 6900 1250 50  0000 C CNN
+F 3 "" H 6900 1250 50  0000 C CNN
+	1    6900 1250
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -958,42 +947,6 @@ F 2 "" H 6750 3850 50  0000 C CNN
 F 3 "" H 6750 3850 50  0000 C CNN
 	1    6750 3850
 	0    -1   -1   0   
-$EndComp
-$Comp
-L CONN_01X05 P11
-U 1 1 591211C0
-P 6800 650
-F 0 "P11" H 6800 950 50  0000 C CNN
-F 1 "CONN_01X05" V 6900 650 50  0000 C CNN
-F 2 "SCUBE:MOTOR_SMD" H 6800 650 50  0001 C CNN
-F 3 "" H 6800 650 50  0000 C CNN
-	1    6800 650 
-	0    -1   -1   0   
-$EndComp
-Text Notes 7000 1200 1    60   ~ 0
-Enable\nMonitor\nSpeed\nGND\n+24V
-NoConn ~ 6700 850 
-$Comp
-L C_Small C50
-U 1 1 591258E0
-P 7250 1050
-F 0 "C50" H 7260 1120 50  0000 L CNN
-F 1 "10u50V" H 7260 970 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1210" H 7250 1050 50  0001 C CNN
-F 3 "" H 7250 1050 50  0000 C CNN
-	1    7250 1050
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR032
-U 1 1 591265DA
-P 7250 1150
-F 0 "#PWR032" H 7250 900 50  0001 C CNN
-F 1 "GND" H 7250 1000 50  0000 C CNN
-F 2 "" H 7250 1150 50  0000 C CNN
-F 3 "" H 7250 1150 50  0000 C CNN
-	1    7250 1150
-	1    0    0    -1  
 $EndComp
 $Comp
 L C_Small C52
@@ -1323,23 +1276,8 @@ Wire Wire Line
 	9950 4700 10050 4700
 Wire Wire Line
 	9950 4500 9950 4750
-Connection ~ 7000 1400
 Wire Wire Line
-	7000 1400 6600 1400
-Wire Wire Line
-	6600 1400 6600 850 
-Wire Wire Line
-	6900 1200 6900 850 
-Connection ~ 7250 900 
-Connection ~ 7000 900 
-Wire Wire Line
-	7000 900  7400 900 
-Wire Wire Line
-	7250 800  7250 950 
-Wire Wire Line
-	7000 1550 7000 850 
-Wire Wire Line
-	6700 1650 6700 1550
+	6700 1650 6700 1350
 Connection ~ 7450 2250
 Connection ~ 7250 2050
 Connection ~ 6700 2250
@@ -1366,7 +1304,7 @@ Connection ~ 6650 2550
 Connection ~ 6650 1550
 Connection ~ 6700 1550
 Wire Wire Line
-	6150 1550 7000 1550
+	6150 1550 6700 1550
 Connection ~ 6650 3850
 Wire Wire Line
 	6150 3850 6750 3850
@@ -1395,14 +1333,9 @@ Wire Wire Line
 Connection ~ 9350 4400
 Wire Wire Line
 	9350 4400 9400 4400
-Connection ~ 6650 1750
 Connection ~ 6650 1650
 Wire Wire Line
 	6150 1650 6700 1650
-Wire Wire Line
-	6800 1750 6800 850 
-Wire Wire Line
-	6150 1750 6800 1750
 Wire Wire Line
 	7150 5200 5700 5200
 Connection ~ 7050 1850
@@ -1948,4 +1881,19 @@ F 10 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2
 	1    8600 2600
 	-1   0    0    1   
 $EndComp
+Wire Wire Line
+	6900 1250 6900 1450
+Wire Wire Line
+	6900 1450 6700 1450
+Connection ~ 6700 1450
+Connection ~ 6150 1750
+Wire Wire Line
+	6650 1750 5800 1750
+$Sheet
+S 4850 1600 950  300 
+U 5AA6613A
+F0 "motor_filter" 60
+F1 "motor_filter.sch" 60
+F2 "PWM" I R 5800 1750 60 
+$EndSheet
 $EndSCHEMATC
