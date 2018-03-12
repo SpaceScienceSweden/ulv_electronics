@@ -533,7 +533,7 @@ L C_Small C51
 U 1 1 599B2BF2
 P 7550 3100
 F 0 "C51" H 7560 3170 50  0000 L CNN
-F 1 "10u" H 7560 3020 50  0000 L CNN
+F 1 "open" H 7560 3020 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 7550 3100 50  0001 C CNN
 F 3 "" H 7550 3100 50  0000 C CNN
 	1    7550 3100
@@ -742,7 +742,7 @@ L R_Small R55
 U 1 1 599B393F
 P 8450 3400
 F 0 "R55" H 8480 3420 50  0000 L CNN
-F 1 "0" H 8480 3360 50  0000 L CNN
+F 1 "open" H 8480 3360 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 8450 3400 50  0001 C CNN
 F 3 "" H 8450 3400 50  0000 C CNN
 	1    8450 3400
@@ -785,4 +785,6 @@ Wire Wire Line
 Connection ~ 8450 3200
 Text Notes 6700 4500 0    60   ~ 0
 Both Sallen-Key (2nd order) and straight RC (1st order) low-pass possible\nFor S-K, populate R19, R53, C7, C51 and R55. Leave R54 open.\nFor RC, populate, R53, C7 and R54. Replace R19 with 0 Ohm. Leave C51 and R55 open.
+Text Notes 3400 4050 1    60   ~ 0
+not populated
 $EndSCHEMATC
