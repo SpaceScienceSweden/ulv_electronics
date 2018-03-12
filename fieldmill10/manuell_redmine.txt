@@ -5,6 +5,11 @@ TODO .sch
 ---------
 
 Lagom filter på 24V till motorn, för minskat brus?
+- https://www.elfa.se/sv/drossel-smd-10-uh-850-ma-20-wuerth-elektronik-74479887310a/p/30063549
+- Capacitors_SMD:C_1210
+- https://www.digikey.se/product-detail/en/bourns-inc/SRU6025A-221Y/SRU6025A-221YCT-ND/4927415
+- https://www.digikey.se/product-detail/en/eaton/SD25-221-R/283-3657-6-ND/3313919
+- https://www.digikey.se/product-detail/en/wurth-electronics-inc/74404043151A/732-10761-1-ND/6598195
 
 Stitched vias runt shielding cans så långt ner i kortet som möjligt
 
@@ -17,6 +22,8 @@ Keramiska kondingar som står på såna där ben vore också lämpligt
 - "Soft Termination" under "Features" på digikey finns det flest av
 
 Eventuellt shielding cans runt fler grejer
+
+Speca rätt LPPB istf ITR-20001 eller whatever
 
 TODO .brd
 ---------
