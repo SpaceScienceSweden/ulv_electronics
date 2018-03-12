@@ -10,6 +10,12 @@ Soft termination på alla keramiska kondingar
 
 Eventuellt shielding cans runt fler grejer
 
+Filmkondingar i filterkedjan förslagsvis
+- 10 nF film (helst PTFE)
+- silver mica 1 pF eller thin film
+- silver mica/film 100 pF
+- 100 nF film?
+
 TODO .brd
 ---------
 
