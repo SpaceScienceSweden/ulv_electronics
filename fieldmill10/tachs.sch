@@ -241,8 +241,12 @@ F 0 "IR2" H 5500 2850 60  0000 C CNN
 F 1 "ITR20001" H 5500 2750 60  0000 C CNN
 F 2 "SCUBE:LPPB032NFSP-RC-ITR20001" H 5500 2600 60  0001 C CNN
 F 3 "" H 5500 2600 60  0000 C CNN
-F 4 "175-34-043" H 5500 2600 60  0001 C CNN "1st Distrib. PN"
-F 5 "https://www.elfa.se/sv/reflexdetektor-kodenshi-sg-2bc/p/17534043" H 5500 2600 60  0001 C CNN "1st Distrib. Link"
+F 4 "Sullins" H 5500 2600 60  0001 C CNN "Mfg. Name"
+F 5 "LPPB032NFSP-RC" H 5500 2600 60  0001 C CNN "Mfg. Part Number"
+F 6 "S9007E-03-ND" H 5500 2600 60  0001 C CNN "Digikey PN"
+F 7 "https://www.digikey.com/product-detail/en/sullins-connector-solutions/LPPB032NFSP-RC/S9007E-03-ND/1786349" H 5500 2600 60  0001 C CNN "Digikey Link"
+F 8 "175-34-043" H 5500 2600 60  0001 C CNN "1st Distrib. PN"
+F 9 "https://www.elfa.se/sv/reflexdetektor-kodenshi-sg-2bc/p/17534043" H 5500 2600 60  0001 C CNN "1st Distrib. Link"
 	1    5500 2600
 	0    -1   1    0   
 $EndComp

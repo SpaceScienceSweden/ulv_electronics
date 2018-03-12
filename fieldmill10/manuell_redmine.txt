@@ -10,8 +10,6 @@ Soft termination på alla keramiska kondingar
 
 Eventuellt shielding cans runt fler grejer
 
-Speca rätt LPPB istf ITR-20001 eller whatever
-
 TODO .brd
 ---------
 
@@ -55,3 +53,5 @@ Lagom filter på 24V till motorn, för minskat brus?
 - https://www.digikey.se/product-detail/en/eaton/SD25-221-R/283-3657-6-ND/3313919
 - https://www.digikey.se/product-detail/en/wurth-electronics-inc/74404043151A/732-10761-1-ND/6598195
 
+Speca rätt LPPB istf ITR-20001 eller whatever
+- IR2 = LPPB032NFSP-RC
