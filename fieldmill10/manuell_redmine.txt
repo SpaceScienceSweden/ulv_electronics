@@ -10,7 +10,7 @@ Soft termination på alla keramiska kondingar
 
 Eventuellt shielding cans runt fler grejer
 
-Filmkondingar i filterkedjan förslagsvis
+Filmkondingar/silver mica i filterkedjan
 - 10 nF film (helst PTFE)
 - silver mica 1 pF eller thin film
 - silver mica/film 100 pF
@@ -27,6 +27,7 @@ Termiska vior på pads slukar lod, vilket orsakar att ben på SOT23:or osv inte 
 
 Alla mekaniska hål på hylslister måste vara icke-genomgående (Z-drill). Det borde gå att lura KiCAD att göra såna på nå vis.
 
+Gör 100 pF virtuella
 
 DONE
 ----

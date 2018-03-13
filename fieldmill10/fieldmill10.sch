@@ -56,10 +56,10 @@ F 3 "" H 1100 6700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR32
+L GND #PWR34
 U 1 1 57ADA565
 P 700 7000
-F 0 "#PWR32" H 700 6750 50  0001 C CNN
+F 0 "#PWR34" H 700 6750 50  0001 C CNN
 F 1 "GND" H 700 6850 50  0000 C CNN
 F 2 "" H 700 7000 50  0000 C CNN
 F 3 "" H 700 7000 50  0000 C CNN
@@ -263,34 +263,34 @@ $EndComp
 $Comp
 L C_Small C13
 U 1 1 58075867
-P 4300 4400
-F 0 "C13" H 4310 4470 50  0000 L CNN
-F 1 "1u" H 4310 4320 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 4300 4400 50  0001 C CNN
-F 3 "" H 4300 4400 50  0000 C CNN
-	1    4300 4400
+P 4350 4400
+F 0 "C13" H 4360 4470 50  0000 L CNN
+F 1 "1u" H 4360 4320 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 4350 4400 50  0001 C CNN
+F 3 "" H 4350 4400 50  0000 C CNN
+	1    4350 4400
 	0    1    1    0   
 $EndComp
 $Comp
 L C_Small C16
 U 1 1 58076106
-P 4550 4400
-F 0 "C16" H 4560 4470 50  0000 L CNN
-F 1 "1u" H 4560 4320 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 4550 4400 50  0001 C CNN
-F 3 "" H 4550 4400 50  0000 C CNN
-	1    4550 4400
+P 4600 4550
+F 0 "C16" H 4610 4620 50  0000 L CNN
+F 1 "1u" H 4610 4470 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 4600 4550 50  0001 C CNN
+F 3 "" H 4600 4550 50  0000 C CNN
+	1    4600 4550
 	1    0    0    -1  
 $EndComp
 $Comp
 L GND #PWR22
 U 1 1 58076CF5
-P 4750 4500
-F 0 "#PWR22" H 4750 4250 50  0001 C CNN
-F 1 "GND" H 4750 4350 50  0000 C CNN
-F 2 "" H 4750 4500 50  0000 C CNN
-F 3 "" H 4750 4500 50  0000 C CNN
-	1    4750 4500
+P 5100 4500
+F 0 "#PWR22" H 5100 4250 50  0001 C CNN
+F 1 "GND" H 5100 4350 50  0000 C CNN
+F 2 "" H 5100 4500 50  0000 C CNN
+F 3 "" H 5100 4500 50  0000 C CNN
+	1    5100 4500
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -464,15 +464,15 @@ $EndSheet
 Text Label 6700 2450 0    60   ~ 0
 ITACH
 $Comp
-L VDD #PWR20
+L VDD #PWR19
 U 1 1 58B4831E
-P 5400 4350
-F 0 "#PWR20" H 5400 4200 50  0001 C CNN
-F 1 "VDD" H 5400 4500 50  0000 C CNN
-F 2 "" H 5400 4350 50  0000 C CNN
-F 3 "" H 5400 4350 50  0000 C CNN
-	1    5400 4350
-	-1   0    0    1   
+P 5550 4200
+F 0 "#PWR19" H 5550 4050 50  0001 C CNN
+F 1 "VDD" H 5550 4350 50  0000 C CNN
+F 2 "" H 5550 4200 50  0000 C CNN
+F 3 "" H 5550 4200 50  0000 C CNN
+	1    5550 4200
+	0    1    1    0   
 $EndComp
 $Comp
 L VDD #PWR9
@@ -542,7 +542,7 @@ F 3 "" H 3600 4100 50  0000 C CNN
 	1    3600 4100
 	1    0    0    -1  
 $EndComp
-Text Notes 3500 5150 0    60   ~ 0
+Text Notes 3500 5400 0    60   ~ 0
 AVDD current <= 4.0 mA
 $Comp
 L MAX504 U2
@@ -572,21 +572,21 @@ F 3 "" H 9900 3450 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L -5V #PWR25
+L -5V #PWR26
 U 1 1 58BF224E
-P 9350 4850
-F 0 "#PWR25" H 9350 4950 50  0001 C CNN
-F 1 "-5V" H 9350 5000 50  0000 C CNN
-F 2 "" H 9350 4850 50  0000 C CNN
-F 3 "" H 9350 4850 50  0000 C CNN
-	1    9350 4850
+P 9650 4850
+F 0 "#PWR26" H 9650 4950 50  0001 C CNN
+F 1 "-5V" H 9650 5000 50  0000 C CNN
+F 2 "" H 9650 4850 50  0000 C CNN
+F 3 "" H 9650 4850 50  0000 C CNN
+	1    9650 4850
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR23
+L GND #PWR24
 U 1 1 58BF22D5
 P 8500 4500
-F 0 "#PWR23" H 8500 4250 50  0001 C CNN
+F 0 "#PWR24" H 8500 4250 50  0001 C CNN
 F 1 "GND" H 8500 4350 50  0000 C CNN
 F 2 "" H 8500 4500 50  0000 C CNN
 F 3 "" H 8500 4500 50  0000 C CNN
@@ -620,10 +620,10 @@ F 3 "" H 9950 4850 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR26
+L GND #PWR27
 U 1 1 58BF4302
 P 9950 4950
-F 0 "#PWR26" H 9950 4700 50  0001 C CNN
+F 0 "#PWR27" H 9950 4700 50  0001 C CNN
 F 1 "GND" H 9950 4800 50  0000 C CNN
 F 2 "" H 9950 4950 50  0000 C CNN
 F 3 "" H 9950 4950 50  0000 C CNN
@@ -653,10 +653,10 @@ $EndComp
 Text Label 6700 2850 0    60   ~ 0
 ONEWIRE
 $Comp
-L GND #PWR31
+L GND #PWR33
 U 1 1 58C40103
 P 6750 5700
-F 0 "#PWR31" H 6750 5450 50  0001 C CNN
+F 0 "#PWR33" H 6750 5450 50  0001 C CNN
 F 1 "GND" H 6750 5550 50  0000 C CNN
 F 2 "" H 6750 5700 50  0000 C CNN
 F 3 "" H 6750 5700 50  0000 C CNN
@@ -664,10 +664,10 @@ F 3 "" H 6750 5700 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L +3V3 #PWR30
+L +3V3 #PWR32
 U 1 1 58C40CB6
 P 5150 5600
-F 0 "#PWR30" H 5150 5450 50  0001 C CNN
+F 0 "#PWR32" H 5150 5450 50  0001 C CNN
 F 1 "+3V3" H 5150 5740 50  0000 C CNN
 F 2 "" H 5150 5600 50  0000 C CNN
 F 3 "" H 5150 5600 50  0000 C CNN
@@ -732,13 +732,13 @@ $EndComp
 $Comp
 L PWR_FLAG #FLG7
 U 1 1 58C459C4
-P 5200 4400
-F 0 "#FLG7" H 5200 4495 50  0001 C CNN
-F 1 "PWR_FLAG" H 5200 4580 50  0000 C CNN
-F 2 "" H 5200 4400 50  0000 C CNN
-F 3 "" H 5200 4400 50  0000 C CNN
-	1    5200 4400
-	-1   0    0    1   
+P 5350 3850
+F 0 "#FLG7" H 5350 3945 50  0001 C CNN
+F 1 "PWR_FLAG" H 5350 4030 50  0000 C CNN
+F 2 "" H 5350 3850 50  0000 C CNN
+F 3 "" H 5350 3850 50  0000 C CNN
+	1    5350 3850
+	0    -1   -1   0   
 $EndComp
 $Comp
 L PWR_FLAG #FLG9
@@ -751,8 +751,6 @@ F 3 "" H 5450 5550 50  0000 C CNN
 	1    5450 5550
 	1    0    0    -1  
 $EndComp
-Text Notes 3800 5000 0    39   ~ 0
-Used to have 2x1 µF here\nbut vreg has 2x10 µF already
 $Comp
 L PWR_FLAG #FLG3
 U 1 1 58C73E73
@@ -813,23 +811,23 @@ $EndComp
 $Comp
 L C_Small C19
 U 1 1 58C799DF
-P 9500 4400
-F 0 "C19" H 9510 4470 50  0000 L CNN
-F 1 "10u" H 9510 4320 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 9500 4400 50  0001 C CNN
-F 3 "" H 9500 4400 50  0000 C CNN
-	1    9500 4400
+P 9800 4400
+F 0 "C19" H 9810 4470 50  0000 L CNN
+F 1 "10u" H 9810 4320 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 9800 4400 50  0001 C CNN
+F 3 "" H 9800 4400 50  0000 C CNN
+	1    9800 4400
 	0    -1   -1   0   
 $EndComp
 $Comp
 L GND #PWR21
 U 1 1 58C79B0A
-P 9600 4400
-F 0 "#PWR21" H 9600 4150 50  0001 C CNN
-F 1 "GND" H 9600 4250 50  0000 C CNN
-F 2 "" H 9600 4400 50  0000 C CNN
-F 3 "" H 9600 4400 50  0000 C CNN
-	1    9600 4400
+P 9900 4400
+F 0 "#PWR21" H 9900 4150 50  0001 C CNN
+F 1 "GND" H 9900 4250 50  0000 C CNN
+F 2 "" H 9900 4400 50  0000 C CNN
+F 3 "" H 9900 4400 50  0000 C CNN
+	1    9900 4400
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -868,12 +866,12 @@ $EndComp
 $Comp
 L R_Small R37
 U 1 1 58CE0570
-P 9350 4700
-F 0 "R37" H 9380 4720 50  0000 L CNN
-F 1 "0" H 9380 4660 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206" H 9350 4700 50  0001 C CNN
-F 3 "" H 9350 4700 50  0000 C CNN
-	1    9350 4700
+P 9650 4700
+F 0 "R37" H 9680 4720 50  0000 L CNN
+F 1 "0" H 9680 4660 50  0000 L CNN
+F 2 "Resistors_SMD:R_1206" H 9650 4700 50  0001 C CNN
+F 3 "" H 9650 4700 50  0000 C CNN
+	1    9650 4700
 	1    0    0    -1  
 $EndComp
 Text Notes 2700 7450 0    60   ~ 0
@@ -881,12 +879,12 @@ AD5551: external ref, bipolar\nAD7304: external ref, quad, bipolar\nAD7249: inte
 $Comp
 L PWR_FLAG #FLG8
 U 1 1 58CF3BAA
-P 9150 4650
-F 0 "#FLG8" H 9150 4745 50  0001 C CNN
-F 1 "PWR_FLAG" H 9150 4830 50  0000 C CNN
-F 2 "" H 9150 4650 50  0000 C CNN
-F 3 "" H 9150 4650 50  0000 C CNN
-	1    9150 4650
+P 9450 4650
+F 0 "#FLG8" H 9450 4745 50  0001 C CNN
+F 1 "PWR_FLAG" H 9450 4830 50  0000 C CNN
+F 2 "" H 9450 4650 50  0000 C CNN
+F 3 "" H 9450 4650 50  0000 C CNN
+	1    9450 4650
 	-1   0    0    1   
 $EndComp
 $Comp
@@ -993,10 +991,10 @@ F 3 "" H 10750 4850 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR27
+L GND #PWR28
 U 1 1 599C5333
 P 10350 4950
-F 0 "#PWR27" H 10350 4700 50  0001 C CNN
+F 0 "#PWR28" H 10350 4700 50  0001 C CNN
 F 1 "GND" H 10350 4800 50  0000 C CNN
 F 2 "" H 10350 4950 50  0000 C CNN
 F 3 "" H 10350 4950 50  0000 C CNN
@@ -1004,10 +1002,10 @@ F 3 "" H 10350 4950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR28
+L GND #PWR29
 U 1 1 599C5464
 P 10550 4950
-F 0 "#PWR28" H 10550 4700 50  0001 C CNN
+F 0 "#PWR29" H 10550 4700 50  0001 C CNN
 F 1 "GND" H 10550 4800 50  0000 C CNN
 F 2 "" H 10550 4950 50  0000 C CNN
 F 3 "" H 10550 4950 50  0000 C CNN
@@ -1015,10 +1013,10 @@ F 3 "" H 10550 4950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR29
+L GND #PWR30
 U 1 1 599C5595
 P 10750 4950
-F 0 "#PWR29" H 10750 4700 50  0001 C CNN
+F 0 "#PWR30" H 10750 4700 50  0001 C CNN
 F 1 "GND" H 10750 4800 50  0000 C CNN
 F 2 "" H 10750 4950 50  0000 C CNN
 F 3 "" H 10750 4950 50  0000 C CNN
@@ -1030,12 +1028,12 @@ Capacitance between VGND and GND is 77 pF (measured)\nMAX504 can drive this quit
 $Comp
 L C_Small C17
 U 1 1 5A67488F
-P 4750 4400
-F 0 "C17" H 4760 4470 50  0000 L CNN
-F 1 "10u" H 4760 4320 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 4750 4400 50  0001 C CNN
-F 3 "" H 4750 4400 50  0000 C CNN
-	1    4750 4400
+P 5100 4400
+F 0 "C17" H 5110 4470 50  0000 L CNN
+F 1 "10u" H 5110 4320 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 5100 4400 50  0001 C CNN
+F 3 "" H 5100 4400 50  0000 C CNN
+	1    5100 4400
 	1    0    0    -1  
 $EndComp
 NoConn ~ 7950 4200
@@ -1064,26 +1062,26 @@ F 3 "" H 10000 2250 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L -2V5 #PWR24
+L -2V5 #PWR31
 U 1 1 5A7A3AB2
-P 4150 4650
-F 0 "#PWR24" H 4150 4500 50  0001 C CNN
-F 1 "-2V5" H 4150 4790 50  0000 C CNN
-F 2 "" H 4150 4650 50  0000 C CNN
-F 3 "" H 4150 4650 50  0000 C CNN
-	1    4150 4650
+P 4150 5050
+F 0 "#PWR31" H 4150 4900 50  0001 C CNN
+F 1 "-2V5" H 4150 5190 50  0000 C CNN
+F 2 "" H 4150 5050 50  0000 C CNN
+F 3 "" H 4150 5050 50  0000 C CNN
+	1    4150 5050
 	-1   0    0    1   
 $EndComp
 $Comp
-L +2V5 #PWR19
+L +2V5 #PWR20
 U 1 1 5A7A3B6E
-P 4050 4150
-F 0 "#PWR19" H 4050 4000 50  0001 C CNN
-F 1 "+2V5" H 4050 4290 50  0000 C CNN
-F 2 "" H 4050 4150 50  0000 C CNN
-F 3 "" H 4050 4150 50  0000 C CNN
-	1    4050 4150
-	-1   0    0    1   
+P 3650 4400
+F 0 "#PWR20" H 3650 4250 50  0001 C CNN
+F 1 "+2V5" H 3650 4540 50  0000 C CNN
+F 2 "" H 3650 4400 50  0000 C CNN
+F 3 "" H 3650 4400 50  0000 C CNN
+	1    3650 4400
+	0    -1   -1   0   
 $EndComp
 $Comp
 L C_Small C8
@@ -1248,7 +1246,7 @@ Wire Wire Line
 Wire Wire Line
 	3600 3800 3600 3900
 Wire Wire Line
-	4150 4150 4150 4650
+	4150 4150 4150 5050
 Wire Wire Line
 	3300 2950 3550 2950
 Wire Wire Line
@@ -1317,11 +1315,11 @@ Wire Wire Line
 Connection ~ 5450 3150
 Wire Wire Line
 	5450 3150 5450 2800
-Connection ~ 9350 4500
+Connection ~ 9650 4500
 Wire Wire Line
-	9350 4500 9150 4500
+	9650 4500 9450 4500
 Wire Wire Line
-	9150 4500 9150 4650
+	9450 4500 9450 4650
 Wire Wire Line
 	7600 3350 9350 3350
 Wire Wire Line
@@ -1329,10 +1327,10 @@ Wire Wire Line
 Wire Wire Line
 	7600 3350 7600 3900
 Wire Wire Line
-	9350 4850 9350 4800
-Connection ~ 9350 4400
+	9650 4850 9650 4800
+Connection ~ 9650 4400
 Wire Wire Line
-	9350 4400 9400 4400
+	9650 4400 9700 4400
 Connection ~ 6650 1650
 Wire Wire Line
 	6150 1650 6700 1650
@@ -1366,13 +1364,10 @@ Wire Wire Line
 Wire Wire Line
 	5650 3650 6650 3650
 Wire Wire Line
-	4150 4550 4550 4550
+	4600 4900 4150 4900
 Connection ~ 5450 5600
 Wire Wire Line
 	5450 5550 5450 5600
-Connection ~ 5200 4250
-Wire Wire Line
-	5200 4400 5200 4250
 Wire Wire Line
 	7450 2250 7450 1800
 Wire Wire Line
@@ -1474,32 +1469,25 @@ Wire Wire Line
 	4250 4200 4250 4150
 Connection ~ 4150 4200
 Wire Wire Line
-	4450 4150 4450 4550
+	4500 4250 4500 4900
 Wire Wire Line
-	4450 4400 4400 4400
-Wire Wire Line
-	4200 4400 4200 4250
+	4500 4400 4450 4400
 Wire Wire Line
 	4200 4250 4350 4250
 Wire Wire Line
 	4350 4250 4350 4150
 Wire Wire Line
-	4550 4300 4550 4150
+	4650 4200 5550 4200
 Wire Wire Line
-	4750 4250 5400 4250
+	4750 4150 4750 4200
 Wire Wire Line
-	4750 4150 4750 4300
-Wire Wire Line
-	4650 4150 4650 4200
-Wire Wire Line
-	4650 4200 4750 4200
+	4650 4200 4650 4150
 Connection ~ 4750 4200
-Connection ~ 4750 4250
-Connection ~ 4150 4550
+Connection ~ 4150 4900
 Wire Wire Line
-	4550 4550 4550 4500
-Connection ~ 4450 4550
-Connection ~ 4450 4400
+	4600 4650 4600 4900
+Connection ~ 4500 4900
+Connection ~ 4500 4400
 Wire Wire Line
 	4450 2250 4450 2450
 Wire Wire Line
@@ -1566,10 +1554,10 @@ Wire Wire Line
 Wire Wire Line
 	5250 3550 6650 3550
 Wire Wire Line
-	5400 3650 5400 4350
+	5400 3650 5400 4200
 Wire Wire Line
 	2450 3900 2750 3900
-Connection ~ 5400 4250
+Connection ~ 5400 4200
 Wire Wire Line
 	5250 3650 5450 3650
 Wire Wire Line
@@ -1636,11 +1624,11 @@ Connection ~ 3450 3800
 Wire Wire Line
 	9050 4000 9950 4000
 Wire Wire Line
-	9350 4000 9350 4600
+	9650 4000 9650 4600
 Wire Wire Line
 	9050 4450 9050 4300
 Wire Wire Line
-	7950 4450 9150 4450
+	7950 4450 9350 4450
 Wire Wire Line
 	7950 4450 7950 4300
 Wire Wire Line
@@ -1651,7 +1639,7 @@ Wire Wire Line
 Wire Wire Line
 	9150 3450 9150 4200
 Wire Wire Line
-	9150 4150 9050 4150
+	9050 4150 9350 4150
 Connection ~ 9050 4150
 Wire Wire Line
 	9150 4450 9150 4400
@@ -1823,7 +1811,7 @@ F 3 "" H 10400 4200 50  0000 C CNN
 	1    10400 4200
 	0    1    1    0   
 $EndComp
-Connection ~ 9350 4000
+Connection ~ 9650 4000
 Wire Wire Line
 	9650 3250 9750 3250
 Wire Wire Line
@@ -1888,7 +1876,7 @@ Wire Wire Line
 Connection ~ 6700 1450
 Connection ~ 6150 1750
 Wire Wire Line
-	6650 1750 5800 1750
+	5800 1750 6650 1750
 $Sheet
 S 4850 1600 950  300 
 U 5AA6613A
@@ -1896,4 +1884,199 @@ F0 "motor_filter" 60
 F1 "motor_filter.sch" 60
 F2 "PWM" I R 5800 1750 60 
 $EndSheet
+$Comp
+L C_Small C3
+U 1 1 5AA7BC0A
+P 5350 4400
+F 0 "C3" H 5360 4470 50  0000 L CNN
+F 1 "100n" H 5360 4320 50  0000 L CNN
+F 2 "Capacitors_SMD:C_1210" H 5350 4400 50  0001 C CNN
+F 3 "" H 5350 4400 50  0000 C CNN
+F 4 "ECH-U1C104GX5" H 5350 4400 60  0001 C CNN "Mfg. Part Number"
+F 5 "300-41-614" H 5350 4400 60  0001 C CNN "Elfa PN"
+F 6 "https://www.elfa.se/sv/kondensator-100-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c104gx5/p/30041614" H 5350 4400 60  0001 C CNN "Elfa Link"
+F 7 "9695001" H 5350 4400 60  0001 C CNN "Farnell PN"
+F 8 "https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-film-pps-100nf-16v-smd/dp/9695001" H 5350 4400 60  0001 C CNN "Farnell Link"
+F 9 "667-ECH-U1C104GX5" H 5350 4400 60  0001 C CNN "Mouser PN"
+F 10 "PCF1189CT-ND" H 5350 4400 60  0001 C CNN "Digikey PN"
+F 11 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736" H 5350 4400 60  0001 C CNN "Digikey Link"
+	1    5350 4400
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR23
+U 1 1 5AA7BCAA
+P 5350 4500
+F 0 "#PWR23" H 5350 4250 50  0001 C CNN
+F 1 "GND" H 5350 4350 50  0000 C CNN
+F 2 "" H 5350 4500 50  0000 C CNN
+F 3 "" H 5350 4500 50  0000 C CNN
+	1    5350 4500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5350 4300 5350 4200
+Connection ~ 5350 4200
+$Comp
+L C_Small C24
+U 1 1 5AA7C428
+P 3900 4550
+F 0 "C24" H 3910 4620 50  0000 L CNN
+F 1 "100n" H 3910 4470 50  0000 L CNN
+F 2 "Capacitors_SMD:C_1210" H 3900 4550 50  0001 C CNN
+F 3 "" H 3900 4550 50  0000 C CNN
+F 4 "ECH-U1C104GX5" H 3900 4550 60  0001 C CNN "Mfg. Part Number"
+F 5 "300-41-614" H 3900 4550 60  0001 C CNN "Elfa PN"
+F 6 "https://www.elfa.se/sv/kondensator-100-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c104gx5/p/30041614" H 3900 4550 60  0001 C CNN "Elfa Link"
+F 7 "9695001" H 3900 4550 60  0001 C CNN "Farnell PN"
+F 8 "https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-film-pps-100nf-16v-smd/dp/9695001" H 3900 4550 60  0001 C CNN "Farnell Link"
+F 9 "667-ECH-U1C104GX5" H 3900 4550 60  0001 C CNN "Mouser PN"
+F 10 "PCF1189CT-ND" H 3900 4550 60  0001 C CNN "Digikey PN"
+F 11 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736" H 3900 4550 60  0001 C CNN "Digikey Link"
+	1    3900 4550
+	1    0    0    -1  
+$EndComp
+$Comp
+L C_Small C56
+U 1 1 5AA7C4D2
+P 3900 4850
+F 0 "C56" H 3910 4920 50  0000 L CNN
+F 1 "100n" H 3910 4770 50  0000 L CNN
+F 2 "Capacitors_SMD:C_1210" H 3900 4850 50  0001 C CNN
+F 3 "" H 3900 4850 50  0000 C CNN
+F 4 "ECH-U1C104GX5" H 3900 4850 60  0001 C CNN "Mfg. Part Number"
+F 5 "300-41-614" H 3900 4850 60  0001 C CNN "Elfa PN"
+F 6 "https://www.elfa.se/sv/kondensator-100-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c104gx5/p/30041614" H 3900 4850 60  0001 C CNN "Elfa Link"
+F 7 "9695001" H 3900 4850 60  0001 C CNN "Farnell PN"
+F 8 "https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-film-pps-100nf-16v-smd/dp/9695001" H 3900 4850 60  0001 C CNN "Farnell Link"
+F 9 "667-ECH-U1C104GX5" H 3900 4850 60  0001 C CNN "Mouser PN"
+F 10 "PCF1189CT-ND" H 3900 4850 60  0001 C CNN "Digikey PN"
+F 11 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736" H 3900 4850 60  0001 C CNN "Digikey Link"
+	1    3900 4850
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR25
+U 1 1 5AA7CC11
+P 3800 4700
+F 0 "#PWR25" H 3800 4450 50  0001 C CNN
+F 1 "GND" H 3800 4550 50  0000 C CNN
+F 2 "" H 3800 4700 50  0000 C CNN
+F 3 "" H 3800 4700 50  0000 C CNN
+	1    3800 4700
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3650 4400 4050 4400
+Wire Wire Line
+	4050 4400 4050 4150
+Wire Wire Line
+	3900 4400 3900 4450
+Connection ~ 3900 4400
+Wire Wire Line
+	3900 4650 3900 4750
+Wire Wire Line
+	3800 4700 3900 4700
+Connection ~ 3900 4700
+Wire Wire Line
+	4150 5000 3900 5000
+Wire Wire Line
+	3900 5000 3900 4950
+Connection ~ 4150 5000
+$Comp
+L C_Small C29
+U 1 1 5AA7DC34
+P 4350 4600
+F 0 "C29" H 4360 4670 50  0000 L CNN
+F 1 "100n" H 4360 4520 50  0000 L CNN
+F 2 "Capacitors_SMD:C_1210" H 4350 4600 50  0001 C CNN
+F 3 "" H 4350 4600 50  0000 C CNN
+F 4 "ECH-U1C104GX5" H 4350 4600 60  0001 C CNN "Mfg. Part Number"
+F 5 "300-41-614" H 4350 4600 60  0001 C CNN "Elfa PN"
+F 6 "https://www.elfa.se/sv/kondensator-100-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c104gx5/p/30041614" H 4350 4600 60  0001 C CNN "Elfa Link"
+F 7 "9695001" H 4350 4600 60  0001 C CNN "Farnell PN"
+F 8 "https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-film-pps-100nf-16v-smd/dp/9695001" H 4350 4600 60  0001 C CNN "Farnell Link"
+F 9 "667-ECH-U1C104GX5" H 4350 4600 60  0001 C CNN "Mouser PN"
+F 10 "PCF1189CT-ND" H 4350 4600 60  0001 C CNN "Digikey PN"
+F 11 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736" H 4350 4600 60  0001 C CNN "Digikey Link"
+	1    4350 4600
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5350 3850 5400 3850
+Connection ~ 5400 3850
+$Comp
+L C_Small C26
+U 1 1 5AA7EB28
+P 4800 4550
+F 0 "C26" H 4810 4620 50  0000 L CNN
+F 1 "100n" H 4810 4470 50  0000 L CNN
+F 2 "Capacitors_SMD:C_1210" H 4800 4550 50  0001 C CNN
+F 3 "" H 4800 4550 50  0000 C CNN
+F 4 "ECH-U1C104GX5" H 4800 4550 60  0001 C CNN "Mfg. Part Number"
+F 5 "300-41-614" H 4800 4550 60  0001 C CNN "Elfa PN"
+F 6 "https://www.elfa.se/sv/kondensator-100-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c104gx5/p/30041614" H 4800 4550 60  0001 C CNN "Elfa Link"
+F 7 "9695001" H 4800 4550 60  0001 C CNN "Farnell PN"
+F 8 "https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-film-pps-100nf-16v-smd/dp/9695001" H 4800 4550 60  0001 C CNN "Farnell Link"
+F 9 "667-ECH-U1C104GX5" H 4800 4550 60  0001 C CNN "Mouser PN"
+F 10 "PCF1189CT-ND" H 4800 4550 60  0001 C CNN "Digikey PN"
+F 11 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736" H 4800 4550 60  0001 C CNN "Digikey Link"
+	1    4800 4550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4200 4250 4200 4600
+Wire Wire Line
+	4200 4600 4250 4600
+Wire Wire Line
+	4250 4400 4200 4400
+Connection ~ 4200 4400
+Wire Wire Line
+	4450 4600 4500 4600
+Connection ~ 4500 4600
+Wire Wire Line
+	4500 4250 4450 4250
+Wire Wire Line
+	4450 4250 4450 4150
+Wire Wire Line
+	4800 4650 4800 4700
+Wire Wire Line
+	4800 4700 4600 4700
+Connection ~ 4600 4700
+Wire Wire Line
+	4800 4350 4800 4450
+Wire Wire Line
+	4550 4350 4800 4350
+Wire Wire Line
+	4550 4350 4550 4150
+Wire Wire Line
+	4600 4450 4600 4350
+Connection ~ 4600 4350
+Wire Wire Line
+	5100 4300 5100 4200
+Connection ~ 5100 4200
+$Comp
+L C_Small C61
+U 1 1 5AA8127E
+P 9350 4300
+F 0 "C61" H 9360 4370 50  0000 L CNN
+F 1 "100n" H 9360 4220 50  0000 L CNN
+F 2 "Capacitors_SMD:C_1210" H 9350 4300 50  0001 C CNN
+F 3 "" H 9350 4300 50  0000 C CNN
+F 4 "ECH-U1C104GX5" H 9350 4300 60  0001 C CNN "Mfg. Part Number"
+F 5 "300-41-614" H 9350 4300 60  0001 C CNN "Elfa PN"
+F 6 "https://www.elfa.se/sv/kondensator-100-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c104gx5/p/30041614" H 9350 4300 60  0001 C CNN "Elfa Link"
+F 7 "9695001" H 9350 4300 60  0001 C CNN "Farnell PN"
+F 8 "https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-film-pps-100nf-16v-smd/dp/9695001" H 9350 4300 60  0001 C CNN "Farnell Link"
+F 9 "667-ECH-U1C104GX5" H 9350 4300 60  0001 C CNN "Mouser PN"
+F 10 "PCF1189CT-ND" H 9350 4300 60  0001 C CNN "Digikey PN"
+F 11 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736" H 9350 4300 60  0001 C CNN "Digikey Link"
+	1    9350 4300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9350 4150 9350 4200
+Wire Wire Line
+	9350 4450 9350 4400
+Connection ~ 9150 4450
 $EndSCHEMATC
