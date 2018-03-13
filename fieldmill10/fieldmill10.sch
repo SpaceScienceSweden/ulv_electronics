@@ -235,29 +235,16 @@ F 0 "C10" H 3010 2770 50  0000 L CNN
 F 1 "10n" H 3010 2620 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 3000 2700 50  0001 C CNN
 F 3 "" H 3000 2700 50  0000 C CNN
+F 4 "Panasonic" H 3000 2700 60  0001 C CNN "Mfg. Name"
+F 5 "ECH-U1C103GX5" H 3000 2700 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-41-612" H 3000 2700 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/kondensator-10-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c103gx5/p/30041612" H 3000 2700 60  0001 C CNN "Elfa Link"
+F 8 "9694897" H 3000 2700 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/panasonic-electronic-components/echu1c103gx5/cap-film-pps-10nf-16v-smd/dp/9694897" H 3000 2700 60  0001 C CNN "Farnell Link"
+F 10 "667-ECH-U1C103GX5" H 3000 2700 60  0001 C CNN "Mouser PN"
+F 11 "PCF1177CT-ND" H 3000 2700 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C103GX5/PCF1177CT-ND/353724" H 3000 2700 60  0001 C CNN "Digikey Link"
 	1    3000 2700
-	1    0    0    -1  
-$EndComp
-$Comp
-L C_Small C11
-U 1 1 58069D62
-P 3000 3200
-F 0 "C11" H 3010 3270 50  0000 L CNN
-F 1 "10n" H 3010 3120 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 3000 3200 50  0001 C CNN
-F 3 "" H 3000 3200 50  0000 C CNN
-	1    3000 3200
-	1    0    0    -1  
-$EndComp
-$Comp
-L C_Small C12
-U 1 1 58069E07
-P 3000 3750
-F 0 "C12" H 3010 3820 50  0000 L CNN
-F 1 "10n" H 3010 3670 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 3000 3750 50  0001 C CNN
-F 3 "" H 3000 3750 50  0000 C CNN
-	1    3000 3750
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -2079,4 +2066,44 @@ Wire Wire Line
 Wire Wire Line
 	9350 4450 9350 4400
 Connection ~ 9150 4450
+$Comp
+L C_Small C?
+U 1 1 5AA8682D
+P 3000 3200
+F 0 "C?" H 3010 3270 50  0000 L CNN
+F 1 "10n" H 3010 3120 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 3000 3200 50  0001 C CNN
+F 3 "" H 3000 3200 50  0000 C CNN
+F 4 "Panasonic" H 3000 3200 60  0001 C CNN "Mfg. Name"
+F 5 "ECH-U1C103GX5" H 3000 3200 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-41-612" H 3000 3200 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/kondensator-10-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c103gx5/p/30041612" H 3000 3200 60  0001 C CNN "Elfa Link"
+F 8 "9694897" H 3000 3200 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/panasonic-electronic-components/echu1c103gx5/cap-film-pps-10nf-16v-smd/dp/9694897" H 3000 3200 60  0001 C CNN "Farnell Link"
+F 10 "667-ECH-U1C103GX5" H 3000 3200 60  0001 C CNN "Mouser PN"
+F 11 "PCF1177CT-ND" H 3000 3200 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C103GX5/PCF1177CT-ND/353724" H 3000 3200 60  0001 C CNN "Digikey Link"
+	1    3000 3200
+	1    0    0    -1  
+$EndComp
+$Comp
+L C_Small C?
+U 1 1 5AA86961
+P 3000 3750
+F 0 "C?" H 3010 3820 50  0000 L CNN
+F 1 "10n" H 3010 3670 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 3000 3750 50  0001 C CNN
+F 3 "" H 3000 3750 50  0000 C CNN
+F 4 "Panasonic" H 3000 3750 60  0001 C CNN "Mfg. Name"
+F 5 "ECH-U1C103GX5" H 3000 3750 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-41-612" H 3000 3750 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/kondensator-10-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c103gx5/p/30041612" H 3000 3750 60  0001 C CNN "Elfa Link"
+F 8 "9694897" H 3000 3750 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/panasonic-electronic-components/echu1c103gx5/cap-film-pps-10nf-16v-smd/dp/9694897" H 3000 3750 60  0001 C CNN "Farnell Link"
+F 10 "667-ECH-U1C103GX5" H 3000 3750 60  0001 C CNN "Mouser PN"
+F 11 "PCF1177CT-ND" H 3000 3750 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C103GX5/PCF1177CT-ND/353724" H 3000 3750 60  0001 C CNN "Digikey Link"
+	1    3000 3750
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
