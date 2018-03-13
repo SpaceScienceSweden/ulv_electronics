@@ -6,15 +6,7 @@ TODO .sch
 
 Minska R14 till 100k?
 
-Soft termination på alla keramiska kondingar
-
 Eventuellt shielding cans runt fler grejer
-
-Filmkondingar/silver mica i filterkedjan
-- 10 nF film (helst PTFE)
-- silver mica 1 pF eller thin film
-- silver mica/film 100 pF
-- 100 nF film?
 
 TODO .brd
 ---------
@@ -62,3 +54,16 @@ Lagom filter på 24V till motorn, för minskat brus?
 
 Speca rätt LPPB istf ITR-20001 eller whatever
 - IR2 = LPPB032NFSP-RC
+
+Filmkondingar/silver mica i filterkedjan
+- 10 nF film (helst PTFE)
+- silver mica 1 pF eller thin film
+- silver mica/film 100 pF
+- 100 nF film?
+
+Soft termination på alla keramiska kondingar. 125°C
+- 1u 25V automotive board flex 0805
+- 10u 10V automotive board flex 0805
+- 10u35V 35V automotive board flex 1206
+- 47u 6V3 automotive board flex 1210
+
