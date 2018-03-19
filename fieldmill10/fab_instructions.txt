@@ -7,4 +7,5 @@ Remaining capacitors are ceramic, must use soft termination. 125°C
 - all others must rated at least 10V
 - automotive grade preferred
 Some(all?) mechanical holes should be Z-drilled
+- drill must not touch In1.Cu shield layer, minimum depth is 1.5 mm
 

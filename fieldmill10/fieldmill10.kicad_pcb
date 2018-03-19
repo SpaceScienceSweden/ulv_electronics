@@ -314,9 +314,9 @@
       (net 14 +3V3))
     (pad E smd rect (at 1.27 2.1 180) (size 0.76 1.8) (layers B.Cu B.Paste B.Mask)
       (net 73 "Net-(C23-Pad2)"))
-    (pad "" np_thru_hole circle (at 0.635 0 180) (size 0.8 0.8) (drill 0.8) (layers *.Cu))
-    (pad "" np_thru_hole circle (at -0.635 0 180) (size 0.8 0.8) (drill 0.8) (layers *.Cu))
   )
+  (via blind (at 99.365 79) (size 0.8) (drill 0.8) (layers B.Cu In2.Cu) (net 0))
+  (via blind (at 100.635 79) (size 0.8) (drill 0.8) (layers B.Cu In2.Cu) (net 0))
 
   (module Resistors_SMD:R_0805 (layer B.Cu) (tedit 5415CDEB) (tstamp 580B553E)
     (at 122.65 34.2 180)
