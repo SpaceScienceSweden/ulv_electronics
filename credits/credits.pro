@@ -1,4 +1,4 @@
-update=Tue 12 Dec 2017 01:03:16 PM CET
+update=tis 20 mar 2018 10:54:08
 version=1
 last_client=kicad
 [pcbnew]
@@ -39,7 +39,7 @@ LabSize=60
 version=1
 LibDir=
 [eeschema/libraries]
-LibName1=credits-rescue
+LibName1=../libraries/scube
 LibName2=power
 LibName3=device
 LibName4=transistors
@@ -69,4 +69,3 @@ LibName27=opto
 LibName28=atmel
 LibName29=contrib
 LibName30=valves
-LibName31=../libraries/scube
