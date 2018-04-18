@@ -52,11 +52,13 @@ F 0 "U7" H 6350 3300 50  0000 C CNN
 F 1 "MAX44252ASD+" H 6500 2700 50  0000 C CNN
 F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 6250 3200 50  0001 C CNN
 F 3 "" H 6350 3300 50  0000 C CNN
-F 4 "2510952" H 6300 3100 60  0001 C CNN "Farnell PN"
-F 5 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 6300 3100 60  0001 C CNN "Farnell Link"
-F 6 "700-MAX44252ASD+" H 6300 3100 60  0001 C CNN "Mouser PN"
-F 7 "MAX44252ASD+-ND" H 6300 3100 60  0001 C CNN "Digikey PN"
-F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 6300 3100 60  0001 C CNN "Digikey Link"
+F 4 "Maxim Integrated" H 6300 3100 60  0001 C CNN "Mfg. Name"
+F 5 "MAX44252ASD+" H 6300 3100 60  0001 C CNN "Mfg. Part Number"
+F 6 "2510952" H 6300 3100 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 6300 3100 60  0001 C CNN "Farnell Link"
+F 8 "700-MAX44252ASD+" H 6300 3100 60  0001 C CNN "Mouser PN"
+F 9 "MAX44252ASD+-ND" H 6300 3100 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 6300 3100 60  0001 C CNN "Digikey Link"
 	2    6300 3100
 	1    0    0    -1  
 $EndComp
@@ -201,8 +203,6 @@ F 4 "Sullins" H 5500 2600 60  0001 C CNN "Mfg. Name"
 F 5 "LPPB032NFSP-RC" H 5500 2600 60  0001 C CNN "Mfg. Part Number"
 F 6 "S9007E-03-ND" H 5500 2600 60  0001 C CNN "Digikey PN"
 F 7 "https://www.digikey.com/product-detail/en/sullins-connector-solutions/LPPB032NFSP-RC/S9007E-03-ND/1786349" H 5500 2600 60  0001 C CNN "Digikey Link"
-F 8 "175-34-043" H 5500 2600 60  0001 C CNN "1st Distrib. PN"
-F 9 "https://www.elfa.se/sv/reflexdetektor-kodenshi-sg-2bc/p/17534043" H 5500 2600 60  0001 C CNN "1st Distrib. Link"
 	1    5500 2600
 	0    -1   1    0   
 $EndComp
@@ -537,11 +537,13 @@ F 0 "U7" H 8850 3200 50  0000 C CNN
 F 1 "MAX44252ASD+" H 9000 2600 50  0000 C CNN
 F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 8750 3100 50  0001 C CNN
 F 3 "" H 8850 3200 50  0000 C CNN
-F 4 "2510952" H 8800 3000 60  0001 C CNN "Farnell PN"
-F 5 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 8800 3000 60  0001 C CNN "Farnell Link"
-F 6 "700-MAX44252ASD+" H 8800 3000 60  0001 C CNN "Mouser PN"
-F 7 "MAX44252ASD+-ND" H 8800 3000 60  0001 C CNN "Digikey PN"
-F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 8800 3000 60  0001 C CNN "Digikey Link"
+F 4 "Maxim Integrated" H 8800 3000 60  0001 C CNN "Mfg. Name"
+F 5 "MAX44252ASD+" H 8800 3000 60  0001 C CNN "Mfg. Part Number"
+F 6 "2510952" H 8800 3000 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 8800 3000 60  0001 C CNN "Farnell Link"
+F 8 "700-MAX44252ASD+" H 8800 3000 60  0001 C CNN "Mouser PN"
+F 9 "MAX44252ASD+-ND" H 8800 3000 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 8800 3000 60  0001 C CNN "Digikey Link"
 	1    8800 3000
 	1    0    0    -1  
 $EndComp
@@ -553,11 +555,13 @@ F 0 "U7" H 8150 3750 50  0000 C CNN
 F 1 "MAX44252ASD+" H 8300 3300 50  0000 C CNN
 F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 8050 3650 50  0001 C CNN
 F 3 "" H 8150 3750 50  0000 C CNN
-F 4 "2510952" H 8100 3550 60  0001 C CNN "Farnell PN"
-F 5 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 8100 3550 60  0001 C CNN "Farnell Link"
-F 6 "700-MAX44252ASD+" H 8100 3550 60  0001 C CNN "Mouser PN"
-F 7 "MAX44252ASD+-ND" H 8100 3550 60  0001 C CNN "Digikey PN"
-F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 8100 3550 60  0001 C CNN "Digikey Link"
+F 4 "Maxim Integrated" H 8100 3550 60  0001 C CNN "Mfg. Name"
+F 5 "MAX44252ASD+" H 8100 3550 60  0001 C CNN "Mfg. Part Number"
+F 6 "2510952" H 8100 3550 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 8100 3550 60  0001 C CNN "Farnell Link"
+F 8 "700-MAX44252ASD+" H 8100 3550 60  0001 C CNN "Mouser PN"
+F 9 "MAX44252ASD+-ND" H 8100 3550 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 8100 3550 60  0001 C CNN "Digikey Link"
 	3    8100 3550
 	1    0    0    -1  
 $EndComp
@@ -569,11 +573,13 @@ F 0 "U7" H 10250 4000 50  0000 C CNN
 F 1 "MAX44252ASD+" H 10400 3400 50  0000 C CNN
 F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 10150 3900 50  0001 C CNN
 F 3 "" H 10250 4000 50  0000 C CNN
-F 4 "2510952" H 10200 3800 60  0001 C CNN "Farnell PN"
-F 5 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 10200 3800 60  0001 C CNN "Farnell Link"
-F 6 "700-MAX44252ASD+" H 10200 3800 60  0001 C CNN "Mouser PN"
-F 7 "MAX44252ASD+-ND" H 10200 3800 60  0001 C CNN "Digikey PN"
-F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 10200 3800 60  0001 C CNN "Digikey Link"
+F 4 "Maxim Integrated" H 10200 3800 60  0001 C CNN "Mfg. Name"
+F 5 "MAX44252ASD+" H 10200 3800 60  0001 C CNN "Mfg. Part Number"
+F 6 "2510952" H 10200 3800 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952" H 10200 3800 60  0001 C CNN "Farnell Link"
+F 8 "700-MAX44252ASD+" H 10200 3800 60  0001 C CNN "Mouser PN"
+F 9 "MAX44252ASD+-ND" H 10200 3800 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359" H 10200 3800 60  0001 C CNN "Digikey Link"
 	4    10200 3800
 	1    0    0    -1  
 $EndComp
