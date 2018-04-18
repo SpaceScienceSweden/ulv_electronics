@@ -193,8 +193,8 @@ $Comp
 L ITR20001 IR2
 U 1 1 58D3D0AF
 P 5500 2600
-F 0 "IR2" H 5500 2850 60  0000 C CNN
-F 1 "ITR20001" H 5500 2750 60  0000 C CNN
+F 0 "IR2" V 5400 2800 60  0000 C CNN
+F 1 "ITR20001 in LPPB032NFSP-RC" V 5550 3450 60  0000 C CNN
 F 2 "SCUBE:LPPB032NFSP-RC-ITR20001" H 5500 2600 60  0001 C CNN
 F 3 "" H 5500 2600 60  0000 C CNN
 F 4 "Sullins" H 5500 2600 60  0001 C CNN "Mfg. Name"
@@ -244,9 +244,10 @@ L R_Small R40
 U 1 1 58D3DCE4
 P 5700 3650
 F 0 "R40" H 5730 3670 50  0000 L CNN
-F 1 "open" H 5730 3610 50  0000 L CNN
+F 1 "10k" H 5730 3610 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 5700 3650 50  0001 C CNN
 F 3 "" H 5700 3650 50  0000 C CNN
+F 4 "dnf" H 5800 3550 60  0000 C CNN "fit_field"
 	1    5700 3650
 	1    0    0    -1  
 $EndComp
@@ -255,9 +256,10 @@ L C_Small C47
 U 1 1 58D41B0B
 P 5950 3600
 F 0 "C47" H 5960 3670 50  0000 L CNN
-F 1 "open" H 5960 3520 50  0000 L CNN
+F 1 "10n" H 5960 3520 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 5950 3600 50  0001 C CNN
 F 3 "" H 5950 3600 50  0000 C CNN
+F 4 "dnf" H 6100 3600 60  0000 C CNN "fit_field"
 	1    5950 3600
 	1    0    0    -1  
 $EndComp
@@ -286,7 +288,7 @@ $EndComp
 Text Notes 9550 3350 0    60   ~ 0
 (3.3-2.0)/1200 = 1 mA
 Text Notes 1350 3700 0    60   ~ 0
-Experiment results:\n680 ohm drive, 100k shunt to GND, 3 mm distance -> 0.8 .. 3.3 V swing\n1k2 drive seems OK too\n470 pF seems a bit on the low side\n47 nF was way too much\ncutoff @ 3rd harmonic, 100 Hz signal:\nC <= 1/(2*pi*100e3*300) = 5.3 n -> 4n7 should be perfect
+Experiment results:\n680 ohm drive, 100k shunt to GND, 3 mm distance -> 0.8 .. 3.3 V swing\n1k2 drive seems OK too\n470 pF seems a bit on the low side\n47 nF was way too much\ncutoff @ 3rd harmonic, 100 Hz signal:\nC <= 1/(2*pi*100e3*300) = 5.3 n -> 4n7 should be perfect\n\nReduced 100k shunt to 10k, increased cap from 1n to 10n
 $Comp
 L R_Small R53
 U 1 1 599B2A1E
@@ -314,14 +316,15 @@ L R_Small R54
 U 1 1 599B43EB
 P 8300 3200
 F 0 "R54" H 8330 3220 50  0000 L CNN
-F 1 "open" H 8330 3160 50  0000 L CNN
+F 1 "0" H 8330 3160 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 8300 3200 50  0001 C CNN
 F 3 "" H 8300 3200 50  0000 C CNN
+F 4 "dnf" V 8250 3050 60  0000 C CNN "fit_field"
 	1    8300 3200
 	0    1    1    0   
 $EndComp
 Text Notes 6700 4500 0    60   ~ 0
-Both Sallen-Key (2nd order) and straight RC (1st order) low-pass possible\nFor S-K, populate R19, R53, C7, C51 and R55. Leave R54 open.\nFor RC, populate, R53, C7 and R54. Replace R19 with 0 Ohm. Leave C51 and R55 open.
+Both Sallen-Key (2nd order) and straight RC (1st order) low-pass possible\nFor S-K, populate R19, R53, C31, C19 and R55. Leave R54 open.\nFor RC, populate, R19, R53, C31 and R54. Leave C19 and R55 open.
 Text Notes 5100 2950 0    60   ~ 0
 1.8 mA
 NoConn ~ 9900 3700
@@ -332,9 +335,10 @@ L R_Small R25
 U 1 1 5A6DE2CA
 P 6900 2450
 F 0 "R25" H 6930 2470 50  0000 L CNN
-F 1 "open" H 6930 2410 50  0000 L CNN
+F 1 "10k" H 6930 2410 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 6900 2450 50  0001 C CNN
 F 3 "" H 6900 2450 50  0000 C CNN
+F 4 "dnf" H 6800 2450 60  0000 C CNN "fit_field"
 	1    6900 2450
 	-1   0    0    1   
 $EndComp
@@ -343,9 +347,10 @@ L R_Small R24
 U 1 1 5A6DE375
 P 6900 2150
 F 0 "R24" H 6930 2170 50  0000 L CNN
-F 1 "open" H 6930 2110 50  0000 L CNN
+F 1 "10k" H 6930 2110 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 6900 2150 50  0001 C CNN
 F 3 "" H 6900 2150 50  0000 C CNN
+F 4 "dnf" H 6800 2150 60  0000 C CNN "fit_field"
 	1    6900 2150
 	-1   0    0    1   
 $EndComp
@@ -522,8 +527,8 @@ Wire Wire Line
 	7850 2300 7850 3100
 Connection ~ 7850 3100
 Connection ~ 6900 2300
-Text Notes 7050 2250 0    60   ~ 0
-Fixed threshold
+Text Notes 7100 2250 0    49   ~ 0
+Fixed threshold\nValues are just guesses
 $Comp
 L LM324 U7
 U 1 1 5A8C787B
@@ -665,4 +670,6 @@ F 10 "https://www.digikey.se/product-detail/en/kemet/C0805X106M8RACAUTO/399-1569
 	1    7550 3100
 	0    -1   -1   0   
 $EndComp
+Text Notes 9500 1850 0    60   ~ 0
+Sampled by ADC
 $EndSCHEMATC

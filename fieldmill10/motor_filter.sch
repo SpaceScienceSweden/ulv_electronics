@@ -74,6 +74,7 @@ F 0 "P11" H 8350 3550 50  0000 C CNN
 F 1 "CONN_01X05" V 8450 3250 50  0000 C CNN
 F 2 "SCUBE:MOTOR_SMD" H 8350 3250 50  0001 C CNN
 F 3 "" H 8350 3250 50  0000 C CNN
+F 4 "dnf" H 8350 2950 60  0000 C CNN "fit_field"
 	1    8350 3250
 	1    0    0    -1  
 $EndComp
@@ -95,6 +96,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 3000 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 3000 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 3000 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" H 3100 3800 60  0000 C CNN "fit_field"
 	1    3000 3600
 	1    0    0    -1  
 $EndComp
@@ -130,6 +132,7 @@ F 0 "L13" V 4750 3450 50  0000 C CNN
 F 1 "3.3 mH" V 4875 3450 50  0000 C CNN
 F 2 "SCUBE:Wurth_7687709332" H 4800 3450 50  0001 C CNN
 F 3 "" H 4800 3450 50  0000 C CNN
+F 4 "+filt" V 4950 3450 60  0000 C CNN "fit_field"
 	1    4800 3450
 	0    -1   -1   0   
 $EndComp
@@ -141,6 +144,7 @@ F 0 "L14" V 5100 3450 50  0000 C CNN
 F 1 "3.3 mH" V 5225 3450 50  0000 C CNN
 F 2 "SCUBE:Wurth_7687709332" H 5150 3450 50  0001 C CNN
 F 3 "" H 5150 3450 50  0000 C CNN
+F 4 "+filt" V 5300 3450 60  0000 C CNN "fit_field"
 	1    5150 3450
 	0    -1   -1   0   
 $EndComp
@@ -152,6 +156,7 @@ F 0 "L15" V 5450 3450 50  0000 C CNN
 F 1 "3.3 mH" V 5575 3450 50  0000 C CNN
 F 2 "SCUBE:Wurth_7687709332" H 5500 3450 50  0001 C CNN
 F 3 "" H 5500 3450 50  0000 C CNN
+F 4 "+filt" V 5650 3450 60  0000 C CNN "fit_field"
 	1    5500 3450
 	0    -1   -1   0   
 $EndComp
@@ -172,6 +177,7 @@ F 0 "R39" V 5230 3200 50  0000 C CNN
 F 1 "0" V 5150 3200 50  0000 C CNN
 F 2 "Resistors_SMD:R_1206" V 5080 3200 50  0001 C CNN
 F 3 "" H 5150 3200 50  0000 C CNN
+F 4 "-filt" V 5200 3000 60  0000 C CNN "fit_field"
 	1    5150 3200
 	0    -1   -1   0   
 $EndComp
@@ -357,6 +363,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 3300 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 3300 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 3300 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" H 3400 3800 60  0000 C CNN "fit_field"
 	1    3300 3600
 	1    0    0    -1  
 $EndComp
@@ -375,6 +382,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 3600 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 3600 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 3600 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" H 3700 3800 60  0000 C CNN "fit_field"
 	1    3600 3600
 	1    0    0    -1  
 $EndComp
@@ -393,6 +401,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 3900 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 3900 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 3900 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" H 4000 3800 60  0000 C CNN "fit_field"
 	1    3900 3600
 	1    0    0    -1  
 $EndComp
@@ -411,6 +420,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 4200 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 4200 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 4200 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" H 4300 3800 60  0000 C CNN "fit_field"
 	1    4200 3600
 	1    0    0    -1  
 $EndComp
@@ -429,6 +439,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 4500 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 4500 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 4500 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" H 4650 3600 60  0000 C CNN "fit_field"
 	1    4500 3600
 	1    0    0    -1  
 $EndComp
@@ -447,6 +458,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 5700 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 5700 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 5700 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" V 5600 3450 60  0000 C CNN "fit_field"
 	1    5700 3600
 	1    0    0    -1  
 $EndComp
@@ -465,6 +477,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 6000 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 6000 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 6000 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" H 6100 3800 60  0000 C CNN "fit_field"
 	1    6000 3600
 	1    0    0    -1  
 $EndComp
@@ -483,6 +496,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 6300 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 6300 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 6300 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" H 6400 3800 60  0000 C CNN "fit_field"
 	1    6300 3600
 	1    0    0    -1  
 $EndComp
@@ -501,6 +515,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 6600 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 6600 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 6600 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" H 6700 3800 60  0000 C CNN "fit_field"
 	1    6600 3600
 	1    0    0    -1  
 $EndComp
@@ -519,6 +534,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 6900 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 6900 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 6900 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" H 7000 3800 60  0000 C CNN "fit_field"
 	1    6900 3600
 	1    0    0    -1  
 $EndComp
@@ -537,6 +553,7 @@ F 7 "https://se.farnell.com/tdk/cga5l1x7r1v106k160ae/kond-aec-q200-x7r-10-f-35v-
 F 8 "810-CGA5L1X7R1V106KE" H 7200 3600 60  0001 C CNN "Mouser PN"
 F 9 "445-172483-1-ND" H 7200 3600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA5L1X7R1V106K160AE/445-172483-1-ND/4990025" H 7200 3600 60  0001 C CNN "Digikey Link"
+F 11 "+filt" H 7300 3800 60  0000 C CNN "fit_field"
 	1    7200 3600
 	1    0    0    -1  
 $EndComp
