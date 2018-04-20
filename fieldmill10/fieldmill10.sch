@@ -1704,7 +1704,7 @@ F 0 "R31" H 10430 4220 50  0000 L CNN
 F 1 "0" H 10430 4160 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 10400 4200 50  0001 C CNN
 F 3 "" H 10400 4200 50  0000 C CNN
-F 4 "-adg601" V 10350 4500 60  0000 C CNN "fit_field"
+F 4 "-adg601,-lab" V 10350 4550 60  0000 C CNN "fit_field"
 	1    10400 4200
 	0    1    1    0   
 $EndComp

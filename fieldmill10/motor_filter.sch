@@ -177,7 +177,7 @@ F 0 "R39" V 5230 3200 50  0000 C CNN
 F 1 "0" V 5150 3200 50  0000 C CNN
 F 2 "Resistors_SMD:R_1206" V 5080 3200 50  0001 C CNN
 F 3 "" H 5150 3200 50  0000 C CNN
-F 4 "-filt" V 5200 3000 60  0000 C CNN "fit_field"
+F 4 "-filt,-lab" V 5200 2850 60  0000 C CNN "fit_field"
 	1    5150 3200
 	0    -1   -1   0   
 $EndComp

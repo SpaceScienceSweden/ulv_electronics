@@ -360,7 +360,7 @@ F 0 "P14" H 5450 3800 50  0000 C CNN
 F 1 "Shield" V 5550 3700 50  0000 C CNN
 F 2 "SCUBE:36903205S" H 5450 3700 50  0001 C CNN
 F 3 "" H 5450 3700 50  0000 C CNN
-F 4 "+shields" V 5350 3500 60  0000 C CNN "fit_field"
+F 4 "+lab" V 5350 3500 60  0000 C CNN "fit_field"
 	1    5450 3700
 	0    -1   -1   0   
 $EndComp

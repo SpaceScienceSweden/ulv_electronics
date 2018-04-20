@@ -220,7 +220,8 @@ class Component():
             return False
 
         if check == "":
-            return True #empty is fitted
+            #return self.prefs.emptyFit
+            check = "-lab";
 
         opts = check.split(",")
 
