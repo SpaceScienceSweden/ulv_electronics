@@ -52,6 +52,7 @@ F 0 "P7" H 1100 6800 50  0000 C CNN
 F 1 "M3" V 1200 6700 50  0000 C CNN
 F 2 "SCUBE:M3_FM_PTH" H 1100 6700 50  0001 C CNN
 F 3 "" H 1100 6700 50  0000 C CNN
+F 4 "dnf" H 1250 6800 60  0000 C CNN "fit_field"
 	1    1100 6700
 	1    0    0    -1  
 $EndComp
@@ -74,6 +75,7 @@ F 0 "P8" H 1100 7000 50  0000 C CNN
 F 1 "M3" V 1200 6900 50  0000 C CNN
 F 2 "SCUBE:M3_FM_PTH" H 1100 6900 50  0001 C CNN
 F 3 "" H 1100 6900 50  0000 C CNN
+F 4 "dnf" H 1250 7000 60  0000 C CNN "fit_field"
 	1    1100 6900
 	1    0    0    -1  
 $EndComp
@@ -85,6 +87,7 @@ F 0 "P9" H 1100 7200 50  0000 C CNN
 F 1 "M3" V 1200 7100 50  0000 C CNN
 F 2 "SCUBE:M3_FM_PTH" H 1100 7100 50  0001 C CNN
 F 3 "" H 1100 7100 50  0000 C CNN
+F 4 "dnf" H 1250 7200 60  0000 C CNN "fit_field"
 	1    1100 7100
 	1    0    0    -1  
 $EndComp
@@ -96,6 +99,7 @@ F 0 "P10" H 1100 7400 50  0000 C CNN
 F 1 "M3" V 1200 7300 50  0000 C CNN
 F 2 "SCUBE:M3_FM_PTH" H 1100 7300 50  0001 C CNN
 F 3 "" H 1100 7300 50  0000 C CNN
+F 4 "dnf" H 1250 7400 60  0000 C CNN "fit_field"
 	1    1100 7300
 	1    0    0    -1  
 $EndComp
@@ -149,11 +153,13 @@ F 0 "U3" H 4400 3300 60  0000 C CNN
 F 1 "ADS131A04IPBS" H 4400 3400 60  0000 C CNN
 F 2 "Housings_QFP:LQFP-32_5x5mm_Pitch0.5mm" H 4250 3400 60  0001 C CNN
 F 3 "" H 4250 3400 60  0000 C CNN
-F 4 "2580620" H 4400 3300 60  0001 C CNN "Farnell PN"
-F 5 "https://se.farnell.com/texas-instruments/ads131a04ipbsr/adc-delta-sigma-24bit-128ksps/dp/2580620" H 4400 3300 60  0001 C CNN "Farnell Link"
-F 6 "595-ADS131A04IPBS" H 4400 3300 60  0001 C CNN "Mouser PN"
-F 7 "296-47690-ND" H 4400 3300 60  0001 C CNN "Digikey PN"
-F 8 "https://www.digikey.se/product-detail/en/texas-instruments/ADS131A04IPBS/296-47690-ND/5994569" H 4400 3300 60  0001 C CNN "Digikey Link"
+F 4 "Texas Instruments" H 4400 3300 60  0001 C CNN "Mfg. Name"
+F 5 "ADS131A04IPBS" H 4400 3300 60  0001 C CNN "Mfg. Part Number"
+F 6 "2580620" H 4400 3300 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/texas-instruments/ads131a04ipbsr/adc-delta-sigma-24bit-128ksps/dp/2580620" H 4400 3300 60  0001 C CNN "Farnell Link"
+F 8 "595-ADS131A04IPBS" H 4400 3300 60  0001 C CNN "Mouser PN"
+F 9 "296-47690-ND" H 4400 3300 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/texas-instruments/ADS131A04IPBS/296-47690-ND/5994569" H 4400 3300 60  0001 C CNN "Digikey Link"
 	1    4400 3300
 	1    0    0    -1  
 $EndComp
@@ -329,39 +335,6 @@ F 3 "" H 3900 2200 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L R_Small R7
-U 1 1 5807A3B7
-P 3900 2000
-F 0 "R7" V 3900 1950 50  0000 L CNN
-F 1 "open" V 3950 1900 50  0000 L CNN
-F 2 "Resistors_SMD:R_0805" H 3900 2000 50  0001 C CNN
-F 3 "" H 3900 2000 50  0000 C CNN
-	1    3900 2000
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Small R6
-U 1 1 5807A4A1
-P 3900 1800
-F 0 "R6" V 3900 1750 50  0000 L CNN
-F 1 "open" V 3950 1700 50  0000 L CNN
-F 2 "Resistors_SMD:R_0805" H 3900 1800 50  0001 C CNN
-F 3 "" H 3900 1800 50  0000 C CNN
-	1    3900 1800
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Small R4
-U 1 1 5807A58A
-P 3900 1600
-F 0 "R4" V 3900 1550 50  0000 L CNN
-F 1 "open" V 3950 1500 50  0000 L CNN
-F 2 "Resistors_SMD:R_0805" H 3900 1600 50  0001 C CNN
-F 3 "" H 3900 1600 50  0000 C CNN
-	1    3900 1600
-	0    1    1    0   
-$EndComp
-$Comp
 L R_Small R2
 U 1 1 5807A676
 P 3900 1400
@@ -384,7 +357,7 @@ F 3 "" H 3700 2200 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 Text Notes 3100 1250 0    60   ~ 0
-ADC is configured via population of these resistors
+ADC is configured via population of these resistors\nM0 = VDD -> Asynchronous interrupt mode\nM1 = GND -> 24-bit words\nM2 = GND -> Hamming code word validation off
 $Comp
 L +3V3 #PWR06
 U 1 1 5807C0BC
@@ -520,11 +493,13 @@ F 0 "U2" H 8500 4500 60  0000 C CNN
 F 1 "MAX504ESD" H 8500 4400 60  0000 C CNN
 F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 8500 4000 60  0001 C CNN
 F 3 "" H 8500 4000 60  0000 C CNN
-F 4 "2514723" H 8500 4000 60  0001 C CNN "Farnell PN"
-F 5 "https://se.farnell.com/maxim-integrated-products/max504esd/d-a-omvandlare-10bit-nsoic-14/dp/2514723" H 8500 4000 60  0001 C CNN "Farnell Link"
-F 6 "700-MAX504ESD" H 8500 4000 60  0001 C CNN "Mouser PN"
-F 7 "MAX504ESD+-ND" H 8500 4000 60  0001 C CNN "Digikey PN"
-F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX504ESD/MAX504ESD-ND/1512537" H 8500 4000 60  0001 C CNN "Digikey Link"
+F 4 "Maxim Integrated" H 8500 4000 60  0001 C CNN "Mfg. Name"
+F 5 "MAX504ESD+" H 8500 4000 60  0001 C CNN "Mfg. Part Number"
+F 6 "2514723" H 8500 4000 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/maxim-integrated-products/max504esd/d-a-omvandlare-10bit-nsoic-14/dp/2514723" H 8500 4000 60  0001 C CNN "Farnell Link"
+F 8 "700-MAX504ESD" H 8500 4000 60  0001 C CNN "Mouser PN"
+F 9 "MAX504ESD+-ND" H 8500 4000 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX504ESD/MAX504ESD-ND/1512537" H 8500 4000 60  0001 C CNN "Digikey Link"
 	1    8500 4000
 	1    0    0    -1  
 $EndComp
@@ -611,11 +586,13 @@ F 0 "U5" H 6250 5800 60  0000 C CNN
 F 1 "DS18B20Z+" H 6250 5700 39  0000 C CNN
 F 2 "Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm" H 6250 5550 60  0001 C CNN
 F 3 "" H 6250 5550 60  0000 C CNN
-F 4 "2518724" H 6250 5550 60  0001 C CNN "Farnell PN"
-F 5 "https://se.farnell.com/maxim-integrated-products/ds18b20z/ic-thermometer-12bit-0-5degc-soic/dp/2518724" H 6250 5550 60  0001 C CNN "Farnell Link"
-F 6 "700-DS18B20Z" H 6250 5550 60  0001 C CNN "Mouser PN"
-F 7 "DS18B20Z+-ND" H 6250 5550 60  0001 C CNN "Digikey PN"
-F 8 "https://www.digikey.se/product-detail/en/maxim-integrated/DS18B20Z/DS18B20Z-ND/956982" H 6250 5550 60  0001 C CNN "Digikey Link"
+F 4 "Maxim Integrated" H 6250 5550 60  0001 C CNN "Mfg. Name"
+F 5 "DS18B20Z+" H 6250 5550 60  0001 C CNN "Mfg. Part Number"
+F 6 "2518724" H 6250 5550 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/maxim-integrated-products/ds18b20z/ic-thermometer-12bit-0-5degc-soic/dp/2518724" H 6250 5550 60  0001 C CNN "Farnell Link"
+F 8 "700-DS18B20Z" H 6250 5550 60  0001 C CNN "Mouser PN"
+F 9 "DS18B20Z+-ND" H 6250 5550 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/DS18B20Z/DS18B20Z-ND/956982" H 6250 5550 60  0001 C CNN "Digikey Link"
 	1    6250 5550
 	1    0    0    -1  
 $EndComp
@@ -857,6 +834,10 @@ F 0 "P12" H 6400 2750 50  0000 C CNN
 F 1 "CONN_02X12" V 6400 2100 50  0000 C CNN
 F 2 "SCUBE:LPPB122NFSP-RC-holes" H 6400 900 50  0001 C CNN
 F 3 "" H 6400 900 50  0000 C CNN
+F 4 "Sullins" H 6400 2100 60  0001 C CNN "Mfg. Name"
+F 5 "LPPB122NFSP-RC" H 6400 2100 60  0001 C CNN "Mfg. Part Number"
+F 6 "S9007E-12-ND" H 6400 2100 60  0001 C CNN "Digikey PN"
+F 7 "https://www.digikey.com/products/en?keywords=LPPB122NFSP-RC" H 6400 2100 60  0001 C CNN "Digikey Link"
 	1    6400 2100
 	1    0    0    -1  
 $EndComp
@@ -887,9 +868,10 @@ L C_Small C52
 U 1 1 599C1D4E
 P 10350 4850
 F 0 "C52" H 10360 4920 50  0000 L CNN
-F 1 "open" H 10360 4770 50  0000 L CNN
+F 1 "1n" H 10360 4770 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 10350 4850 50  0001 C CNN
 F 3 "" H 10350 4850 50  0000 C CNN
+F 4 "dnf" H 10450 5050 60  0000 C CNN "fit_field"
 	1    10350 4850
 	1    0    0    -1  
 $EndComp
@@ -909,9 +891,10 @@ L C_Small C53
 U 1 1 599C420E
 P 10550 4850
 F 0 "C53" H 10560 4920 50  0000 L CNN
-F 1 "open" H 10560 4770 50  0000 L CNN
+F 1 "1n" H 10560 4770 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 10550 4850 50  0001 C CNN
 F 3 "" H 10550 4850 50  0000 C CNN
+F 4 "dnf" H 10650 5050 60  0000 C CNN "fit_field"
 	1    10550 4850
 	1    0    0    -1  
 $EndComp
@@ -920,9 +903,10 @@ L C_Small C54
 U 1 1 599C4355
 P 10750 4850
 F 0 "C54" H 10760 4920 50  0000 L CNN
-F 1 "open" H 10760 4770 50  0000 L CNN
+F 1 "1n" H 10760 4770 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 10750 4850 50  0001 C CNN
 F 3 "" H 10750 4850 50  0000 C CNN
+F 4 "dnf" H 10850 5050 60  0000 C CNN "fit_field"
 	1    10750 4850
 	1    0    0    -1  
 $EndComp
@@ -1060,13 +1044,15 @@ F 0 "D2" H 9850 1650 50  0000 C CNN
 F 1 "1SMA5919BT3G" H 9850 1850 50  0000 C CNN
 F 2 "Diodes_SMD:SMA_Standard" H 9850 1750 50  0001 C CNN
 F 3 "" H 9850 1750 50  0000 C CNN
-F 4 "300-50-189" H 9850 1750 60  0001 C CNN "Elfa PN"
-F 5 "https://www.elfa.se/sv/zenerdiod-sma-on-semiconductor-1sma5919bt3g/p/30050189" H 9850 1750 60  0001 C CNN "Elfa Link"
-F 6 "1431141" H 9850 1750 60  0001 C CNN "Farnell PN"
-F 7 "https://se.farnell.com/on-semiconductor/1sma5919bt3g/diode-zener-5-6v-1-5w/dp/1431141" H 9850 1750 60  0001 C CNN "Farnell Link"
-F 8 "863-1SMA5919BT3G" H 9850 1750 60  0001 C CNN "Mouser PN"
-F 9 "1SMA5919BT3GOSCT-ND" H 9850 1750 60  0001 C CNN "Digikey PN"
-F 10 "https://www.digikey.se/product-detail/en/on-semiconductor/1SMA5919BT3G/1SMA5919BT3GOSCT-ND/917675" H 9850 1750 60  0001 C CNN "Digikey Link"
+F 4 "ON Semiconductor" H 9850 1750 60  0001 C CNN "Mfg. Name"
+F 5 "1SMA5919BT3G" H 9850 1750 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-50-189" H 9850 1750 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/zenerdiod-sma-on-semiconductor-1sma5919bt3g/p/30050189" H 9850 1750 60  0001 C CNN "Elfa Link"
+F 8 "1431141" H 9850 1750 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/on-semiconductor/1sma5919bt3g/diode-zener-5-6v-1-5w/dp/1431141" H 9850 1750 60  0001 C CNN "Farnell Link"
+F 10 "863-1SMA5919BT3G" H 9850 1750 60  0001 C CNN "Mouser PN"
+F 11 "1SMA5919BT3GOSCT-ND" H 9850 1750 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/on-semiconductor/1SMA5919BT3G/1SMA5919BT3GOSCT-ND/917675" H 9850 1750 60  0001 C CNN "Digikey Link"
 	1    9850 1750
 	0    1    1    0   
 $EndComp
@@ -1078,13 +1064,15 @@ F 0 "D1" H 8600 850 50  0000 C CNN
 F 1 "STTH102A" H 8600 650 50  0000 C CNN
 F 2 "Diodes_SMD:SMA_Standard" H 8600 750 50  0001 C CNN
 F 3 "" H 8600 750 50  0000 C CNN
-F 4 "170-02-496" H 8600 750 60  0001 C CNN "Elfa PN"
-F 5 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 8600 750 60  0001 C CNN "Elfa Link"
-F 6 "9907874" H 8600 750 60  0001 C CNN "Farnell PN"
-F 7 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 8600 750 60  0001 C CNN "Farnell Link"
-F 8 "511-STTH102A" H 8600 750 60  0001 C CNN "Mouser PN"
-F 9 "497-2500-1-ND" H 8600 750 60  0001 C CNN "Digikey PN"
-F 10 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 8600 750 60  0001 C CNN "Digikey Link"
+F 4 "STMicroelectronics" H 8600 750 60  0001 C CNN "Mfg. Name"
+F 5 "STTH102A" H 8600 750 60  0001 C CNN "Mfg. Part Number"
+F 6 "170-02-496" H 8600 750 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 8600 750 60  0001 C CNN "Elfa Link"
+F 8 "9907874" H 8600 750 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 8600 750 60  0001 C CNN "Farnell Link"
+F 10 "511-STTH102A" H 8600 750 60  0001 C CNN "Mouser PN"
+F 11 "497-2500-1-ND" H 8600 750 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 8600 750 60  0001 C CNN "Digikey Link"
 	1    8600 750 
 	1    0    0    -1  
 $EndComp
@@ -1622,11 +1610,13 @@ F 0 "U10" H 8700 950 50  0000 C CNN
 F 1 "LDL1117S25R" H 8600 1450 50  0000 C CNN
 F 2 "TO_SOT_Packages_SMD:SOT-223" H 8600 1200 50  0001 C CNN
 F 3 "http://www.st.com/content/ccc/resource/technical/document/datasheet/group3/0e/5a/00/ca/10/1a/4f/a5/DM00366442/files/DM00366442.pdf/jcr:content/translations/en.DM00366442.pdf" H 8600 1200 50  0001 C CNN
-F 4 "2778100" H 8600 1200 60  0001 C CNN "Farnell PN"
-F 5 "https://se.farnell.com/stmicroelectronics/ldl1117s25r/ldo-fixed-2-5v-1-2a-sot-223-4/dp/2778100" H 8600 1200 60  0001 C CNN "Farnell Link"
-F 6 "511-LDL1117S25R" H 8600 1200 60  0001 C CNN "Mouser PN"
-F 7 "497-17237-1-ND" H 8600 1200 60  0001 C CNN "Digikey PN"
-F 8 "https://www.digikey.se/product-detail/en/stmicroelectronics/LDL1117S25R/497-17237-1-ND/7102077" H 8600 1200 60  0001 C CNN "Digikey Link"
+F 4 "STMicroelectronics" H 8600 1200 60  0001 C CNN "Mfg. Name"
+F 5 "LDL1117S25R" H 8600 1200 60  0001 C CNN "Mfg. Part Number"
+F 6 "2778100" H 8600 1200 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/stmicroelectronics/ldl1117s25r/ldo-fixed-2-5v-1-2a-sot-223-4/dp/2778100" H 8600 1200 60  0001 C CNN "Farnell Link"
+F 8 "511-LDL1117S25R" H 8600 1200 60  0001 C CNN "Mouser PN"
+F 9 "497-17237-1-ND" H 8600 1200 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/stmicroelectronics/LDL1117S25R/497-17237-1-ND/7102077" H 8600 1200 60  0001 C CNN "Digikey Link"
 	1    8600 1200
 	1    0    0    -1  
 $EndComp
@@ -1645,13 +1635,15 @@ F 0 "U9" H 8400 2000 50  0000 C CNN
 F 1 "LM337IMP/NOPB" H 8500 2000 50  0000 L CNN
 F 2 "TO_SOT_Packages_SMD:SOT-223" H 8600 2100 50  0001 C CIN
 F 3 "" H 8600 2200 50  0000 C CNN
-F 4 "173-28-875" H 8600 2200 60  0001 C CNN "Elfa PN"
-F 5 "https://www.elfa.se/sv/spaenningsregulator-37-sot-223-lm337-texas-instruments-lm337imp-nopb/p/17328875" H 8600 2200 60  0001 C CNN "Elfa Link"
-F 6 "2781817" H 8600 2200 60  0001 C CNN "Farnell PN"
-F 7 "https://se.farnell.com/texas-instruments/lm337imp-nopb/linear-volt-reg-1-2-37v-1-5a-sot223/dp/2781817" H 8600 2200 60  0001 C CNN "Farnell Link"
-F 8 "926-LM337IMP/NOPB" H 8600 2200 60  0001 C CNN "Mouser PN"
-F 9 "LM337IMP/NOPBCT-ND" H 8600 2200 60  0001 C CNN "Digikey PN"
-F 10 "https://www.digikey.se/product-detail/en/texas-instruments/LM337IMP-NOPB/LM337IMP-NOPBCT-ND/270746" H 8600 2200 60  0001 C CNN "Digikey Link"
+F 4 "Texas Instruments" H 8600 2200 60  0001 C CNN "Mfg. Name"
+F 5 "LM337IMP/NOPB" H 8600 2200 60  0001 C CNN "Mfg. Part Number"
+F 6 "173-28-875" H 8600 2200 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/spaenningsregulator-37-sot-223-lm337-texas-instruments-lm337imp-nopb/p/17328875" H 8600 2200 60  0001 C CNN "Elfa Link"
+F 8 "2781817" H 8600 2200 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/texas-instruments/lm337imp-nopb/linear-volt-reg-1-2-37v-1-5a-sot223/dp/2781817" H 8600 2200 60  0001 C CNN "Farnell Link"
+F 10 "926-LM337IMP/NOPB" H 8600 2200 60  0001 C CNN "Mouser PN"
+F 11 "LM337IMP/NOPBCT-ND" H 8600 2200 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/texas-instruments/LM337IMP-NOPB/LM337IMP-NOPBCT-ND/270746" H 8600 2200 60  0001 C CNN "Digikey Link"
 	1    8600 2200
 	1    0    0    -1  
 $EndComp
@@ -1670,6 +1662,7 @@ F 5 "https://se.farnell.com/analog-devices/adg601brtz-reel7/analogue-switch-spst
 F 6 "584-ADG601BRTZ-R7" H 10400 3900 60  0001 C CNN "Mouser PN"
 F 7 "ADG601BRTZ-REEL7CT-ND" H 10400 3900 60  0001 C CNN "Digikey PN"
 F 8 "https://www.digikey.se/product-detail/en/analog-devices-inc/ADG601BRTZ-REEL7/ADG601BRTZ-REEL7CT-ND/820426" H 10400 3900 60  0001 C CNN "Digikey Link"
+F 9 "+adg601" H 10400 4100 60  0000 C CNN "fit_field"
 	1    10400 3900
 	1    0    0    -1  
 $EndComp
@@ -1711,6 +1704,7 @@ F 0 "R31" H 10430 4220 50  0000 L CNN
 F 1 "0" H 10430 4160 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 10400 4200 50  0001 C CNN
 F 3 "" H 10400 4200 50  0000 C CNN
+F 4 "-adg601,-lab" V 10350 4550 60  0000 C CNN "fit_field"
 	1    10400 4200
 	0    1    1    0   
 $EndComp
@@ -1744,13 +1738,15 @@ F 0 "D3" H 9400 1950 50  0000 C CNN
 F 1 "STTH102A" H 9400 2150 50  0000 C CNN
 F 2 "Diodes_SMD:SMA_Standard" H 9400 2050 50  0001 C CNN
 F 3 "" H 9400 2050 50  0000 C CNN
-F 4 "170-02-496" H 9400 2050 60  0001 C CNN "Elfa PN"
-F 5 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 9400 2050 60  0001 C CNN "Elfa Link"
-F 6 "9907874" H 9400 2050 60  0001 C CNN "Farnell PN"
-F 7 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 9400 2050 60  0001 C CNN "Farnell Link"
-F 8 "511-STTH102A" H 9400 2050 60  0001 C CNN "Mouser PN"
-F 9 "497-2500-1-ND" H 9400 2050 60  0001 C CNN "Digikey PN"
-F 10 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 9400 2050 60  0001 C CNN "Digikey Link"
+F 4 "STMicroelectronics" H 9400 2050 60  0001 C CNN "Mfg. Name"
+F 5 "STTH102A" H 9400 2050 60  0001 C CNN "Mfg. Part Number"
+F 6 "170-02-496" H 9400 2050 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 9400 2050 60  0001 C CNN "Elfa Link"
+F 8 "9907874" H 9400 2050 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 9400 2050 60  0001 C CNN "Farnell Link"
+F 10 "511-STTH102A" H 9400 2050 60  0001 C CNN "Mouser PN"
+F 11 "497-2500-1-ND" H 9400 2050 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 9400 2050 60  0001 C CNN "Digikey Link"
 	1    9400 2050
 	0    1    1    0   
 $EndComp
@@ -1762,13 +1758,15 @@ F 0 "D4" H 8600 2500 50  0000 C CNN
 F 1 "STTH102A" H 8600 2700 50  0000 C CNN
 F 2 "Diodes_SMD:SMA_Standard" H 8600 2600 50  0001 C CNN
 F 3 "" H 8600 2600 50  0000 C CNN
-F 4 "170-02-496" H 8600 2600 60  0001 C CNN "Elfa PN"
-F 5 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 8600 2600 60  0001 C CNN "Elfa Link"
-F 6 "9907874" H 8600 2600 60  0001 C CNN "Farnell PN"
-F 7 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 8600 2600 60  0001 C CNN "Farnell Link"
-F 8 "511-STTH102A" H 8600 2600 60  0001 C CNN "Mouser PN"
-F 9 "497-2500-1-ND" H 8600 2600 60  0001 C CNN "Digikey PN"
-F 10 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 8600 2600 60  0001 C CNN "Digikey Link"
+F 4 "STMicroelectronics" H 8600 2600 60  0001 C CNN "Mfg. Name"
+F 5 "STTH102A" H 8600 2600 60  0001 C CNN "Mfg. Part Number"
+F 6 "170-02-496" H 8600 2600 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 8600 2600 60  0001 C CNN "Elfa Link"
+F 8 "9907874" H 8600 2600 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 8600 2600 60  0001 C CNN "Farnell Link"
+F 10 "511-STTH102A" H 8600 2600 60  0001 C CNN "Mouser PN"
+F 11 "497-2500-1-ND" H 8600 2600 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 8600 2600 60  0001 C CNN "Digikey Link"
 	1    8600 2600
 	-1   0    0    1   
 $EndComp
@@ -1795,14 +1793,15 @@ F 0 "C3" H 5360 4470 50  0000 L CNN
 F 1 "100n" H 5360 4320 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1210" H 5350 4400 50  0001 C CNN
 F 3 "" H 5350 4400 50  0000 C CNN
-F 4 "ECH-U1C104GX5" H 5350 4400 60  0001 C CNN "Mfg. Part Number"
-F 5 "300-41-614" H 5350 4400 60  0001 C CNN "Elfa PN"
-F 6 "https://www.elfa.se/sv/kondensator-100-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c104gx5/p/30041614" H 5350 4400 60  0001 C CNN "Elfa Link"
-F 7 "9695001" H 5350 4400 60  0001 C CNN "Farnell PN"
-F 8 "https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-film-pps-100nf-16v-smd/dp/9695001" H 5350 4400 60  0001 C CNN "Farnell Link"
-F 9 "667-ECH-U1C104GX5" H 5350 4400 60  0001 C CNN "Mouser PN"
-F 10 "PCF1189CT-ND" H 5350 4400 60  0001 C CNN "Digikey PN"
-F 11 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736" H 5350 4400 60  0001 C CNN "Digikey Link"
+F 4 "Panasonic" H 5350 4400 60  0001 C CNN "Mfg. Name"
+F 5 "ECH-U1C104GX5" H 5350 4400 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-41-614" H 5350 4400 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/kondensator-100-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c104gx5/p/30041614" H 5350 4400 60  0001 C CNN "Elfa Link"
+F 8 "9695001" H 5350 4400 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-film-pps-100nf-16v-smd/dp/9695001" H 5350 4400 60  0001 C CNN "Farnell Link"
+F 10 "667-ECH-U1C104GX5" H 5350 4400 60  0001 C CNN "Mouser PN"
+F 11 "PCF1189CT-ND" H 5350 4400 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736" H 5350 4400 60  0001 C CNN "Digikey Link"
 	1    5350 4400
 	1    0    0    -1  
 $EndComp
@@ -2183,5 +2182,41 @@ F 9 "399-15692-1-ND" H 5100 4400 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/kemet/C0805X106M8RACAUTO/399-15692-1-ND/7427572" H 5100 4400 60  0001 C CNN "Digikey Link"
 	1    5100 4400
 	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R4
+U 1 1 5AD7BF6A
+P 3900 1600
+F 0 "R4" H 3930 1620 50  0000 L CNN
+F 1 "0" H 3930 1560 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 3900 1600 50  0001 C CNN
+F 3 "" H 3900 1600 50  0000 C CNN
+F 4 "dnf" V 3850 1750 60  0000 C CNN "fit_field"
+	1    3900 1600
+	0    1    1    0   
+$EndComp
+$Comp
+L R_Small R6
+U 1 1 5AD7CC29
+P 3900 1800
+F 0 "R6" H 3930 1820 50  0000 L CNN
+F 1 "0" H 3930 1760 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 3900 1800 50  0001 C CNN
+F 3 "" H 3900 1800 50  0000 C CNN
+F 4 "dnf" V 3850 1950 60  0000 C CNN "fit_field"
+	1    3900 1800
+	0    1    1    0   
+$EndComp
+$Comp
+L R_Small R7
+U 1 1 5AD7D420
+P 3900 2000
+F 0 "R7" H 3930 2020 50  0000 L CNN
+F 1 "0" H 3930 1960 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" H 3900 2000 50  0001 C CNN
+F 3 "" H 3900 2000 50  0000 C CNN
+F 4 "dnf" V 3850 1850 60  0000 C CNN "fit_field"
+	1    3900 2000
+	0    1    1    0   
 $EndComp
 $EndSCHEMATC

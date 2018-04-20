@@ -59,4 +59,9 @@
   (pad "" np_thru_hole circle (at -6.985 0.635) (size 0.7 0.7) (drill 0.7) (layers *.Cu))
   (pad "" np_thru_hole circle (at -1.905 0.635) (size 0.7 0.7) (drill 0.7) (layers *.Cu))
   (pad "" np_thru_hole circle (at -0.635 0.635) (size 0.7 0.7) (drill 0.7) (layers *.Cu))
+  (model ${KIPRJMOD}/../libraries/packages3d/LPPB122NFSP-RC.wrl
+    (at (xyz 0 0 0))
+    (scale (xyz 0.3937 0.3937 0.3937))
+    (rotate (xyz -90 0 0))
+  )
 )

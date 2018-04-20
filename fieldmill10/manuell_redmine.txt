@@ -21,6 +21,8 @@ Alla mekaniska hål på hylslister måste vara icke-genomgående (Z-drill). Det 
 
 Gör 100 pF virtuella
 
+Se till att dioderna hamnar åt rätt håll
+
 DONE
 ----
 

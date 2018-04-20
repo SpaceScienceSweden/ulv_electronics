@@ -83,4 +83,9 @@
   (pad "" smd rect (at 1.905 -2.1) (size 0.76 1.8) (layers B.Cu B.Paste B.Mask))
   (pad "" smd rect (at 3.175 -2.1) (size 0.76 1.8) (layers B.Cu B.Paste B.Mask))
   (pad "" smd rect (at 6.985 -2.1) (size 0.76 1.8) (layers B.Cu B.Paste B.Mask))
+  (model ${KIPRJMOD}/../libraries/packages3d/LPPB122NFSP-RC.wrl
+    (at (xyz 0 0 0))
+    (scale (xyz 0.3937 0.3937 0.3937))
+    (rotate (xyz -90 0 0))
+  )
 )
