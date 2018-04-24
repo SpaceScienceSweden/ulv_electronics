@@ -1,0 +1,44 @@
+Component,Part,References,Value,Footprint,Quantity Per PCB,Digikey Link,Farnell PN,Farnell Link,Elfa Link,Mouser PN,Mfg. Name,Mfg. Part Number,Elfa PN,Digikey PN
+1,C_Small,C3 C20 C24 C25 C26 C28 C29 C56 C57 C58 C59 C60 C61,100n,C_1210,13,https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736,9695001,https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-film-pps-100nf-16v-smd/dp/9695001,https://www.elfa.se/sv/kondensator-100-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c104gx5/p/30041614,667-ECH-U1C104GX5,Panasonic,ECH-U1C104GX5,300-41-614,PCF1189CT-ND
+2,C_Small,C7 C10 C11 C23,10n,C_0805,4,https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C103GX5/PCF1177CT-ND/353724,9694897,https://se.farnell.com/panasonic-electronic-components/echu1c103gx5/cap-film-pps-10nf-16v-smd/dp/9694897,https://www.elfa.se/sv/kondensator-10-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c103gx5/p/30041612,667-ECH-U1C103GX5,Panasonic,ECH-U1C103GX5,300-41-612,PCF1177CT-ND
+3,C_Small,C2 C4 C5 C8 C9 C12 C14 C17 C18 C19 C22 C31,10u,C_0805,12,https://www.digikey.se/product-detail/en/kemet/C0805X106M8RACAUTO/399-15692-1-ND/7427572,2776919,https://se.farnell.com/kemet/c0805x106m8racauto/cap-mlcc-aec-q200-x7r-20-10v-0805/dp/2776919,,80-C0805X106M8RAUTO,KEMET,C0805X106M8RACAUTO,,399-15692-1-ND
+4,C_Small,C21 C30 C32 C36 C38 C42,1p,C_0805,6,https://www.digikey.se/product-detail/en/cornell-dubilier-electronics-cde/MC08CA010D-F/338-1339-ND/969296,1610819,https://se.farnell.com/cornell-dubilier/mc08ca010d-f/capacitor-rf-microwave-1pf-100v/dp/1610819,,5982-08-100V1.0-F,Cornell Dubilier Electronics,MC08CA010D-F,,338-1339-ND
+5,C_Small,C6 C13 C16,1u,C_0805,3,https://www.digikey.se/product-detail/en/kemet/C0805X105K3RACAUTO/399-6996-1-ND/3314504,2478267,https://se.farnell.com/kemet/c0805x105k3racauto/kondensator-mlcc-x7r-1-f-25v-0805/dp/2478267,,80-C0805X105K3RAUTO,KEMET,C0805X105K3RACAUTO,,399-6996-1-ND
+6,C_Small,C1,47u,C_1210,1,https://www.digikey.se/product-detail/en/murata-electronics-north-america/GCJ32ER70J476KE01L/490-10559-1-ND/5030050,,,,81-GCJ32ER70J476KE1L,Murata,GCJ32ER70J476KE01L,,490-10559-1-ND
+7,D_Zener,D2,1SMA5919BT3G,SMA_Standard,1,https://www.digikey.se/product-detail/en/on-semiconductor/1SMA5919BT3G/1SMA5919BT3GOSCT-ND/917675,1431141,https://se.farnell.com/on-semiconductor/1sma5919bt3g/diode-zener-5-6v-1-5w/dp/1431141,https://www.elfa.se/sv/zenerdiod-sma-on-semiconductor-1sma5919bt3g/p/30050189,863-1SMA5919BT3G,ON Semiconductor,1SMA5919BT3G,300-50-189,1SMA5919BT3GOSCT-ND
+8,LED,D5,LED,LED_0805,1,,,,,,,,,
+9,D,D1 D3 D4,STTH102A,SMA_Standard,3,https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882,9907874,https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874,https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074,511-STTH102A,STMicroelectronics,STTH102A,170-02-496,497-2500-1-ND
+10,ITR20001,IR2,ITR20001 in LPPB032NFSP-RC,LPPB032NFSP-RC-ITR20001,1,https://www.digikey.com/product-detail/en/sullins-connector-solutions/LPPB032NFSP-RC/S9007E-03-ND/1786349,,,,,Sullins,LPPB032NFSP-RC,,S9007E-03-ND
+11,L,L1 L2 L3 L4 L5 L6 L7 L8 L9 L10 L11 L12,56n,C_0603,12,https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV4T/712-1443-1-ND/1914893,,,,609-L-14C56NJV4T,Johanson,L-14C56NJV4T,,712-1443-1-ND
+12,CONN_02X12,P12 P13,CONN_02X12,LPPB122NFSP-RC-holes,2,https://www.digikey.com/products/en?keywords=LPPB122NFSP-RC,,,,,Sullins,LPPB122NFSP-RC,,S9007E-12-ND
+13,R_Small,R1 R12 R13 R34 R37 R39,0,R_1206,6,,,,,,,,,
+14,R_Small,R2 R8 R10 R31 R55 R56,0,R_0805,6,,,,,,,,,
+15,R_Small,R30 R32 R33 R35 R36 R42,100M,R_1206,6,https://www.digikey.se/product-detail/en/vishay-dale/CRHV1206AF100MFKE5/CRHV100MACT-ND/2499032,1109056,https://se.farnell.com/vishay/crhv1206af100mfkft/motst-tunnfilm-100m-1-0-3w-1206/dp/1109056,,71-CRHV1206AF100MFKF,Vishay,CRHV1206AF100MFK,,CRHV100MACT-ND
+16,R_Small,R3 R5 R9 R15 R17 R19 R20 R26 R27 R28 R29 R53,10k,R_0805,12,,,,,,,,,
+17,R_Small,R21,18k,R_0805,1,,,,,,,,,
+18,R_Small,R14,1M,R_0805,1,,,,,,,,,
+19,R_Small,R16 R22 R23,1k,R_0805,3,,,,,,,,,
+20,R_Small,R18 R45,1k2,R_0805,2,,,,,,,,,
+21,R_Small,R11 R38,50,R_0805,2,,,,,,,,,
+22,ADS131A04,U3,ADS131A04IPBS,LQFP-32_5x5mm_Pitch0.5mm,1,https://www.digikey.se/product-detail/en/texas-instruments/ADS131A04IPBS/296-47690-ND/5994569,2580620,https://se.farnell.com/texas-instruments/ads131a04ipbsr/adc-delta-sigma-24bit-128ksps/dp/2580620,,595-ADS131A04IPBS,Texas Instruments,ADS131A04IPBS,,296-47690-ND
+23,DS18B20Z,U5,DS18B20Z+,SOIC-8_3.9x4.9mm_Pitch1.27mm,1,https://www.digikey.se/product-detail/en/maxim-integrated/DS18B20Z/DS18B20Z-ND/956982,2518724,https://se.farnell.com/maxim-integrated-products/ds18b20z/ic-thermometer-12bit-0-5degc-soic/dp/2518724,,700-DS18B20Z,Maxim Integrated,DS18B20Z+,,DS18B20Z+-ND
+24,LM1117-2.5-4PIN,U10,LDL1117S25R,SOT-223,1,https://www.digikey.se/product-detail/en/stmicroelectronics/LDL1117S25R/497-17237-1-ND/7102077,2778100,https://se.farnell.com/stmicroelectronics/ldl1117s25r/ldo-fixed-2-5v-1-2a-sot-223-4/dp/2778100,,511-LDL1117S25R,STMicroelectronics,LDL1117S25R,,497-17237-1-ND
+25,LM337IMP-4PIN,U9,LM337IMP/NOPB,SOT-223,1,https://www.digikey.se/product-detail/en/texas-instruments/LM337IMP-NOPB/LM337IMP-NOPBCT-ND/270746,2781817,https://se.farnell.com/texas-instruments/lm337imp-nopb/linear-volt-reg-1-2-37v-1-5a-sot223/dp/2781817,https://www.elfa.se/sv/spaenningsregulator-37-sot-223-lm337-texas-instruments-lm337imp-nopb/p/17328875,926-LM337IMP/NOPB,Texas Instruments,LM337IMP/NOPB,173-28-875,LM337IMP/NOPBCT-ND
+26,OP275,U4 U6 U8,LTC6241IS8#PBF,SOIC-8_3.9x4.9mm_Pitch1.27mm,3,https://www.digikey.se/products/en?keywords=LTC6241IS8%23PBF,,,,584-LTC6241IS8#PBF,Linear Technology/Analog Devices,LTC6241IS8#PBF,,LTC6241IS8#PBF-ND
+27,LM324,U7,MAX44252ASD+,SOIC-14_3.9x8.7mm_Pitch1.27mm,1,https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359,2510952,https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952,,700-MAX44252ASD+,Maxim Integrated,MAX44252ASD+,,MAX44252ASD+-ND
+28,MAX504,U2,MAX504ESD,SOIC-14_3.9x8.7mm_Pitch1.27mm,1,https://www.digikey.se/product-detail/en/maxim-integrated/MAX504ESD/MAX504ESD-ND/1512537,2514723,https://se.farnell.com/maxim-integrated-products/max504esd/d-a-omvandlare-10bit-nsoic-14/dp/2514723,,700-MAX504ESD,Maxim Integrated,MAX504ESD+,,MAX504ESD+-ND
+
+
+
+
+
+Component Groups:,39
+Component Count:,148
+Fitted Components:,107
+Number of PCBs:,1
+Total components:,107
+Schematic Version:,
+Schematic Date:,
+BoM Date:,tis 24 apr 2018 02:01:53
+Schematic Source:,/home/thardin/projects/spacehackers/ulv_electronics/fieldmill10/fieldmill10.sch
+KiCad Version:,Eeschema 4.0.5+dfsg1-4
