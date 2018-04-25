@@ -67,7 +67,7 @@ L R_Small R18
 U 1 1 58A6685E
 P 5050 3150
 F 0 "R18" H 5080 3170 50  0000 L CNN
-F 1 "1k2" H 5080 3110 50  0000 L CNN
+F 1 "1k" H 5080 3110 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 5050 3150 50  0001 C CNN
 F 3 "" H 5050 3150 50  0000 C CNN
 	1    5050 3150
@@ -279,14 +279,14 @@ L R_Small R45
 U 1 1 58D453FA
 P 9300 3500
 F 0 "R45" H 9330 3520 50  0000 L CNN
-F 1 "1k2" H 9330 3460 50  0000 L CNN
+F 1 "1k" H 9330 3460 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 9300 3500 50  0001 C CNN
 F 3 "" H 9300 3500 50  0000 C CNN
 	1    9300 3500
 	1    0    0    -1  
 $EndComp
 Text Notes 9550 3350 0    60   ~ 0
-(3.3-2.0)/1200 = 1 mA
+(3.3-2.0)/1000 = 1.3 mA
 Text Notes 1350 3700 0    60   ~ 0
 Experiment results:\n680 ohm drive, 100k shunt to GND, 3 mm distance -> 0.8 .. 3.3 V swing\n1k2 drive seems OK too\n470 pF seems a bit on the low side\n47 nF was way too much\ncutoff @ 3rd harmonic, 100 Hz signal:\nC <= 1/(2*pi*100e3*300) = 5.3 n -> 4n7 should be perfect\n\nReduced 100k shunt to 10k, increased cap from 1n to 10n
 $Comp
@@ -326,7 +326,7 @@ $EndComp
 Text Notes 6700 4500 0    60   ~ 0
 Both Sallen-Key (2nd order) and straight RC (1st order) low-pass possible\nFor S-K, populate R19, R53, C31, C19 and R55. Leave R54 open.\nFor RC, populate, R19, R53, C31 and R54. Leave C19 and R55 open.
 Text Notes 5100 2950 0    60   ~ 0
-1.8 mA
+2.1 mA
 NoConn ~ 9900 3700
 NoConn ~ 9900 3900
 NoConn ~ 10500 3800
