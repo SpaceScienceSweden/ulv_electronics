@@ -1,0 +1,15 @@
+TODO (.sch)
+-----------
+
+
+
+TODO (.kicad_pcb & footprints)
+-----------------
+
+Create FTSH-112-04 footprint with third row of holes behind current ones
+- must use the same origin
+
+Move connectors out 0.25 mm
+- this makes the board backward compatible with the thinner cpu3 boards
+
+Deepen routed out stuff near connectors by 1.27-0.25 = 1.22 mm
