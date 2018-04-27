@@ -4,27 +4,35 @@ Flytta färdiga saker från TODO till DONE.
 TODO .sch
 ---------
 
-Minska R14 till 100k?
-
-Eventuellt shielding cans runt fler grejer
-
 TODO .brd
 ---------
 
-Allt på ett 3.1 mm 4+ lager kort
+Ej paste för virtuella komponenter
+- conform dnf .sch -> .brd?
+
+Se till att dioderna hamnar åt rätt håll
+
+DONE
+----
+
+Gör 100 pF virtuella
 
 Stitched vias runt shielding cans så långt ner i kortet som möjligt
 
 Termiska vior på pads slukar lod, vilket orsakar att ben på SOT23:or osv inte löds ordentligt. Verboten!
 
 Alla mekaniska hål på hylslister måste vara icke-genomgående (Z-drill). Det borde gå att lura KiCAD att göra såna på nå vis.
+- yes, noll koppar och så helt separat .drl-fil för tillverkare
 
-Gör 100 pF virtuella
+Eventuellt shielding cans runt fler grejer
+- nope, finns inte plats
 
-Se till att dioderna hamnar åt rätt håll
+Minska R14 till 100k?
+- blev ej, vi läser av tach i mjukvara
 
-DONE
-----
+
+Allt på ett 3.1 mm 4+ lager kort
+- det blev 4.0 mm (+- 10%)
 
 Shielding cans över högimpediva delar
 
