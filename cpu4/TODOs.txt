@@ -13,3 +13,6 @@ Move connectors out 0.25 mm
 - this makes the board backward compatible with the thinner cpu3 boards
 
 Deepen routed out stuff near connectors by 1.27-0.25 = 1.22 mm
+
+Move lower mounting hole on side opposite of female header to the same height as the hole next to the header
+- this to help allen wrench clear the stud
