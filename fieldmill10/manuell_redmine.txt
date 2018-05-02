@@ -7,6 +7,8 @@ TODO .sch
 TODO .brd
 ---------
 
+Minst dubbla mikrovior överallt, speciellt på signaler.
+
 Ej paste för virtuella komponenter
 - conform dnf .sch -> .brd?
 
