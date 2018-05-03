@@ -42,8 +42,14 @@ board = pcbnew.LoadBoard(filename)
 it = board.GetModules().begin()
 while it is not None:
   # Set to normal+insert or virtual depending on if ref
-  # is in the BOM
-  it.SetAttributes(pcbnew.MOD_CMS if it.GetReference() in refs else pcbnew.MOD_VIRTUAL)
+  # is in the BOM. Set solder paste clearance to -10 mm
+  # to get rid of B.Paste for virtual parts.
+  if it.GetReference() in refs:
+    it.SetAttributes(pcbnew.MOD_CMS)
+    it.SetLocalSolderPasteMargin(0)
+  else:
+    it.SetAttributes(pcbnew.MOD_VIRTUAL)
+    it.SetLocalSolderPasteMargin(-10000000)
   it = it.Next()
 
 pcbnew.SaveBoard(filename, board)
