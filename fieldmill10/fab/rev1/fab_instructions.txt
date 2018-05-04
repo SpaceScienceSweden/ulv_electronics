@@ -13,4 +13,6 @@ Remaining capacitors are ceramic, must use soft termination. 125°C
 
 fieldmill10-inner3-back.drl contains holes to be Z-drilled to a depth of 1.5 mm (not plated)
 
-All parts should tolerate +125°C
+All parts must tolerate +125°C
+
+- MAX504 is an exception since it is only available up to +85°C
