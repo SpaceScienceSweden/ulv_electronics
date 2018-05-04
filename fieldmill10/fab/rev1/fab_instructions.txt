@@ -1,11 +1,15 @@
 Leaded solder only
+
 1 pF are silver mica caps, 125°C
+
 100 pF, 10 nF and 100 nF are film caps, 125°C
+
 Remaining capacitors are ceramic, must use soft termination. 125°C
+
 - 47u must be rated at least 4V
 - 10u35V must be rated at least 35V
 - all others must rated at least 10V
 - automotive grade preferred
-Some(all?) mechanical holes should be Z-drilled
-- drill must not touch In1.Cu shield layer, minimum depth is 1.5 mm
+
+fieldmill10-inner3-back.drl contains holes to be Z-drilled to a depth of 1.5 mm (not plated)
 

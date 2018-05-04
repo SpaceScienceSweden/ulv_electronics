@@ -1,21 +1,16 @@
-Kopia av vad jag skrivit i redmine, plus lite mer.
-Flytta färdiga saker från TODO till DONE.
+TODO fab
+--------
 
-TODO .sch
----------
+Se till att dioderna och IC:s hamnar åt rätt håll
+B.Adhes?
 
-TODO .brd
----------
+DONE
+----
 
 Minst dubbla mikrovior överallt, speciellt på signaler.
 
 Ej paste för virtuella komponenter
 - conform dnf .sch -> .brd?
-
-Se till att dioderna hamnar åt rätt håll
-
-DONE
-----
 
 Gör 100 pF virtuella
 
