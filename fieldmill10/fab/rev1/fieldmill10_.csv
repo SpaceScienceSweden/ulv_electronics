@@ -22,7 +22,7 @@ Component,Part,References,Value,Footprint,Quantity Per PCB,Digikey Link,Farnell 
 21,DS18B20Z,U5,DS18B20Z+,SOIC-8_3.9x4.9mm_Pitch1.27mm,1,https://www.digikey.se/product-detail/en/maxim-integrated/DS18B20Z/DS18B20Z-ND/956982,2518724,https://se.farnell.com/maxim-integrated-products/ds18b20z/ic-thermometer-12bit-0-5degc-soic/dp/2518724,,700-DS18B20Z,Maxim Integrated,DS18B20Z+,,DS18B20Z+-ND
 22,LM1117-2.5-4PIN,U10,LDL1117S25R,SOT-223,1,https://www.digikey.se/product-detail/en/stmicroelectronics/LDL1117S25R/497-17237-1-ND/7102077,2778100,https://se.farnell.com/stmicroelectronics/ldl1117s25r/ldo-fixed-2-5v-1-2a-sot-223-4/dp/2778100,,511-LDL1117S25R,STMicroelectronics,LDL1117S25R,,497-17237-1-ND
 23,LM337IMP-4PIN,U9,LM337IMP/NOPB,SOT-223,1,https://www.digikey.se/product-detail/en/texas-instruments/LM337IMP-NOPB/LM337IMP-NOPBCT-ND/270746,2781817,https://se.farnell.com/texas-instruments/lm337imp-nopb/linear-volt-reg-1-2-37v-1-5a-sot223/dp/2781817,https://www.elfa.se/sv/spaenningsregulator-37-sot-223-lm337-texas-instruments-lm337imp-nopb/p/17328875,926-LM337IMP/NOPB,Texas Instruments,LM337IMP/NOPB,173-28-875,LM337IMP/NOPBCT-ND
-24,OP275,U4 U6 U8,LTC6241IS8#PBF,SOIC-8_3.9x4.9mm_Pitch1.27mm,3,https://www.digikey.se/products/en?keywords=LTC6241IS8%23PBF,,,,584-LTC6241IS8#PBF,Linear Technology/Analog Devices,LTC6241IS8#PBF,,LTC6241IS8#PBF-ND
+24,OP275,U4 U6 U8,LTC6241HS8#TRPBF,SOIC-8_3.9x4.9mm_Pitch1.27mm,3,https://www.digikey.com/product-detail/en/linear-technology-analog-devices/LTC6241HS8-TRPBF/LTC6241HS8-TRPBFCT-ND/7914681,,,,584-LTC6241HS8#TRPBF,Linear Technology/Analog Devices,LTC6241HS8#TRPBF,,LTC6241HS8#TRPBFCT-ND
 25,LM324,U7,MAX44252ASD+,SOIC-14_3.9x8.7mm_Pitch1.27mm,1,https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX44252ASD-ND/2816359,2510952,https://se.farnell.com/maxim-integrated-products/max44252asd/op-f-rst-rkare-10mhz-8v-s-nsoic/dp/2510952,,700-MAX44252ASD+,Maxim Integrated,MAX44252ASD+,,MAX44252ASD+-ND
 26,MAX504,U2,MAX504ESD,SOIC-14_3.9x8.7mm_Pitch1.27mm,1,https://www.digikey.se/product-detail/en/maxim-integrated/MAX504ESD/MAX504ESD-ND/1512537,2514723,https://se.farnell.com/maxim-integrated-products/max504esd/d-a-omvandlare-10bit-nsoic-14/dp/2514723,,700-MAX504ESD,Maxim Integrated,MAX504ESD+,,MAX504ESD+-ND
 
@@ -37,6 +37,6 @@ Number of PCBs:,1
 Total components:,106
 Schematic Version:,
 Schematic Date:,
-BoM Date:,tor  3 maj 2018 16:24:28
+BoM Date:,fre  4 maj 2018 14:41:51
 Schematic Source:,/home/thardin/projects/spacehackers/ulv_electronics/fieldmill10/fieldmill10.sch
 KiCad Version:,Eeschema 4.0.5+dfsg1-4
