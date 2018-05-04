@@ -3,6 +3,8 @@ TODO fab
 
 Se till att dioderna och IC:s hamnar åt rätt håll
 B.Adhes?
+Hylslister monterbara?
+Conformal coating?
 
 DONE
 ----

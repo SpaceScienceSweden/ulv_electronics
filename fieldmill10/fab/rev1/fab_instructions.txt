@@ -1,18 +1,19 @@
 Leaded solder only
 
-1 pF are silver mica caps, 125°C
+Stackup in UMU_180430.pdf
 
-100 pF, 10 nF and 100 nF are film caps, 125°C
+- total thickness is 3.76 mm (want 4.0 mm but not possible, will shim)
+- fieldmill10-inner3-back.drl are holes to be Z-drilled to a depth of 1.5 mm (not plated)
 
-Remaining capacitors are ceramic, must use soft termination. 125°C
+All parts must tolerate +125°C
+
+- MAX504 is an exception since it is only available up to +85°C
+
+Ceramic capacitors MUST use soft termination
 
 - 47u must be rated at least 4V
 - 10u35V must be rated at least 35V
 - all others must rated at least 10V
 - automotive grade preferred
 
-fieldmill10-inner3-back.drl contains holes to be Z-drilled to a depth of 1.5 mm (not plated)
-
-All parts must tolerate +125°C
-
-- MAX504 is an exception since it is only available up to +85°C
+There are indeed zero ohm resistors in 0805 and 1206 packages
