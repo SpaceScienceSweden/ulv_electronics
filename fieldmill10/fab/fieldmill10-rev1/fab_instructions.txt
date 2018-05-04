@@ -1,3 +1,5 @@
+Board should be immersion silver (IS) plated
+
 Leaded solder only
 
 Stackup in UMU_180430.pdf
