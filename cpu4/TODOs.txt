@@ -1,6 +1,15 @@
 TODO (.sch)
 -----------
 
+Use same diodes as fm10 (SMA doesn't roll)
+
+Set fit_field where relevant
+
+Make all protection resistors 1206, 0 Ohm. Fit only one where there are multiple ones
+
+Assign PF5/6 LEDs to some other pins
+
+Maybe make more connections straight to the µC instead of through 74153
 
 
 TODO (.kicad_pcb & footprints)
