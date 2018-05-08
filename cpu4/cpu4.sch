@@ -52,6 +52,7 @@ F 0 "IC1" H 4200 5450 50  0000 L BNN
 F 1 "ATMEGA128L-8AN" H 6100 1600 50  0000 L BNN
 F 2 "SCUBE:ATmegaS128" H 5350 3550 50  0000 C CIN
 F 3 "" H 5350 3550 50  0000 C CNN
+F 4 "dnf" H 4250 5550 60  0000 C CNN "fit_field"
 	1    5350 3550
 	1    0    0    -1  
 $EndComp
@@ -502,14 +503,12 @@ L R_Small R7
 U 1 1 58D98427
 P 9450 5200
 F 0 "R7" H 9480 5220 50  0000 L CNN
-F 1 "120" H 9480 5160 50  0000 L CNN
+F 1 "0" H 9480 5160 50  0000 L CNN
 F 2 "SCUBE:Resistor_1206_2010_combined" H 9450 5200 50  0001 C CNN
 F 3 "" H 9450 5200 50  0000 C CNN
 	1    9450 5200
 	1    0    0    -1  
 $EndComp
-Text Notes 9650 5300 0    60   ~ 0
-(3.3-3.1)/1.5e-3 = 133 Ohm\n3.3^2/120 = 90 mW
 $Comp
 L +3.3V #PWR014
 U 1 1 58D9978C
@@ -540,7 +539,7 @@ L R_Small R10
 U 1 1 58D9BAD0
 P 2450 1300
 F 0 "R10" H 2480 1320 50  0000 L CNN
-F 1 "22" H 2480 1260 50  0000 L CNN
+F 1 "0" H 2480 1260 50  0000 L CNN
 F 2 "SCUBE:Resistor_1206_2010_combined" H 2450 1300 50  0001 C CNN
 F 3 "" H 2450 1300 50  0000 C CNN
 	1    2450 1300
@@ -551,9 +550,10 @@ L R_Small R9
 U 1 1 58D9BD77
 P 2450 1100
 F 0 "R9" H 2480 1120 50  0000 L CNN
-F 1 "22" H 2480 1060 50  0000 L CNN
+F 1 "0" H 2480 1060 50  0000 L CNN
 F 2 "SCUBE:Resistor_1206_2010_combined" H 2450 1100 50  0001 C CNN
 F 3 "" H 2450 1100 50  0000 C CNN
+F 4 "dnf" V 2450 1100 60  0000 C CNN "fit_field"
 	1    2450 1100
 	0    -1   -1   0   
 $EndComp
@@ -601,16 +601,15 @@ Text GLabel 9250 2900 0    60   Input ~ 0
 MISO
 Text GLabel 9250 3000 0    60   Input ~ 0
 SD_IRQ
-Text Notes 7900 1950 0    60   ~ 0
-AVR has high >= 0.6*VCC = 1.8 V\nµSD allows down to 2.0 V supply\nTake 2.5 V as a good value\n60 mA max\n(3.3-2.5)/0.06 = 13 Ohm
 $Comp
 L R_Small R11
 U 1 1 58D9FF73
 P 8250 2350
 F 0 "R11" H 8280 2370 50  0000 L CNN
-F 1 "22" H 8280 2310 50  0000 L CNN
+F 1 "0" H 8280 2310 50  0000 L CNN
 F 2 "SCUBE:Resistor_1206_2010_combined" H 8250 2350 50  0001 C CNN
 F 3 "" H 8250 2350 50  0000 C CNN
+F 4 "dnf" V 8250 2350 60  0000 C CNN "fit_field"
 	1    8250 2350
 	0    -1   -1   0   
 $EndComp
@@ -619,7 +618,7 @@ L R_Small R12
 U 1 1 58DA0009
 P 8250 2550
 F 0 "R12" H 8280 2570 50  0000 L CNN
-F 1 "22" H 8280 2510 50  0000 L CNN
+F 1 "0" H 8280 2510 50  0000 L CNN
 F 2 "SCUBE:Resistor_1206_2010_combined" H 8250 2550 50  0001 C CNN
 F 3 "" H 8250 2550 50  0000 C CNN
 	1    8250 2550
@@ -1016,6 +1015,7 @@ F 0 "P3" H 1300 6250 50  0000 C CNN
 F 1 "CONN_01X02" V 1400 6100 50  0000 C CNN
 F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 1300 6100 50  0001 C CNN
 F 3 "" H 1300 6100 50  0000 C CNN
+F 4 "dnf" V 1500 6100 60  0000 C CNN "fit_field"
 	1    1300 6100
 	0    -1   -1   0   
 $EndComp
@@ -1027,6 +1027,7 @@ F 0 "D1" H 2400 6225 50  0000 L CNN
 F 1 "LED_Small" H 2275 6000 50  0000 L CNN
 F 2 "LEDs:LED_0805" V 2450 6100 50  0001 C CNN
 F 3 "" V 2450 6100 50  0000 C CNN
+F 4 "dnf" H 2600 6150 60  0000 C CNN "fit_field"
 	1    2450 6100
 	-1   0    0    1   
 $EndComp
@@ -1038,6 +1039,7 @@ F 0 "D7" H 2400 6525 50  0000 L CNN
 F 1 "LED_Small" H 2275 6300 50  0000 L CNN
 F 2 "LEDs:LED_0805" V 2450 6400 50  0001 C CNN
 F 3 "" V 2450 6400 50  0000 C CNN
+F 4 "dnf" H 2600 6450 60  0000 C CNN "fit_field"
 	1    2450 6400
 	-1   0    0    1   
 $EndComp
@@ -1049,6 +1051,7 @@ F 0 "R3" H 2780 6120 50  0000 L CNN
 F 1 "1k2" H 2780 6060 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 2750 6100 50  0001 C CNN
 F 3 "" H 2750 6100 50  0000 C CNN
+F 4 "dnf" V 2650 6100 60  0000 C CNN "fit_field"
 	1    2750 6100
 	0    -1   -1   0   
 $EndComp
@@ -1060,6 +1063,7 @@ F 0 "R4" H 2780 6420 50  0000 L CNN
 F 1 "1k2" H 2780 6360 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 2750 6400 50  0001 C CNN
 F 3 "" H 2750 6400 50  0000 C CNN
+F 4 "dnf" V 2650 6400 60  0000 C CNN "fit_field"
 	1    2750 6400
 	0    -1   -1   0   
 $EndComp
@@ -1121,6 +1125,7 @@ F 0 "R39" H 1680 7020 50  0000 L CNN
 F 1 "0" H 1680 6960 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 1650 7000 50  0001 C CNN
 F 3 "" H 1650 7000 50  0000 C CNN
+F 4 "dnf" V 1650 7000 60  0000 C CNN "fit_field"
 	1    1650 7000
 	-1   0    0    1   
 $EndComp
@@ -1132,6 +1137,7 @@ F 0 "R40" H 1830 7020 50  0000 L CNN
 F 1 "0" H 1830 6960 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 1800 7000 50  0001 C CNN
 F 3 "" H 1800 7000 50  0000 C CNN
+F 4 "dnf" V 1800 7000 60  0000 C CNN "fit_field"
 	1    1800 7000
 	1    0    0    -1  
 $EndComp
@@ -1190,6 +1196,7 @@ F 0 "R44" V 7600 4450 50  0000 L CNN
 F 1 "0" H 7580 4310 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 7550 4350 50  0001 C CNN
 F 3 "" H 7550 4350 50  0000 C CNN
+F 4 "dnf" V 7550 4350 60  0000 C CNN "fit_field"
 	1    7550 4350
 	0    -1   -1   0   
 $EndComp
@@ -1201,6 +1208,7 @@ F 0 "R45" V 7600 4550 50  0000 L CNN
 F 1 "0" H 7580 4410 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 7550 4450 50  0001 C CNN
 F 3 "" H 7550 4450 50  0000 C CNN
+F 4 "dnf" V 7550 4450 60  0000 C CNN "fit_field"
 	1    7550 4450
 	0    -1   -1   0   
 $EndComp
@@ -1212,6 +1220,7 @@ F 0 "R46" V 7600 4650 50  0000 L CNN
 F 1 "0" H 7580 4510 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 7550 4550 50  0001 C CNN
 F 3 "" H 7550 4550 50  0000 C CNN
+F 4 "dnf" V 7550 4550 60  0000 C CNN "fit_field"
 	1    7550 4550
 	0    -1   -1   0   
 $EndComp
@@ -1223,6 +1232,7 @@ F 0 "R47" V 7600 4750 50  0000 L CNN
 F 1 "0" H 7580 4610 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 7550 4650 50  0001 C CNN
 F 3 "" H 7550 4650 50  0000 C CNN
+F 4 "dnf" V 7550 4650 60  0000 C CNN "fit_field"
 	1    7550 4650
 	0    -1   -1   0   
 $EndComp
@@ -1632,4 +1642,6 @@ Wire Wire Line
 	850  5450 850  5400
 Wire Wire Line
 	850  5400 900  5400
+Text Notes 7900 1950 0    60   ~ 0
+AVR has high >= 0.6*VCC = 1.8 V\nµSD allows down to 2.0 V supply\nTake 2.5 V as a good value\n60 mA max\n(3.3-2.5)/0.06 = 13 Ohm
 $EndSCHEMATC

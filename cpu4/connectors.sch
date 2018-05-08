@@ -147,7 +147,8 @@ F 0 "U5" H 2350 5750 60  0000 C CNN
 F 1 "SN74LVC1G125DBVR" H 2350 5350 60  0000 C CNN
 F 2 "TO_SOT_Packages_SMD:SOT-23-5" H 2350 5550 60  0001 C CNN
 F 3 "" H 2350 5550 60  0000 C CNN
-F 4 "http://se.farnell.com/texas-instruments/sn74lvc1g125dbvr/ic-buffer-gate-bus-smd-sot-23/dp/1470768" H 2350 5550 60  0001 C CNN "1st Distrib. Link"
+F 4 "dnf" H 2350 5550 60  0000 C CNN "fit_field"
+F 5 "http://se.farnell.com/texas-instruments/sn74lvc1g125dbvr/ic-buffer-gate-bus-smd-sot-23/dp/1470768" H 2350 5550 60  0001 C CNN "1st Distrib. Link"
 	1    2350 5550
 	0    1    1    0   
 $EndComp
@@ -161,6 +162,7 @@ F 0 "C12" H 2710 5620 50  0000 L CNN
 F 1 "100n" H 2710 5470 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 2700 5550 50  0001 C CNN
 F 3 "" H 2700 5550 50  0000 C CNN
+F 4 "dnf" H 2800 5400 60  0000 C CNN "fit_field"
 	1    2700 5550
 	1    0    0    -1  
 $EndComp
@@ -211,7 +213,8 @@ F 0 "U6" H 3700 5750 60  0000 C CNN
 F 1 "SN74LVC1G125DBVR" H 3700 5350 60  0000 C CNN
 F 2 "TO_SOT_Packages_SMD:SOT-23-5" H 3700 5550 60  0001 C CNN
 F 3 "" H 3700 5550 60  0000 C CNN
-F 4 "http://se.farnell.com/texas-instruments/sn74lvc1g125dbvr/ic-buffer-gate-bus-smd-sot-23/dp/1470768" H 3700 5550 60  0001 C CNN "1st Distrib. Link"
+F 4 "dnf" H 3700 5550 60  0000 C CNN "fit_field"
+F 5 "http://se.farnell.com/texas-instruments/sn74lvc1g125dbvr/ic-buffer-gate-bus-smd-sot-23/dp/1470768" H 3700 5550 60  0001 C CNN "1st Distrib. Link"
 	1    3700 5550
 	0    1    1    0   
 $EndComp
@@ -223,6 +226,7 @@ F 0 "C13" H 4060 5620 50  0000 L CNN
 F 1 "100n" H 4060 5470 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 4050 5550 50  0001 C CNN
 F 3 "" H 4050 5550 50  0000 C CNN
+F 4 "dnf" H 4150 5400 60  0000 C CNN "fit_field"
 	1    4050 5550
 	1    0    0    -1  
 $EndComp
@@ -245,7 +249,8 @@ F 0 "U7" H 5050 5750 60  0000 C CNN
 F 1 "SN74LVC1G125DBVR" H 5050 5350 60  0000 C CNN
 F 2 "TO_SOT_Packages_SMD:SOT-23-5" H 5050 5550 60  0001 C CNN
 F 3 "" H 5050 5550 60  0000 C CNN
-F 4 "http://se.farnell.com/texas-instruments/sn74lvc1g125dbvr/ic-buffer-gate-bus-smd-sot-23/dp/1470768" H 5050 5550 60  0001 C CNN "1st Distrib. Link"
+F 4 "dnf" H 5050 5550 60  0000 C CNN "fit_field"
+F 5 "http://se.farnell.com/texas-instruments/sn74lvc1g125dbvr/ic-buffer-gate-bus-smd-sot-23/dp/1470768" H 5050 5550 60  0001 C CNN "1st Distrib. Link"
 	1    5050 5550
 	0    1    1    0   
 $EndComp
@@ -257,6 +262,7 @@ F 0 "C14" H 5410 5620 50  0000 L CNN
 F 1 "100n" H 5410 5470 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 5400 5550 50  0001 C CNN
 F 3 "" H 5400 5550 50  0000 C CNN
+F 4 "dnf" H 5500 5400 60  0000 C CNN "fit_field"
 	1    5400 5550
 	1    0    0    -1  
 $EndComp
@@ -290,6 +296,7 @@ F 0 "R2" H 5580 6020 50  0000 L CNN
 F 1 "100" H 5580 5960 50  0000 L CNN
 F 2 "SCUBE:Resistor_1206_2010_combined" H 5550 6000 50  0001 C CNN
 F 3 "" H 5550 6000 50  0000 C CNN
+F 4 "dnf" V 5450 6000 60  0000 C CNN "fit_field"
 	1    5550 6000
 	0    1    1    0   
 $EndComp
@@ -572,8 +579,6 @@ F 3 "" H 5100 2200 50  0000 C CNN
 	1    5100 2200
 	1    0    0    -1  
 $EndComp
-Text Notes 2200 1150 0    60   ~ 0
-We could put these on the fieldmill8  boards if we're cramped fo space
 Text Notes 900  7100 0    60   ~ 0
 We don't care about /DONEn
 NoConn ~ 5600 7050
