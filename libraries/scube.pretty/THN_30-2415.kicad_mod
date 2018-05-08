@@ -19,4 +19,9 @@
   (pad 6 thru_hole circle (at -10.16 -10.16) (size 2.032 2.032) (drill 1.1) (layers *.Cu *.Mask F.SilkS))
   (pad 2 thru_hole circle (at -10.16 -2.54) (size 2.032 2.032) (drill 1.1) (layers *.Cu *.Mask F.SilkS))
   (pad 1 thru_hole circle (at -10.16 2.54) (size 2.032 2.032) (drill 1.1) (layers *.Cu *.Mask F.SilkS))
+  (model ${KIPRJMOD}/../libraries/packages3d/THN_30-2415.wrl
+    (at (xyz 0 0 0))
+    (scale (xyz 0.3937 0.3937 0.3937))
+    (rotate (xyz 0 0 -90))
+  )
 )
