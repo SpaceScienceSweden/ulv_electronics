@@ -2,7 +2,12 @@ Features to add/remove
 ----------------------
 
 Measure whether EN_XMEM does anything
-- consider changing to be A16 for 128k RAM
+- consider changing it to be A16 for 128k bankswitched RAM
+- base draw = bootloader, 7.1 mA @ 24V if no FMs installed (170 mW)
+- current draw with EN_XMEM enabled increases to 10.3 mA (247 mW)
+- current draw with EN_XMEM and EN_APWR enabled and no FMs installed is 25.9 mA (622 mW)
+- installing one FM makes this difference even larger: 9.4 -> 43.4 mA (226 -> 1042 mW)
+- conclusion: the ~3 mA (77 mW) from EN_XMEM is a drop in the ocean
 
 Test analog inputs, make sure system voltages can be measured
 
@@ -35,3 +40,10 @@ Deepen routed out stuff near connectors by 1.27-0.25 = 1.22 mm
 
 Move lower mounting hole on side opposite of female header to the same height as the hole next to the header
 - this to help allen wrench clear the stud
+
+
+
+DONE
+----
+
+
