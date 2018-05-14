@@ -159,8 +159,6 @@ F 3 "" H 6950 4350 50  0000 C CNN
 	1    6950 4350
 	1    0    0    -1  
 $EndComp
-Text Notes 7750 4400 0    60   ~ 0
-71V124SA12YG = 10..140 mA (83 MHz)\nGuess linear in frequency -> 23 mA\nSN74AHC573 seems to be 4 mA\n(3.3-3.0)/27mA = 11 Ohm\n3.3^2/11 = 1.0 W
 $Comp
 L R_Small R19
 U 1 1 58D97222
@@ -248,31 +246,6 @@ $EndComp
 Wire Wire Line
 	3000 4250 3200 4250
 $Comp
-L C_Small C36
-U 1 1 59101F79
-P 7200 4350
-F 0 "C36" H 7210 4420 50  0000 L CNN
-F 1 "10u0805" H 7210 4270 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 7200 4350 50  0001 C CNN
-F 3 "" H 7200 4350 50  0000 C CNN
-	1    7200 4350
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR038
-U 1 1 59101FB2
-P 7200 4450
-F 0 "#PWR038" H 7200 4200 50  0001 C CNN
-F 1 "GND" H 7200 4300 50  0000 C CNN
-F 2 "" H 7200 4450 50  0000 C CNN
-F 3 "" H 7200 4450 50  0000 C CNN
-	1    7200 4450
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7200 4000 7200 4250
-Connection ~ 7200 4000
-$Comp
 L C_Small C37
 U 1 1 591243BB
 P 7550 4350
@@ -297,4 +270,6 @@ F 3 "" H 7550 4450 50  0000 C CNN
 	1    7550 4450
 	1    0    0    -1  
 $EndComp
+Text Notes 6500 3600 0    60   ~ 0
+Power use: 3 mA @ 24V (77 mW)
 $EndSCHEMATC

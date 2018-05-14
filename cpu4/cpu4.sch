@@ -492,7 +492,7 @@ L C_Small C34
 U 1 1 58D97F20
 P 9450 5600
 F 0 "C34" H 9460 5670 50  0000 L CNN
-F 1 "10u0805" H 9460 5520 50  0000 L CNN
+F 1 "100n" H 9460 5520 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 9450 5600 50  0001 C CNN
 F 3 "" H 9450 5600 50  0000 C CNN
 	1    9450 5600
@@ -1141,39 +1141,6 @@ F 4 "dnf" V 1800 7000 60  0000 C CNN "fit_field"
 	1    1800 7000
 	1    0    0    -1  
 $EndComp
-$Comp
-L C_Small C9
-U 1 1 590F9B1A
-P 3200 1500
-F 0 "C9" H 3210 1570 50  0000 L CNN
-F 1 "10u0805" H 3210 1420 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 3200 1500 50  0001 C CNN
-F 3 "" H 3200 1500 50  0000 C CNN
-	1    3200 1500
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR032
-U 1 1 590F9C64
-P 3200 1600
-F 0 "#PWR032" H 3200 1350 50  0001 C CNN
-F 1 "GND" H 3200 1450 50  0000 C CNN
-F 2 "" H 3200 1600 50  0000 C CNN
-F 3 "" H 3200 1600 50  0000 C CNN
-	1    3200 1600
-	1    0    0    -1  
-$EndComp
-$Comp
-L C_Small C10
-U 1 1 590FA430
-P 8450 2700
-F 0 "C10" H 8200 2700 50  0000 L CNN
-F 1 "10u0805" H 8100 2600 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 8450 2700 50  0001 C CNN
-F 3 "" H 8450 2700 50  0000 C CNN
-	1    8450 2700
-	1    0    0    -1  
-$EndComp
 Text GLabel 4050 4150 0    60   Input ~ 0
 PF5
 Text GLabel 4050 4250 0    60   Input ~ 0
@@ -1303,14 +1270,6 @@ Wire Wire Line
 Connection ~ 1800 6400
 Wire Wire Line
 	1800 6900 1800 6400
-Connection ~ 8450 2550
-Wire Wire Line
-	8450 2600 8450 2550
-Wire Wire Line
-	8450 2850 8450 2800
-Connection ~ 3200 1300
-Wire Wire Line
-	3200 1300 3200 1400
 Connection ~ 1650 6100
 Wire Wire Line
 	1650 6900 1650 6100
@@ -1512,8 +1471,6 @@ Wire Wire Line
 	8850 2800 9250 2800
 Wire Wire Line
 	8850 2850 8850 2800
-Wire Wire Line
-	8450 2850 8850 2850
 Connection ~ 8650 2850
 Wire Wire Line
 	8100 2550 8100 2350
@@ -1644,4 +1601,6 @@ Wire Wire Line
 	850  5400 900  5400
 Text Notes 7900 1950 0    60   ~ 0
 AVR has high >= 0.6*VCC = 1.8 V\nµSD allows down to 2.0 V supply\nTake 2.5 V as a good value\n60 mA max\n(3.3-2.5)/0.06 = 13 Ohm
+Wire Wire Line
+	8850 2850 8650 2850
 $EndSCHEMATC
