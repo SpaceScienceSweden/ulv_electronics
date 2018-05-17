@@ -1,3 +1,8 @@
+TODO (.kicad_pcb)
+-----------------
+
+Route the thing, make sure it passes DRC and there are no unconnected stuff
+
 Features to add/remove
 ----------------------
 
@@ -11,8 +16,8 @@ Measure whether EN_XMEM does anything
 
 Test analog inputs, make sure system voltages can be measured
 
-TODO (.sch)
------------
+DONE
+----
 
 Use same diodes as fm10 (SMA doesn't roll)
 
@@ -23,12 +28,10 @@ Set fit_field where relevant
 - replace some 10u's with 100n
 
 Assign PF5/6 LEDs to some other pins
+- nah
 
 Maybe make more connections straight to the µC instead of through 74153
 - PD0 and PD1 to TACH0/TACH1 for example
-
-TODO (.kicad_pcb & footprints)
------------------
 
 Create FTSH-112-04 footprint with third row of holes behind current ones
 - must use the same origin
@@ -40,10 +43,5 @@ Deepen routed out stuff near connectors by 1.27-0.25 = 1.22 mm
 
 Move lower mounting hole on side opposite of female header to the same height as the hole next to the header
 - this to help allen wrench clear the stud
-
-
-
-DONE
-----
 
 
