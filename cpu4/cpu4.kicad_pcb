@@ -387,7 +387,7 @@
     (add_net VIN)
   )
 
-  (module HERE:umu_logo (layer B.Cu) (tedit 0) (tstamp 5928435C)
+  (module HERE:umu_logo locked (layer B.Cu) (tedit 0) (tstamp 5928435C)
     (at 128.3 109.75 180)
     (fp_text reference G*** (at 0 0 180) (layer B.SilkS) hide
       (effects (font (thickness 0.3)) (justify mirror))
@@ -4383,7 +4383,7 @@
       (net 59 "Net-(C15-Pad1)"))
   )
 
-  (module HERE:teknisk_fysik (layer B.Cu) (tedit 0) (tstamp 59284342)
+  (module HERE:teknisk_fysik locked (layer B.Cu) (tedit 0) (tstamp 59284342)
     (at 87.75 125 180)
     (fp_text reference G*** (at 0 0 180) (layer B.SilkS) hide
       (effects (font (thickness 0.3)) (justify mirror))
@@ -4601,7 +4601,7 @@
     )
   )
 
-  (module HERE:logo (layer F.Cu) (tedit 0) (tstamp 59287131)
+  (module HERE:logo locked (layer F.Cu) (tedit 0) (tstamp 59287131)
     (at 104 108.75)
     (fp_text reference G*** (at 0 0) (layer F.SilkS) hide
       (effects (font (thickness 0.3)))
@@ -5048,7 +5048,7 @@
       (xy 0.358405 -5.265772)) (layer In2.Cu) (width 0.01))
   )
 
-  (module HERE:atmel (layer B.Cu) (tedit 0) (tstamp 592AE1D7)
+  (module HERE:atmel locked (layer B.Cu) (tedit 0) (tstamp 592AE1D7)
     (at 96.25 131.25 180)
     (fp_text reference G*** (at 0 0 180) (layer B.SilkS) hide
       (effects (font (thickness 0.3)) (justify mirror))
@@ -5164,7 +5164,7 @@
       (xy -0.372998 0.968202) (xy -0.176047 0.983516) (xy 0.01823 0.967967)) (layer B.Cu) (width 0.01))
   )
 
-  (module HERE:scube (layer B.Cu) (tedit 0) (tstamp 592AE49F)
+  (module HERE:scube locked (layer B.Cu) (tedit 0) (tstamp 592AE49F)
     (at 133.75 123 180)
     (fp_text reference G*** (at 0 0 180) (layer B.SilkS) hide
       (effects (font (thickness 0.3)) (justify mirror))
@@ -5493,7 +5493,7 @@
       (xy 3.218656 3.679237)) (layer B.Cu) (width 0.01))
   )
 
-  (module HERE:lulebotics3 (layer B.Cu) (tedit 0) (tstamp 592D44AA)
+  (module HERE:lulebotics3 locked (layer B.Cu) (tedit 0) (tstamp 592D44AA)
     (at 115 120.75 180)
     (fp_text reference G*** (at 0 0 180) (layer B.SilkS) hide
       (effects (font (thickness 0.3)) (justify mirror))
