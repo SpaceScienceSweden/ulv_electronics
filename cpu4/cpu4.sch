@@ -245,7 +245,7 @@ F 3 "" H 3450 1900 50  0000 C CNN
 	1    3450 1900
 	1    0    0    -1  
 $EndComp
-Text Notes 4550 7000 0    60   ~ 0
+Text Notes 4550 7700 0    60   ~ 0
 These pins are purposefully assigned so\nTACHn (ICP1, TIMER1_CAPT=12) has higher\npriority than /DRDYn (ICP3, TIMER3_CAPT=26)
 $Comp
 L L_Small L1
@@ -365,8 +365,6 @@ F 3 "" H 1450 5050 50  0000 C CNN
 	1    1450 5050
 	1    0    0    -1  
 $EndComp
-Text Notes 350  -300 0    60   ~ 0
-Things to do on this board:\nMake input capture work for us, on tachometer and ADC interrupts. There needs to be something mux-ish to switch between FMs\nAdd two or more µSD card slots\nUse some things like JTAG and 32 kHz pins for other pins (but leave footprints in place for now)\nRoute some more CPU pins to board edge headers\nAdd some eFuses\nAdd RS-485 driver, maybe RS-485 pins (we might have two CPUs)
 $Comp
 L DS18B20Z U4
 U 1 1 58CEFCB9
@@ -460,8 +458,6 @@ F 3 "" H 1300 7150 50  0000 C CNN
 	1    1300 7150
 	0    -1   -1   0   
 $EndComp
-Text Notes 1850 800  0    60   ~ 0
-Supply current > 10 mA (table 162)\nPick 27 mA, same as SRAM\n(3.3-3.0)/0.027 = 11
 $Sheet
 S 9300 3600 1200 900 
 U 58D7FBB9
@@ -574,8 +570,6 @@ F 3 "" H 8650 2700 50  0000 C CNN
 $EndComp
 Text GLabel 9250 2900 0    60   Input ~ 0
 MISO
-Text GLabel 9250 3000 0    60   Input ~ 0
-SD_IRQ
 $Comp
 L R_Small R12
 U 1 1 58DA0009
@@ -613,11 +607,11 @@ F 5 "http://se.farnell.com/texas-instruments/cd74ac153m96/data-selector-mux-dual
 $EndComp
 Text GLabel 4050 3350 0    60   Input ~ 0
 PG3
-Text GLabel 3150 7100 3    60   Input ~ 0
+Text GLabel 3150 7300 3    60   Input ~ 0
 /DRDY0
-Text GLabel 3250 7100 3    60   Input ~ 0
+Text GLabel 3250 7300 3    60   Input ~ 0
 /DRDY1
-Text GLabel 3350 7100 3    60   Input ~ 0
+Text GLabel 3350 7300 3    60   Input ~ 0
 /DRDY2
 $Comp
 L GND #PWR017
@@ -674,8 +668,6 @@ F 3 "" H 1700 4850 50  0000 C CNN
 	1    1700 4850
 	1    0    0    -1  
 $EndComp
-Text GLabel 4050 5150 0    60   Input ~ 0
-SD_IRQ
 Text GLabel 6650 3150 2    60   Input ~ 0
 /SD_CS
 Text GLabel 3950 3550 0    60   Input ~ 0
@@ -690,11 +682,11 @@ Text GLabel 4050 4850 0    60   Input ~ 0
 /CS_VGND1
 Text GLabel 4050 4950 0    60   Input ~ 0
 /CS_VGND2
-Text GLabel 2950 4900 0    60   Input ~ 0
+Text GLabel 2550 4900 0    60   Input ~ 0
 EN_VGND0
-Text GLabel 2950 5050 0    60   Input ~ 0
+Text GLabel 2550 5050 0    60   Input ~ 0
 EN_VGND1
-Text GLabel 2950 5200 0    60   Input ~ 0
+Text GLabel 2550 5200 0    60   Input ~ 0
 EN_VGND2
 $Comp
 L +3.3V #PWR019
@@ -971,9 +963,9 @@ Text GLabel 4050 4150 0    60   Input ~ 0
 Text GLabel 4050 4250 0    60   Input ~ 0
 /CS_ADC1
 Wire Wire Line
-	3050 4900 2950 4900
+	2600 4900 2550 4900
 Wire Wire Line
-	3050 5200 2950 5200
+	2600 5200 2550 5200
 Connection ~ 850  5200
 Wire Wire Line
 	750  5450 750  5200
@@ -990,7 +982,11 @@ Connection ~ 5200 1300
 Wire Wire Line
 	5100 5550 5100 5650
 Wire Wire Line
-	5100 5650 5500 5650
+	5100 5650 5200 5650
+Wire Wire Line
+	5200 5650 5300 5650
+Wire Wire Line
+	5300 5650 5500 5650
 Wire Wire Line
 	5300 5650 5300 5750
 Wire Wire Line
@@ -1000,9 +996,13 @@ Wire Wire Line
 	5500 5650 5500 5550
 Connection ~ 5300 5650
 Wire Wire Line
-	1400 5300 1750 5300
+	1400 5300 1700 5300
 Wire Wire Line
-	750  5200 900  5200
+	1700 5300 1750 5300
+Wire Wire Line
+	750  5200 850  5200
+Wire Wire Line
+	850  5200 900  5200
 Wire Wire Line
 	1450 5050 1450 5200
 Wire Wire Line
@@ -1012,18 +1012,26 @@ Wire Wire Line
 Wire Wire Line
 	1450 5400 1400 5400
 Wire Wire Line
-	3700 1850 4050 1850
+	3700 1850 3900 1850
+Wire Wire Line
+	3900 1850 4050 1850
 Wire Wire Line
 	2700 1300 2700 1400
 Wire Wire Line
 	2950 1300 2950 1400
 Connection ~ 2950 1300
 Wire Wire Line
-	3800 2600 4050 2600
+	3800 2600 3950 2600
+Wire Wire Line
+	3950 2600 4050 2600
 Wire Wire Line
 	3950 2600 3950 2550
 Wire Wire Line
-	3800 2300 4050 2300
+	3800 2300 3900 2300
+Wire Wire Line
+	3900 2300 3950 2300
+Wire Wire Line
+	3950 2300 4050 2300
 Connection ~ 3950 2600
 Wire Wire Line
 	3950 2300 3950 2350
@@ -1034,7 +1042,9 @@ Wire Wire Line
 	3900 2100 3900 2300
 Connection ~ 3900 2300
 Wire Wire Line
-	3700 1550 3700 1850
+	3700 1550 3700 1650
+Wire Wire Line
+	3700 1650 3700 1850
 Wire Wire Line
 	3700 1300 3700 1350
 Connection ~ 3700 1300
@@ -1046,9 +1056,13 @@ Connection ~ 3700 1650
 Wire Wire Line
 	9000 4750 6650 4750
 Wire Wire Line
-	5450 1300 5550 1300
+	5450 1300 5500 1300
 Wire Wire Line
-	5500 1150 5500 1550
+	5500 1300 5550 1300
+Wire Wire Line
+	5500 1150 5500 1300
+Wire Wire Line
+	5500 1300 5500 1550
 Connection ~ 5500 1300
 Wire Wire Line
 	3800 2850 4050 2850
@@ -1057,7 +1071,19 @@ Wire Wire Line
 Wire Wire Line
 	6650 4850 9100 4850
 Wire Wire Line
-	2550 1300 5250 1300
+	2550 1300 2700 1300
+Wire Wire Line
+	2700 1300 2950 1300
+Wire Wire Line
+	2950 1300 3700 1300
+Wire Wire Line
+	3700 1300 4350 1300
+Wire Wire Line
+	4350 1300 5100 1300
+Wire Wire Line
+	5100 1300 5200 1300
+Wire Wire Line
+	5200 1300 5250 1300
 Wire Wire Line
 	1700 4550 4050 4550
 Wire Wire Line
@@ -1065,7 +1091,13 @@ Wire Wire Line
 Wire Wire Line
 	1250 7150 1300 7150
 Wire Wire Line
-	1250 6850 1250 7450
+	1250 6850 1250 7050
+Wire Wire Line
+	1250 7050 1250 7150
+Wire Wire Line
+	1250 7150 1250 7250
+Wire Wire Line
+	1250 7250 1250 7450
 Wire Wire Line
 	1250 6850 1200 6850
 Wire Wire Line
@@ -1084,12 +1116,18 @@ Wire Wire Line
 Wire Wire Line
 	9650 5450 9650 5650
 Wire Wire Line
-	9300 5450 9650 5450
+	9300 5450 9450 5450
 Wire Wire Line
-	9450 5300 9450 5500
+	9450 5450 9650 5450
+Wire Wire Line
+	9450 5300 9450 5450
+Wire Wire Line
+	9450 5450 9450 5500
 Connection ~ 9450 5450
 Wire Wire Line
-	9450 5700 9450 5900
+	9450 5700 9450 5850
+Wire Wire Line
+	9450 5850 9450 5900
 Wire Wire Line
 	10550 5750 10600 5750
 Wire Wire Line
@@ -1115,10 +1153,14 @@ Wire Wire Line
 Wire Wire Line
 	8150 2550 8100 2550
 Wire Wire Line
-	8350 2550 8850 2550
+	8350 2550 8650 2550
+Wire Wire Line
+	8650 2550 8850 2550
 Connection ~ 8650 2550
 Wire Wire Line
-	8650 2800 8650 2900
+	8650 2800 8650 2850
+Wire Wire Line
+	8650 2850 8650 2900
 Wire Wire Line
 	8850 2550 8850 2600
 Wire Wire Line
@@ -1129,13 +1171,17 @@ Wire Wire Line
 	8850 2850 8850 2800
 Connection ~ 8650 2850
 Wire Wire Line
-	8650 2400 8650 2600
+	8650 2400 8650 2550
+Wire Wire Line
+	8650 2550 8650 2600
 Wire Wire Line
 	850  5200 850  4950
 Wire Wire Line
 	900  5300 600  5300
 Wire Wire Line
-	600  4950 600  5450
+	600  4950 600  5300
+Wire Wire Line
+	600  5300 600  5450
 Wire Wire Line
 	1700 5300 1700 4950
 Wire Wire Line
@@ -1153,13 +1199,17 @@ Wire Wire Line
 Wire Wire Line
 	7450 4950 6650 4950
 Wire Wire Line
-	4900 6000 4900 5450
+	4900 5450 4900 6000
+Wire Wire Line
+	4900 6000 4900 6250
 Wire Wire Line
 	4900 5450 4000 5450
 Wire Wire Line
 	4000 5450 4000 5500
 Wire Wire Line
-	4050 5250 3350 5250
+	2750 5250 3350 5250
+Wire Wire Line
+	3350 5250 4050 5250
 Wire Wire Line
 	3350 5250 3350 5500
 Wire Wire Line
@@ -1182,17 +1232,31 @@ Wire Wire Line
 	1350 4300 1350 4350
 Connection ~ 1350 4350
 Wire Wire Line
-	1850 3600 1850 4100
+	1850 3600 1850 3950
 Wire Wire Line
-	1350 3600 1350 4100
+	1850 3950 1850 4100
 Wire Wire Line
-	1100 3600 1100 4100
+	1350 3600 1350 3750
 Wire Wire Line
-	2100 3600 2100 4100
+	1350 3750 1350 4100
 Wire Wire Line
-	1100 4300 1100 4400
+	1100 3600 1100 3650
 Wire Wire Line
-	1100 4350 1850 4350
+	1100 3650 1100 4100
+Wire Wire Line
+	2100 3600 2100 4050
+Wire Wire Line
+	2100 4050 2100 4100
+Wire Wire Line
+	1100 4300 1100 4350
+Wire Wire Line
+	1100 4350 1100 4400
+Wire Wire Line
+	1100 4350 1350 4350
+Wire Wire Line
+	1350 4350 1600 4350
+Wire Wire Line
+	1600 4350 1850 4350
 Wire Wire Line
 	1850 4350 1850 4300
 Connection ~ 2100 4050
@@ -1204,38 +1268,62 @@ Wire Wire Line
 	4050 3650 1100 3650
 Connection ~ 1100 3650
 Wire Wire Line
-	3450 3450 4050 3450
+	3450 3450 4000 3450
+Wire Wire Line
+	4000 3450 4050 3450
 Wire Wire Line
 	3950 3550 4000 3550
 Wire Wire Line
 	4000 3550 4000 3450
 Connection ~ 4000 3450
 Wire Wire Line
-	3050 4900 3050 5200
+	2600 4900 2600 5050
 Wire Wire Line
-	2950 5050 4050 5050
-Connection ~ 3050 5050
+	2600 5050 2600 5200
+Wire Wire Line
+	2550 5050 2600 5050
+Wire Wire Line
+	2600 5050 2650 5050
+Wire Wire Line
+	2850 5050 2900 5050
+Wire Wire Line
+	2900 5050 4050 5050
+Connection ~ 2600 5050
 Wire Wire Line
 	4350 1300 4350 1200
 Connection ~ 4350 1300
 Wire Wire Line
-	3150 7000 3150 7100
+	3150 7000 3150 7250
 Wire Wire Line
-	3250 7000 3250 7100
+	3150 7250 3150 7300
 Wire Wire Line
-	3350 7000 3350 7100
+	3250 7000 3250 7150
 Wire Wire Line
-	3800 7000 3800 7400
+	3250 7150 3250 7300
 Wire Wire Line
-	3900 7000 3900 7400
+	3350 7000 3350 7050
 Wire Wire Line
-	4000 7000 4000 7400
+	3350 7050 3350 7300
+Wire Wire Line
+	3800 7000 3800 7350
+Wire Wire Line
+	3800 7350 3800 7400
+Wire Wire Line
+	3900 7000 3900 7300
+Wire Wire Line
+	3900 7300 3900 7400
+Wire Wire Line
+	4000 7000 4000 7250
+Wire Wire Line
+	4000 7250 4000 7400
 Wire Wire Line
 	1600 4350 1600 4300
 Connection ~ 1600 4350
 Connection ~ 1100 4350
 Wire Wire Line
-	1600 3600 1600 4100
+	1600 3600 1600 3850
+Wire Wire Line
+	1600 3850 1600 4100
 Wire Wire Line
 	2100 4050 4050 4050
 Wire Wire Line
@@ -1268,10 +1356,10 @@ $EndComp
 Wire Wire Line
 	6650 4650 6800 4650
 Wire Wire Line
-	6800 4650 6800 7250
+	6800 4650 6800 7300
 Wire Wire Line
-	6800 7250 3900 7250
-Connection ~ 3900 7250
+	6800 7300 3900 7300
+Connection ~ 3900 7300
 Wire Wire Line
 	6650 4550 6850 4550
 Wire Wire Line
@@ -1283,4 +1371,85 @@ Text Notes 6900 4700 0    60   ~ 0
 Instead of TACH input capture, reading PD0,\nPD1 and PD4 in parallell might happen.\nOr INT0, INT1 and ICP1 interrupts
 NoConn ~ 4100 7000
 NoConn ~ 3450 7000
+$Comp
+L R_Small R4
+U 1 1 5AFF3879
+P 2900 6000
+F 0 "R4" H 2930 6020 50  0000 L CNN
+F 1 "0" H 2930 5960 50  0000 L CNN
+F 2 "Resistors_SMD:R_1206" H 2900 6000 50  0001 C CNN
+F 3 "" H 2900 6000 50  0000 C CNN
+	1    2900 6000
+	-1   0    0    1   
+$EndComp
+NoConn ~ 9250 3000
+Wire Wire Line
+	3250 7150 3000 7150
+Wire Wire Line
+	3000 7150 3000 5150
+Wire Wire Line
+	3000 5150 4050 5150
+Connection ~ 3250 7150
+Wire Wire Line
+	2900 5050 2900 5900
+Connection ~ 2900 5050
+Wire Wire Line
+	2900 6100 2900 7250
+Wire Wire Line
+	2900 7250 3150 7250
+Connection ~ 3150 7250
+$Comp
+L R_Small R3
+U 1 1 5AFF68A7
+P 2750 5050
+F 0 "R3" H 2780 5070 50  0000 L CNN
+F 1 "0" H 2780 5010 50  0000 L CNN
+F 2 "Resistors_SMD:R_1206" H 2750 5050 50  0001 C CNN
+F 3 "" H 2750 5050 50  0000 C CNN
+F 4 "dnf" V 2750 5050 60  0000 C CNN "fit_field"
+	1    2750 5050
+	0    1    1    0   
+$EndComp
+Text Notes 2650 5000 0    49   ~ 0
+EN_VGND only used\nif ADG601's installed
+$Comp
+L R_Small R14
+U 1 1 5AFF8E9D
+P 2750 6250
+F 0 "R14" H 2780 6270 50  0000 L CNN
+F 1 "0" H 2780 6210 50  0000 L CNN
+F 2 "Resistors_SMD:R_1206" H 2750 6250 50  0001 C CNN
+F 3 "" H 2750 6250 50  0000 C CNN
+F 4 "dnf" V 2750 6250 60  0000 C CNN "fit_field"
+	1    2750 6250
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3350 7050 2750 7050
+Wire Wire Line
+	2750 7050 2750 6350
+Connection ~ 3350 7050
+Wire Wire Line
+	2750 6150 2750 5250
+Connection ~ 3350 5250
+$Comp
+L R_Small R15
+U 1 1 5AFFA3BF
+P 4900 6350
+F 0 "R15" H 4930 6370 50  0000 L CNN
+F 1 "0" H 4930 6310 50  0000 L CNN
+F 2 "Resistors_SMD:R_1206" H 4900 6350 50  0001 C CNN
+F 3 "" H 4900 6350 50  0000 C CNN
+F 4 "dnf" V 4900 6350 60  0000 C CNN "fit_field"
+	1    4900 6350
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4000 7250 4900 7250
+Wire Wire Line
+	4900 7250 4900 6450
+Connection ~ 4000 7250
+Connection ~ 4900 6000
+Text Notes 5050 6450 0    60   ~ 0
+We might remove the 74153\nentirely in future revisions
 $EndSCHEMATC
