@@ -1,9 +1,9 @@
 (kicad_pcb (version 4) (host pcbnew 4.0.5+dfsg1-4)
 
   (general
-    (links 0)
+    (links 377)
     (no_connects 0)
-    (area 58.499499 58.499499 141.500501 141.500501)
+    (area 15.335715 14.45 157.795239 145.75)
     (thickness 3.7)
     (drawings 258)
     (tracks 5296)
@@ -5482,7 +5482,7 @@
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )
   (gr_circle (center 100 100) (end 110 100) (layer B.CrtYd) (width 0.2))
-  (gr_text "fieldmill10-rev3\n2018-05-09" (at 110.5 137.5) (layer B.Cu)
+  (gr_text "fieldmill10-rev4\n2018-05-17" (at 110.5 137.5) (layer B.Cu)
     (effects (font (size 1.5 1.5) (thickness 0.3)) (justify mirror))
   )
   (gr_circle (center 100 100) (end 111.25 100) (layer Edge.Cuts) (width 0.001))
