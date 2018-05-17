@@ -170,33 +170,15 @@ F 3 "" H 6800 4200 50  0000 C CNN
 	1    6800 4200
 	0    1    1    0   
 $EndComp
-$Comp
-L R_Small R18
-U 1 1 58D974AA
-P 6800 4000
-F 0 "R18" H 6830 4020 50  0000 L CNN
-F 1 "0" H 6830 3960 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206" H 6800 4000 50  0001 C CNN
-F 3 "" H 6800 4000 50  0000 C CNN
-F 4 "dnf" V 6800 4000 60  0000 C CNN "fit_field"
-	1    6800 4000
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	6950 3950 6950 4250
 Wire Wire Line
-	6900 4200 6950 4200
+	6900 4200 7550 4200
 Connection ~ 6950 4200
-Wire Wire Line
-	6900 4000 7550 4000
-Connection ~ 6950 4000
 Wire Wire Line
 	6650 3950 6650 4200
 Wire Wire Line
 	6650 4200 6700 4200
-Wire Wire Line
-	6700 4000 6650 4000
-Connection ~ 6650 4000
 $Comp
 L GND #PWR035
 U 1 1 58D97560
@@ -230,8 +212,6 @@ F 3 "" H 7250 3950 50  0000 C CNN
 	1    7250 3950
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	7250 4000 7250 3950
 $Comp
 L GND #PWR037
 U 1 1 58DBA48F
@@ -256,9 +236,6 @@ F 3 "" H 7550 4350 50  0000 C CNN
 	1    7550 4350
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	7550 4000 7550 4250
-Connection ~ 7250 4000
 $Comp
 L GND #PWR039
 U 1 1 59124426
@@ -272,4 +249,9 @@ F 3 "" H 7550 4450 50  0000 C CNN
 $EndComp
 Text Notes 6500 3600 0    60   ~ 0
 Power use: 3 mA @ 24V (77 mW)
+Wire Wire Line
+	7550 4200 7550 4250
+Wire Wire Line
+	7250 3950 7250 4200
+Connection ~ 7250 4200
 $EndSCHEMATC
