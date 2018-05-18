@@ -1066,7 +1066,7 @@ F 2 "Diodes_SMD:SMA_Standard" H 8600 750 50  0001 C CNN
 F 3 "" H 8600 750 50  0000 C CNN
 F 4 "STMicroelectronics" H 8600 750 60  0001 C CNN "Mfg. Name"
 F 5 "STTH102A" H 8600 750 60  0001 C CNN "Mfg. Part Number"
-F 6 "170-02-496" H 8600 750 60  0001 C CNN "Elfa PN"
+F 6 "300-34-074" H 8600 750 60  0001 C CNN "Elfa PN"
 F 7 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 8600 750 60  0001 C CNN "Elfa Link"
 F 8 "9907874" H 8600 750 60  0001 C CNN "Farnell PN"
 F 9 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 8600 750 60  0001 C CNN "Farnell Link"
@@ -1740,7 +1740,7 @@ F 2 "Diodes_SMD:SMA_Standard" H 9400 2050 50  0001 C CNN
 F 3 "" H 9400 2050 50  0000 C CNN
 F 4 "STMicroelectronics" H 9400 2050 60  0001 C CNN "Mfg. Name"
 F 5 "STTH102A" H 9400 2050 60  0001 C CNN "Mfg. Part Number"
-F 6 "170-02-496" H 9400 2050 60  0001 C CNN "Elfa PN"
+F 6 "300-34-074" H 9400 2050 60  0001 C CNN "Elfa PN"
 F 7 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 9400 2050 60  0001 C CNN "Elfa Link"
 F 8 "9907874" H 9400 2050 60  0001 C CNN "Farnell PN"
 F 9 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 9400 2050 60  0001 C CNN "Farnell Link"
@@ -1760,7 +1760,7 @@ F 2 "Diodes_SMD:SMA_Standard" H 8600 2600 50  0001 C CNN
 F 3 "" H 8600 2600 50  0000 C CNN
 F 4 "STMicroelectronics" H 8600 2600 60  0001 C CNN "Mfg. Name"
 F 5 "STTH102A" H 8600 2600 60  0001 C CNN "Mfg. Part Number"
-F 6 "170-02-496" H 8600 2600 60  0001 C CNN "Elfa PN"
+F 6 "300-34-074" H 8600 2600 60  0001 C CNN "Elfa PN"
 F 7 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 8600 2600 60  0001 C CNN "Elfa Link"
 F 8 "9907874" H 8600 2600 60  0001 C CNN "Farnell PN"
 F 9 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 8600 2600 60  0001 C CNN "Farnell Link"
