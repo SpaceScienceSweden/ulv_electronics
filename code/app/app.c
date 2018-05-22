@@ -1448,8 +1448,47 @@ static void handle_input(void) {
         }
       } else if (c == 'v') {
         //measure system voltages
-        start_section("ERROR");
-        printf_P(PSTR("TODO\r\n"));
+        //enable ADC, set prescaler such that the ADC clock is 50..200 kHz
+#if F_CPU < 6400000 || F_CPU > 25600000
+#error You need to compute some new value for the ADC prescaler
+#endif
+        ADCSRA = (1<<ADEN) | (7<<ADPS0);
+        //make sure pull-ups are disabled
+        PORTF &= 7<<5;
+
+        //ADC0..4
+        start_section("INFO");
+        float v33 = 0;
+        for (uint8_t x = 0; x < 5; x++) {
+          //2.56V reference
+          ADMUX = x | (3<<REFS0);
+          ADCSRA |= 1<<ADSC;
+          while (ADCSRA & (1<<ADSC));
+          
+          int adc = ADCL;
+          adc += ADCH*256;  //0..1023 (right-adjusted)
+
+          //values taken from schematic
+          static const float scale[4] = {
+             (18.0+18.0)/18.0 * 2.56 / 1024,
+            (150.0+10.0)/10.0 * 2.56 / 1024,
+            (150.0+10.0)/10.0 * 2.56 / 1024,
+             (18.0+10.0)/10.0 * 2.56 / 1024,
+          };
+          float v;
+          if (x < 4) {
+            v = adc * scale[x];
+            //remember where the 3.3V bus is at
+            if (x == 0) v33 = v;
+          } else {
+            //this calculation is a bit more convoluted
+            float temp = adc * 2.56/1024;
+            v = temp * (10.0+22.0)/10.0 - /*3.3*/ v33 * 22.0/10.0;
+          }
+          const char *strs[5] = {"+3.3V", "+24V", "VIN", "+5V", "-5V"};
+          printf_P(PSTR("%s:\t%+.2f V (%i)\r\n"), strs[x], v, adc);
+        }
+        ADCSRA = 0;
       } else if (c == 'V') {
         PORTB |= (1<<0);
         start_section("INFO");
