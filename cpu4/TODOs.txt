@@ -1,3 +1,8 @@
+TODO (.sch)
+-----------
+
+Use film capacitors for AVCC and AREF
+
 TODO (.kicad_pcb)
 -----------------
 

@@ -254,7 +254,7 @@ U 1 1 57F5D755
 P 5650 1300
 F 0 "C7" H 5660 1370 50  0000 L CNN
 F 1 "100n" H 5660 1220 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 5650 1300 50  0001 C CNN
+F 2 "Capacitors_SMD:C_1210" H 5650 1300 50  0001 C CNN
 F 3 "" H 5650 1300 50  0000 C CNN
 	1    5650 1300
 	0    -1   -1   0   
@@ -276,7 +276,7 @@ U 1 1 57F5DD88
 P 3700 2850
 F 0 "C8" H 3710 2920 50  0000 L CNN
 F 1 "100n" H 3710 2770 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 3700 2850 50  0001 C CNN
+F 2 "Capacitors_SMD:C_1210" H 3700 2850 50  0001 C CNN
 F 3 "" H 3700 2850 50  0000 C CNN
 	1    3700 2850
 	0    1    1    0   
@@ -1289,4 +1289,6 @@ Text Notes 5050 6450 0    60   ~ 0
 We might remove the 74153\nentirely in future revisions
 Wire Wire Line
 	9450 5450 9650 5450
+Text Notes 5750 1050 0    60   ~ 0
+NOTE: C7 and C8 should be film caps,\nsame as on fm10
 $EndSCHEMATC
