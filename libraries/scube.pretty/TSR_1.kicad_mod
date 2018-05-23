@@ -19,4 +19,9 @@
   (pad 1 thru_hole circle (at -2.54 0) (size 1.524 1.524) (drill 0.762) (layers *.Cu *.Mask))
   (pad 2 thru_hole circle (at 0 0) (size 1.524 1.524) (drill 0.762) (layers *.Cu *.Mask))
   (pad 3 thru_hole circle (at 2.54 0) (size 1.524 1.524) (drill 0.762) (layers *.Cu *.Mask))
+  (model ${KIPRJMOD}/../libraries/packages3d/TSR_1-2433.wrl
+    (at (xyz 0 0 0))
+    (scale (xyz 0.3937 0.3937 0.3937))
+    (rotate (xyz 0 0 180))
+  )
 )
