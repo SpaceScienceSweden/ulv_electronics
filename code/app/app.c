@@ -1401,92 +1401,97 @@ static int8_t exactly_one_adc(void) {
 static inline uint8_t* read_samples_fast(
     uint8_t *ptr,
     uint8_t pc,
-    uint8_t discard_samples,
-    uint8_t *stat1_addr,
     uint8_t *stat1_data) {
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
   //001a aaaa
-  SPDR = 0; *stat1_addr = SPDR; while(!(SPSR & (1<<SPIF)));
+  SPDR = 0; while(!(SPSR & (1<<SPIF)));
   //dddd dddd
   SPDR = 0; *stat1_data = SPDR;
   while(!(SPSR & (1<<SPIF)));
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
   SPDR = 0;
 
-  if (!discard_samples) {
-    //grab samples in big endian order, store as little endian
-    ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-    SPDR = 0; ptr[1] = SPDR;
-    if (pc < 3) {
-      if (pc == 1) {
-        while(!(SPSR & (1<<SPIF)));
-      } else { // 2
-        while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-      }
-    } else {
-      if (pc == 3) {
-        while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-      } else { // 4
-        while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-      }
+  //grab samples in big endian order, store as little endian
+  ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+  SPDR = 0; ptr[1] = SPDR;
+  if (pc < 3) {
+    if (pc == 1) {
+      while(!(SPSR & (1<<SPIF)));
+    } else { // 2
+      while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
     }
-    ptr[0] = SPDR; ptr += 3;
   } else {
-    //discard
-    while(!(SPSR & (1<<SPIF)));
-    SPDR = 0;
-    if (pc < 3) {
-      if (pc == 1) {
-        while(!(SPSR & (1<<SPIF)));
-      } else { // 2
-        while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      }
-    } else {
-      if (pc == 3) {
-        while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      } else { // 4
-        while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-        SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      }
+    if (pc == 3) {
+      while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+    } else { // 4
+      while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
     }
   }
+  ptr[0] = SPDR; ptr += 3;
 
   return ptr;
+}
+
+static inline void discard_samples_fast(uint8_t pc) {
+  SPDR = 0; while(!(SPSR & (1<<SPIF)));
+  //001a aaaa
+  SPDR = 0; while(!(SPSR & (1<<SPIF)));
+  //dddd dddd
+  SPDR = 0; while(!(SPSR & (1<<SPIF)));
+  SPDR = 0; while(!(SPSR & (1<<SPIF)));
+  SPDR = 0;
+
+  while(!(SPSR & (1<<SPIF)));
+  SPDR = 0;
+  if (pc < 3) {
+    if (pc == 1) {
+      while(!(SPSR & (1<<SPIF)));
+    } else { // 2
+      while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    }
+  } else {
+    if (pc == 3) {
+      while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    } else { // 4
+      while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    }
+  }
 }
 
 // General idea is to sample as fast as possible (57.6 kHz)
@@ -1579,8 +1584,12 @@ void square_demod_tach(void) {
       if (ic3) {
         //IC3 is /DRDY
         adc_select(id);
-        uint8_t stat1_addr, stat1_data;
-        ptr = read_samples_fast(ptr, pc, discard_samples, &stat1_addr, &stat1_data);
+        uint8_t stat1_data;
+        if (discard_samples > 0) {
+          discard_samples_fast(pc);
+        } else {
+          ptr = read_samples_fast(ptr, pc, &stat1_data);
+        }
         adc_deselect();
 
         //clear by writing a one
@@ -1645,7 +1654,7 @@ void square_demod_tach(void) {
       uint16_t q0 = (tachs[0][0][cur_tach]   - sample_time_base + cycles_per_sample-1) / cycles_per_sample;
       uint16_t q4 = (tachs[0][0][cur_tach+1] - sample_time_base + cycles_per_sample-1) / cycles_per_sample;
 
-      if (q4 > num_frames) {
+      if (q4 > max_frames) {
         //printf_P(PSTR("tach %u skipped, done\n"), cur_tach);
         break;
       }
@@ -1726,6 +1735,11 @@ square_demod_tach_done:
 // Similar to square_demod_tach except it uses the analog signal
 // in channel 4 in each FM for synchronization. This allows sampling
 // all FMs at the same time.
+//
+// Max sample rates @ 14 MHz:
+//
+// 1x @ 19600 Hz (DIV1 = 0x02, DIV2 = 0x2C)
+// 2x @  9600 Hz (DIV1 = 0x02, DIV2 = 0x2A)
 void square_demod_analog(uint8_t fm_mask) {
   fm_mask &= 7;
   uint8_t num_fms = popcount(fm_mask);
@@ -1812,7 +1826,7 @@ void square_demod_analog(uint8_t fm_mask) {
     //but also to allow the sinc3 filter to warm up
     //experiments show that five samples are about the right amount to discard
     uint8_t discard_samples = 5;
-    uint16_t num_frames = 0;
+    uint16_t num_frames_left = max_frames;
 
     uint8_t *ptr = (uint8_t*)&sample_data[0][0];
 
@@ -1821,36 +1835,50 @@ void square_demod_analog(uint8_t fm_mask) {
 
     set_74153(first_id);
 
-    while (num_frames < max_frames) {
-      uint8_t ic3 = ETIFR & (1<<ICF3);
-
-      if (ic3) {
-        //IC3 is /DRDY
-        uint8_t stat1_addr, stat1_data = 0;
-        for (uint8_t i = first_id; i < 3; i++) {
-          if (fm_mask & (1<<i)) {
-            adc_select(i);
-            ptr = read_samples_fast(ptr, 4, discard_samples, &stat1_addr, &stat1_data);
-            adc_deselect();
-            if (discard_samples == 0 && stat1_data) {
-              start_section("ERROR");
-              printf_P(PSTR("Got STAT_1 = %02hhx\n"), stat1_data);
-              goto square_demod_analog_done;
-            }
-          }
+    //longer WDT than normal to not have to do WDR inside loops
+    wdt_enable(WDTO_2S);
+    for (; discard_samples > 0; discard_samples--) {
+      while (!(ETIFR & (1<<ICF3)));
+      //IC3 is /DRDY
+#define DISCARD_FM(i) \
+        if (fm_mask & (1<<i)) {\
+          adc_select(i);\
+          discard_samples_fast(4);\
+          adc_deselect();\
         }
+      DISCARD_FM(0);
+      DISCARD_FM(1);
+      DISCARD_FM(2);
 
-        //clear by writing a one
-        ETIFR |= 1<<ICF3;
-
-        if (discard_samples > 0) {
-          discard_samples--;
-        } else {
-          num_frames++;
-        }
-      }
-      wdt_reset();
+      //clear by writing a one
+      ETIFR |= 1<<ICF3;
     }
+
+    do {
+      while (!(ETIFR & (1<<ICF3)));
+      //IC3 is /DRDY
+#define READ_FM(i) \
+          if (fm_mask & (1<<i)) {\
+            adc_select(i);\
+            uint8_t stat1_data;\
+            ptr = read_samples_fast(ptr, 4, &stat1_data);\
+            adc_deselect();\
+            if (stat1_data) {\
+              start_section("ERROR");\
+              printf_P(PSTR("Got STAT_1 = %02hhx\n"), stat1_data);\
+              goto square_demod_analog_done;\
+            }\
+          }
+      READ_FM(0);
+      READ_FM(1);
+      READ_FM(2);
+
+      //clear by writing a one
+      ETIFR |= 1<<ICF3;
+      //wdt_reset();
+      num_frames_left--;
+    } while (num_frames_left > 0);
+    wdt_enable(WDTO_250MS);
 
 #if 0
     //done capturing. swap buffers and set up bsend
@@ -1885,7 +1913,7 @@ void square_demod_analog(uint8_t fm_mask) {
       uint16_t q0 = (tachs[0][0][cur_tach]   - sample_time_base + cycles_per_sample-1) / cycles_per_sample;
       uint16_t q4 = (tachs[0][0][cur_tach+1] - sample_time_base + cycles_per_sample-1) / cycles_per_sample;
 
-      if (q4 > num_frames) {
+      if (q4 > max_frames) {
         //printf_P(PSTR("tach %u skipped, done\n"), cur_tach);
         break;
       }
