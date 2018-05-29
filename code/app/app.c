@@ -14,6 +14,8 @@
 #include <ds18b20/romsearch.h>
 #include "sample_packet_s.h"
 
+#define WDTO_DEFAULT WDTO_250MS
+
 #define BS  '\x08'  //backspace
 #define DEL '\x7F'  //delete - treat same as backspace
 #define ESC '\x1B'
@@ -1878,7 +1880,7 @@ void square_demod_analog(uint8_t fm_mask) {
       //wdt_reset();
       num_frames_left--;
     } while (num_frames_left > 0);
-    wdt_enable(WDTO_250MS);
+    wdt_enable(WDTO_DEFAULT);
 
 #if 0
     //done capturing. swap buffers and set up bsend
@@ -2561,7 +2563,7 @@ static void handle_input(void) {
 
 int main(void)
 {
-  wdt_enable(WDTO_250MS);
+  wdt_enable(WDTO_DEFAULT);
 
   setup_uart1();
   //setup stdout for printf()
