@@ -1409,12 +1409,13 @@ static inline uint8_t* read_samples_fast(
   SPDR = 0; *stat1_addr = SPDR; while(!(SPSR & (1<<SPIF)));
   //dddd dddd
   SPDR = 0; *stat1_data = SPDR;
+  while(!(SPSR & (1<<SPIF)));
+  SPDR = 0; while(!(SPSR & (1<<SPIF)));
+  SPDR = 0;
 
   if (!discard_samples) {
-    while(!(SPSR & (1<<SPIF)));
-    SPDR = 0; while(!(SPSR & (1<<SPIF)));
     //grab samples in big endian order, store as little endian
-    SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+    ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
     SPDR = 0; ptr[1] = SPDR;
     if (pc < 3) {
       if (pc == 1) {
@@ -1451,8 +1452,6 @@ static inline uint8_t* read_samples_fast(
   } else {
     //discard
     while(!(SPSR & (1<<SPIF)));
-    SPDR = 0; while(!(SPSR & (1<<SPIF)));
-    SPDR = 0; while(!(SPSR & (1<<SPIF)));
     SPDR = 0;
     if (pc < 3) {
       if (pc == 1) {
