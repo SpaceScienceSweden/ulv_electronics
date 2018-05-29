@@ -1496,6 +1496,75 @@ static inline void discard_samples_fast(uint8_t pc) {
   }
 }
 
+static inline void accumulate_square_interval(
+  uint8_t pc,
+  uint16_t q0,
+  uint16_t q4,
+  uint16_t ofs,
+  uint16_t stride,
+  int64_t *Q1,
+  int64_t *Q2,
+  int64_t *Q3,
+  int64_t *Q4,
+  uint16_t *NQ
+) {
+  uint16_t q2 = (q4 + q0) / 2;
+  uint16_t q1 = (q2 + q0) / 2;
+  uint16_t q3 = (q4 + q2) / 2;
+
+  __int24 *data_ptr = ofs + q0*stride + (__int24*)&sample_data[0][0];
+  uint16_t i = q0;
+#define DO_QUADRANT(q, Q, k)\
+  do {\
+    NQ[k] += q-i;\
+    for (; i < q; i++) {\
+      for (uint8_t j = 0; j < pc; j++) {\
+        Q[j] += data_ptr[j];\
+      }\
+      data_ptr += stride;\
+      wdt_reset();\
+    }\
+  } while (0)
+  DO_QUADRANT(q1, Q1, 0);
+  DO_QUADRANT(q2, Q2, 1);
+  DO_QUADRANT(q3, Q3, 2);
+  DO_QUADRANT(q4, Q4, 3);
+}
+
+static inline void print_iq(
+  uint8_t j,
+  int64_t *Q1,
+  int64_t *Q2,
+  int64_t *Q3,
+  int64_t *Q4,
+  uint16_t *NQ
+) {
+  //make sure we have enough samples for form averages
+  if (NQ[0] && NQ[1] && NQ[2] && NQ[3]) {
+    // This diagram illustrates how the different quadrant values get summed into I and Q respectively:
+    //
+    // I:‾__‾
+    // Q:‾‾__
+    // q:1234
+    //
+    // In other words:
+    //
+    // I = q1-q2-q3+q4
+    // Q = q1+q2-q3-q4
+    float q1 = Q1[j] / (float)NQ[0];
+    float q2 = Q2[j] / (float)NQ[1];
+    float q3 = Q3[j] / (float)NQ[2];
+    float q4 = Q4[j] / (float)NQ[3];
+    //4 << 23 to get the result in [-1,1]
+    float I = (q1-q2-q3+q4) / (float)(4L << 23);
+    float Q = (q1+q2-q3-q4) / (float)(4L << 23);
+    printf_P(PSTR("%+.5f %+.5f "), I, Q);
+  } else {
+    //print zeros
+    printf_P(PSTR("0 0 "));
+  }
+}
+
 // General idea is to sample as fast as possible (57.6 kHz)
 // Makes use of input capture, no interrupts
 // Highest speed this can capture four channels is 14400 Hz @ 14 MHz
@@ -1636,10 +1705,7 @@ void square_demod_tach(void) {
     int64_t Q2[4] = {0};
     int64_t Q3[4] = {0};
     int64_t Q4[4] = {0};
-    uint16_t NQ1[4] = {0};
-    uint16_t NQ2[4] = {0};
-    uint16_t NQ3[4] = {0};
-    uint16_t NQ4[4] = {0};
+    uint16_t NQ[4] = {0};
 
     //skip any tach(s) which are before the first sample
     //printf_P(PSTR("%u tachs\n"), num_tachs);
@@ -1660,32 +1726,8 @@ void square_demod_tach(void) {
         //printf_P(PSTR("tach %u skipped, done\n"), cur_tach);
         break;
       }
-      //printf_P(PSTR("\rcompute tach %u, %lu cycles     "), cur_tach, (uint32_t)(tachs[0][0][cur_tach+1] - tachs[0][0][cur_tach]));
 
-      uint16_t q2 = (q4 + q0) / 2;
-      uint16_t q1 = (q2 + q0) / 2;
-      uint16_t q3 = (q4 + q2) / 2;
-
-      __int24 *data_ptr = q0*pc + (__int24*)&sample_data[0][0];
-      uint16_t i = q0;
-#define DO_QUADRANT(q, Q)\
-      do {\
-        N##Q[0] += q-i;\
-        N##Q[1] += q-i;\
-        N##Q[2] += q-i;\
-        N##Q[3] += q-i;\
-        for (; i < q; i++) {\
-          for (uint8_t j = 0; j < pc; j++) {\
-            Q[j] += *data_ptr++;\
-          }\
-          wdt_reset();\
-        }\
-      } while (0)
-      DO_QUADRANT(q1, Q1);
-      DO_QUADRANT(q2, Q2);
-      DO_QUADRANT(q3, Q3);
-      DO_QUADRANT(q4, Q4);
-
+      accumulate_square_interval(pc, q0, q4, 0, pc, Q1, Q2, Q3, Q4, NQ);
       wdt_reset();
     }
     //printf_P(PSTR("\n"));
@@ -1695,36 +1737,12 @@ void square_demod_tach(void) {
     }
 
     start_section("INFO");
+    printf_P(PSTR("%5u %5u %5u %5u "), NQ[0], NQ[1], NQ[2], NQ[3]);
     for (uint8_t j = 0; j < pc; j++) {
-      //j should really print as channel indices
-      //so if we only have channel 3 enabled it'll print the first column as "3" not "0"
-      printf_P(PSTR("%hhu %5u %5u %5u %5u "), j, NQ1[j], NQ2[j], NQ3[j], NQ4[j]);
-      //make sure we have enough samples for form averages
-      if (NQ1[j] && NQ2[j] && NQ3[j] && NQ4[j]) {
-        // This diagram illustrates how the different quadrant values get summed into I and Q respectively:
-        //
-        // I:‾__‾
-        // Q:‾‾__
-        // q:1234
-        //
-        // In other words:
-        //
-        // I = q1-q2-q3+q4
-        // Q = q1+q2-q3-q4
-        float q1 = Q1[j] / (float)NQ1[j];
-        float q2 = Q2[j] / (float)NQ2[j];
-        float q3 = Q3[j] / (float)NQ3[j];
-        float q4 = Q4[j] / (float)NQ4[j];
-        //4 << 23 to get the result in [-1,1]
-        float I = (q1-q2-q3+q4) / (float)(4L << 23);
-        float Q = (q1+q2-q3-q4) / (float)(4L << 23);
-        printf_P(PSTR("%+.5f %+.5f\n"), I, Q);
-      } else {
-        //print zeros
-        printf_P(PSTR("0 0\n"));
-      }
+      print_iq(j, Q1, Q2, Q3, Q4, NQ);
       wdt_reset();
     }
+    printf_P(PSTR("\r\n"));
     READY();
   }
 
@@ -1882,112 +1900,76 @@ void square_demod_analog(uint8_t fm_mask) {
     } while (num_frames_left > 0);
     wdt_enable(WDTO_DEFAULT);
 
-#if 0
-    //done capturing. swap buffers and set up bsend
-    //size_t nbytes = sample_setup(!sample_data_idx);
-    //start_section("INFO");
-    //printf_P(PSTR("would have sent %i bytes\n"), nbytes);
-
-    uint16_t cur_frame = 0;
-    uint16_t cur_tach = 0;
-
-    int64_t Q1[4] = {0};
-    int64_t Q2[4] = {0};
-    int64_t Q3[4] = {0};
-    int64_t Q4[4] = {0};
-    uint16_t NQ1[4] = {0};
-    uint16_t NQ2[4] = {0};
-    uint16_t NQ3[4] = {0};
-    uint16_t NQ4[4] = {0};
-
-    //skip any tach(s) which are before the first sample
-    //printf_P(PSTR("%u tachs\n"), num_tachs);
-    while (tachs[0][0][cur_tach] < sample_time_base && cur_tach < num_tachs-1) {
-      //printf_P(PSTR("skip %u\n"), cur_tach);
-      cur_tach++;
-    }
-    //keep going while we're between two tach pulses
-    for (; cur_tach < num_tachs-1; cur_tach++) {
-      //sample_time_base is the time of the first sample
-      //compute at each sample each quadrant ends
-      //just averaging the indices should be good enough,
-      //but a more accurate computation might reduce jitter
-      uint16_t q0 = (tachs[0][0][cur_tach]   - sample_time_base + cycles_per_sample-1) / cycles_per_sample;
-      uint16_t q4 = (tachs[0][0][cur_tach+1] - sample_time_base + cycles_per_sample-1) / cycles_per_sample;
-
-      if (q4 > max_frames) {
-        //printf_P(PSTR("tach %u skipped, done\n"), cur_tach);
-        break;
-      }
-      //printf_P(PSTR("\rcompute tach %u, %lu cycles     "), cur_tach, (uint32_t)(tachs[0][0][cur_tach+1] - tachs[0][0][cur_tach]));
-
-      uint16_t q2 = (q4 + q0) / 2;
-      uint16_t q1 = (q2 + q0) / 2;
-      uint16_t q3 = (q4 + q2) / 2;
-
-      __int24 *data_ptr = q0*pc + (__int24*)&sample_data[0][0];
-      uint16_t i = q0;
-#define DO_QUADRANT(q, Q)\
-      do {\
-        N##Q[0] += q-i;\
-        N##Q[1] += q-i;\
-        N##Q[2] += q-i;\
-        N##Q[3] += q-i;\
-        for (; i < q; i++) {\
-          for (uint8_t j = 0; j < pc; j++) {\
-            Q[j] += *data_ptr++;\
-          }\
-          wdt_reset();\
-        }\
-      } while (0)
-      DO_QUADRANT(q1, Q1);
-      DO_QUADRANT(q2, Q2);
-      DO_QUADRANT(q3, Q3);
-      DO_QUADRANT(q4, Q4);
-
-      wdt_reset();
-    }
-    //printf_P(PSTR("\n"));
-#endif
-
     if (have_esc()) {
       goto square_demod_analog_done;
     }
 
+    //synthesize TACH from fourth channel in each FM data stream
     start_section("INFO");
-    printf_P(PSTR("got the datas\r\n"));
-#if 0
-    for (uint8_t j = 0; j < pc; j++) {
-      //j should really print as channel indices
-      //so if we only have channel 3 enabled it'll print the first column as "3" not "0"
-      printf_P(PSTR("%hhu %5u %5u %5u %5u "), j, NQ1[j], NQ2[j], NQ3[j], NQ4[j]);
-      //make sure we have enough samples for form averages
-      if (NQ1[j] && NQ2[j] && NQ3[j] && NQ4[j]) {
-        // This diagram illustrates how the different quadrant values get summed into I and Q respectively:
-        //
-        // I:‾__‾
-        // Q:‾‾__
-        // q:1234
-        //
-        // In other words:
-        //
-        // I = q1-q2-q3+q4
-        // Q = q1+q2-q3-q4
-        float q1 = Q1[j] / (float)NQ1[j];
-        float q2 = Q2[j] / (float)NQ2[j];
-        float q3 = Q3[j] / (float)NQ3[j];
-        float q4 = Q4[j] / (float)NQ4[j];
-        //4 << 23 to get the result in [-1,1]
-        float I = (q1-q2-q3+q4) / (float)(4L << 23);
-        float Q = (q1+q2-q3-q4) / (float)(4L << 23);
-        printf_P(PSTR("%+.5f %+.5f\n"), I, Q);
-      } else {
-        //print zeros
-        printf_P(PSTR("0 0\n"));
+    uint8_t ofs = 0;  //FM offset into sample_data
+    for (uint8_t i = first_id; i < 3; i++) {
+      if (fm_mask & (1<<i)) {
+        __int24 lo = (1L<<23) - 1;
+        __int24 hi = 0;
+        __int24 *data_ptr = ofs + (__int24*)&sample_data[0][0];
+
+        for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4*num_fms) {
+          __int24 s = data_ptr[3];
+          if (s < lo) lo = s;
+          if (s > hi) hi = s;
+        }
+        
+        //hysteresis: >75% -> on, <25% -> off
+        __int24 mid = lo/2 + hi/2;
+        __int24 on  = hi/2 + mid/2;
+        __int24 off = lo/2 + mid/2;
+
+        //printf_P(PSTR("FM %hhu: tach in [%li, %li], off = %li, on = %li\r\n"), i, (int32_t)lo, (int32_t)hi, (int32_t)off, (int32_t)on);
+
+        //rewind
+        data_ptr = ofs + (__int24*)&sample_data[0][0];
+        uint8_t state = data_ptr[3] > mid;
+        uint16_t q0 = 0; //index of last tach, or zero
+
+        //demodulation stuff
+        int64_t Q1[4] = {0};
+        int64_t Q2[4] = {0};
+        int64_t Q3[4] = {0};
+        int64_t Q4[4] = {0};
+        uint16_t NQ[4] = {0};
+
+        uint8_t num_tachs = 0;
+
+        for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4*num_fms) {
+          __int24 s = data_ptr[3];
+          //look for rising edge
+          if (state == 0 && s > on) {
+            state = 1;
+            //printf_P(PSTR("rising edge @ %u\r\n"), k);
+            uint16_t q4 = k;
+            if (q0 > 0) {
+              num_tachs++;
+              accumulate_square_interval(4, q0, q4, ofs, 4*num_fms, Q1, Q2, Q3, Q4, NQ);
+              wdt_reset();
+            }
+            q0 = q4;
+          } else if (state == 1 && s < off) {
+            state = 0;
+          }
+          wdt_reset();
+        }
+
+        //print it
+        printf_P(PSTR("%hhu %hhu %5u %5u %5u %5u "), i, num_tachs, NQ[0], NQ[1], NQ[2], NQ[3]);
+        for (uint8_t j = 0; j < 4; j++) {
+          print_iq(j, Q1, Q2, Q3, Q4, NQ);
+          wdt_reset();
+        }
+        printf_P(PSTR("\r\n"));
+
+        ofs += 4;
       }
-      wdt_reset();
     }
-#endif
     READY();
   }
 
@@ -1996,25 +1978,6 @@ square_demod_analog_done:
   sei();
   return;
 }
-
-/*
-void square_demodulator(void) {
-  //each sample is added to the corresponding quadrant accumulator
-  //later I and Q are formed by combining average q1..4 like this:
-  //
-  //  I[x] = q1[x]/nq1 + q2[x]/nq2 - q3[x]/nq3 - q4[x]/nq4
-  //  Q[x] = q1[x]/nq1 - q2[x]/nq2 - q3[x]/nq3 + q4[x]/nq4
-  //
-  int64_t q1[3] = {0};
-  int64_t q2[3] = {0};
-  int64_t q3[3] = {0};
-  int64_t q4[3] = {0};
-  int16_t nq1 = 0;
-  int16_t nq2 = 0;
-  int16_t nq3 = 0;
-  int16_t nq4 = 0;
-}
-*/
 
 static void handle_input(void) {
       int len = recvline();
