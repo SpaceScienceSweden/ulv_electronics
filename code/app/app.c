@@ -1409,7 +1409,7 @@ static inline uint8_t* read_samples_fast(
   //001a aaaa
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
   //dddd dddd
-  SPDR = 0; *stat1_data = SPDR;
+  SPDR = 0; *stat1_data |= SPDR;
   while(!(SPSR & (1<<SPIF)));
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
   SPDR = 0;
@@ -1644,28 +1644,29 @@ void square_demod_tach(void) {
       uint16_t cur10 = TCNT1;
 
       if (ic1) {
+        //clear by writing a one
+        TIFR |= 1<<ICF1;
+
         //IC1 is tachometer
         //don't bother until we've gone through the discard samples
         if (discard_samples == 0) {
           uint16_t delta = (ICR1 - last10) & TIMER1_TOP;
           tachs[0][0][num_tachs++] = time_base + last10 + delta;
         }
-        //clear by writing a one
-        TIFR |= 1<<ICF1;
       }
       if (ic3) {
         //IC3 is /DRDY
+        //clear by writing a one
+        ETIFR |= 1<<ICF3;
+
         adc_select(id);
-        uint8_t stat1_data;
+        uint8_t stat1_data = 0;
         if (discard_samples > 0) {
           discard_samples_fast(pc);
         } else {
           ptr = read_samples_fast(ptr, pc, &stat1_data);
         }
         adc_deselect();
-
-        //clear by writing a one
-        ETIFR |= 1<<ICF3;
 
         if (discard_samples > 0) {
           uint16_t delta = (ICR3 - last10) & TIMER1_TOP;
@@ -1759,8 +1760,8 @@ square_demod_tach_done:
 //
 // Max sample rates @ 14 MHz:
 //
-// 1x @ 19600 Hz (DIV1 = 0x02, DIV2 = 0x2C)
-// 2x @  9600 Hz (DIV1 = 0x02, DIV2 = 0x2A)
+// 1x @ 38400 Hz (DIV1 = 0x02, DIV2 = 0x2C)
+// 2x @ 19200 Hz (DIV1 = 0x02, DIV2 = 0x2A)
 void square_demod_analog(uint8_t fm_mask) {
   fm_mask &= 7;
   uint8_t num_fms = popcount(fm_mask);
@@ -1851,16 +1852,15 @@ void square_demod_analog(uint8_t fm_mask) {
 
     uint8_t *ptr = (uint8_t*)&sample_data[0][0];
 
-    //pre-clear both ICF bits by writing ones
-    ETIFR |= 1<<ICF3;
-
     set_74153(first_id);
+    DDRD |= 1;  //debug
 
     //longer WDT than normal to not have to do WDR inside loops
     wdt_enable(WDTO_2S);
     for (; discard_samples > 0; discard_samples--) {
-      while (!(ETIFR & (1<<ICF3)));
-      //IC3 is /DRDY
+      //poll /DRDY
+      while (PINE & (1<<PE7));
+
 #define DISCARD_FM(i) \
         if (fm_mask & (1<<i)) {\
           adc_select(i);\
@@ -1870,35 +1870,34 @@ void square_demod_analog(uint8_t fm_mask) {
       DISCARD_FM(0);
       DISCARD_FM(1);
       DISCARD_FM(2);
-
-      //clear by writing a one
-      ETIFR |= 1<<ICF3;
     }
 
+    PORTD |= 1; //debug
     do {
-      while (!(ETIFR & (1<<ICF3)));
-      //IC3 is /DRDY
+      //poll /DRDY
+      while (PINE & (1<<PE7));
+      uint8_t stat1_data = 0;
+
 #define READ_FM(i) \
           if (fm_mask & (1<<i)) {\
             adc_select(i);\
-            uint8_t stat1_data;\
             ptr = read_samples_fast(ptr, 4, &stat1_data);\
             adc_deselect();\
-            if (stat1_data) {\
-              start_section("ERROR");\
-              printf_P(PSTR("Got STAT_1 = %02hhx\n"), stat1_data);\
-              goto square_demod_analog_done;\
-            }\
           }
       READ_FM(0);
       READ_FM(1);
       READ_FM(2);
 
-      //clear by writing a one
-      ETIFR |= 1<<ICF3;
+      if (stat1_data) {
+        start_section("ERROR");
+        printf_P(PSTR("Got STAT_1 = %02hhx\n"), stat1_data);
+        goto square_demod_analog_done;
+      }
+
       //wdt_reset();
       num_frames_left--;
     } while (num_frames_left > 0);
+    PORTD &= ~1;  //debug
     wdt_enable(WDTO_DEFAULT);
 
     if (have_esc()) {
