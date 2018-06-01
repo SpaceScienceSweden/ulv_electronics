@@ -463,7 +463,7 @@ static void settime64(uint64_t t) {
 static void setup_timers() {
   //PB5 = OC1A, PB6 = OC1B, PB7 = OC1C. inverted drive signals
   //pwm frequency range is 500 Hz .. 20 kHz
-  //WGM=3 -> TOP=0x3FF -> (7372800/1024) = 7200 Hz (10-bit fast PWM)
+  //WGM=3 -> TOP=0x3FF -> (14745600/1024) = 14400 Hz (10-bit fast PWM)
   uint8_t wgm = 7;
   TCCR1A = (3<<COM1A0) | (3<<COM1B0) | (3<<COM1C0) | ((wgm&3) << WGM10);
   //enable clock, set prescaler
@@ -1400,6 +1400,7 @@ static int8_t exactly_one_adc(void) {
   }
 }
 
+//~5 Mbps with a 14 MHz clock (24.2 µs to read 15 bytes)
 static inline uint8_t* read_samples_fast(
     uint8_t *ptr,
     uint8_t pc,
@@ -2441,7 +2442,7 @@ static void handle_input(void) {
           start_section(cycles_in > cycles_out ? "INFO" : "ERROR");
           printf_P(PSTR(" sample data size = %lu / %u\r\n"), sample_data_size, (uint16_t)sizeof(sample_data[0]));
           printf_P(PSTR("      packet size = %lu (upper limit)\r\n"), bytes);
-          printf_P(PSTR("      sample rate = %lu Hz\r\n"), 7372800UL/cycles_per_sample);
+          printf_P(PSTR("      sample rate = %lu Hz\r\n"), F_CPU/cycles_per_sample);
           printf_P(PSTR("cycles per sample = %lu\r\n"), cycles_per_sample);
           printf_P(PSTR("         popcount = %hhu\r\n"), pc);
           printf_P(PSTR("--------------------------\r\n"));
