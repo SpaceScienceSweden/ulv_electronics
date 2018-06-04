@@ -2,14 +2,24 @@ TODO (.sch)
 -----------
 
 Use film capacitors for AVCC and AREF
+BOM
+- all industrial parts
 
 TODO (.kicad_pcb)
 -----------------
 
-Route the thing, make sure it passes DRC and there are no unconnected stuff
+Make all silk readable
+.pos output
 
-Features to add/remove
-----------------------
+TODO fab+asm
+------------
+
+Separate fab and asm instructions
+
+DONE
+----
+
+Route the thing, make sure it passes DRC and there are no unconnected stuff
 
 Measure whether EN_XMEM does anything
 - consider changing it to be A16 for 128k bankswitched RAM
@@ -20,9 +30,7 @@ Measure whether EN_XMEM does anything
 - conclusion: the ~3 mA (77 mW) from EN_XMEM is a drop in the ocean
 
 Test analog inputs, make sure system voltages can be measured
-
-DONE
-----
+- works so long as pull-ups are disabled
 
 Use same diodes as fm10 (SMA doesn't roll)
 
