@@ -40,16 +40,7 @@ programserial:
 	make -C app all
 	killall picocom minicom || true
 	stty -F /dev/ttyUSB0 $(PROGBAUD)
-	# Send ESC in case we're doing something
-	/bin/echo -en \\x1b > /dev/ttyUSB0
-	sleep 0.1
-	/bin/echo -en \\x1b > /dev/ttyUSB0
-	sleep 0.1
-	# Tell application to enter bootloader
-	# Send twice, sometimes it borks
-	echo "S" > /dev/ttyUSB0
-	sleep 0.1
-	echo "S" > /dev/ttyUSB0
+	./reset_kub.sh
 	# Don't touch EEPROM -> motors keep spinning if spun up
 	avrdude -b $(PROGBAUD) -c avr109 -p atmega128 -P /dev/ttyUSB0 -U flash:w:app/app.hex
 
