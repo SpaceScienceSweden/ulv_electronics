@@ -1429,7 +1429,9 @@ static int8_t exactly_one_adc(void) {
   }
 }
 
-//~5 Mbps with a 14 MHz clock (24.2 µs to read 15 bytes)
+//~5 Mbps with a 14 MHz clock   (24.2 µs to read 15 bytes)
+//~4.7 Mbps with 16-bit samples (16.9 µs to read 10 bytes)
+//currently wasting ~350 ns between cycles = 5 cycles
 #if WORDSZ > 24
 #error read_samples_fast() doesnt support >24-bit
 #endif
