@@ -2268,7 +2268,7 @@ static void handle_input(void) {
         //sample for one second
         while (gettime32() - t0 < F_CPU) {
           for (uint8_t x = 0; x < 3; x++) {
-            PORTD = (PORTD & ~((1<<6)|(1<<7))) | (x << 6);
+            set_74153(x);
             _delay_us(10);
             int p = PIND & (1<<4);
             if (p && !lastpin[x]) {
