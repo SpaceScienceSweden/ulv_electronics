@@ -13,6 +13,7 @@
 #include <ds18b20/ds18b20.h>
 #include <ds18b20/romsearch.h>
 #include "sample_packet_s.h"
+#include "square_demod_s.h"
 
 #define WDTO_DEFAULT WDTO_250MS
 
@@ -1573,9 +1574,11 @@ static inline void accumulate_square_interval(
   accu_t *Q4,
   uint16_t *NQ
 ) {
-  uint16_t q2 = (q4 + q0) / 2;
-  uint16_t q1 = (q2 + q0) / 2;
-  uint16_t q3 = (q4 + q2) / 2;
+  //q4 <= 16383 means these can't overflow
+  //round to nearest frame while we're at it
+  uint16_t q1 = (3*q0 +   q4 + 2) / 4;
+  uint16_t q2 = (  q0 +   q4 + 1) / 2;
+  uint16_t q3 = (  q0 + 3*q4 + 2) / 4;
 
   sample_t *data_ptr = ofs + q0*stride + (sample_t*)&sample_data[0][0];
   uint16_t i = q0;
@@ -1604,7 +1607,7 @@ static inline void print_iq(
   accu_t *Q4,
   uint16_t *NQ
 ) {
-  //make sure we have enough samples for form averages
+  //make sure we have enough samples to form averages
   if (NQ[0] && NQ[1] && NQ[2] && NQ[3]) {
     // This diagram illustrates how the different quadrant values get summed into I and Q respectively:
     //
@@ -1627,6 +1630,31 @@ static inline void print_iq(
   } else {
     //print zeros
     printf_P(PSTR("0 0 "));
+  }
+}
+
+//only works with 16-bit samples
+static inline void binary_iq(
+  fm_s *fm,
+  accu_t *Q1,
+  accu_t *Q2,
+  accu_t *Q3,
+  accu_t *Q4
+) {
+  //make sure we have enough samples to form averages
+  if (fm->NQ[0] && fm->NQ[1] && fm->NQ[2] && fm->NQ[3]) {
+    for (uint8_t j = 0; j < 4; j++) {
+      // I = q1-q2-q3+q4
+      // Q = q1+q2-q3-q4
+      accu_t q1 = Q1[j] / fm->NQ[0];
+      accu_t q2 = Q2[j] / fm->NQ[1];
+      accu_t q3 = Q3[j] / fm->NQ[2];
+      accu_t q4 = Q4[j] / fm->NQ[3];
+
+      //leave data as raw as possible, hence no divisions by 4
+      fm->IQ[j][0] = q1-q2-q3+q4;
+      fm->IQ[j][1] = q1+q2-q3-q4;
+    }
   }
 }
 
@@ -1669,6 +1697,11 @@ void square_demod_tach(void) {
 
   if (max_frames2 < max_frames) {
     max_frames = max_frames2;
+  }
+
+  //sanity check, to prevent q1..3 from having to deal with overflow
+  if (max_frames > 16383) {
+    max_frames > 16383;
   }
 
   start_section("INFO");
@@ -1831,10 +1864,18 @@ square_demod_tach_done:
 //
 // In other words at max gain ENOB is low enough that we can get away with 16 bit samples
 // The code currently has a bit too much overhead to bump the sample rate to 57.6 kHz for 1x
-void square_demod_analog(uint8_t fm_mask) {
+void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
   fm_mask &= 7;
   uint8_t num_fms = popcount(fm_mask);
-  
+
+#if WORDSZ > 16
+  if (send_binary) {
+    start_section("ERROR");
+    printf_P(PSTR("can only send binary with 16-bit samples for now\r\n"));
+    return;
+  }
+#endif
+
   if (fm_mask == 0) {
     start_section("ERROR");
     printf_P(PSTR("fm_mask == 0\r\n"));
@@ -1906,6 +1947,11 @@ void square_demod_analog(uint8_t fm_mask) {
     max_frames = max_frames2;
   }
 
+  //sanity check, to prevent q1..3 from having to deal with overflow
+  if (max_frames > 16383) {
+    max_frames > 16383;
+  }
+
   start_section("INFO");
   printf_P(PSTR("max_frames = %i\n"), max_frames);
 
@@ -1971,11 +2017,25 @@ void square_demod_analog(uint8_t fm_mask) {
       goto square_demod_analog_done;
     }
 
+    //start transmitting
+    if (send_binary) {
+      start_section("SQUARE");
+      square_demod_header_s hdr;
+      hdr.version = 1;
+      hdr.num_frames = max_frames;
+      hdr.fm_mask = fm_mask;
+      sendbuf(&hdr, sizeof(hdr));
+    } else {
+      start_section("INFO");
+    }
+
     //synthesize TACH from fourth channel in each FM data stream
-    start_section("INFO");
     uint8_t ofs = 0;  //FM offset into sample_data
     for (uint8_t i = first_id; i < 3; i++) {
       if (fm_mask & (1<<i)) {
+        fm_s fm;
+        memset(&fm, 0, sizeof(fm));
+
         sample_t lo = (1L<<(WORDSZ-1)) - 1;
         sample_t hi = 0;
         sample_t *data_ptr = ofs + (sample_t*)&sample_data[0][0];
@@ -1985,7 +2045,11 @@ void square_demod_analog(uint8_t fm_mask) {
           if (s < lo) lo = s;
           if (s > hi) hi = s;
         }
-        
+
+        //deal with >=24-bit
+        fm.tach_min = lo / (1<<(WORDSZ-16));
+        fm.tach_max = hi / (1<<(WORDSZ-16));
+
         //hysteresis: >75% -> on, <25% -> off
         sample_t mid = lo/2 + hi/2;
         sample_t on  = hi/2 + mid/2;
@@ -2003,11 +2067,10 @@ void square_demod_analog(uint8_t fm_mask) {
         accu_t Q2[4] = {0};
         accu_t Q3[4] = {0};
         accu_t Q4[4] = {0};
-        uint16_t NQ[4] = {0};
 
-        uint8_t num_tachs = 0;
-
-        for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4*num_fms) {
+        for (uint16_t k = 0;
+              k < max_frames && fm.num_tachs < 255;
+              k++, data_ptr += 4*num_fms) {
           sample_t s = data_ptr[3];
           //look for rising edge
           if (state == 0 && s > on) {
@@ -2015,9 +2078,13 @@ void square_demod_analog(uint8_t fm_mask) {
             //printf_P(PSTR("rising edge @ %u\r\n"), k);
             uint16_t q4 = k;
             if (q0 > 0) {
-              num_tachs++;
-              accumulate_square_interval(4, q0, q4, ofs, 4*num_fms, Q1, Q2, Q3, Q4, NQ);
+              fm.num_tachs++;
+              //~85% of time between captures is spent here
+              accumulate_square_interval(4, q0, q4, ofs, 4*num_fms, Q1, Q2, Q3, Q4, fm.NQ);
               wdt_reset();
+            } else {
+              //first sample - record discard
+              fm.discard = q4;
             }
             q0 = q4;
           } else if (state == 1 && s < off) {
@@ -2026,13 +2093,20 @@ void square_demod_analog(uint8_t fm_mask) {
           wdt_reset();
         }
 
-        //print it
-        printf_P(PSTR("%hhu %hhu %5u %5u %5u %5u "), i, num_tachs, NQ[0], NQ[1], NQ[2], NQ[3]);
-        for (uint8_t j = 0; j < 4; j++) {
-          print_iq(j, Q1, Q2, Q3, Q4, NQ);
-          wdt_reset();
+        if (send_binary) {
+          binary_iq(&fm, Q1, Q2, Q3, Q4);
+          sendbuf(&fm, sizeof(fm));
+        } else {
+          //print it
+          printf_P(PSTR("%hhu %hhu %5u %5u %5u %5u "),
+            i, fm.num_tachs, fm.NQ[0], fm.NQ[1], fm.NQ[2], fm.NQ[3]);
+
+          for (uint8_t j = 0; j < 4; j++) {
+            print_iq(j, Q1, Q2, Q3, Q4, fm.NQ);
+            wdt_reset();
+          }
+          printf_P(PSTR("\r\n"));
         }
-        printf_P(PSTR("\r\n"));
 
         ofs += 4;
       }
@@ -2580,13 +2654,15 @@ static void handle_input(void) {
         printf_P(PSTR("'G' not ported to 16-bit mode yet\r\n"));
 #endif
       } else if (c == 'H') {
-        uint8_t fm_mask = 0;
-        int n = sscanf(line, "%hhu", &fm_mask);
+        uint8_t fm_mask = 0, send_binary = 0;
+        int n = sscanf(line, "%hhu %hhu", &fm_mask, &send_binary);
         if (n == 1) {
-          square_demod_analog(fm_mask);
+          square_demod_analog(fm_mask, 0);
+        } else if (n == 2) {
+          square_demod_analog(fm_mask, send_binary);
         } else {
           start_section("ERROR");
-          printf_P(PSTR("'H' requires exactly one argument\r\n"));
+          printf_P(PSTR("'H' requires one or two arguments\r\n"));
         }
       } else if (c == '?') {
         //print help
@@ -2636,6 +2712,22 @@ int main(void)
   uint8_t temp_conversion_in_progress = 0;
 
   unlock_adcs();
+
+  //default samplerates and gains
+  wreg(0, 0x0d, 0x02);
+  wreg(0, 0x0e, 0x2a);
+  wreg(0, 0x11, 0x04);
+  wreg(0, 0x12, 0x04);
+  wreg(0, 0x13, 0x04);
+  wreg(0, 0x14, 0x00);
+  wreg(1, 0x0d, 0x02);
+  wreg(1, 0x0e, 0x2a);
+  wreg(1, 0x11, 0x04);
+  wreg(1, 0x12, 0x04);
+  wreg(1, 0x13, 0x04);
+  wreg(1, 0x14, 0x00);
+  OCR1A = TIMER1_TOP/2;
+  OCR1B = TIMER1_TOP/2;
 
   for (;;) {
 retry:
