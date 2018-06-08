@@ -29,6 +29,9 @@ flight:
 	  -U lfuse:w:0xef:m -U hfuse:w:0xCC:m -U efuse:w:0xff:m -U eeprom:w:eeprom.hex
 	make programserial
 
+setbaud:
+	stty -F /dev/ttyUSB0 $(BAUD)
+
 programserial:
 	make -C app all
 	killall picocom minicom || true

@@ -738,15 +738,12 @@ static void print64(uint64_t i) {
 }
 
 #define FADC      F_CPU
-#define WORDSZ    24    //ADC word size
+#define WORDSZ    16    //ADC word size
 #define CLK_DIV   2
 #define ICLK_DIV  2
 #define OSR       5     //0..15 -> 4096 .. 32, see osrtab below
 #define GAIN      4     //0..4, actual gain = 2^GAIN
 
-#if WORDSZ < 24
-#error We want WORDSZ >= 24
-#endif
 #if CLK_DIV % 2 != 0 || CLK_DIV < 2 || CLK_DIV > 14
 #error Illegal CLK_DIV
 #endif
@@ -758,6 +755,20 @@ static void print64(uint64_t i) {
 #endif
 #if GAIN < 0 || GAIN > 4
 #error Illegal GAIN
+#endif
+
+#if WORDSZ > 16
+typedef uint32_t adc_word_t;
+#else
+typedef uint16_t adc_word_t;
+#endif
+
+#if WORDSZ == 16
+typedef int16_t sample_t;
+#elif WORDSZ == 24
+typedef __int24 sample_t;
+#else
+typedef int32_t sample_t;
 #endif
 
 static const uint16_t osrtab[16] = {
@@ -786,8 +797,8 @@ static inline uint8_t spi_comm_byte(uint8_t in) {
 }
 #endif
 
-static uint32_t spi_comm_word(uint32_t in) {
-  uint32_t out = 0;
+static adc_word_t spi_comm_word(adc_word_t in) {
+  adc_word_t out = 0;
   uint8_t x;
 
   for (x = 0; x < WORDSZ; x += 8) {
@@ -810,9 +821,9 @@ static void setup_adc_pins() {
 }
 
 
-static uint32_t adc_comm_inner(uint8_t pc, uint32_t cmd) {
+static adc_word_t adc_comm_inner(uint8_t pc, adc_word_t cmd) {
   uint8_t x;
-  uint32_t out;
+  adc_word_t out;
 
   out = spi_comm_word(cmd);
 
@@ -831,9 +842,9 @@ static uint32_t adc_comm_inner(uint8_t pc, uint32_t cmd) {
  * cmd: device command
  * return: device word out
  */
-static uint32_t adc_comm(uint8_t id, uint32_t cmd) {
+static adc_word_t adc_comm(uint8_t id, adc_word_t cmd) {
   adc_select(id);
-  uint32_t out = adc_comm_inner(adc_popcount[id], cmd);
+  adc_word_t out = adc_comm_inner(adc_popcount[id], cmd);
   adc_deselect();
   return out;
 }
@@ -879,7 +890,7 @@ static uint8_t popcount(uint16_t a) {
 }
 
 static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
-  uint32_t word;
+  adc_word_t word;
   adc_comm(id, WREG(a,d));
 
   //if we change ADC_ENA then we need to update popcount since we use dynamic framing
@@ -923,7 +934,7 @@ void adc_regs(void) {
 }
 
 static uint8_t adc_unlock_standby_disable(uint8_t id) {
-  uint32_t word;
+  adc_word_t word;
 
   //unlock and enter standby, halting any ongoing conversion
   adc_comm(id, UNLOCK);
@@ -953,7 +964,7 @@ static uint8_t adc_unlock_standby_disable(uint8_t id) {
 //wait for RESET, then UNLOCK
 void unlock_adcs(void) {
   for (uint8_t id = 0; id < 3; id++) {
-    uint32_t word;
+    adc_word_t word;
     adc_ena[id] = 0;
     adc_popcount[id] = 0;
 
@@ -1154,7 +1165,7 @@ static uint8_t adc_wakeup(uint8_t int7) {
   READY();
 
   PORTF = portf;
-  uint32_t wakeup_res = adc_comm_inner(pc, 0) >> (WORDSZ-16);
+  adc_word_t wakeup_res = adc_comm_inner(pc, 0) >> (WORDSZ-16);
   adc_deselect();
 
   if (wakeup_res != 0x0033) {
@@ -1169,7 +1180,7 @@ static uint8_t adc_wakeup(uint8_t int7) {
   adc_deselect();
 
   PORTF = portf;
-  uint32_t lock_res = adc_comm_inner(pc, 0) >> (WORDSZ-16);
+  adc_word_t lock_res = adc_comm_inner(pc, 0) >> (WORDSZ-16);
   adc_deselect();
 
   if (lock_res != 0x0555) {
@@ -1219,18 +1230,22 @@ ISR(INT7_vect) {
   for (uint8_t id = 0; id < 3; id++) {
     if (adc_popcount[id]) {
       adc_select(id);
-#if WORDSZ != 24
-#error WORDSZ != 24 not supported currently
+#if WORDSZ > 24
+#error WORDSZ > 24 not supported currently
 #endif
       //skip status
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#endif
       SPDR = 0;
 
       if (do_store) {
         while(!(SPSR & (1<<SPIF)));
         SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
         SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+#endif
         SPDR = 0; *ptr++ = SPDR;
         if (adc_popcount[id] < 3) {
           if (adc_popcount[id] == 1) {
@@ -1239,7 +1254,9 @@ ISR(INT7_vect) {
             while(!(SPSR & (1<<SPIF)));
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+#endif
           }
         } else {
           if (adc_popcount[id] == 3) {
@@ -1248,8 +1265,10 @@ ISR(INT7_vect) {
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+#endif
           } else { // 4
             while(!(SPSR & (1<<SPIF)));
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
@@ -1258,9 +1277,11 @@ ISR(INT7_vect) {
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; *ptr++ = SPDR; while(!(SPSR & (1<<SPIF)));
+#endif
           }
         }
         *ptr++ = SPDR;
@@ -1268,7 +1289,9 @@ ISR(INT7_vect) {
         //discard
         while(!(SPSR & (1<<SPIF)));
         SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
         SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#endif
         SPDR = 0;
         if (adc_popcount[id] < 3) {
           if (adc_popcount[id] == 1) {
@@ -1277,7 +1300,9 @@ ISR(INT7_vect) {
             while(!(SPSR & (1<<SPIF)));
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#endif
           }
         } else {
           if (adc_popcount[id] == 3) {
@@ -1286,8 +1311,10 @@ ISR(INT7_vect) {
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#endif
           } else { // 4
             while(!(SPSR & (1<<SPIF)));
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
@@ -1297,8 +1324,10 @@ ISR(INT7_vect) {
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
             SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#endif
           }
         }
       }
@@ -1401,6 +1430,9 @@ static int8_t exactly_one_adc(void) {
 }
 
 //~5 Mbps with a 14 MHz clock (24.2 µs to read 15 bytes)
+#if WORDSZ > 24
+#error read_samples_fast() doesnt support >24-bit
+#endif
 static inline uint8_t* read_samples_fast(
     uint8_t *ptr,
     uint8_t pc,
@@ -1409,69 +1441,86 @@ static inline uint8_t* read_samples_fast(
   //001a aaaa
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
   //dddd dddd
-  SPDR = 0; *stat1_data |= SPDR;
-  while(!(SPSR & (1<<SPIF)));
-  SPDR = 0; while(!(SPSR & (1<<SPIF)));
+  SPDR = 0; *stat1_data |= SPDR; while(!(SPSR & (1<<SPIF)));
   SPDR = 0;
 
   //grab samples in big endian order, store as little endian
-  ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-  SPDR = 0; ptr[1] = SPDR;
+#if WORDSZ == 24
+  while(!(SPSR & (1<<SPIF))); SPDR = 0; ptr[2] = SPDR;
+  while(!(SPSR & (1<<SPIF))); SPDR = 0;
+#endif
+  ptr[1] = SPDR;
   if (pc < 3) {
     if (pc == 1) {
-      while(!(SPSR & (1<<SPIF)));
     } else { // 2
       while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
       SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+#endif
+      SPDR = 0; ptr[1] = SPDR;
     }
   } else {
     if (pc == 3) {
       while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
       SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+#endif
       SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
       SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+#endif
+      SPDR = 0; ptr[1] = SPDR;
     } else { // 4
       while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
       SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+#endif
       SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
       SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+#endif
       SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += 3; while(!(SPSR & (1<<SPIF)));
+      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
       SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+#endif
+      SPDR = 0; ptr[1] = SPDR;
     }
   }
-  ptr[0] = SPDR; ptr += 3;
+  while(!(SPSR & (1<<SPIF)));
+  ptr[0] = SPDR; ptr += WORDSZ/8;
 
   return ptr;
 }
 
+#if WORDSZ > 24
+#error discard_samples_fast() doesnt support >24-bit
+#endif
 static inline void discard_samples_fast(uint8_t pc) {
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
   //001a aaaa
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
   //dddd dddd
+#if WORDSZ == 24
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
-  SPDR = 0;
-
-  while(!(SPSR & (1<<SPIF)));
+#endif
+  SPDR = 0; while(!(SPSR & (1<<SPIF)));
   SPDR = 0;
   if (pc < 3) {
     if (pc == 1) {
-      while(!(SPSR & (1<<SPIF)));
     } else { // 2
       while(!(SPSR & (1<<SPIF)));
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#endif
+      SPDR = 0;
     }
   } else {
     if (pc == 3) {
@@ -1479,9 +1528,11 @@ static inline void discard_samples_fast(uint8_t pc) {
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#endif
+      SPDR = 0;
     } else { // 4
       while(!(SPSR & (1<<SPIF)));
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
@@ -1489,13 +1540,24 @@ static inline void discard_samples_fast(uint8_t pc) {
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#if WORDSZ == 24
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
+#endif
+      SPDR = 0;
     }
   }
+  //might be possible to skip this last wait, but we'd have to
+  //be careful that we don't re-enter this function too quickly
+  while(!(SPSR & (1<<SPIF)));
 }
+
+#if WORDSZ == 16
+typedef int32_t accu_t;
+#else
+typedef int64_t accu_t;
+#endif
 
 static inline void accumulate_square_interval(
   uint8_t pc,
@@ -1503,17 +1565,17 @@ static inline void accumulate_square_interval(
   uint16_t q4,
   uint16_t ofs,
   uint16_t stride,
-  int64_t *Q1,
-  int64_t *Q2,
-  int64_t *Q3,
-  int64_t *Q4,
+  accu_t *Q1,
+  accu_t *Q2,
+  accu_t *Q3,
+  accu_t *Q4,
   uint16_t *NQ
 ) {
   uint16_t q2 = (q4 + q0) / 2;
   uint16_t q1 = (q2 + q0) / 2;
   uint16_t q3 = (q4 + q2) / 2;
 
-  __int24 *data_ptr = ofs + q0*stride + (__int24*)&sample_data[0][0];
+  sample_t *data_ptr = ofs + q0*stride + (sample_t*)&sample_data[0][0];
   uint16_t i = q0;
 #define DO_QUADRANT(q, Q, k)\
   do {\
@@ -1534,10 +1596,10 @@ static inline void accumulate_square_interval(
 
 static inline void print_iq(
   uint8_t j,
-  int64_t *Q1,
-  int64_t *Q2,
-  int64_t *Q3,
-  int64_t *Q4,
+  accu_t *Q1,
+  accu_t *Q2,
+  accu_t *Q3,
+  accu_t *Q4,
   uint16_t *NQ
 ) {
   //make sure we have enough samples for form averages
@@ -1556,9 +1618,9 @@ static inline void print_iq(
     float q2 = Q2[j] / (float)NQ[1];
     float q3 = Q3[j] / (float)NQ[2];
     float q4 = Q4[j] / (float)NQ[3];
-    //4 << 23 to get the result in [-1,1]
-    float I = (q1-q2-q3+q4) / (float)(4L << 23);
-    float Q = (q1+q2-q3-q4) / (float)(4L << 23);
+    //4 << (WORDSZ-1) to get the result in [-1,1]
+    float I = (q1-q2-q3+q4) / (float)(4L << (WORDSZ-1));
+    float Q = (q1+q2-q3-q4) / (float)(4L << (WORDSZ-1));
     printf_P(PSTR("%+.5f %+.5f "), I, Q);
   } else {
     //print zeros
@@ -1566,6 +1628,7 @@ static inline void print_iq(
   }
 }
 
+#if 0
 // General idea is to sample as fast as possible (57.6 kHz)
 // Makes use of input capture, no interrupts
 // Highest speed this can capture four channels is 14400 Hz @ 14 MHz
@@ -1703,10 +1766,10 @@ void square_demod_tach(void) {
     uint16_t cur_frame = 0;
     uint16_t cur_tach = 0;
 
-    int64_t Q1[4] = {0};
-    int64_t Q2[4] = {0};
-    int64_t Q3[4] = {0};
-    int64_t Q4[4] = {0};
+    accu_t Q1[4] = {0};
+    accu_t Q2[4] = {0};
+    accu_t Q3[4] = {0};
+    accu_t Q4[4] = {0};
     uint16_t NQ[4] = {0};
 
     //skip any tach(s) which are before the first sample
@@ -1753,15 +1816,19 @@ square_demod_tach_done:
   sei();
   return;
 }
+#endif
 
 // Similar to square_demod_tach except it uses the analog signal
 // in channel 4 in each FM for synchronization. This allows sampling
 // all FMs at the same time.
 //
-// Max sample rates @ 14 MHz:
+// Max sample rates @ 14 MHz, 24-bit:
 //
-// 1x @ 38400 Hz (DIV1 = 0x02, DIV2 = 0x2C)
-// 2x @ 19200 Hz (DIV1 = 0x02, DIV2 = 0x2A)
+// 1x @ 38400 Hz (DIV1 = 0x02, DIV2 = 0x2C), ENOB = 15.73 .. 19.79
+// 2x @ 19200 Hz (DIV1 = 0x02, DIV2 = 0x2A), ENOB = 14.79 .. 18.80
+//
+// In other words at max gain ENOB is low enough that we can get away with 16 bit samples
+// The code currently has a bit too much overhead to bump the sample rate to 57.6 kHz for 1x
 void square_demod_analog(uint8_t fm_mask) {
   fm_mask &= 7;
   uint8_t num_fms = popcount(fm_mask);
@@ -1819,8 +1886,8 @@ void square_demod_analog(uint8_t fm_mask) {
     goto square_demod_analog_done;
   }
   
-#if WORDSZ != 24
-#error WORDSZ != 24 not supported currently
+#if WORDSZ > 24
+#error WORDSZ > 24 not supported currently
 #endif
 
   uint32_t cycles_per_sample = adc_cycles_per_sample();
@@ -1839,8 +1906,6 @@ void square_demod_analog(uint8_t fm_mask) {
 
   start_section("INFO");
   printf_P(PSTR("max_frames = %i\n"), max_frames);
-
-  __uint24 time_base = 0;
 
   for (;;) {
     //discard the first bunch of samples
@@ -1909,39 +1974,39 @@ void square_demod_analog(uint8_t fm_mask) {
     uint8_t ofs = 0;  //FM offset into sample_data
     for (uint8_t i = first_id; i < 3; i++) {
       if (fm_mask & (1<<i)) {
-        __int24 lo = (1L<<23) - 1;
-        __int24 hi = 0;
-        __int24 *data_ptr = ofs + (__int24*)&sample_data[0][0];
+        sample_t lo = (1L<<(WORDSZ-1)) - 1;
+        sample_t hi = 0;
+        sample_t *data_ptr = ofs + (sample_t*)&sample_data[0][0];
 
         for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4*num_fms) {
-          __int24 s = data_ptr[3];
+          sample_t s = data_ptr[3];
           if (s < lo) lo = s;
           if (s > hi) hi = s;
         }
         
         //hysteresis: >75% -> on, <25% -> off
-        __int24 mid = lo/2 + hi/2;
-        __int24 on  = hi/2 + mid/2;
-        __int24 off = lo/2 + mid/2;
+        sample_t mid = lo/2 + hi/2;
+        sample_t on  = hi/2 + mid/2;
+        sample_t off = lo/2 + mid/2;
 
         //printf_P(PSTR("FM %hhu: tach in [%li, %li], off = %li, on = %li\r\n"), i, (int32_t)lo, (int32_t)hi, (int32_t)off, (int32_t)on);
 
         //rewind
-        data_ptr = ofs + (__int24*)&sample_data[0][0];
+        data_ptr = ofs + (sample_t*)&sample_data[0][0];
         uint8_t state = data_ptr[3] > mid;
         uint16_t q0 = 0; //index of last tach, or zero
 
         //demodulation stuff
-        int64_t Q1[4] = {0};
-        int64_t Q2[4] = {0};
-        int64_t Q3[4] = {0};
-        int64_t Q4[4] = {0};
+        accu_t Q1[4] = {0};
+        accu_t Q2[4] = {0};
+        accu_t Q3[4] = {0};
+        accu_t Q4[4] = {0};
         uint16_t NQ[4] = {0};
 
         uint8_t num_tachs = 0;
 
         for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4*num_fms) {
-          __int24 s = data_ptr[3];
+          sample_t s = data_ptr[3];
           //look for rising edge
           if (state == 0 && s > on) {
             state = 1;
@@ -2506,7 +2571,12 @@ static void handle_input(void) {
         start_section("VGNDS");
         printf_P(PSTR("%u %u %u\r\n"), vgnds[0], vgnds[1], vgnds[2]);
       } else if (c == 'G') {
+#if WORDSZ == 24
         square_demod_tach();
+#else
+        start_section("ERROR");
+        printf_P(PSTR("'G' not ported to 16-bit mode yet\r\n"));
+#endif
       } else if (c == 'H') {
         uint8_t fm_mask = 0;
         int n = sscanf(line, "%hhu", &fm_mask);
