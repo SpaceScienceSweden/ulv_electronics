@@ -76,8 +76,11 @@ F 0 "F1" V 3475 4150 50  0000 C CNN
 F 1 "Polyfuse_Small" V 3625 4150 50  0000 C CNN
 F 2 "Fuse_Holders_and_Fuses:Fuse_SMD2920" H 3600 3950 50  0001 L CNN
 F 3 "" H 3550 4150 50  0001 C CNN
-F 4 "507-2070-1-ND" H 3550 4150 60  0001 C CNN "1st Distrib. PN"
-F 5 "https://www.digikey.se/product-detail/en/bel-fuse-inc/0ZCF0100AF2A/507-2070-1-ND/6210547" H 3550 4150 60  0001 C CNN "1st Distrib. Link"
+F 4 "Bel Fuse Inc." H 3550 4150 60  0001 C CNN "Mfg. Name"
+F 5 "0ZCF0100AF2A" H 3550 4150 60  0001 C CNN "Mfg. Part Number"
+F 6 "530-0ZCF0100AF2A" H 3550 4150 60  0001 C CNN "Mouser PN"
+F 7 "507-2070-1-ND" H 3550 4150 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/bel-fuse-inc/0ZCF0100AF2A/507-2070-1-ND/6210547" H 3550 4150 60  0001 C CNN "Digikey Link"
 	1    3550 4150
 	0    1    1    0   
 $EndComp
@@ -1113,17 +1116,6 @@ F 0 "D8" H 3050 3980 50  0000 L CNN
 F 1 "STTH102A" H 2950 3800 50  0000 L CNN
 F 2 "Diodes_SMD:SMA_Standard" V 3100 3900 50  0001 C CNN
 F 3 "" V 3100 3900 50  0000 C CNN
-F 4 "STMicroelectronics" H 3100 3900 60  0001 C CNN "Mfg. Name"
-F 5 "STTH102A" H 3100 3900 60  0001 C CNN "Mfg. Part Number"
-F 6 "170-02-496" H 3100 3900 60  0001 C CNN "Elfa PN"
-F 7 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 3100 3900 60  0001 C CNN "Elfa Link"
-F 8 "9907874" H 3100 3900 60  0001 C CNN "Farnell PN"
-F 9 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 3100 3900 60  0001 C CNN "Farnell Link"
-F 10 "511-STTH102A" H 3100 3900 60  0001 C CNN "Mouser PN"
-F 11 "497-2500-1-ND" H 3100 3900 60  0001 C CNN "Digikey PN"
-F 12 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 3100 3900 60  0001 C CNN "Digikey Link"
-F 13 "170-02-496" H 3100 3900 60  0001 C CNN "1st Distrib. PN"
-F 14 "https://www.elfa.se/sv/schottkydiod-40-melf-diotec-sms240/p/17002496" H 3100 3900 60  0001 C CNN "1st Distrib. Link"
 	1    3100 3900
 	-1   0    0    1   
 $EndComp
@@ -1312,15 +1304,13 @@ F 2 "Diodes_SMD:SMA_Standard" V 3100 4150 50  0001 C CNN
 F 3 "" V 3100 4150 50  0000 C CNN
 F 4 "STMicroelectronics" H 3100 4150 60  0001 C CNN "Mfg. Name"
 F 5 "STTH102A" H 3100 4150 60  0001 C CNN "Mfg. Part Number"
-F 6 "170-02-496" H 3100 4150 60  0001 C CNN "Elfa PN"
+F 6 "300-34-074" H 3100 4150 60  0001 C CNN "Elfa PN"
 F 7 "https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074" H 3100 4150 60  0001 C CNN "Elfa Link"
 F 8 "9907874" H 3100 4150 60  0001 C CNN "Farnell PN"
 F 9 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874" H 3100 4150 60  0001 C CNN "Farnell Link"
 F 10 "511-STTH102A" H 3100 4150 60  0001 C CNN "Mouser PN"
 F 11 "497-2500-1-ND" H 3100 4150 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 3100 4150 60  0001 C CNN "Digikey Link"
-F 13 "170-02-496" H 3100 4150 60  0001 C CNN "1st Distrib. PN"
-F 14 "https://www.elfa.se/sv/schottkydiod-40-melf-diotec-sms240/p/17002496" H 3100 4150 60  0001 C CNN "1st Distrib. Link"
 	1    3100 4150
 	-1   0    0    1   
 $EndComp
