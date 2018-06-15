@@ -401,10 +401,6 @@ F 0 "C31" H 7560 4420 50  0000 L CNN
 F 1 "10u50V" H 7560 4270 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1210" H 7550 4350 50  0001 C CNN
 F 3 "" H 7550 4350 50  0000 C CNN
-F 4 "KEMET" H 7550 4350 60  0001 C CNN "Mfg. Name"
-F 5 "C1210C106M5RACTU" H 7550 4350 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-10-788" H 7550 4350 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/kondensator-10-uf-50-vdc-1210-kemet-c1210c106m5ractu/p/30010788" H 7550 4350 60  0001 C CNN "1st Distrib. Link"
 	1    7550 4350
 	1    0    0    -1  
 $EndComp
@@ -416,10 +412,6 @@ F 0 "C30" H 5060 4520 50  0000 L CNN
 F 1 "10u50V" H 5060 4370 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1210" H 5050 4450 50  0001 C CNN
 F 3 "" H 5050 4450 50  0000 C CNN
-F 4 "KEMET" H 5050 4450 60  0001 C CNN "Mfg. Name"
-F 5 "C1210C106M5RACTU" H 5050 4450 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-10-788" H 5050 4450 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/kondensator-10-uf-50-vdc-1210-kemet-c1210c106m5ractu/p/30010788" H 5050 4450 60  0001 C CNN "1st Distrib. Link"
 	1    5050 4450
 	1    0    0    -1  
 $EndComp
@@ -431,10 +423,13 @@ F 0 "C29" H 4760 4520 50  0000 L CNN
 F 1 "10u50V" H 4760 4370 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1210" H 4750 4450 50  0001 C CNN
 F 3 "" H 4750 4450 50  0000 C CNN
-F 4 "KEMET" H 4750 4450 60  0001 C CNN "Mfg. Name"
-F 5 "C1210C106M5RACTU" H 4750 4450 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-10-788" H 4750 4450 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/kondensator-10-uf-50-vdc-1210-kemet-c1210c106m5ractu/p/30010788" H 4750 4450 60  0001 C CNN "1st Distrib. Link"
+F 4 "TDK" H 4750 4450 60  0001 C CNN "Mfg. Name"
+F 5 "CGA6P3X7S1H106K250AE" H 4750 4450 60  0001 C CNN "Mfg. Part Number"
+F 6 "2435524" H 4750 4450 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/tdk/cga6p3x7s1h106k250ae/kond-mlcc-x7s-10uf-50v-1210/dp/2435524" H 4750 4450 60  0001 C CNN "Farnell Link"
+F 8 "810-CGA6P3X7S1H106KS" H 4750 4450 60  0001 C CNN "Mouser PN"
+F 9 "445-8792-1-ND" H 4750 4450 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA6P3X7S1H106K250AE/445-8792-1-ND/3248604" H 4750 4450 60  0001 C CNN "Digikey Link"
 	1    4750 4450
 	1    0    0    -1  
 $EndComp
@@ -1264,10 +1259,6 @@ F 0 "C38" H 5210 1920 50  0000 L CNN
 F 1 "10u50V" H 5210 1770 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1210" H 5200 1850 50  0001 C CNN
 F 3 "" H 5200 1850 50  0000 C CNN
-F 4 "KEMET" H 5200 1850 60  0001 C CNN "Mfg. Name"
-F 5 "C1210C106M5RACTU" H 5200 1850 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-10-788" H 5200 1850 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/kondensator-10-uf-50-vdc-1210-kemet-c1210c106m5ractu/p/30010788" H 5200 1850 60  0001 C CNN "1st Distrib. Link"
 	1    5200 1850
 	1    0    0    -1  
 $EndComp
@@ -1339,10 +1330,6 @@ F 0 "C39" H 6560 3370 50  0000 L CNN
 F 1 "10u50V" H 6560 3220 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1210" H 6550 3300 50  0001 C CNN
 F 3 "" H 6550 3300 50  0000 C CNN
-F 4 "KEMET" H 6550 3300 60  0001 C CNN "Mfg. Name"
-F 5 "C1210C106M5RACTU" H 6550 3300 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-10-788" H 6550 3300 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/kondensator-10-uf-50-vdc-1210-kemet-c1210c106m5ractu/p/30010788" H 6550 3300 60  0001 C CNN "1st Distrib. Link"
 	1    6550 3300
 	1    0    0    -1  
 $EndComp
