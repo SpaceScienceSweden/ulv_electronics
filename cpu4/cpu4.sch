@@ -129,6 +129,13 @@ F 0 "C1" H 2710 1570 50  0000 L CNN
 F 1 "100n" H 2710 1420 50  0000 L CNN
 F 2 "Capacitors_SMD:C_0805" H 2700 1500 50  0001 C CNN
 F 3 "" H 2700 1500 50  0000 C CNN
+F 4 "TDK" H 2700 1500 60  0001 C CNN "Mfg. Name"
+F 5 "CGA4J3X7T2E104M125AE" H 2700 1500 60  0001 C CNN "Mfg. Part Number"
+F 6 "2211003" H 2700 1500 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/tdk/cga4j3x7t2e104m125ae/cap-mlcc-x7t-100nf-250v-0805/dp/2211003" H 2700 1500 60  0001 C CNN "Farnell Link"
+F 8 "810-CGA4J3X7T2E104MS" H 2700 1500 60  0001 C CNN "Mouser PN"
+F 9 "445-7965-1-ND" H 2700 1500 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA4J3X7T2E104M125AE/445-7965-1-ND/2782533" H 2700 1500 60  0001 C CNN "Digikey Link"
 	1    2700 1500
 	1    0    0    -1  
 $EndComp
@@ -256,6 +263,15 @@ F 0 "C7" H 5660 1370 50  0000 L CNN
 F 1 "100n" H 5660 1220 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1210" H 5650 1300 50  0001 C CNN
 F 3 "" H 5650 1300 50  0000 C CNN
+F 4 "Panasonic" H 5650 1300 60  0001 C CNN "Mfg. Name"
+F 5 "ECH-U1C104GX5" H 5650 1300 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-41-614" H 5650 1300 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/kondensator-100-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c104gx5/p/30041614" H 5650 1300 60  0001 C CNN "Elfa Link"
+F 8 "9695001" H 5650 1300 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-film-pps-100nf-16v-smd/dp/9695001" H 5650 1300 60  0001 C CNN "Farnell Link"
+F 10 "667-ECH-U1C104GX5" H 5650 1300 60  0001 C CNN "Mouser PN"
+F 11 "PCF1189CT-ND" H 5650 1300 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736" H 5650 1300 60  0001 C CNN "Digikey Link"
 	1    5650 1300
 	0    -1   -1   0   
 $EndComp
