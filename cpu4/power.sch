@@ -114,8 +114,13 @@ F 2 "Diodes_SMD:SMA_Standard" H 4000 4450 50  0001 C CNN
 F 3 "" H 4000 4450 50  0000 C CNN
 F 4 "Würth" H 4000 4450 60  0001 C CNN "Mfg. Name"
 F 5 "824501401" H 4000 4450 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-59-556" H 4000 4450 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/transientskyddsdiod-40-400-sma-wuerth-elektronik-824501401/p/30059556" H 4000 4450 60  0001 C CNN "1st Distrib. Link"
+F 6 "300-59-556" H 4000 4450 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/transientskyddsdiod-40-400-sma-wuerth-elektronik-824501401/p/30059556" H 4000 4450 60  0001 C CNN "Elfa Link"
+F 8 "2536561" H 4000 4450 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/wurth-elektronik/824501401/tvs-diod-400w-40v-dbl-rikt-do/dp/2536561" H 4000 4450 60  0001 C CNN "Farnell Link"
+F 10 "710-824501401" H 4000 4450 60  0001 C CNN "Mouser PN"
+F 11 "732-9960-1-ND" H 4000 4450 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/wurth-electronics-inc/824501401/732-9960-1-ND/5871113" H 4000 4450 60  0001 C CNN "Digikey Link"
 	1    4000 4450
 	0    1    1    0   
 $EndComp
@@ -968,10 +973,6 @@ F 0 "D5" H 3550 6250 50  0000 C CNN
 F 1 "12V" H 3550 6050 50  0000 C CNN
 F 2 "Diodes_SMD:SMA_Standard" H 3550 6150 50  0001 C CNN
 F 3 "" H 3550 6150 50  0000 C CNN
-F 4 "Würth" H 3550 6150 60  0001 C CNN "Mfg. Name"
-F 5 "824501121" H 3550 6150 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-59-541" H 3550 6150 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/transientskyddsdiod-12-400-sma-wuerth-elektronik-824501121/p/30059541" H 3550 6150 60  0001 C CNN "1st Distrib. Link"
 	1    3550 6150
 	-1   0    0    1   
 $EndComp
@@ -985,8 +986,13 @@ F 2 "Diodes_SMD:SMA_Standard" H 3250 5800 50  0001 C CNN
 F 3 "" H 3250 5800 50  0000 C CNN
 F 4 "Würth" H 3250 5800 60  0001 C CNN "Mfg. Name"
 F 5 "824501121" H 3250 5800 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-59-541" H 3250 5800 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/transientskyddsdiod-12-400-sma-wuerth-elektronik-824501121/p/30059541" H 3250 5800 60  0001 C CNN "1st Distrib. Link"
+F 6 "300-59-541" H 3250 5800 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/transientskyddsdiod-12-400-sma-wuerth-elektronik-824501121/p/30059541" H 3250 5800 60  0001 C CNN "Elfa Link"
+F 8 "2536587" H 3250 5800 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/wurth-elektronik/824501121/tvs-diod-400w-12v-dbl-rikt-do/dp/2536587" H 3250 5800 60  0001 C CNN "Farnell Link"
+F 10 "710-824501121" H 3250 5800 60  0001 C CNN "Mouser PN"
+F 11 "732-9949-1-ND" H 3250 5800 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/wurth-electronics-inc/824501121/732-9949-1-ND/5871103" H 3250 5800 60  0001 C CNN "Digikey Link"
 	1    3250 5800
 	0    -1   -1   0   
 $EndComp
@@ -998,10 +1004,6 @@ F 0 "D6" H 3750 6600 50  0000 C CNN
 F 1 "12V" H 3750 6400 50  0000 C CNN
 F 2 "Diodes_SMD:SMA_Standard" H 3750 6500 50  0001 C CNN
 F 3 "" H 3750 6500 50  0000 C CNN
-F 4 "Würth" H 3750 6500 60  0001 C CNN "Mfg. Name"
-F 5 "824501121" H 3750 6500 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-59-541" H 3750 6500 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/transientskyddsdiod-12-400-sma-wuerth-elektronik-824501121/p/30059541" H 3750 6500 60  0001 C CNN "1st Distrib. Link"
 	1    3750 6500
 	0    1    1    0   
 $EndComp
@@ -1143,10 +1145,6 @@ F 0 "D9" H 4300 4550 50  0000 C CNN
 F 1 "40V" H 4300 4350 50  0000 C CNN
 F 2 "Diodes_SMD:SMA_Standard" H 4300 4450 50  0001 C CNN
 F 3 "" H 4300 4450 50  0000 C CNN
-F 4 "Würth" H 4300 4450 60  0001 C CNN "Mfg. Name"
-F 5 "824501401" H 4300 4450 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-59-556" H 4300 4450 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/transientskyddsdiod-40-400-sma-wuerth-elektronik-824501401/p/30059556" H 4300 4450 60  0001 C CNN "1st Distrib. Link"
 	1    4300 4450
 	0    1    1    0   
 $EndComp
@@ -1294,10 +1292,6 @@ F 0 "D10" H 5750 3200 50  0000 C CNN
 F 1 "40V" H 5750 3000 50  0000 C CNN
 F 2 "Diodes_SMD:SMA_Standard" H 5750 3100 50  0001 C CNN
 F 3 "" H 5750 3100 50  0000 C CNN
-F 4 "Würth" H 5750 3100 60  0001 C CNN "Mfg. Name"
-F 5 "824501401" H 5750 3100 60  0001 C CNN "Mfg. Part Number"
-F 6 "300-59-556" H 5750 3100 60  0001 C CNN "1st Distrib. PN"
-F 7 "https://www.elfa.se/sv/transientskyddsdiod-40-400-sma-wuerth-elektronik-824501401/p/30059556" H 5750 3100 60  0001 C CNN "1st Distrib. Link"
 	1    5750 3100
 	0    1    1    0   
 $EndComp
