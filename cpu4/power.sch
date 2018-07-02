@@ -177,6 +177,15 @@ F 0 "Q1" H 5500 3150 50  0000 L CNN
 F 1 "IRLL024NPBF" H 4900 3250 50  0000 L CNN
 F 2 "TO_SOT_Packages_SMD:SOT-223" H 5500 3200 50  0001 C CNN
 F 3 "" H 5300 3100 50  0000 C CNN
+F 4 "Infineon Technologies" H 5300 3100 60  0001 C CNN "Mfg. Name"
+F 5 "IRLL024NPBF" H 5300 3100 60  0001 C CNN "Mfg. Part Number"
+F 6 "171-37-904" H 5300 3100 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/mosfet-55-sot-223-ir-irll024npbf/p/17137904" H 5300 3100 60  0001 C CNN "Elfa Link"
+F 8 "8651205" H 5300 3100 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/infineon/irll024npbf/mosfet-n-55v-4-4a-sot-223/dp/8651205" H 5300 3100 60  0001 C CNN "Farnell Link"
+F 10 "942-IRLL024NPBF" H 5300 3100 60  0001 C CNN "Mouser PN"
+F 11 "IRLL024NPBF-ND" H 5300 3100 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/infineon-technologies/IRLL024NPBF/IRLL024NPBF-ND/856814" H 5300 3100 60  0001 C CNN "Digikey Link"
 	1    5300 3100
 	1    0    0    -1  
 $EndComp
