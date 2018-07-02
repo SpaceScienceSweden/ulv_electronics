@@ -49,9 +49,16 @@ L THN_30-2415 U10
 U 1 1 58D7FCA5
 P 6800 4350
 F 0 "U10" H 6800 4650 60  0000 C CNN
-F 1 "THN_30-2415" H 6800 4050 60  0000 C CNN
+F 1 "THN_30-2415WI" H 6800 4050 60  0000 C CNN
 F 2 "SCUBE:THN_30-2415" H 6800 4300 60  0001 C CNN
 F 3 "" H 6800 4300 60  0000 C CNN
+F 4 "Traco Power" H 6800 4350 60  0001 C CNN "Mfg. Name"
+F 5 "THN 30-2415WI" H 6800 4350 60  0001 C CNN "Mfg. Part Number"
+F 6 "2322198" H 6800 4350 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/tracopower/thn-30-2415wi/dc-dc-converter-1-25a-24v-30w/dp/2322198" H 6800 4350 60  0001 C CNN "Farnell Link"
+F 8 "495-THN30-2415WI" H 6800 4350 60  0001 C CNN "Mouser PN"
+F 9 "1951-2310-ND" H 6800 4350 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/traco-power-north-america/THN-30-2415WI/1951-2310-ND/9383345" H 6800 4350 60  0001 C CNN "Digikey Link"
 	1    6800 4350
 	1    0    0    -1  
 $EndComp
