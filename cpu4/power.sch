@@ -59,6 +59,8 @@ F 7 "https://se.farnell.com/tracopower/thn-30-2415wi/dc-dc-converter-1-25a-24v-3
 F 8 "495-THN30-2415WI" H 6800 4350 60  0001 C CNN "Mouser PN"
 F 9 "1951-2310-ND" H 6800 4350 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/traco-power-north-america/THN-30-2415WI/1951-2310-ND/9383345" H 6800 4350 60  0001 C CNN "Digikey Link"
+F 11 "lab" H 6800 4350 60  0000 C CNN "fit_field"
+F 12 "5" H 6800 4350 60  0001 C CNN "No. in lab"
 	1    6800 4350
 	1    0    0    -1  
 $EndComp
@@ -79,6 +81,8 @@ F 9 "https://se.farnell.com/tracopower/tmr-6-2421wi/dc-dc-converter-6w-5v-0-6a/d
 F 10 "495-TMR6-2421WI" H 6600 2600 60  0001 C CNN "Mouser PN"
 F 11 "1951-2400-ND" H 6600 2600 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/traco-power-north-america/TMR-6-2421WI/1951-2400-ND/9383435" H 6600 2600 60  0001 C CNN "Digikey Link"
+F 13 "lab" V 6800 2400 60  0000 C CNN "fit_field"
+F 14 "6" H 6600 2600 60  0001 C CNN "No. in lab"
 	1    6600 2600
 	0    -1   -1   0   
 $EndComp
@@ -95,6 +99,7 @@ F 5 "0ZCF0100AF2A" H 3550 4150 60  0001 C CNN "Mfg. Part Number"
 F 6 "530-0ZCF0100AF2A" H 3550 4150 60  0001 C CNN "Mouser PN"
 F 7 "507-2070-1-ND" H 3550 4150 60  0001 C CNN "Digikey PN"
 F 8 "https://www.digikey.se/product-detail/en/bel-fuse-inc/0ZCF0100AF2A/507-2070-1-ND/6210547" H 3550 4150 60  0001 C CNN "Digikey Link"
+F 9 "8" V 3550 4150 60  0001 C CNN "No. in lab"
 	1    3550 4150
 	0    1    1    0   
 $EndComp
@@ -1202,6 +1207,8 @@ F 9 "https://se.farnell.com/tracopower/tsr-1-2433/converter-dc-to-dc-3-3v-1a-sip
 F 10 "495-TSR-1-2433" H 5900 1400 60  0001 C CNN "Mouser PN"
 F 11 "1951-2742-ND" H 5900 1400 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/traco-power-north-america/TSR-1-2433/1951-2742-ND/9383776" H 5900 1400 60  0001 C CNN "Digikey Link"
+F 13 "lab" H 6050 1250 60  0000 C CNN "fit_field"
+F 14 "9" H 5900 1400 60  0001 C CNN "No. in lab"
 	1    5900 1400
 	1    0    0    -1  
 $EndComp

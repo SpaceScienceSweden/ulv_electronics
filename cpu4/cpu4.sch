@@ -68,6 +68,7 @@ F 5 "ATmega128L–8AN" H 5350 3550 60  0001 C CNN "Mfg. Part Number"
 F 6 "556-ATMEGA128L-8AN" H 5350 3550 60  0001 C CNN "Mouser PN"
 F 7 "ATMEGA128L-8AN-ND" H 5350 3550 60  0001 C CNN "Digikey PN"
 F 8 "https://www.digikey.se/product-detail/en/microchip-technology/ATMEGA128L-8AN/ATMEGA128L-8AN-ND/2050766" H 5350 3550 60  0001 C CNN "Digikey Link"
+F 9 "7" H 5350 3550 60  0001 C CNN "No. in lab"
 	1    5350 3550
 	1    0    0    -1  
 $EndComp
