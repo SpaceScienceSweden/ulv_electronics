@@ -592,8 +592,13 @@ F 0 "U1" H 3850 6550 50  0000 C CNN
 F 1 "CD74AC153M96" H 3850 6400 50  0000 C CNN
 F 2 "Housings_SOIC:SOIC-16_3.9x9.9mm_Pitch1.27mm" H 3850 6250 50  0001 C CNN
 F 3 "" H 3850 6250 50  0000 C CNN
-F 4 "2334932" H 3850 6250 60  0001 C CNN "1st Distrib. PN"
-F 5 "http://se.farnell.com/texas-instruments/cd74ac153m96/data-selector-mux-dual-4-1-soic/dp/2334932" H 3850 6250 60  0001 C CNN "1st Distrib. Link"
+F 4 "Texas Instruments " H 3850 6250 60  0001 C CNN "Mfg. Name"
+F 5 "CD74AC153M96" H 3850 6250 60  0001 C CNN "Mfg. Part Number"
+F 6 "2334932" H 3850 6250 60  0001 C CNN "Farnell PN"
+F 7 "http://se.farnell.com/texas-instruments/cd74ac153m96/data-selector-mux-dual-4-1-soic/dp/2334932" H 3850 6250 60  0001 C CNN "Farnell Link"
+F 8 "595-CD74AC153M96" H 3850 6250 60  0001 C CNN "Mouser PN"
+F 9 "296-4229-1-ND" H 3850 6250 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/texas-instruments/CD74AC153M96/296-4229-1-ND/375128" H 3850 6250 60  0001 C CNN "Digikey Link"
 	1    3850 6250
 	0    -1   -1   0   
 $EndComp
