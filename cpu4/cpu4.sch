@@ -389,9 +389,16 @@ L DS18B20Z U4
 U 1 1 58CEFCB9
 P 10150 5600
 F 0 "U4" H 10150 5850 60  0000 C CNN
-F 1 "DS18B20Z" H 10150 5750 39  0000 C CNN
+F 1 "DS18B20Z+" H 10150 5750 39  0000 C CNN
 F 2 "SMD_Packages:SOIC-8-N" H 10150 5600 60  0001 C CNN
 F 3 "" H 10150 5600 60  0000 C CNN
+F 4 "Maxim Integrated" H 10150 5600 60  0001 C CNN "Mfg. Name"
+F 5 "DS18B20Z+" H 10150 5600 60  0001 C CNN "Mfg. Part Number"
+F 6 "2518724" H 10150 5600 60  0001 C CNN "Farnell PN"
+F 7 "https://se.farnell.com/maxim-integrated-products/ds18b20z/ic-thermometer-12bit-0-5degc-soic/dp/2518724" H 10150 5600 60  0001 C CNN "Farnell Link"
+F 8 "700-DS18B20Z" H 10150 5600 60  0001 C CNN "Mouser PN"
+F 9 "DS18B20Z+-ND" H 10150 5600 60  0001 C CNN "Digikey PN"
+F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/DS18B20Z/DS18B20Z-ND/956982" H 10150 5600 60  0001 C CNN "Digikey Link"
 	1    10150 5600
 	1    0    0    -1  
 $EndComp
