@@ -172,10 +172,14 @@ L Crystal_Small Y1
 U 1 1 57F3D15D
 P 3950 2450
 F 0 "Y1" H 3950 2550 50  0000 C CNN
-F 1 "7.3728 MHz" V 4200 2450 50  0000 C BNN
+F 1 "14.7456 MHz" V 4200 2450 43  0000 C BNN
 F 2 "Crystals:Crystal_HC49-SD_SMD" H 3950 2450 50  0001 C CNN
 F 3 "" H 3950 2450 50  0000 C CNN
-F 4 "check bags at lab" H 3950 2450 60  0001 C CNN "Mfg. Part Number"
+F 4 "Abracon" H 3950 2450 60  0001 C CNN "Mfg. Name"
+F 5 "ABLS-14.7456MHZ-K4T" H 3950 2450 60  0001 C CNN "Mfg. Part Number"
+F 6 "815-ABLS-14.74MK4-T" H 3950 2450 60  0001 C CNN "Mouser PN"
+F 7 "535-9946-1-ND" H 3950 2450 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/abracon-llc/ABLS-14.7456MHZ-K4T/535-9946-1-ND/2001569" H 3950 2450 60  0001 C CNN "Digikey Link"
 	1    3950 2450
 	0    1    1    0   
 $EndComp
