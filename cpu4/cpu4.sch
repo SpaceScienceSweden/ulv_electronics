@@ -63,6 +63,11 @@ F 0 "IC1" H 4350 5450 50  0000 L BNN
 F 1 "ATMEGA128L-8AN" H 6000 1600 50  0000 L BNN
 F 2 "Housings_QFP:TQFP-64_14x14mm_Pitch0.8mm" H 5350 3550 50  0000 C CIN
 F 3 "" H 5350 3550 50  0000 C CNN
+F 4 "Microchip Technology / Atmel" H 5350 3550 60  0001 C CNN "Mfg. Name"
+F 5 "ATmega128L–8AN" H 5350 3550 60  0001 C CNN "Mfg. Part Number"
+F 6 "556-ATMEGA128L-8AN" H 5350 3550 60  0001 C CNN "Mouser PN"
+F 7 "ATMEGA128L-8AN-ND" H 5350 3550 60  0001 C CNN "Digikey PN"
+F 8 "https://www.digikey.se/product-detail/en/microchip-technology/ATMEGA128L-8AN/ATMEGA128L-8AN-ND/2050766" H 5350 3550 60  0001 C CNN "Digikey Link"
 	1    5350 3550
 	1    0    0    -1  
 $EndComp
