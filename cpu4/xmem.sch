@@ -58,8 +58,15 @@ F 0 "U2" H 2650 3750 50  0000 C CNN
 F 1 "SN74AHC573" H 2500 2550 50  0000 C CNN
 F 2 "SCUBE:SO-20" H 2500 3150 50  0001 C CNN
 F 3 "" H 2500 3150 50  0000 C CNN
-F 4 "300-22-908" H 2500 3150 60  0001 C CNN "1st Distrib. PN"
-F 5 "https://www.elfa.se/sv/logikkrets-so-20-sn74ahc573-texas-instruments-sn74ahc573dw/p/30022908" H 2500 3150 60  0001 C CNN "1st Distrib. Link"
+F 4 "Texas Instruments" H 2500 3150 60  0001 C CNN "Mfg. Name"
+F 5 "SN74AHC573DW" H 2500 3150 60  0001 C CNN "Mfg. Part Number"
+F 6 "300-22-908" H 2500 3150 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/logikkrets-so-20-sn74ahc573-texas-instruments-sn74ahc573dw/p/30022908" H 2500 3150 60  0001 C CNN "Elfa Link"
+F 8 "1287471" H 2500 3150 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/texas-instruments/sn74ahc573dw/latch-d-type-octal-smd-soic20/dp/1287471" H 2500 3150 60  0001 C CNN "Farnell Link"
+F 10 "595-SN74AHC573DW" H 2500 3150 60  0001 C CNN "Mouser PN"
+F 11 "296-4612-5-ND" H 2500 3150 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/texas-instruments/SN74AHC573DW/296-4612-5-ND/375821" H 2500 3150 60  0001 C CNN "Digikey Link"
 	1    2500 3150
 	1    0    0    -1  
 $EndComp
