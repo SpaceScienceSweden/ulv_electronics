@@ -327,6 +327,15 @@ F 0 "Q2" H 2500 2000 50  0000 L CNN
 F 1 "PMBF170" H 2500 1900 50  0000 L CNN
 F 2 "TO_SOT_Packages_SMD:SOT-23" H 2500 2050 50  0001 C CNN
 F 3 "" H 2300 1950 50  0000 C CNN
+F 4 "Nexperia" H 2300 1950 60  0001 C CNN "Mfg. Name"
+F 5 "PMBF170,215" H 2300 1950 60  0001 C CNN "Mfg. Part Number"
+F 6 "171-30-701" H 2300 1950 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/liten-signaltransistor-sot-23-60-nxp-pmbf170/p/17130701" H 2300 1950 60  0001 C CNN "Elfa Link"
+F 8 "1081473" H 2300 1950 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/nexperia/pmbf170-215/mosfet-n-sot-23/dp/1081473" H 2300 1950 60  0001 C CNN "Farnell Link"
+F 10 "771-PMBF170-T/R" H 2300 1950 60  0001 C CNN "Mouser PN"
+F 11 "1727-5173-1-ND" H 2300 1950 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/nexperia-usa-inc/PMBF170215/1727-5173-1-ND/2531764" H 2300 1950 60  0001 C CNN "Digikey Link"
 	1    2300 1950
 	1    0    0    -1  
 $EndComp
