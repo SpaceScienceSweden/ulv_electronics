@@ -780,10 +780,18 @@ L MAX485 U11
 U 1 1 58D92495
 P 1800 6150
 F 0 "U11" H 1800 6400 60  0000 C CNN
-F 1 "MAX485" H 1800 5900 60  0000 C CNN
+F 1 "MAX3485CSA+" H 1800 5900 60  0000 C CNN
 F 2 "Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm" H 1800 6150 60  0001 C CNN
 F 3 "" H 1800 6150 60  0000 C CNN
-F 4 "check bags at lab" H 1800 6150 60  0001 C CNN "Mfg. Part Number"
+F 4 "Maxim Integrated" H 1800 6150 60  0001 C CNN "Mfg. Name"
+F 5 "MAX3485CSA+" H 1800 6150 60  0001 C CNN "Mfg. Part Number"
+F 6 "173-23-736" H 1800 6150 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/interface-krets-rs422-485-so-maxim-max3485csa/p/17323736" H 1800 6150 60  0001 C CNN "Elfa Link"
+F 8 "2511468" H 1800 6150 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/maxim-integrated-products/max3485csa/rs422-rs485-txrx-10mbps-3-6v-nsoic/dp/2511468" H 1800 6150 60  0001 C CNN "Farnell Link"
+F 10 "700-MAX3485CSA" H 1800 6150 60  0001 C CNN "Mouser PN"
+F 11 "MAX3485CSA+-ND" H 1800 6150 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX3485CSA/MAX3485CSA-ND/1702241" H 1800 6150 60  0001 C CNN "Digikey Link"
 	1    1800 6150
 	1    0    0    -1  
 $EndComp
