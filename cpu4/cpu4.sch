@@ -174,8 +174,7 @@ F 0 "Y1" H 3950 2550 50  0000 C CNN
 F 1 "7.3728 MHz" V 4200 2450 50  0000 C BNN
 F 2 "Crystals:Crystal_HC49-SD_SMD" H 3950 2450 50  0001 C CNN
 F 3 "" H 3950 2450 50  0000 C CNN
-F 4 "	174-52-030" H 3950 2450 60  0001 C CNN "1st Distrib. PN"
-F 5 "https://www.elfa.se/sv/kristall-hc49-4h-mhz-iqd-lf-xtal003151/p/17452030?q=*&sort=Price:asc&filter_Frekvens~~MHz=8&filter_Category3=Kristaller+%2F+Oscillatorer&filter_Category4=Kristaller&filter_Buyable=1&page=3&origPageSize=50&simi=97.5" H 3950 2450 60  0001 C CNN "1st Distrib. Link"
+F 4 "check bags at lab" H 3950 2450 60  0001 C CNN "Mfg. Part Number"
 	1    3950 2450
 	0    1    1    0   
 $EndComp
