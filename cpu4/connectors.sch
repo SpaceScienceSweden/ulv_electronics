@@ -186,8 +186,6 @@ F 2 "SCUBE:FTSH-112-04-L-D-RA-3x12" H 3150 5700 50  0001 C CNN
 F 3 "" H 3150 5700 50  0000 C CNN
 F 4 "Samtec" H 3150 6900 60  0001 C CNN "Mfg. Name"
 F 5 "FTSH-112-04-L-D-RA" H 3150 6900 60  0001 C CNN "Mfg. Part Number"
-F 6 "1767213" H 3150 6900 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 3150 6900 60  0001 C CNN "1st Distrib. Link"
 	1    3150 6900
 	1    0    0    1   
 $EndComp
@@ -260,8 +258,6 @@ F 2 "SCUBE:FTSH-112-04-L-D-RA-3x12" H 4500 5700 50  0001 C CNN
 F 3 "" H 4500 5700 50  0000 C CNN
 F 4 "Samtec" H 4500 6900 60  0001 C CNN "Mfg. Name"
 F 5 "FTSH-112-04-L-D-RA" H 4500 6900 60  0001 C CNN "Mfg. Part Number"
-F 6 "1767213" H 4500 6900 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 4500 6900 60  0001 C CNN "1st Distrib. Link"
 	1    4500 6900
 	1    0    0    1   
 $EndComp
@@ -275,8 +271,6 @@ F 2 "SCUBE:FTSH-112-04-L-D-RA-3x12" H 5850 5700 50  0001 C CNN
 F 3 "" H 5850 5700 50  0000 C CNN
 F 4 "Samtec" H 5850 6900 60  0001 C CNN "Mfg. Name"
 F 5 "FTSH-112-04-L-D-RA" H 5850 6900 60  0001 C CNN "Mfg. Part Number"
-F 6 "1767213" H 5850 6900 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 5850 6900 60  0001 C CNN "1st Distrib. Link"
 	1    5850 6900
 	1    0    0    1   
 $EndComp
@@ -290,8 +284,10 @@ F 2 "SCUBE:FTSH-112-04-L-D-RA-3x12" H 3200 2300 50  0001 C CNN
 F 3 "" H 3200 2300 50  0000 C CNN
 F 4 "Samtec" H 3200 3500 60  0001 C CNN "Mfg. Name"
 F 5 "FTSH-112-04-L-D-RA" H 3200 3500 60  0001 C CNN "Mfg. Part Number"
-F 6 "1767213" H 3200 3500 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 3200 3500 60  0001 C CNN "1st Distrib. Link"
+F 6 "1767213" H 3200 3500 60  0001 C CNN "Farnell PN"
+F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 3200 3500 60  0001 C CNN "Farnell Link"
+F 8 "FTSH-112-04-L-D-RA-ND" H 3200 3500 60  0001 C CNN "Digikey PN"
+F 9 "https://www.digikey.se/products/en?keywords=FTSH-112-04-L-D-RA" H 3200 3500 60  0001 C CNN "Digikey Link"
 	1    3200 3500
 	1    0    0    1   
 $EndComp
@@ -305,8 +301,6 @@ F 2 "SCUBE:FTSH-112-04-L-D-RA-3x12" H 4550 2300 50  0001 C CNN
 F 3 "" H 4550 2300 50  0000 C CNN
 F 4 "Samtec" H 4550 3500 60  0001 C CNN "Mfg. Name"
 F 5 "FTSH-112-04-L-D-RA" H 4550 3500 60  0001 C CNN "Mfg. Part Number"
-F 6 "1767213" H 4550 3500 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 4550 3500 60  0001 C CNN "1st Distrib. Link"
 	1    4550 3500
 	1    0    0    1   
 $EndComp
@@ -320,8 +314,6 @@ F 2 "SCUBE:FTSH-112-04-L-D-RA-3x12" H 5900 2300 50  0001 C CNN
 F 3 "" H 5900 2300 50  0000 C CNN
 F 4 "Samtec" H 5900 3500 60  0001 C CNN "Mfg. Name"
 F 5 "FTSH-112-04-L-D-RA" H 5900 3500 60  0001 C CNN "Mfg. Part Number"
-F 6 "1767213" H 5900 3500 60  0001 C CNN "1st Distrib. PN"
-F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 5900 3500 60  0001 C CNN "1st Distrib. Link"
 	1    5900 3500
 	1    0    0    1   
 $EndComp
