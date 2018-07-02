@@ -70,8 +70,15 @@ F 0 "U9" H 6750 1950 60  0000 C CNN
 F 1 "TMR 6-2421WI" V 6950 2400 60  0000 C CNN
 F 2 "SCUBE:RSO-2412D_v2" H 6600 2600 60  0001 C CNN
 F 3 "" H 6600 2600 60  0000 C CNN
-F 4 "945-2868-ND" H 6600 2600 60  0001 C CNN "1st Distrib. PN"
-F 5 "https://www.digikey.se/product-detail/en/recom-power/RS-2405DZ/945-2868-ND/2321312" H 6600 2600 60  0001 C CNN "1st Distrib. Link"
+F 4 "Traco Power" H 6600 2600 60  0001 C CNN "Mfg. Name"
+F 5 "TMR 6-2421WI" H 6600 2600 60  0001 C CNN "Mfg. Part Number"
+F 6 "110-50-311" H 6600 2600 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/dc-dc-omvandlare-36-vdc-vdc-traco-power-tmr-2421wi/p/11050311" H 6600 2600 60  0001 C CNN "Elfa Link"
+F 8 "2363824" H 6600 2600 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/tracopower/tmr-6-2421wi/dc-dc-converter-6w-5v-0-6a/dp/2363824" H 6600 2600 60  0001 C CNN "Farnell Link"
+F 10 "495-TMR6-2421WI" H 6600 2600 60  0001 C CNN "Mouser PN"
+F 11 "1951-2400-ND" H 6600 2600 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/traco-power-north-america/TMR-6-2421WI/1951-2400-ND/9383435" H 6600 2600 60  0001 C CNN "Digikey Link"
 	1    6600 2600
 	0    -1   -1   0   
 $EndComp
