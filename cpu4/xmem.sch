@@ -67,6 +67,8 @@ F 9 "https://se.farnell.com/texas-instruments/sn74ahc573dw/latch-d-type-octal-sm
 F 10 "595-SN74AHC573DW" H 2500 3150 60  0001 C CNN "Mouser PN"
 F 11 "296-4612-5-ND" H 2500 3150 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/texas-instruments/SN74AHC573DW/296-4612-5-ND/375821" H 2500 3150 60  0001 C CNN "Digikey Link"
+F 13 "-40" H 2500 3150 60  0001 C CNN "Min temp"
+F 14 "85" H 2500 3150 60  0001 C CNN "Max temp"
 	1    2500 3150
 	1    0    0    -1  
 $EndComp
@@ -131,6 +133,8 @@ F 3 "" H 3900 3700 50  0000 C CNN
 F 4 "972-71V124SA12YGI" H 3900 3700 60  0001 C CNN "Mouser PN"
 F 5 "800-1460-5-ND" H 3900 3700 60  0001 C CNN "Digikey PN"
 F 6 "https://www.digikey.se/product-detail/en/idt-integrated-device-technology-inc/71V124SA12YGI/800-1460-5-ND/1915761" H 3900 3700 60  0001 C CNN "Digikey Link"
+F 7 "-40" H 3900 3700 60  0001 C CNN "Min temp"
+F 8 "85" H 3900 3700 60  0001 C CNN "Max temp"
 	1    3900 3700
 	1    0    0    -1  
 $EndComp

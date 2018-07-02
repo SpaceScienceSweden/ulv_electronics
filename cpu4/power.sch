@@ -60,7 +60,9 @@ F 8 "495-THN30-2415WI" H 6800 4350 60  0001 C CNN "Mouser PN"
 F 9 "1951-2310-ND" H 6800 4350 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/traco-power-north-america/THN-30-2415WI/1951-2310-ND/9383345" H 6800 4350 60  0001 C CNN "Digikey Link"
 F 11 "lab" H 6800 4350 60  0000 C CNN "fit_field"
-F 12 "5" H 6800 4350 60  0001 C CNN "No. in lab"
+F 12 "-40" H 6800 4350 60  0001 C CNN "Min temp"
+F 13 "80" H 6800 4350 60  0001 C CNN "Max temp"
+F 14 "5" H 6800 4350 60  0001 C CNN "No. in lab"
 	1    6800 4350
 	1    0    0    -1  
 $EndComp
@@ -82,7 +84,9 @@ F 10 "495-TMR6-2421WI" H 6600 2600 60  0001 C CNN "Mouser PN"
 F 11 "1951-2400-ND" H 6600 2600 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/traco-power-north-america/TMR-6-2421WI/1951-2400-ND/9383435" H 6600 2600 60  0001 C CNN "Digikey Link"
 F 13 "lab" V 6800 2400 60  0000 C CNN "fit_field"
-F 14 "6" H 6600 2600 60  0001 C CNN "No. in lab"
+F 14 "-40" H 6600 2600 60  0001 C CNN "Min temp"
+F 15 "71" H 6600 2600 60  0001 C CNN "Max temp"
+F 16 "6" H 6600 2600 60  0001 C CNN "No. in lab"
 	1    6600 2600
 	0    -1   -1   0   
 $EndComp
@@ -99,7 +103,9 @@ F 5 "0ZCF0100AF2A" H 3550 4150 60  0001 C CNN "Mfg. Part Number"
 F 6 "530-0ZCF0100AF2A" H 3550 4150 60  0001 C CNN "Mouser PN"
 F 7 "507-2070-1-ND" H 3550 4150 60  0001 C CNN "Digikey PN"
 F 8 "https://www.digikey.se/product-detail/en/bel-fuse-inc/0ZCF0100AF2A/507-2070-1-ND/6210547" H 3550 4150 60  0001 C CNN "Digikey Link"
-F 9 "8" V 3550 4150 60  0001 C CNN "No. in lab"
+F 9 "-40" H 3550 4150 60  0001 C CNN "Min temp"
+F 10 "85" H 3550 4150 60  0001 C CNN "Max temp"
+F 11 "8" V 3550 4150 60  0001 C CNN "No. in lab"
 	1    3550 4150
 	0    1    1    0   
 $EndComp
@@ -143,6 +149,8 @@ F 9 "https://se.farnell.com/wurth-elektronik/824501401/tvs-diod-400w-40v-dbl-rik
 F 10 "710-824501401" H 4000 4450 60  0001 C CNN "Mouser PN"
 F 11 "732-9960-1-ND" H 4000 4450 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/wurth-electronics-inc/824501401/732-9960-1-ND/5871113" H 4000 4450 60  0001 C CNN "Digikey Link"
+F 13 "-65" H 4000 4450 60  0001 C CNN "Min temp"
+F 14 "150" H 4000 4450 60  0001 C CNN "Max temp"
 	1    4000 4450
 	0    1    1    0   
 $EndComp
@@ -183,6 +191,8 @@ F 5 "C1210X106K8NACAUTO" H 7400 3000 60  0001 C CNN "Mfg. Part Number"
 F 6 "80-C1210X106K8NAUTO" H 7400 3000 60  0001 C CNN "Mouser PN"
 F 7 "399-17273-1-ND" H 7400 3000 60  0001 C CNN "Digikey PN"
 F 8 "https://www.digikey.se/product-detail/en/kemet/C1210X106K8NACAUTO/399-17273-1-ND/8602584" H 7400 3000 60  0001 C CNN "Digikey Link"
+F 9 "-55" H 7400 3000 60  0001 C CNN "Min temp"
+F 10 "150" H 7400 3000 60  0001 C CNN "Max temp"
 	1    7400 3000
 	1    0    0    -1  
 $EndComp
@@ -205,6 +215,8 @@ F 9 "https://se.farnell.com/infineon/irll024npbf/mosfet-n-55v-4-4a-sot-223/dp/86
 F 10 "942-IRLL024NPBF" H 5300 3100 60  0001 C CNN "Mouser PN"
 F 11 "IRLL024NPBF-ND" H 5300 3100 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/infineon-technologies/IRLL024NPBF/IRLL024NPBF-ND/856814" H 5300 3100 60  0001 C CNN "Digikey Link"
+F 13 "-55" H 5300 3100 60  0001 C CNN "Min temp"
+F 14 "150" H 5300 3100 60  0001 C CNN "Max temp"
 	1    5300 3100
 	1    0    0    -1  
 $EndComp
@@ -423,6 +435,8 @@ F 7 "https://se.farnell.com/tdk/cga6p3x7s1h106k250ae/kond-mlcc-x7s-10uf-50v-1210
 F 8 "810-CGA6P3X7S1H106KS" H 4750 4450 60  0001 C CNN "Mouser PN"
 F 9 "445-8792-1-ND" H 4750 4450 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA6P3X7S1H106K250AE/445-8792-1-ND/3248604" H 4750 4450 60  0001 C CNN "Digikey Link"
+F 11 "-55" H 4750 4450 60  0001 C CNN "Min temp"
+F 12 "125" H 4750 4450 60  0001 C CNN "Max temp"
 	1    4750 4450
 	1    0    0    -1  
 $EndComp
@@ -792,6 +806,8 @@ F 9 "https://se.farnell.com/maxim-integrated-products/max3485csa/rs422-rs485-txr
 F 10 "700-MAX3485CSA" H 1800 6150 60  0001 C CNN "Mouser PN"
 F 11 "MAX3485CSA+-ND" H 1800 6150 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX3485CSA/MAX3485CSA-ND/1702241" H 1800 6150 60  0001 C CNN "Digikey Link"
+F 13 "0" H 1800 6150 60  0001 C CNN "Min temp"
+F 14 "70" H 1800 6150 60  0001 C CNN "Max temp"
 	1    1800 6150
 	1    0    0    -1  
 $EndComp
@@ -1019,6 +1035,8 @@ F 9 "https://se.farnell.com/wurth-elektronik/824501121/tvs-diod-400w-12v-dbl-rik
 F 10 "710-824501121" H 3250 5800 60  0001 C CNN "Mouser PN"
 F 11 "732-9949-1-ND" H 3250 5800 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/wurth-electronics-inc/824501121/732-9949-1-ND/5871103" H 3250 5800 60  0001 C CNN "Digikey Link"
+F 13 "-65" H 3250 5800 60  0001 C CNN "Min temp"
+F 14 "150" H 3250 5800 60  0001 C CNN "Max temp"
 	1    3250 5800
 	0    -1   -1   0   
 $EndComp
@@ -1181,6 +1199,8 @@ F 4 "Sullins" H 1700 4100 60  0001 C CNN "Mfg. Name"
 F 5 "LPPB122NFSP-RC" H 1700 4100 60  0001 C CNN "Mfg. Part Number"
 F 6 "S9007E-12-ND" H 1700 4100 60  0001 C CNN "Digikey PN"
 F 7 "https://www.digikey.se/products/en?keywords=LPPB122NFSP-RC" H 1700 4100 60  0001 C CNN "Digikey Link"
+F 8 "-40" H 1700 4100 60  0001 C CNN "Min temp"
+F 9 "125" H 1700 4100 60  0001 C CNN "Max temp"
 	1    1700 4100
 	-1   0    0    1   
 $EndComp
@@ -1216,7 +1236,9 @@ F 10 "495-TSR-1-2433" H 5900 1400 60  0001 C CNN "Mouser PN"
 F 11 "1951-2742-ND" H 5900 1400 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/traco-power-north-america/TSR-1-2433/1951-2742-ND/9383776" H 5900 1400 60  0001 C CNN "Digikey Link"
 F 13 "lab" H 6050 1250 60  0000 C CNN "fit_field"
-F 14 "9" H 5900 1400 60  0001 C CNN "No. in lab"
+F 14 "-40" H 5900 1400 60  0001 C CNN "Min temp"
+F 15 "85" H 5900 1400 60  0001 C CNN "Max temp"
+F 16 "9" H 5900 1400 60  0001 C CNN "No. in lab"
 	1    5900 1400
 	1    0    0    -1  
 $EndComp
@@ -1349,6 +1371,8 @@ F 9 "https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-
 F 10 "511-STTH102A" H 3100 4150 60  0001 C CNN "Mouser PN"
 F 11 "497-2500-1-ND" H 3100 4150 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882" H 3100 4150 60  0001 C CNN "Digikey Link"
+F 13 "-65" H 3100 4150 60  0001 C CNN "Min temp"
+F 14 "175" H 3100 4150 60  0001 C CNN "Max temp"
 	1    3100 4150
 	-1   0    0    1   
 $EndComp

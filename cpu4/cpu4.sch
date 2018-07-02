@@ -68,7 +68,9 @@ F 5 "ATmega128L–8AN" H 5350 3550 60  0001 C CNN "Mfg. Part Number"
 F 6 "556-ATMEGA128L-8AN" H 5350 3550 60  0001 C CNN "Mouser PN"
 F 7 "ATMEGA128L-8AN-ND" H 5350 3550 60  0001 C CNN "Digikey PN"
 F 8 "https://www.digikey.se/product-detail/en/microchip-technology/ATMEGA128L-8AN/ATMEGA128L-8AN-ND/2050766" H 5350 3550 60  0001 C CNN "Digikey Link"
-F 9 "7" H 5350 3550 60  0001 C CNN "No. in lab"
+F 9 "-40" H 5350 3550 60  0001 C CNN "Min temp"
+F 10 "105" H 5350 3550 60  0001 C CNN "Max temp"
+F 11 "7" H 5350 3550 60  0001 C CNN "No. in lab"
 	1    5350 3550
 	1    0    0    -1  
 $EndComp
@@ -142,6 +144,8 @@ F 7 "https://se.farnell.com/tdk/cga4j3x7t2e104m125ae/cap-mlcc-x7t-100nf-250v-080
 F 8 "810-CGA4J3X7T2E104MS" H 2700 1500 60  0001 C CNN "Mouser PN"
 F 9 "445-7965-1-ND" H 2700 1500 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/tdk-corporation/CGA4J3X7T2E104M125AE/445-7965-1-ND/2782533" H 2700 1500 60  0001 C CNN "Digikey Link"
+F 11 "-55" H 2700 1500 60  0001 C CNN "Min temp"
+F 12 "125" H 2700 1500 60  0001 C CNN "Max temp"
 	1    2700 1500
 	1    0    0    -1  
 $EndComp
@@ -180,6 +184,8 @@ F 5 "ABLS-14.7456MHZ-K4T" H 3950 2450 60  0001 C CNN "Mfg. Part Number"
 F 6 "815-ABLS-14.74MK4-T" H 3950 2450 60  0001 C CNN "Mouser PN"
 F 7 "535-9946-1-ND" H 3950 2450 60  0001 C CNN "Digikey PN"
 F 8 "https://www.digikey.se/product-detail/en/abracon-llc/ABLS-14.7456MHZ-K4T/535-9946-1-ND/2001569" H 3950 2450 60  0001 C CNN "Digikey Link"
+F 9 "-40" H 3950 2450 60  0001 C CNN "Min temp"
+F 10 "125" H 3950 2450 60  0001 C CNN "Max temp"
 	1    3950 2450
 	0    1    1    0   
 $EndComp
@@ -207,6 +213,8 @@ F 5 "C0805X220J5GACTU" H 3700 2300 60  0001 C CNN "Mfg. Part Number"
 F 6 "80-C0805X220J5G" H 3700 2300 60  0001 C CNN "Mouser PN"
 F 7 "399-7432-1-ND" H 3700 2300 60  0001 C CNN "Digikey PN"
 F 8 "https://www.digikey.se/product-detail/en/kemet/C0805X220J5GACTU/399-7432-1-ND/3317466" H 3700 2300 60  0001 C CNN "Digikey Link"
+F 9 "-55" H 3700 2300 60  0001 C CNN "Min temp"
+F 10 "125" H 3700 2300 60  0001 C CNN "Max temp"
 	1    3700 2300
 	0    -1   -1   0   
 $EndComp
@@ -271,6 +279,8 @@ F 7 "https://www.elfa.se/sv/drossel-smd-10-uh-850-ma-20-wuerth-elektronik-744798
 F 8 "710-74479887310A" H 5350 1300 60  0001 C CNN "Mouser PN"
 F 9 "732-4516-1-ND" H 5350 1300 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/wurth-electronics-inc/74479887310A/732-4516-1-ND/4120134" H 5350 1300 60  0001 C CNN "Digikey Link"
+F 11 "-40" H 5350 1300 60  0001 C CNN "Min temp"
+F 12 "125" H 5350 1300 60  0001 C CNN "Max temp"
 	1    5350 1300
 	0    -1   -1   0   
 $EndComp
@@ -291,6 +301,8 @@ F 9 "https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-fil
 F 10 "667-ECH-U1C104GX5" H 5650 1300 60  0001 C CNN "Mouser PN"
 F 11 "PCF1189CT-ND" H 5650 1300 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736" H 5650 1300 60  0001 C CNN "Digikey Link"
+F 13 "-55" H 5650 1300 60  0001 C CNN "Min temp"
+F 14 "125" H 5650 1300 60  0001 C CNN "Max temp"
 	1    5650 1300
 	0    -1   -1   0   
 $EndComp
@@ -403,6 +415,8 @@ F 7 "https://se.farnell.com/maxim-integrated-products/ds18b20z/ic-thermometer-12
 F 8 "700-DS18B20Z" H 10150 5600 60  0001 C CNN "Mouser PN"
 F 9 "DS18B20Z+-ND" H 10150 5600 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/DS18B20Z/DS18B20Z-ND/956982" H 10150 5600 60  0001 C CNN "Digikey Link"
+F 11 "-55" H 10150 5600 60  0001 C CNN "Min temp"
+F 12 "125" H 10150 5600 60  0001 C CNN "Max temp"
 	1    10150 5600
 	1    0    0    -1  
 $EndComp
@@ -610,6 +624,8 @@ F 7 "http://se.farnell.com/texas-instruments/cd74ac153m96/data-selector-mux-dual
 F 8 "595-CD74AC153M96" H 3850 6250 60  0001 C CNN "Mouser PN"
 F 9 "296-4229-1-ND" H 3850 6250 60  0001 C CNN "Digikey PN"
 F 10 "https://www.digikey.se/product-detail/en/texas-instruments/CD74AC153M96/296-4229-1-ND/375128" H 3850 6250 60  0001 C CNN "Digikey Link"
+F 11 "-55" H 3850 6250 60  0001 C CNN "Min temp"
+F 12 "125" H 3850 6250 60  0001 C CNN "Max temp"
 	1    3850 6250
 	0    -1   -1   0   
 $EndComp

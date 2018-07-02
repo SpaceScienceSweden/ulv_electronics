@@ -288,6 +288,8 @@ F 6 "1767213" H 3200 3500 60  0001 C CNN "Farnell PN"
 F 7 "http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213" H 3200 3500 60  0001 C CNN "Farnell Link"
 F 8 "FTSH-112-04-L-D-RA-ND" H 3200 3500 60  0001 C CNN "Digikey PN"
 F 9 "https://www.digikey.se/products/en?keywords=FTSH-112-04-L-D-RA" H 3200 3500 60  0001 C CNN "Digikey Link"
+F 10 "-55" H 3200 3500 60  0001 C CNN "Min temp"
+F 11 "125" H 3200 3500 60  0001 C CNN "Max temp"
 	1    3200 3500
 	1    0    0    1   
 $EndComp
@@ -336,6 +338,8 @@ F 9 "https://se.farnell.com/nexperia/pmbf170-215/mosfet-n-sot-23/dp/1081473" H 2
 F 10 "771-PMBF170-T/R" H 2300 1950 60  0001 C CNN "Mouser PN"
 F 11 "1727-5173-1-ND" H 2300 1950 60  0001 C CNN "Digikey PN"
 F 12 "https://www.digikey.se/product-detail/en/nexperia-usa-inc/PMBF170215/1727-5173-1-ND/2531764" H 2300 1950 60  0001 C CNN "Digikey Link"
+F 13 "-65" H 2300 1950 60  0001 C CNN "Min temp"
+F 14 "150" H 2300 1950 60  0001 C CNN "Max temp"
 	1    2300 1950
 	1    0    0    -1  
 $EndComp
