@@ -1193,6 +1193,15 @@ F 0 "U12" H 5900 1500 60  0000 C CNN
 F 1 "TSR 1-2433" H 5900 1600 60  0000 C CNN
 F 2 "SCUBE:TSR_1" H 5900 1400 60  0001 C CNN
 F 3 "" H 5900 1400 60  0001 C CNN
+F 4 "Traco Power" H 5900 1400 60  0001 C CNN "Mfg. Name"
+F 5 "TSR 1-2433" H 5900 1400 60  0001 C CNN "Mfg. Part Number"
+F 6 "169-53-483" H 5900 1400 60  0001 C CNN "Elfa PN"
+F 7 "https://www.elfa.se/sv/dc-dc-omvandlare-vdc-1000-ma-traco-power-tsr-2433/p/16953483" H 5900 1400 60  0001 C CNN "Elfa Link"
+F 8 "1696319" H 5900 1400 60  0001 C CNN "Farnell PN"
+F 9 "https://se.farnell.com/tracopower/tsr-1-2433/converter-dc-to-dc-3-3v-1a-sip/dp/1696319" H 5900 1400 60  0001 C CNN "Farnell Link"
+F 10 "495-TSR-1-2433" H 5900 1400 60  0001 C CNN "Mouser PN"
+F 11 "1951-2742-ND" H 5900 1400 60  0001 C CNN "Digikey PN"
+F 12 "https://www.digikey.se/product-detail/en/traco-power-north-america/TSR-1-2433/1951-2742-ND/9383776" H 5900 1400 60  0001 C CNN "Digikey Link"
 	1    5900 1400
 	1    0    0    -1  
 $EndComp
