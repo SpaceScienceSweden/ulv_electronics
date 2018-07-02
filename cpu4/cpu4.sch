@@ -858,17 +858,6 @@ F 3 "" H 3250 3450 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L PWR_FLAG #FLG025
-U 1 1 58DB2C09
-P 4350 1200
-F 0 "#FLG025" H 4350 1295 50  0001 C CNN
-F 1 "PWR_FLAG" H 4350 1380 50  0000 C CNN
-F 2 "" H 4350 1200 50  0000 C CNN
-F 3 "" H 4350 1200 50  0000 C CNN
-	1    4350 1200
-	1    0    0    -1  
-$EndComp
-$Comp
 L PWR_FLAG #FLG026
 U 1 1 58DB2D7E
 P 5500 1150
@@ -1164,9 +1153,6 @@ Wire Wire Line
 Wire Wire Line
 	2850 5050 4050 5050
 Connection ~ 2600 5050
-Wire Wire Line
-	4350 1300 4350 1200
-Connection ~ 4350 1300
 Wire Wire Line
 	3150 7000 3150 7300
 Wire Wire Line
