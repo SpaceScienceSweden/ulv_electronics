@@ -764,6 +764,7 @@ F 0 "U11" H 1800 6400 60  0000 C CNN
 F 1 "MAX485" H 1800 5900 60  0000 C CNN
 F 2 "Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm" H 1800 6150 60  0001 C CNN
 F 3 "" H 1800 6150 60  0000 C CNN
+F 4 "check bags at lab" H 1800 6150 60  0001 C CNN "Mfg. Part Number"
 	1    1800 6150
 	1    0    0    -1  
 $EndComp
