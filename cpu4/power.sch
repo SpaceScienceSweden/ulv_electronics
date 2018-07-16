@@ -35,9 +35,9 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 4 4
-Title ""
-Date ""
-Rev ""
+Title "cpu4"
+Date "2018-07-11"
+Rev "rev1"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -72,7 +72,7 @@ U 1 1 58D7FD3C
 P 6600 2600
 F 0 "U9" H 6750 1950 60  0000 C CNN
 F 1 "TMR 6-2421WI" V 6950 2400 60  0000 C CNN
-F 2 "SCUBE:RSO-2412D_v2" H 6600 2600 60  0001 C CNN
+F 2 "SCUBE:TMR_6-2421WI" H 6600 2600 60  0001 C CNN
 F 3 "" H 6600 2600 60  0000 C CNN
 F 4 "Traco Power" H 6600 2600 60  0001 C CNN "Mfg. Name"
 F 5 "TMR 6-2421WI" H 6600 2600 60  0001 C CNN "Mfg. Part Number"

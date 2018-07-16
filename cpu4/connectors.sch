@@ -35,9 +35,9 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 3 4
-Title ""
-Date ""
-Rev ""
+Title "cpu4"
+Date "2018-07-11"
+Rev "rev1"
 Comp ""
 Comment1 ""
 Comment2 ""

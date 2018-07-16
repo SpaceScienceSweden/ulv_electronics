@@ -35,9 +35,9 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 4
-Title ""
-Date ""
-Rev ""
+Title "cpu4"
+Date "2018-07-11"
+Rev "1.0"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -82,6 +82,7 @@ F 0 "P2" H 1150 5500 50  0000 C CNN
 F 1 "ISP" H 1150 5100 50  0000 C CNN
 F 2 "Pin_Headers:Pin_Header_Straight_2x03" H 1150 4100 50  0001 C CNN
 F 3 "" H 1150 4100 50  0000 C CNN
+F 4 "dnf" V 1150 5300 60  0000 C CNN "fit_field"
 	1    1150 5300
 	1    0    0    -1  
 $EndComp

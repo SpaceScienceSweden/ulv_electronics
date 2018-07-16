@@ -1,7 +1,6 @@
 TODO (.sch)
 -----------
 
-Use film capacitors for AVCC and AREF
 BOM
 - all industrial parts
 
@@ -18,6 +17,8 @@ Separate fab and asm instructions
 
 DONE
 ----
+
+Use film capacitors for AVCC and AREF
 
 Route the thing, make sure it passes DRC and there are no unconnected stuff
 
