@@ -1,0 +1,46 @@
+Component,References,Value,Footprint,Quantity Per PCB,Digikey Link,Farnell PN,Farnell Link,Max temp,Min temp,Mouser PN,Mfg. Name,Mfg. Part Number,Digikey PN,Elfa Link,Elfa PN,No. in lab
+1,C1 C2 C3 C4 C34 C35,100n,C_0805,6,https://www.digikey.se/product-detail/en/tdk-corporation/CGA4J3X7T2E104M125AE/445-7965-1-ND/2782533,2211003,https://se.farnell.com/tdk/cga4j3x7t2e104m125ae/cap-mlcc-x7t-100nf-250v-0805/dp/2211003,125,-55,810-CGA4J3X7T2E104MS,TDK,CGA4J3X7T2E104M125AE,445-7965-1-ND,,,
+2,C7 C8,100n,C_1210,2,https://www.digikey.se/product-detail/en/panasonic-electronic-components/ECH-U1C104GX5/PCF1189CT-ND/353736,9695001,https://se.farnell.com/panasonic-electronic-components/echu1c104gx5/cap-film-pps-100nf-16v-smd/dp/9695001,125,-55,667-ECH-U1C104GX5,Panasonic,ECH-U1C104GX5,PCF1189CT-ND,https://www.elfa.se/sv/kondensator-100-nf-16-vdc-panasonic-automotive-industrial-systems-echu1c104gx5/p/30041614,300-41-614,
+3,C15 C16 C17 C18 C19 C20 C21 C22 C23 C24 C25 C26 C27 C28 C32 C33,10u10V,C_1210,16,https://www.digikey.se/product-detail/en/kemet/C1210X106K8NACAUTO/399-17273-1-ND/8602584,,,150,-55,80-C1210X106K8NAUTO,KEMET,C1210X106K8NACAUTO,399-17273-1-ND,,,
+4,C29 C30 C31 C38 C39,10u50V,C_1210,5,https://www.digikey.se/product-detail/en/tdk-corporation/CGA6P3X7S1H106K250AE/445-8792-1-ND/3248604,2435524,https://se.farnell.com/tdk/cga6p3x7s1h106k250ae/kond-mlcc-x7s-10uf-50v-1210/dp/2435524,125,-55,810-CGA6P3X7S1H106KS,TDK,CGA6P3X7S1H106K250AE,445-8792-1-ND,,,
+5,C5 C6,22p,C_0805,2,https://www.digikey.se/product-detail/en/kemet/C0805X220J5GACTU/399-7432-1-ND/3317466,,,125,-55,80-C0805X220J5G,KEMET,C0805X220J5GACTU,399-7432-1-ND,,,
+6,D4 D5 D6,12V,SMA_Standard,3,https://www.digikey.se/product-detail/en/wurth-electronics-inc/824501121/732-9949-1-ND/5871103,2536587,https://se.farnell.com/wurth-elektronik/824501121/tvs-diod-400w-12v-dbl-rikt-do/dp/2536587,150,-65,710-824501121,Würth,824501121,732-9949-1-ND,https://www.elfa.se/sv/transientskyddsdiod-12-400-sma-wuerth-elektronik-824501121/p/30059541,300-59-541,
+7,D3 D9 D10,40V,SMA_Standard,3,https://www.digikey.se/product-detail/en/wurth-electronics-inc/824501401/732-9960-1-ND/5871113,2536561,https://se.farnell.com/wurth-elektronik/824501401/tvs-diod-400w-40v-dbl-rikt-do/dp/2536561,150,-65,710-824501401,Würth,824501401,732-9960-1-ND,https://www.elfa.se/sv/transientskyddsdiod-40-400-sma-wuerth-elektronik-824501401/p/30059556,300-59-556,
+8,D2 D8,STTH102A,SMA_Standard,2,https://www.digikey.se/product-detail/en/stmicroelectronics/STTH102A/497-2500-1-ND/603882,9907874,https://se.farnell.com/stmicroelectronics/stth102a/diode-ultrafast-1a-200v-sma/dp/9907874,175,-65,511-STTH102A,STMicroelectronics,STTH102A,497-2500-1-ND,https://www.elfa.se/sv/likriktardiod-sma-200-st-stth102a/p/30034074,300-34-074,
+9,F1,Polyfuse_Small,Fuse_SMD2920,1,https://www.digikey.se/product-detail/en/bel-fuse-inc/0ZCF0100AF2A/507-2070-1-ND/6210547,,,85,-40,530-0ZCF0100AF2A,Bel Fuse Inc.,0ZCF0100AF2A,507-2070-1-ND,,,8
+10,IC1,ATMEGA128L-8AN,TQFP-64_14x14mm_Pitch0.8mm,1,https://www.digikey.se/product-detail/en/microchip-technology/ATMEGA128L-8AN/ATMEGA128L-8AN-ND/2050766,,,105,-40,556-ATMEGA128L-8AN,Microchip Technology / Atmel,ATmega128L–8AN,ATMEGA128L-8AN-ND,,,7
+11,L1 L2 L3 L4 L5 L6 L7 L8,10u,L_1008,8,https://www.digikey.se/product-detail/en/wurth-electronics-inc/74479887310A/732-4516-1-ND/4120134,,,125,-40,710-74479887310A,Würth,74479887310A,732-4516-1-ND,https://www.elfa.se/sv/drossel-smd-10-uh-850-ma-20-wuerth-elektronik-74479887310a/p/30063549,300-63-549,
+12,P1 P5 P6 P7 P12 P13,CONN_02X12,FTSH-112-04-L-D-RA-3x12,6,https://www.digikey.se/products/en?keywords=FTSH-112-04-L-D-RA,1767213,http://se.farnell.com/samtec/ftsh-112-04-l-d-ra/header-1-27mm-2x12way-r-a/dp/1767213,125,-55,,Samtec,FTSH-112-04-L-D-RA,FTSH-112-04-L-D-RA-ND,,,
+13,P4,CONN_02X12,LPPB122NFSP-RC,1,https://www.digikey.se/products/en?keywords=LPPB122NFSP-RC,,,125,-40,,Sullins,LPPB122NFSP-RC,S9007E-12-ND,,,
+14,Q1,IRLL024NPBF,SOT-223,1,https://www.digikey.se/product-detail/en/infineon-technologies/IRLL024NPBF/IRLL024NPBF-ND/856814,8651205,https://se.farnell.com/infineon/irll024npbf/mosfet-n-55v-4-4a-sot-223/dp/8651205,150,-55,942-IRLL024NPBF,Infineon Technologies,IRLL024NPBF,IRLL024NPBF-ND,https://www.elfa.se/sv/mosfet-55-sot-223-ir-irll024npbf/p/17137904,171-37-904,
+15,Q2 Q3 Q4,PMBF170,SOT-23,3,https://www.digikey.se/product-detail/en/nexperia-usa-inc/PMBF170215/1727-5173-1-ND/2531764,1081473,https://se.farnell.com/nexperia/pmbf170-215/mosfet-n-sot-23/dp/1081473,150,-65,771-PMBF170-T/R,Nexperia,"PMBF170,215",1727-5173-1-ND,https://www.elfa.se/sv/liten-signaltransistor-sot-23-60-nxp-pmbf170/p/17130701,171-30-701,
+16,R4 R11 R19 R41 R42 R43 R54,0,R_1206,7,,,,,,,,,,,,
+17,R1 R5 R23 R25 R26 R38,10k,R_0805,6,,,,,,,,,,,,
+18,R8 R13 R16 R17,120,R_0805,4,,,,,,,,,,,,
+19,R21 R37,150k,R_0805,2,,,,,,,,,,,,
+20,R20 R22 R24,18k,R_0805,3,,,,,,,,,,,,
+21,R6,1M,R_0805,1,,,,,,,,,,,,
+22,R27,22k,R_0805,1,,,,,,,,,,,,
+23,R36,4k7,R_0805,1,,,,,,,,,,,,
+24,R28 R29 R30 R31 R32 R33,56k,R_0805,6,,,,,,,,,,,,
+25,U3,71V124SA12YGI,SOJ-32,1,https://www.digikey.se/product-detail/en/idt-integrated-device-technology-inc/71V124SA12YGI/800-1460-5-ND/1915761,,,85,-40,972-71V124SA12YGI,,,800-1460-5-ND,,,
+26,U1,CD74AC153M96,SOIC-16_3.9x9.9mm_Pitch1.27mm,1,https://www.digikey.se/product-detail/en/texas-instruments/CD74AC153M96/296-4229-1-ND/375128,2334932,http://se.farnell.com/texas-instruments/cd74ac153m96/data-selector-mux-dual-4-1-soic/dp/2334932,125,-55,595-CD74AC153M96,Texas Instruments,CD74AC153M96,296-4229-1-ND,,,
+27,U4,DS18B20Z+,SOIC-8-N,1,https://www.digikey.se/product-detail/en/maxim-integrated/DS18B20Z/DS18B20Z-ND/956982,2518724,https://se.farnell.com/maxim-integrated-products/ds18b20z/ic-thermometer-12bit-0-5degc-soic/dp/2518724,125,-55,700-DS18B20Z,Maxim Integrated,DS18B20Z+,DS18B20Z+-ND,,,
+28,U11,MAX3483ESA+,SOIC-8_3.9x4.9mm_Pitch1.27mm,1,https://www.digikey.se/product-detail/en/maxim-integrated/MAX3483ESA/MAX3483ESA-ND/1702246,2519249,https://se.farnell.com/maxim-integrated-products/max3483esa/ic-transceiver-rs422-rs485-8soic/dp/2519249,85,-40,700-MAX3483ESA,Maxim Integrated,MAX3483ESA+,MAX3483ESA+-ND,,,
+29,U2,SN74AHC573,SO-20,1,https://www.digikey.se/product-detail/en/texas-instruments/SN74AHC573DW/296-4612-5-ND/375821,1287471,https://se.farnell.com/texas-instruments/sn74ahc573dw/latch-d-type-octal-smd-soic20/dp/1287471,85,-40,595-SN74AHC573DW,Texas Instruments,SN74AHC573DW,296-4612-5-ND,https://www.elfa.se/sv/logikkrets-so-20-sn74ahc573-texas-instruments-sn74ahc573dw/p/30022908,300-22-908,
+30,Y1,14.7456 MHz,Crystal_HC49-SD_SMD,1,https://www.digikey.se/product-detail/en/abracon-llc/ABLS-14.7456MHZ-K4T/535-9946-1-ND/2001569,,,125,-40,815-ABLS-14.74MK4-T,Abracon,ABLS-14.7456MHZ-K4T,535-9946-1-ND,,,
+
+
+
+
+
+Component Groups:,41
+Component Count:,118
+Fitted Components:,97
+Number of PCBs:,1
+Total components:,97
+Schematic Version:,1.0
+Schematic Date:,2018-07-11
+BoM Date:,mn 16 jul 2018 17:36:52
+Schematic Source:,/home/thardin/projects/spacehackers/ulv_electronics/cpu4/cpu4.sch
+KiCad Version:,Eeschema 4.0.7+dfsg1-1~bpo9+1
