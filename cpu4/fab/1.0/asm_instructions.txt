@@ -1,3 +1,5 @@
+1% resistors
+
 Pin headers should be soldered facing out.
 They can each be mounted in one of two positions:
 a "forward" position more toward the edge of the board,
