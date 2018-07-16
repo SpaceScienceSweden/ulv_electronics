@@ -1,9 +1,3 @@
-TODO (.kicad_pcb)
------------------
-
-Make all silk readable
-.pos output
-
 TODO fab+asm
 ------------
 
@@ -20,6 +14,8 @@ Replacing THN 30WI with THN 15WIR (90°C max) may be tempting, but keep in mind:
 
 DONE
 ----
+
+Make all silk readable
 
 BOM
 - all industrial parts
