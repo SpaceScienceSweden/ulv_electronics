@@ -1,0 +1,4 @@
+1.55 mm 4-layer stackup with 35 µm outer layers and inner layers at least 17.5 µm.
+Layers are numbered in the lower right, text in bottom layer is mirrored.
+All holes except two are PTH.
+Two NPTHs in lower left corner.
