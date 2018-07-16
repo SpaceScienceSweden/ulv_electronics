@@ -1,9 +1,3 @@
-TODO (.sch)
------------
-
-BOM
-- all industrial parts
-
 TODO (.kicad_pcb)
 -----------------
 
@@ -14,9 +8,26 @@ TODO fab+asm
 ------------
 
 Separate fab and asm instructions
+Get TMR 3WI series +-5V switchers, they're rated up to +85°C
+- ITQ2405S from XP Power is even better, operating up to 100°C (starts derating at 70°C)
+- CUI Inc. have some parts that go up to 105°C, like PRMC3-D24-D5-S, but they require +18V minimum
+Replacing THN 30WI with THN 15WIR (90°C max) may be tempting, but keep in mind:
+- motors are rated at 5W, so three of them hit the 15W limit
+- peak current draw of motors is 580 mA (14 W)
+- this means turning a motor on while the other two are running may overload a 15W module
+- Artesyn's AXA00H18-L give is rated up to 85°C, but also only 20W
+- in short, can't really use anything other than THN 30WI in the current size
 
 DONE
 ----
+
+BOM
+- all industrial parts
+- this can't actually be done, because the +-5V regulator tops out at 71°C
+  the TMR 3WI series goes up to +85°C however
+- the +24V regulator is +80°C max
+- all other parts are +85°C max or higher however, which should be OK
+
 
 Use film capacitors for AVCC and AREF
 
