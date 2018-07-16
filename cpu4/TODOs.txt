@@ -11,6 +11,8 @@ Replacing THN 30WI with THN 15WIR (90°C max) may be tempting, but keep in mind:
 - this means turning a motor on while the other two are running may overload a 15W module
 - Artesyn's AXA00H18-L give is rated up to 85°C, but also only 20W
 - in short, can't really use anything other than THN 30WI in the current size
+As for TSR 1-2433, going from +85°C to +90°C is hardly worth the trouble
+- TSR 0.5-2433 is an option if we *really* need to
 
 DONE
 ----

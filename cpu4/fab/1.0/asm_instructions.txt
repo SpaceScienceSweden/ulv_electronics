@@ -1,0 +1,5 @@
+Pin headers should be soldered facing out.
+They can each be mounted in one of two positions:
+a "forward" position more toward the edge of the board,
+and a "rearward" position more toward the center of the board.
+All pin headers should be soldered in the "rearward" position (see cpu4.png)

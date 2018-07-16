@@ -1,0 +1,19 @@
+Component,Part,References,Value,Footprint,Quantity Per PCB,Digikey Link,Farnell PN,fit_field,Farnell Link,Max temp,Min temp,Mouser PN,Mfg. Name,Mfg. Part Number,Digikey PN,Elfa Link,Elfa PN,1st Distrib. Link,1st Distrib. PN,No. in lab
+1,THN_30-2415,U10,THN_30-2415WI,THN_30-2415,1,https://www.digikey.se/product-detail/en/traco-power-north-america/THN-30-2415WI/1951-2310-ND/9383345,2322198,+lab,https://se.farnell.com/tracopower/thn-30-2415wi/dc-dc-converter-1-25a-24v-30w/dp/2322198,80,-40,495-THN30-2415WI,Traco Power,THN 30-2415WI,1951-2310-ND,,,,,5
+2,RSO-2412D-Dual,U9,TMR 6-2421WI,TMR_6-2421WI,1,https://www.digikey.se/product-detail/en/traco-power-north-america/TMR-6-2421WI/1951-2400-ND/9383435,2363824,+lab,https://se.farnell.com/tracopower/tmr-6-2421wi/dc-dc-converter-6w-5v-0-6a/dp/2363824,71,-40,495-TMR6-2421WI,Traco Power,TMR 6-2421WI,1951-2400-ND,https://www.elfa.se/sv/dc-dc-omvandlare-36-vdc-vdc-traco-power-tmr-2421wi/p/11050311,110-50-311,,,6
+3,TSR_1,U12,TSR 1-2433,TSR_1,1,https://www.digikey.se/product-detail/en/traco-power-north-america/TSR-1-2433/1951-2742-ND/9383776,1696319,+lab,https://se.farnell.com/tracopower/tsr-1-2433/converter-dc-to-dc-3-3v-1a-sip/dp/1696319,85,-40,495-TSR-1-2433,Traco Power,TSR 1-2433,1951-2742-ND,https://www.elfa.se/sv/dc-dc-omvandlare-vdc-1000-ma-traco-power-tsr-2433/p/16953483,169-53-483,,,9
+
+
+
+
+
+Component Groups:,39
+Component Count:,118
+Fitted Components:,3
+Number of PCBs:,1
+Total components:,3
+Schematic Version:,1.0
+Schematic Date:,2018-07-16
+BoM Date:,mn 16 jul 2018 17:53:39
+Schematic Source:,/home/thardin/projects/spacehackers/ulv_electronics/cpu4/cpu4.sch
+KiCad Version:,Eeschema 4.0.7+dfsg1-1~bpo9+1
