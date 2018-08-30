@@ -27,7 +27,7 @@ OBJDUMP        = avr-objdump
 all: $(PRG).elf lst text eeprom
 	avr-size $(PRG).elf
 
-$(PRG).elf: $(OBJ) sample_packet_s.h
+$(PRG).elf: $(OBJ) wire_structs.h
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
 clean:

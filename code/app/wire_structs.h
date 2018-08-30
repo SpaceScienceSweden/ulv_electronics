@@ -1,3 +1,91 @@
+// Overview of the IQ demodulated packet format:
+//
+// +---------------------------------------+
+// | Header                (6  bytes)      |
+// +---------------------------------------+
+// | "TEMP"                (4 bytes)       |
+// | Temperature values    (variable size) |
+// +---------------------------------------+
+// | "VOLT"                (4 bytes)       |
+// | Voltage ADC values    (variable size) |
+// +---------------------------------------+
+// | "FMIQ"                (4 bytes)       |
+// | Demodulated FM data   (variable size) |
+// +---------------------------------------+
+//
+// TEMP, VOLT and FMIQ are convenient markers and
+// always present. The amount of data between markers
+// depends on values in the header.
+// The size of the packet can be summarized as:
+//
+//   packet_size =
+//     6 +
+//     4 + num_temps*4 +
+//     4 + popcount(adc_mask)*2 +
+//     4 + popcount(fm_mask)*31
+
+typedef struct square_demod_header_s {
+  uint8_t version;      // format version (1)
+  uint16_t num_frames;  // number of frames sampled
+
+  // Number of DS18B20Z outputs (0..6)
+  // Each output is a temperature_s (4 bytes)
+  uint8_t num_temps;
+
+  // Voltage ADC channel bitmask.
+  // Used for reporting system voltages.
+  // Bit n -> ADCn value present (2 bytes).
+  // Currently only channels ADC0..4 are used.
+  // All values are 10-bit single-ended conversions
+  // with 2.56 V reference, transmitted in 16-bit ints.
+  // Values are ADCL + 256*ADCH.
+  // See the implementation of the 'v' command in app.c
+  // for how to convert these values.
+  uint8_t volt_mask;
+
+  // Fieldmill bitmask
+  // Bits 0..2 -> corresponding FM is enabled
+  // See fm_s struct
+  uint8_t fm_mask;
+} square_demod_header_s;
+
+// TEMP
+
+// Temperature reading structure.
+// Since temperature conversions take around 750 ms
+// not every packet will have temperatures.
+typedef struct temperature_s {
+  // Bytes 1-2 of DS18B20Z ROM is enough to uniquely
+  // identify the ones we have:
+  //
+  //  286a1a690900005e -> 6a 1a
+  //  28f72a6909000021 -> f7 2a
+  uint8_t   rom12[2];
+
+  // Temperature in degrees Celsius * 16
+  int16_t   temp;
+} temperature_s;
+
+// VOLT
+
+// Inbetween VOLT and TEMP are the system voltages
+// 10-bit values contained in 16-bit integers
+
+// FMIQ
+
+// There are popcount(fm_mask) instances of this
+typedef struct fm_s {
+  int16_t tach_min; // min of all tach samples
+  int16_t tach_max; // max of all tach samples
+  uint16_t discard; // how many samples were discarded
+                    // before the first tach
+  uint8_t num_tachs;// number of tachometer impulses
+  uint16_t NQ[4];   // number of frames collected in
+                    // each quadrant
+  int16_t IQ[4][2]; // IQ data (IQIQIQIQ)
+} fm_s;
+
+
 // Overview of the sample packet format:
 //
 // +---------------------------------------+
@@ -54,22 +142,6 @@ typedef struct sample_packet_header_s {
   // Typical values: 1 or 8.
   uint8_t   prescaler;
 } sample_packet_header_s;
-
-// Temperature reading structure.
-// Since temperature conversions take around 750 ms
-// not every sample packet will have temperatures.
-typedef struct temperature_s {
-  // Bytes 1-2 of DS18B20Z ROM is enough to uniquely
-  // identify the ones we have:
-  //
-  //  286a1a690900005e -> 6a 1a
-  //  28f72a6909000021 -> f7 2a
-  uint8_t   rom12[2];
-
-  // Temperature in degrees Celsius * 16
-  int16_t   temp;
-} temperature_s;
-
 
 // Sample packet itself is variable size.
 typedef struct sample_packet_s {

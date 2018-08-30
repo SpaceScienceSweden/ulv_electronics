@@ -12,8 +12,7 @@
 #include "../eeprom.h"
 #include <ds18b20/ds18b20.h>
 #include <ds18b20/romsearch.h>
-#include "sample_packet_s.h"
-#include "square_demod_s.h"
+#include "wire_structs.h"
 
 #define WDTO_DEFAULT WDTO_250MS
 
@@ -1853,6 +1852,35 @@ square_demod_tach_done:
 }
 #endif
 
+static void read_temps(void) {
+  for (uint8_t x = 0; x < romcnt; x++) {
+    temps[x].rom12[0] = roms[x*8+1];
+    temps[x].rom12[1] = roms[x*8+2];
+    ds18b20read( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &roms[x*8], &temps[x].temp );
+  }
+}
+
+static void enable_adc(void) {
+  ADCSRA = (1<<ADEN) | (7<<ADPS0);
+  //make sure pull-ups are disabled
+  PORTF &= 7<<5;
+}
+
+static void disable_adc(void) {
+  ADCSRA = 0;
+}
+
+static int read_adc(uint8_t x) {
+  //2.56V reference
+  ADMUX = x | (3<<REFS0);
+  ADCSRA |= 1<<ADSC;
+  while (ADCSRA & (1<<ADSC));
+
+  int adc = ADCL;
+  adc += ADCH*256;  //0..1023 (right-adjusted)
+  return adc;
+}
+
 // Similar to square_demod_tach except it uses the analog signal
 // in channel 4 in each FM for synchronization. This allows sampling
 // all FMs at the same time.
@@ -1955,6 +1983,7 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
   start_section("INFO");
   printf_P(PSTR("max_frames = %i\n"), max_frames);
 
+  uint8_t temp_conversion_in_progress = 0;
   for (;;) {
     //discard the first bunch of samples
     //partly to deal with initial F_DRDY
@@ -1967,6 +1996,16 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
 
     set_74153(first_id);
     DDRD |= 1;  //debug
+
+    //start temperature conversion if the 1-Wire bus is free
+    //use the same kind of flag as in main() to keep track of it,
+    //in case we get into a situation where conversions will always finish between
+    //transmitting the header and getting back here
+    if (onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK ) &&
+        !temp_conversion_in_progress) {
+      ds18b20convert( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, NULL );
+      temp_conversion_in_progress = 1;
+    }
 
     //longer WDT than normal to not have to do WDR inside loops
     wdt_enable(WDTO_2S);
@@ -2024,7 +2063,42 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
       hdr.version = 1;
       hdr.num_frames = max_frames;
       hdr.fm_mask = fm_mask;
+
+      //check for finished temperature conversion
+      if (temp_conversion_in_progress &&
+          onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK )) {
+        //hooray!
+        hdr.num_temps = romcnt;
+        read_temps();
+        temp_conversion_in_progress = 0;
+      } else {
+        hdr.num_temps = 0;
+      }
+
+      //read ADC0..4
+      hdr.volt_mask = 31;
+
+      //transmit header, and depending on if we should, temperatures and ADC values
       sendbuf(&hdr, sizeof(hdr));
+      sendbuf("TEMP", 4);
+      if (hdr.num_temps) {
+        sendbuf(temps, sizeof(temps[0])*hdr.num_temps);
+      }
+      sendbuf("VOLT", 4);
+      if (hdr.volt_mask) {
+        uint16_t adcs[8];
+        uint8_t ofs = 0;
+
+        enable_adc();
+        for (uint8_t x = 0; x < 8; x++) {
+          if (hdr.volt_mask & (1<<x)) {
+            adcs[ofs++] = read_adc(x);
+          }
+        }
+        disable_adc();
+        sendbuf(adcs, sizeof(adcs[0])*ofs);
+      }
+      sendbuf("FMIQ", 4);
     } else {
       start_section("INFO");
     }
@@ -2200,21 +2274,13 @@ static void handle_input(void) {
 #if F_CPU < 6400000 || F_CPU > 25600000
 #error You need to compute some new value for the ADC prescaler
 #endif
-        ADCSRA = (1<<ADEN) | (7<<ADPS0);
-        //make sure pull-ups are disabled
-        PORTF &= 7<<5;
+        enable_adc();
 
         //ADC0..4
         start_section("INFO");
         float v33 = 0;
         for (uint8_t x = 0; x < 5; x++) {
-          //2.56V reference
-          ADMUX = x | (3<<REFS0);
-          ADCSRA |= 1<<ADSC;
-          while (ADCSRA & (1<<ADSC));
-          
-          int adc = ADCL;
-          adc += ADCH*256;  //0..1023 (right-adjusted)
+          int adc = read_adc(x);
 
           //values taken from schematic
           static const float scale[4] = {
@@ -2236,7 +2302,7 @@ static void handle_input(void) {
           const char *strs[5] = {"+3.3V", "+24V", "VIN", "+5V", "-5V"};
           printf_P(PSTR("%s:\t%+.2f V (%i)\r\n"), strs[x], v, adc);
         }
-        ADCSRA = 0;
+        disable_adc();
       } else if (c == 'V') {
         PORTB |= (1<<0);
         start_section("INFO");
@@ -2797,11 +2863,7 @@ retry:
           if (onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK )) {
             //hooray!
             header.num_temps = romcnt;
-            for (uint8_t x = 0; x < romcnt; x++) {
-              temps[x].rom12[0] = roms[x*8+1];
-              temps[x].rom12[1] = roms[x*8+2];
-              ds18b20read( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &roms[x*8], &temps[x].temp );
-            }
+            read_temps();
             temp_conversion_in_progress = 0;
           }
         }
