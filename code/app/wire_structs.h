@@ -23,6 +23,9 @@
 //     4 + num_temps*4 +
 //     4 + popcount(adc_mask)*2 +
 //     4 + popcount(fm_mask)*31
+//
+// The largest this will typically get (6 temperature
+// readings, 5 voltages, 3 FM IQ data structs) is 145 B
 
 typedef struct square_demod_header_s {
   uint8_t version;      // format version (1)
