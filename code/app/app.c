@@ -1977,7 +1977,7 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
 
   //sanity check, to prevent q1..3 from having to deal with overflow
   if (max_frames > 16383) {
-    max_frames > 16383;
+    max_frames = 16383;
   }
 
   start_section("INFO");
