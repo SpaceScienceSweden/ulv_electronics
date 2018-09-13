@@ -2786,12 +2786,14 @@ int main(void)
   unlock_adcs();
 
   //default samplerates and gains
+  wreg(0, A_SYS_CFG, 0x03); //tightest analog margin
   wreg(0, 0x0d, 0x02);
   wreg(0, 0x0e, 0x2a);
   wreg(0, 0x11, 0x04);
   wreg(0, 0x12, 0x04);
   wreg(0, 0x13, 0x04);
   wreg(0, 0x14, 0x00);
+  wreg(1, A_SYS_CFG, 0x03); //tightest analog margin
   wreg(1, 0x0d, 0x02);
   wreg(1, 0x0e, 0x2a);
   wreg(1, 0x11, 0x04);
