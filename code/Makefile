@@ -34,7 +34,7 @@ flight:
 	make programserial
 
 setbaud:
-	stty -F /dev/ttyUSB0 -echo $(PROGBAUD)
+	stty -F /dev/ttyUSB0 -echo -icrnl -ixon -onlcr -echoe -echok -echoctl -echoke raw $(PROGBAUD)
 
 programserial:
 	make -C app all
