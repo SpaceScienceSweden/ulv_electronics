@@ -16,6 +16,12 @@
 
 #define WDTO_DEFAULT WDTO_250MS
 
+#define FEATURE_TIMER_TEST 1
+#define FEATURE_MEASURE_RPMS 1
+#define FEATURE_TWIDDLE_VGND 1
+#define FEATURE_PROGRAMS 1
+
+
 #define BS  '\x08'  //backspace
 #define DEL '\x7F'  //delete - treat same as backspace
 #define ESC '\x1B'
@@ -114,6 +120,7 @@ const char *TEMP = "TEMP";
 const char *TACH = "TACH";
 const char *SAMP = "SAMP";
 
+#if FEATURE_PROGRAMS == 1
 //each program consists of a number of lines
 //each line is NUL terminated
 char program_store[4096];
@@ -123,6 +130,7 @@ struct {
   char *start, *end;  //pointers into program_store
 } programs[16];
 static const int max_programs = sizeof(programs)/sizeof(programs[0]);
+#endif
 
 static uint8_t adc_popcount[3] = {0,0,0};
 static uint8_t adc_ena[3] = {0,0,0};
@@ -591,6 +599,7 @@ static void disable_vgnd(void) {
   //PORTF &= ~((1<<5) | (1<<6));
 }
 
+#if FEATURE_PROGRAMS == 1
 static size_t free_program_space(void) {
   if (programs[0].name[0] == 0) {
     return sizeof(program_store);
@@ -687,6 +696,7 @@ static char add_program_line(const char *line) {
 
   return 0;
 }
+#endif //FEATURE_PROGRAMS
 
 static inline uint8_t have_esc(void) {
   //check for escape
@@ -2377,6 +2387,7 @@ static void handle_input(void) {
           temp /= 16;
           printf_P(PSTR(" %i.%02i\r\n"), temp, (625*templo)/100);
         }
+#if FEATURE_TIMER_TEST == 1
       } else if (c == ':') {
         //test timer1
         __uint24 last = gettime24();
@@ -2414,6 +2425,8 @@ static void handle_input(void) {
             break;
           }
         }
+#endif //FEATURE_TIMER_TEST
+#if FEATURE_MEASURE_RPMS == 1
       } else if (c == 'r') {
         //measure motor speeds
         start_section("INFO");
@@ -2458,6 +2471,8 @@ static void handle_input(void) {
           }
           printf_P(PSTR("Motor %i: %i tachs (%i RPM)\r\n"), (int)x, ntachs[x], rpm);
         }
+#endif //FEATURE_MEASURE_RPMS
+#if FEATURE_TWIDDLE_VGND == 1
       } else if (c == ';') {
         uint16_t sintab[1024];
 
@@ -2495,6 +2510,8 @@ static void handle_input(void) {
       escapeit:
         //leave with VGND=0
         set_vgnds(512);
+#endif // FEATURE_TWIDDLE_VGND
+#if FEATURE_PROGRAMS == 1
       } else if (c == 'p') {
         //list programs
         list_programs();
@@ -2548,6 +2565,7 @@ static void handle_input(void) {
             }
           }
         }
+#endif //FEATURE_PROGRAMS
       } else if (c == 'w') {
         if (len > 0) {
           uint32_t delay, t0, t1;
