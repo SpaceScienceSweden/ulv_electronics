@@ -891,6 +891,22 @@ static uint8_t popcount(uint16_t a) {
 
 static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
   adc_word_t word;
+
+  //deal with reserved bits, in case the users is careless
+  if (a == A_SYS_CFG) {
+    d |= 0x20;
+  } else if (a == CLK1) {
+    d &= 0x8E;
+  } else if (a == CLK2) {
+    d &= 0xEF;
+  } else if (a == ADC_ENA) {
+    d &= 0x0F;
+  } else if (a == 0x10) {
+    d  = 0x00;
+  } else if (a >= ADC1 && a <= ADC4) {
+    d &= 0x03;
+  }
+
   adc_comm(id, WREG(a,d));
 
   //if we change ADC_ENA then we need to update popcount since we use dynamic framing
@@ -903,7 +919,7 @@ static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
   word = adc_comm(id, 0);
   if (((word >> (WORDSZ-16)) & 0x1FFF) != ((a<<8) | d)) {
     start_section("ERROR");
-    printf_P(PSTR("wreg having problems (a=%02x, d=%02x vs %08lX)\r\n"), a, d, word);
+    printf_P(PSTR("wreg having problems (id=%hhu, a=%02x, d=%02x vs %08lX)\r\n"), id, a, d, word);
     return 1;
   }
   return 0;
@@ -2786,14 +2802,14 @@ int main(void)
   unlock_adcs();
 
   //default samplerates and gains
-  wreg(0, A_SYS_CFG, 0x03); //tightest analog margin
+  wreg(0, A_SYS_CFG, 0x23); //tightest analog margin
   wreg(0, 0x0d, 0x02);
   wreg(0, 0x0e, 0x2a);
   wreg(0, 0x11, 0x04);
   wreg(0, 0x12, 0x04);
   wreg(0, 0x13, 0x04);
   wreg(0, 0x14, 0x00);
-  wreg(1, A_SYS_CFG, 0x03); //tightest analog margin
+  wreg(1, A_SYS_CFG, 0x23); //tightest analog margin
   wreg(1, 0x0d, 0x02);
   wreg(1, 0x0e, 0x2a);
   wreg(1, 0x11, 0x04);
