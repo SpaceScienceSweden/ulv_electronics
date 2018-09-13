@@ -1645,6 +1645,7 @@ static inline void binary_iq(
     for (uint8_t j = 0; j < 4; j++) {
       // I = q1-q2-q3+q4
       // Q = q1+q2-q3-q4
+      //TODO: proper rounding
       accu_t q1 = Q1[j] / fm->NQ[0];
       accu_t q2 = Q2[j] / fm->NQ[1];
       accu_t q3 = Q3[j] / fm->NQ[2];
@@ -2007,6 +2008,8 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
       temp_conversion_in_progress = 1;
     }
 
+    uint8_t stat1[3] = {0,0,0};
+
     //longer WDT than normal to not have to do WDR inside loops
     wdt_enable(WDTO_2S);
     for (; discard_samples > 0; discard_samples--) {
@@ -2028,21 +2031,20 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
     do {
       //poll /DRDY
       while (PINE & (1<<PE7));
-      uint8_t stat1_data = 0;
-
 #define READ_FM(i) \
           if (fm_mask & (1<<i)) {\
             adc_select(i);\
-            ptr = read_samples_fast(ptr, 4, &stat1_data);\
+            ptr = read_samples_fast(ptr, 4, &stat1[i]);\
             adc_deselect();\
           }
       READ_FM(0);
       READ_FM(1);
       READ_FM(2);
 
-      if (stat1_data) {
+      if (stat1[0] || stat1[1] || stat1[2]) {
         start_section("ERROR");
-        printf_P(PSTR("Got STAT_1 = %02hhx\n"), stat1_data);
+        printf_P(PSTR("Got STAT_1 = {%02hhx, %02hhx, %02hhx}\n"),
+          stat1[0], stat1[1], stat1[2]);
         goto square_demod_analog_done;
       }
 
@@ -2060,7 +2062,7 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
     if (send_binary) {
       start_section("SQUARE");
       square_demod_header_s hdr;
-      hdr.version = 1;
+      hdr.version = 2;
       hdr.num_frames = max_frames;
       hdr.fm_mask = fm_mask;
 
@@ -2105,10 +2107,14 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
 
     //synthesize TACH from fourth channel in each FM data stream
     uint8_t ofs = 0;  //FM offset into sample_data
-    for (uint8_t i = first_id; i < 3; i++) {
-      if (fm_mask & (1<<i)) {
+    for (uint8_t id = first_id; id < 3; id++) {
+      if (fm_mask & (1<<id)) {
         fm_s fm;
         memset(&fm, 0, sizeof(fm));
+        fm.stat_1 = stat1[id];
+        fm.stat_p = rreg(id, STAT_P);
+        fm.stat_n = rreg(id, STAT_N);
+        fm.stat_s = rreg(id, STAT_S);
 
         sample_t lo = (1L<<(WORDSZ-1)) - 1;
         sample_t hi = 0;
@@ -2173,7 +2179,7 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
         } else {
           //print it
           printf_P(PSTR("%hhu %hhu %5u %5u %5u %5u "),
-            i, fm.num_tachs, fm.NQ[0], fm.NQ[1], fm.NQ[2], fm.NQ[3]);
+            id, fm.num_tachs, fm.NQ[0], fm.NQ[1], fm.NQ[2], fm.NQ[3]);
 
           for (uint8_t j = 0; j < 4; j++) {
             print_iq(j, Q1, Q2, Q3, Q4, fm.NQ);

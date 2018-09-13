@@ -86,6 +86,12 @@ typedef struct fm_s {
   uint16_t NQ[4];   // number of frames collected in
                     // each quadrant
   int16_t IQ[4][2]; // IQ data (IQIQIQIQ)
+
+  // ADS131A04 registers:
+  uint8_t stat_1;   // STAT_1
+  uint8_t stat_p;   // STAT_P
+  uint8_t stat_n;   // STAT_N
+  uint8_t stat_s;   // STAT_S
 } fm_s;
 
 
