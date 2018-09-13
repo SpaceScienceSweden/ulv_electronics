@@ -28,7 +28,7 @@
 // readings, 5 voltages, 3 FM IQ data structs) is 145 B
 
 typedef struct square_demod_header_s {
-  uint8_t version;      // format version (1)
+  uint8_t version;      // format version (3)
   uint16_t num_frames;  // number of frames sampled
 
   // Number of DS18B20Z outputs (0..6)
@@ -78,8 +78,6 @@ typedef struct temperature_s {
 
 // There are popcount(fm_mask) instances of this
 typedef struct fm_s {
-  int16_t tach_min; // min of all tach samples
-  int16_t tach_max; // max of all tach samples
   uint16_t discard; // how many samples were discarded
                     // before the first tach
   uint8_t num_tachs;// number of tachometer impulses
@@ -88,10 +86,21 @@ typedef struct fm_s {
   int16_t IQ[4][2]; // IQ data (IQIQIQIQ)
 
   // ADS131A04 registers:
-  uint8_t stat_1;   // STAT_1
+  uint8_t stat_1;   // STAT_1 (or'd during capture)
   uint8_t stat_p;   // STAT_P
   uint8_t stat_n;   // STAT_N
   uint8_t stat_s;   // STAT_S
+
+  // min/max of all samples in each channel
+  int16_t minmax[4][2];
+
+  // mean value of samples within tachometer interval
+  int16_t mean[4];
+
+  // mean absolute value of samples
+  // channel 4 excluded since it would equal mean[3],
+  // due to wiring
+  uint16_t mean_abs[3];
 } fm_s;
 
 

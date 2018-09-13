@@ -1666,6 +1666,8 @@ static inline void binary_iq(
   accu_t *Q3,
   accu_t *Q4
 ) {
+  uint16_t N = fm->NQ[0] + fm->NQ[1] + fm->NQ[2] + fm->NQ[3];
+
   //make sure we have enough samples to form averages
   if (fm->NQ[0] && fm->NQ[1] && fm->NQ[2] && fm->NQ[3]) {
     for (uint8_t j = 0; j < 4; j++) {
@@ -1680,6 +1682,9 @@ static inline void binary_iq(
       //leave data as raw as possible, hence no divisions by 4
       fm->IQ[j][0] = q1-q2-q3+q4;
       fm->IQ[j][1] = q1+q2-q3-q4;
+
+      //mean is proper tho
+      fm->mean[j] = (Q1[j] + Q2[j] + Q3[j] + Q4[j]) / N;
     }
   }
 }
@@ -2088,7 +2093,7 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
     if (send_binary) {
       start_section("SQUARE");
       square_demod_header_s hdr;
-      hdr.version = 2;
+      hdr.version = 3;
       hdr.num_frames = max_frames;
       hdr.fm_mask = fm_mask;
 
@@ -2137,6 +2142,16 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
       if (fm_mask & (1<<id)) {
         fm_s fm;
         memset(&fm, 0, sizeof(fm));
+
+        fm.minmax[0][0] = INT16_MAX;
+        fm.minmax[1][0] = INT16_MAX;
+        fm.minmax[2][0] = INT16_MAX;
+        fm.minmax[3][0] = INT16_MAX;
+        fm.minmax[0][1] = INT16_MIN;
+        fm.minmax[1][1] = INT16_MIN;
+        fm.minmax[2][1] = INT16_MIN;
+        fm.minmax[3][1] = INT16_MIN;
+
         fm.stat_1 = stat1[id];
         fm.stat_p = rreg(id, STAT_P);
         fm.stat_n = rreg(id, STAT_N);
@@ -2146,26 +2161,46 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
         sample_t hi = 0;
         sample_t *data_ptr = ofs + (sample_t*)&sample_data[0][0];
 
+        uint32_t sum_abs[3] = {0,0,0};
+
+        // TODO: we could use a fixed threshold for tach,
+        // and fold this into the demodulation loop below
         for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4*num_fms) {
-          sample_t s = data_ptr[3];
-          if (s < lo) lo = s;
-          if (s > hi) hi = s;
+          for (uint8_t l = 0; l < 4; l++) {
+            //deal with >=24-bit
+            int16_t s = data_ptr[l] / (1 << (WORDSZ-16));
+            if (s < fm.minmax[l][0]) fm.minmax[l][0] = s;
+            if (s > fm.minmax[l][1]) fm.minmax[l][1] = s;
+
+            //tachometer is always positive,
+            //so no point in computing mean_abs for it
+            //computing the mean absolute difference to the mean instead
+            //might be more useful, but would also be pricier
+            if (l < 3) {
+              if (s > 0) {
+                sum_abs[l] += s;
+              } else if (s < 0) {
+                //should hopefully deal with -32768 correctly
+                sum_abs[l] -= s;
+              }
+            }
+          }
         }
 
-        //deal with >=24-bit
-        fm.tach_min = lo / (1<<(WORDSZ-16));
-        fm.tach_max = hi / (1<<(WORDSZ-16));
+        fm.mean_abs[0] = sum_abs[0] / max_frames;
+        fm.mean_abs[1] = sum_abs[1] / max_frames;
+        fm.mean_abs[2] = sum_abs[2] / max_frames;
 
         //hysteresis: >75% -> on, <25% -> off
-        sample_t mid = lo/2 + hi/2;
-        sample_t on  = hi/2 + mid/2;
-        sample_t off = lo/2 + mid/2;
+        int16_t mid = fm.minmax[3][0]/2 + fm.minmax[3][1]/2;
+        int16_t on  = fm.minmax[3][1]/2 + mid/2;
+        int16_t off = fm.minmax[3][0]/2 + mid/2;
 
         //printf_P(PSTR("FM %hhu: tach in [%li, %li], off = %li, on = %li\r\n"), i, (int32_t)lo, (int32_t)hi, (int32_t)off, (int32_t)on);
 
         //rewind
         data_ptr = ofs + (sample_t*)&sample_data[0][0];
-        uint8_t state = data_ptr[3] > mid;
+        uint8_t state = data_ptr[3]/(1 << (WORDSZ-16)) > mid;
         uint16_t q0 = 0; //index of last tach, or zero
 
         //demodulation stuff
@@ -2177,7 +2212,7 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
         for (uint16_t k = 0;
               k < max_frames && fm.num_tachs < 255;
               k++, data_ptr += 4*num_fms) {
-          sample_t s = data_ptr[3];
+          int16_t s = data_ptr[3] / (1 << (WORDSZ-16));
           //look for rising edge
           if (state == 0 && s > on) {
             state = 1;
