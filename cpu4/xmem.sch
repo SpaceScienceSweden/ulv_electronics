@@ -1,36 +1,6 @@
-EESchema Schematic File Version 2
-LIBS:power
-LIBS:device
-LIBS:transistors
-LIBS:conn
-LIBS:linear
-LIBS:regul
-LIBS:74xx
-LIBS:cmos4000
-LIBS:adc-dac
-LIBS:memory
-LIBS:xilinx
-LIBS:microcontrollers
-LIBS:dsp
-LIBS:microchip
-LIBS:analog_switches
-LIBS:motorola
-LIBS:texas
-LIBS:intel
-LIBS:audio
-LIBS:interface
-LIBS:digital-audio
-LIBS:philips
-LIBS:display
-LIBS:cypress
-LIBS:siliconi
-LIBS:opto
-LIBS:atmel
-LIBS:contrib
-LIBS:valves
-LIBS:scube
+EESchema Schematic File Version 4
 LIBS:cpu4-cache
-EELAYER 25 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -51,7 +21,7 @@ Text GLabel 3200 4650 0    60   Input ~ 0
 Text GLabel 3200 4750 0    60   Input ~ 0
 /WR
 $Comp
-L 74LS573 U2
+L cpu4-rescue:74LS573 U2
 U 1 1 57F80533
 P 2500 3150
 F 0 "U2" H 2650 3750 50  0000 C CNN
@@ -123,7 +93,7 @@ A14
 Text GLabel 3200 4150 0    60   Input ~ 0
 A15
 $Comp
-L IS63LV1024 U3
+L cpu4-rescue:IS63LV1024 U3
 U 1 1 57FA43DC
 P 3900 3700
 F 0 "U3" H 3950 3700 50  0000 C CNN
@@ -139,7 +109,7 @@ F 8 "85" H 3900 3700 60  0001 C CNN "Max temp"
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR027
+L cpu4-rescue:VCC #PWR027
 U 1 1 57FA4515
 P 6950 3950
 F 0 "#PWR027" H 6950 3800 50  0001 C CNN
@@ -150,7 +120,7 @@ F 3 "" H 6950 3950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR028
+L cpu4-rescue:+3.3V #PWR028
 U 1 1 57FA452D
 P 6650 3950
 F 0 "#PWR028" H 6650 3800 50  0001 C CNN
@@ -161,7 +131,7 @@ F 3 "" H 6650 3950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C3
+L cpu4-rescue:C_Small C3
 U 1 1 58D96905
 P 6950 4350
 F 0 "C3" H 6960 4420 50  0000 L CNN
@@ -177,7 +147,7 @@ Connection ~ 6950 4200
 Wire Wire Line
 	6650 3950 6650 4200
 $Comp
-L GND #PWR029
+L cpu4-rescue:GND #PWR029
 U 1 1 58D97560
 P 6950 4450
 F 0 "#PWR029" H 6950 4200 50  0001 C CNN
@@ -198,7 +168,7 @@ Wire Wire Line
 Text Notes 6500 3600 0    60   ~ 0
 Power use: 3 mA @ 24V (77 mW)
 $Comp
-L R_Small R11
+L cpu4-rescue:R_Small R11
 U 1 1 5AFDD8A9
 P 1450 4250
 F 0 "R11" H 1480 4270 50  0000 L CNN
@@ -209,7 +179,7 @@ F 3 "" H 1450 4250 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L R_Small R9
+L cpu4-rescue:R_Small R9
 U 1 1 5AFDD993
 P 1450 3950
 F 0 "R9" H 1480 3970 50  0000 L CNN
@@ -221,7 +191,7 @@ F 4 "dnf" V 1450 3950 60  0000 C CNN "fit_field"
 	0    1    1    0   
 $EndComp
 $Comp
-L R_Small R18
+L cpu4-rescue:R_Small R18
 U 1 1 5AFDDB2A
 P 1600 4600
 F 0 "R18" H 1630 4620 50  0000 L CNN
@@ -236,7 +206,7 @@ Wire Wire Line
 	1600 4500 1600 4250
 Connection ~ 1600 4250
 $Comp
-L GND #PWR030
+L cpu4-rescue:GND #PWR030
 U 1 1 5AFDDB8F
 P 1600 4700
 F 0 "#PWR030" H 1600 4450 50  0001 C CNN
@@ -263,7 +233,7 @@ Connection ~ 1300 4100
 Text Notes 700  5300 0    60   ~ 0
 PG3 can be used for either:\nBankswitching (fit R11) or\nEnabling/disabling XMEM, saving some power (fit R9 and R18)
 $Comp
-L R_Small R54
+L cpu4-rescue:R_Small R54
 U 1 1 5AFE0EC8
 P 1850 4600
 F 0 "R54" H 1880 4620 50  0000 L CNN
@@ -277,7 +247,7 @@ Wire Wire Line
 	1850 4450 1850 4500
 Connection ~ 1850 4450
 $Comp
-L GND #PWR031
+L cpu4-rescue:GND #PWR031
 U 1 1 5AFE0F52
 P 1850 4700
 F 0 "#PWR031" H 1850 4450 50  0001 C CNN

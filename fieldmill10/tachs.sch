@@ -1,36 +1,6 @@
-EESchema Schematic File Version 2
-LIBS:power
-LIBS:device
-LIBS:transistors
-LIBS:conn
-LIBS:linear
-LIBS:regul
-LIBS:74xx
-LIBS:cmos4000
-LIBS:adc-dac
-LIBS:memory
-LIBS:xilinx
-LIBS:microcontrollers
-LIBS:dsp
-LIBS:microchip
-LIBS:analog_switches
-LIBS:motorola
-LIBS:texas
-LIBS:intel
-LIBS:audio
-LIBS:interface
-LIBS:digital-audio
-LIBS:philips
-LIBS:display
-LIBS:cypress
-LIBS:siliconi
-LIBS:opto
-LIBS:atmel
-LIBS:contrib
-LIBS:valves
-LIBS:scube
+EESchema Schematic File Version 4
 LIBS:fieldmill10-cache
-EELAYER 25 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -45,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L LM324 U7
+L fieldmill10-rescue:LM324 U7
 U 2 1 58A66840
 P 6300 3100
 F 0 "U7" H 6350 3300 50  0000 C CNN
@@ -63,7 +33,7 @@ F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX4
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R18
+L fieldmill10-rescue:R_Small R18
 U 1 1 58A6685E
 P 5050 3150
 F 0 "R18" H 5080 3170 50  0000 L CNN
@@ -74,7 +44,7 @@ F 3 "" H 5050 3150 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R20
+L fieldmill10-rescue:R_Small R20
 U 1 1 58A66865
 P 5450 3400
 F 0 "R20" H 5480 3420 50  0000 L CNN
@@ -85,7 +55,7 @@ F 3 "" H 5450 3400 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R14
+L fieldmill10-rescue:R_Small R14
 U 1 1 58A66879
 P 8900 2650
 F 0 "R14" H 8930 2670 50  0000 L CNN
@@ -96,7 +66,7 @@ F 3 "" H 8900 2650 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L R_Small R16
+L fieldmill10-rescue:R_Small R16
 U 1 1 58A66880
 P 8250 2900
 F 0 "R16" H 8280 2920 50  0000 L CNN
@@ -107,7 +77,7 @@ F 3 "" H 8250 2900 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L R_Small R19
+L fieldmill10-rescue:R_Small R19
 U 1 1 58A66887
 P 6850 3200
 F 0 "R19" H 6880 3220 50  0000 L CNN
@@ -118,7 +88,7 @@ F 3 "" H 6850 3200 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR60
+L fieldmill10-rescue:GND #PWR60
 U 1 1 58A6688E
 P 6150 4050
 F 0 "#PWR60" H 6150 3800 50  0001 C CNN
@@ -133,7 +103,7 @@ fc = 1/(2*pi*10k*10u) = 1.6 Hz
 Text HLabel 9450 3000 2    60   Input ~ 0
 ITACH
 $Comp
-L R_Small R13
+L fieldmill10-rescue:R_Small R13
 U 1 1 58A72048
 P 3950 1800
 F 0 "R13" H 3980 1820 50  0000 L CNN
@@ -144,7 +114,7 @@ F 3 "" H 3950 1800 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR54
+L fieldmill10-rescue:GND #PWR54
 U 1 1 58A7283B
 P 4200 2100
 F 0 "#PWR54" H 4200 1850 50  0001 C CNN
@@ -155,7 +125,7 @@ F 3 "" H 4200 2100 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3V3 #PWR53
+L fieldmill10-rescue:+3V3 #PWR53
 U 1 1 58B46917
 P 3750 1800
 F 0 "#PWR53" H 3750 1650 50  0001 C CNN
@@ -166,7 +136,7 @@ F 3 "" H 3750 1800 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR55
+L fieldmill10-rescue:GND #PWR55
 U 1 1 58B47058
 P 4550 2100
 F 0 "#PWR55" H 4550 1850 50  0001 C CNN
@@ -179,7 +149,7 @@ $EndComp
 Text HLabel 9450 1900 2    60   Input ~ 0
 RAW_ITACH
 $Comp
-L PWR_FLAG #FLG10
+L fieldmill10-rescue:PWR_FLAG #FLG10
 U 1 1 58C4677A
 P 4800 1700
 F 0 "#FLG10" H 4800 1795 50  0001 C CNN
@@ -192,7 +162,7 @@ $EndComp
 Text Notes 3150 4450 0    60   ~ 0
 R40 might be better/simpler way to get RAW_ITACH to a "lagom" level
 $Comp
-L ITR20001 IR2
+L fieldmill10-rescue:ITR20001 IR2
 U 1 1 58D3D0AF
 P 5500 2600
 F 0 "IR2" V 5400 2800 60  0000 C CNN
@@ -207,7 +177,7 @@ F 7 "https://www.digikey.com/product-detail/en/sullins-connector-solutions/LPPB0
 	0    -1   1    0   
 $EndComp
 $Comp
-L +3V3 #PWR56
+L fieldmill10-rescue:+3V3 #PWR56
 U 1 1 58D3D2E9
 P 5500 2250
 F 0 "#PWR56" H 5500 2100 50  0001 C CNN
@@ -218,7 +188,7 @@ F 3 "" H 5500 2250 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3V3 #PWR57
+L fieldmill10-rescue:+3V3 #PWR57
 U 1 1 58D3D339
 P 5700 2250
 F 0 "#PWR57" H 5700 2100 50  0001 C CNN
@@ -229,7 +199,7 @@ F 3 "" H 5700 2250 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L -5V #PWR59
+L fieldmill10-rescue:-5V #PWR59
 U 1 1 58D3DB70
 P 5700 4000
 F 0 "#PWR59" H 5700 4100 50  0001 C CNN
@@ -240,7 +210,7 @@ F 3 "" H 5700 4000 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L R_Small R40
+L fieldmill10-rescue:R_Small R40
 U 1 1 58D3DCE4
 P 5700 3650
 F 0 "R40" H 5730 3670 50  0000 L CNN
@@ -252,7 +222,7 @@ F 4 "dnf" H 5800 3550 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C47
+L fieldmill10-rescue:C_Small C47
 U 1 1 58D41B0B
 P 5950 3600
 F 0 "C47" H 5960 3670 50  0000 L CNN
@@ -264,7 +234,7 @@ F 4 "dnf" H 6100 3600 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L LED D5
+L fieldmill10-rescue:LED D5
 U 1 1 58D45386
 P 9300 3250
 F 0 "D5" H 9300 3350 50  0000 C CNN
@@ -276,7 +246,7 @@ F 4 "dnf" H 9450 3150 60  0000 C CNN "fit_field"
 	0    -1   -1   0   
 $EndComp
 $Comp
-L R_Small R45
+L fieldmill10-rescue:R_Small R45
 U 1 1 58D453FA
 P 9300 3500
 F 0 "R45" H 9330 3520 50  0000 L CNN
@@ -291,7 +261,7 @@ Text Notes 9550 3350 0    60   ~ 0
 Text Notes 1350 3700 0    60   ~ 0
 Experiment results:\n680 ohm drive, 100k shunt to GND, 3 mm distance -> 0.8 .. 3.3 V swing\n1k2 drive seems OK too\n470 pF seems a bit on the low side\n47 nF was way too much\ncutoff @ 3rd harmonic, 100 Hz signal:\nC <= 1/(2*pi*100e3*300) = 5.3 n -> 4n7 should be perfect\n\nReduced 100k shunt to 10k, increased cap from 1n to 10n
 $Comp
-L R_Small R53
+L fieldmill10-rescue:R_Small R53
 U 1 1 599B2A1E
 P 7150 3200
 F 0 "R53" H 7180 3220 50  0000 L CNN
@@ -302,7 +272,7 @@ F 3 "" H 7150 3200 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L R_Small R55
+L fieldmill10-rescue:R_Small R55
 U 1 1 599B393F
 P 8450 3400
 F 0 "R55" H 8480 3420 50  0000 L CNN
@@ -313,7 +283,7 @@ F 3 "" H 8450 3400 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R54
+L fieldmill10-rescue:R_Small R54
 U 1 1 599B43EB
 P 8300 3200
 F 0 "R54" H 8330 3220 50  0000 L CNN
@@ -332,7 +302,7 @@ NoConn ~ 9900 3700
 NoConn ~ 9900 3900
 NoConn ~ 10500 3800
 $Comp
-L R_Small R25
+L fieldmill10-rescue:R_Small R25
 U 1 1 5A6DE2CA
 P 6900 2450
 F 0 "R25" H 6930 2470 50  0000 L CNN
@@ -344,7 +314,7 @@ F 4 "dnf" H 6800 2450 60  0000 C CNN "fit_field"
 	-1   0    0    1   
 $EndComp
 $Comp
-L R_Small R24
+L fieldmill10-rescue:R_Small R24
 U 1 1 5A6DE375
 P 6900 2150
 F 0 "R24" H 6930 2170 50  0000 L CNN
@@ -356,7 +326,7 @@ F 4 "dnf" H 6800 2150 60  0000 C CNN "fit_field"
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR58
+L fieldmill10-rescue:GND #PWR58
 U 1 1 5A6DE6AD
 P 6900 2550
 F 0 "#PWR58" H 6900 2300 50  0001 C CNN
@@ -369,11 +339,9 @@ $EndComp
 Wire Wire Line
 	5050 3950 5050 3250
 Wire Wire Line
-	6000 3200 6000 3200
-Wire Wire Line
 	6000 3200 6000 3450
 Wire Wire Line
-	6650 1900 6650 3450
+	6650 1900 6650 2900
 Wire Wire Line
 	6650 3100 6600 3100
 Wire Wire Line
@@ -389,9 +357,9 @@ Connection ~ 6650 3100
 Wire Wire Line
 	9150 2650 9000 2650
 Wire Wire Line
-	4050 1800 8700 1800
+	4050 1800 4200 1800
 Wire Wire Line
-	9100 3000 9450 3000
+	9100 3000 9150 3000
 Wire Wire Line
 	5300 3050 5300 3300
 Wire Wire Line
@@ -402,7 +370,7 @@ Wire Wire Line
 Wire Wire Line
 	3850 1800 3750 1800
 Wire Wire Line
-	5050 3950 9300 3950
+	5050 3950 5300 3950
 Wire Wire Line
 	4200 1900 4200 1800
 Connection ~ 4200 1800
@@ -424,9 +392,9 @@ Wire Wire Line
 Wire Wire Line
 	5500 2950 5500 2900
 Wire Wire Line
-	5700 2900 5700 3550
+	5700 2900 5700 3000
 Wire Wire Line
-	5700 3750 5700 4000
+	5700 3750 5700 3900
 Wire Wire Line
 	5950 3700 5950 3900
 Wire Wire Line
@@ -435,7 +403,7 @@ Connection ~ 5700 3900
 Wire Wire Line
 	5450 3950 5450 3500
 Wire Wire Line
-	5300 3050 5700 3050
+	5300 3050 5450 3050
 Wire Wire Line
 	5450 3300 5450 3050
 Connection ~ 5450 3050
@@ -459,21 +427,21 @@ Connection ~ 8700 3950
 Wire Wire Line
 	9300 3950 9300 3600
 Wire Wire Line
-	7250 3200 8200 3200
+	7250 3200 7350 3200
 Wire Wire Line
 	7350 3500 7350 3200
 Connection ~ 7350 3200
 Wire Wire Line
-	6950 3200 7050 3200
+	6950 3200 7000 3200
 Wire Wire Line
 	7450 3100 7000 3100
 Wire Wire Line
 	7000 3100 7000 3200
 Connection ~ 7000 3200
 Wire Wire Line
-	8350 2900 8500 2900
+	8350 2900 8450 2900
 Wire Wire Line
-	7650 3100 8500 3100
+	7650 3100 7850 3100
 Wire Wire Line
 	7350 3700 7350 3950
 Connection ~ 7350 3950
@@ -481,9 +449,9 @@ Wire Wire Line
 	8000 3850 8000 3950
 Connection ~ 8000 3950
 Wire Wire Line
-	8450 3500 8450 3900
+	8450 3500 8450 3550
 Wire Wire Line
-	8450 3100 8450 3300
+	8450 3100 8450 3200
 Connection ~ 8450 3100
 Wire Wire Line
 	8000 1800 8000 3250
@@ -521,7 +489,7 @@ Wire Wire Line
 	6900 2050 6900 1800
 Connection ~ 6900 1800
 Wire Wire Line
-	6900 2250 6900 2350
+	6900 2250 6900 2300
 Wire Wire Line
 	6900 2300 7850 2300
 Wire Wire Line
@@ -531,7 +499,7 @@ Connection ~ 6900 2300
 Text Notes 7100 2250 0    49   ~ 0
 Fixed threshold\nValues are just guesses
 $Comp
-L LM324 U7
+L fieldmill10-rescue:LM324 U7
 U 1 1 5A8C787B
 P 8800 3000
 F 0 "U7" H 8850 3200 50  0000 C CNN
@@ -549,7 +517,7 @@ F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX4
 	1    0    0    -1  
 $EndComp
 $Comp
-L LM324 U7
+L fieldmill10-rescue:LM324 U7
 U 3 1 5A8C7A52
 P 8100 3550
 F 0 "U7" H 8150 3750 50  0000 C CNN
@@ -567,7 +535,7 @@ F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX4
 	1    0    0    -1  
 $EndComp
 $Comp
-L LM324 U7
+L fieldmill10-rescue:LM324 U7
 U 4 1 5A8C7C01
 P 10200 3800
 F 0 "U7" H 10250 4000 50  0000 C CNN
@@ -585,7 +553,7 @@ F 10 "https://www.digikey.se/product-detail/en/maxim-integrated/MAX44252ASD/MAX4
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C60
+L fieldmill10-rescue:C_Small C60
 U 1 1 5AA7B261
 P 4200 2000
 F 0 "C60" H 4210 2070 50  0000 L CNN
@@ -604,7 +572,7 @@ F 11 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/E
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C23
+L fieldmill10-rescue:C_Small C23
 U 1 1 5AA86FDF
 P 5300 3400
 F 0 "C23" H 5310 3470 50  0000 L CNN
@@ -624,7 +592,7 @@ F 12 "https://www.digikey.se/product-detail/en/panasonic-electronic-components/E
 	-1   0    0    1   
 $EndComp
 $Comp
-L C_Small C18
+L fieldmill10-rescue:C_Small C18
 U 1 1 5AA83FA8
 P 4550 2000
 F 0 "C18" H 4560 2070 50  0000 L CNN
@@ -642,7 +610,7 @@ F 10 "https://www.digikey.se/product-detail/en/kemet/C0805X106M8RACAUTO/399-1569
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C31
+L fieldmill10-rescue:C_Small C31
 U 1 1 5AA83FE4
 P 7350 3600
 F 0 "C31" H 7360 3670 50  0000 L CNN
@@ -660,7 +628,7 @@ F 10 "https://www.digikey.se/product-detail/en/kemet/C0805X106M8RACAUTO/399-1569
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C19
+L fieldmill10-rescue:C_Small C19
 U 1 1 5AA84096
 P 7550 3100
 F 0 "C19" H 7560 3170 50  0000 L CNN
@@ -679,4 +647,68 @@ F 10 "https://www.digikey.se/product-detail/en/kemet/C0805X106M8RACAUTO/399-1569
 $EndComp
 Text Notes 9500 1850 0    60   ~ 0
 Sampled by ADC
+Wire Wire Line
+	5700 3000 5700 3050
+Wire Wire Line
+	6200 3950 7350 3950
+Wire Wire Line
+	6200 1800 6900 1800
+Wire Wire Line
+	6650 3100 6650 3200
+Wire Wire Line
+	9150 3000 9300 3000
+Wire Wire Line
+	4200 1800 4550 1800
+Wire Wire Line
+	4550 1800 4800 1800
+Wire Wire Line
+	4800 1800 6200 1800
+Wire Wire Line
+	6650 2900 6650 3100
+Wire Wire Line
+	5700 3900 5700 4000
+Wire Wire Line
+	5450 3050 5700 3050
+Wire Wire Line
+	5700 3050 5700 3450
+Wire Wire Line
+	5700 3450 5700 3550
+Wire Wire Line
+	9300 3000 9450 3000
+Wire Wire Line
+	6650 3200 6650 3450
+Wire Wire Line
+	8700 3950 9300 3950
+Wire Wire Line
+	7350 3200 7750 3200
+Wire Wire Line
+	7000 3200 7050 3200
+Wire Wire Line
+	7350 3950 8000 3950
+Wire Wire Line
+	8000 3950 8700 3950
+Wire Wire Line
+	8450 3100 8500 3100
+Wire Wire Line
+	8000 1800 8700 1800
+Wire Wire Line
+	8450 2900 8500 2900
+Wire Wire Line
+	6150 3950 6200 3950
+Wire Wire Line
+	8450 3200 8450 3300
+Wire Wire Line
+	8450 3550 8450 3900
+Wire Wire Line
+	7750 3200 8200 3200
+Wire Wire Line
+	5300 3950 5450 3950
+Wire Wire Line
+	5450 3950 6150 3950
+Wire Wire Line
+	6900 1800 8000 1800
+Wire Wire Line
+	7850 3100 8450 3100
+Wire Wire Line
+	6900 2300 6900 2350
 $EndSCHEMATC

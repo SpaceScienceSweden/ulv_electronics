@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name fieldmill10-rescue)(type Legacy)(uri ${KIPRJMOD}/fieldmill10-rescue.lib)(options "")(descr ""))
+)

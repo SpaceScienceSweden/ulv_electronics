@@ -1,36 +1,6 @@
-EESchema Schematic File Version 2
-LIBS:power
-LIBS:device
-LIBS:transistors
-LIBS:conn
-LIBS:linear
-LIBS:regul
-LIBS:74xx
-LIBS:cmos4000
-LIBS:adc-dac
-LIBS:memory
-LIBS:xilinx
-LIBS:microcontrollers
-LIBS:dsp
-LIBS:microchip
-LIBS:analog_switches
-LIBS:motorola
-LIBS:texas
-LIBS:intel
-LIBS:audio
-LIBS:interface
-LIBS:digital-audio
-LIBS:philips
-LIBS:display
-LIBS:cypress
-LIBS:siliconi
-LIBS:opto
-LIBS:atmel
-LIBS:contrib
-LIBS:valves
-LIBS:scube
+EESchema Schematic File Version 4
 LIBS:cpu4-cache
-EELAYER 25 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -45,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L THN_30-2415 U10
+L cpu4-rescue:THN_30-2415 U10
 U 1 1 58D7FCA5
 P 6800 4350
 F 0 "U10" H 6800 4650 60  0000 C CNN
@@ -67,7 +37,7 @@ F 14 "5" H 6800 4350 60  0001 C CNN "No. in lab"
 	1    0    0    -1  
 $EndComp
 $Comp
-L RSO-2412D-Dual U9
+L cpu4-rescue:RSO-2412D-Dual U9
 U 1 1 58D7FD3C
 P 6600 2600
 F 0 "U9" H 6750 1950 60  0000 C CNN
@@ -91,7 +61,7 @@ F 16 "6" H 6600 2600 60  0001 C CNN "No. in lab"
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Polyfuse_Small F1
+L cpu4-rescue:Polyfuse_Small F1
 U 1 1 58D80A2E
 P 3550 4150
 F 0 "F1" V 3475 4150 50  0000 C CNN
@@ -110,7 +80,7 @@ F 11 "8" V 3550 4150 60  0001 C CNN "No. in lab"
 	0    1    1    0   
 $EndComp
 $Comp
-L CONN_01X02 P14
+L cpu4-rescue:CONN_01X02 P14
 U 1 1 58D80AB3
 P 3550 3750
 F 0 "P14" H 3550 3900 50  0000 C CNN
@@ -122,7 +92,7 @@ F 4 "dnf" V 3550 3550 60  0000 C CNN "fit_field"
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR050
+L cpu4-rescue:GND #PWR050
 U 1 1 58D80E4A
 P 800 4050
 F 0 "#PWR050" H 800 3800 50  0001 C CNN
@@ -133,7 +103,7 @@ F 3 "" H 800 4050 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L D_TVS D3
+L cpu4-rescue:D_TVS D3
 U 1 1 58D8158D
 P 4000 4450
 F 0 "D3" H 4000 4550 50  0000 C CNN
@@ -157,7 +127,7 @@ $EndComp
 Text GLabel 5150 4050 1    60   Input ~ 0
 VIN
 $Comp
-L GND #PWR051
+L cpu4-rescue:GND #PWR051
 U 1 1 58D82129
 P 4800 4950
 F 0 "#PWR051" H 4800 4700 50  0001 C CNN
@@ -168,7 +138,7 @@ F 3 "" H 4800 4950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR052
+L cpu4-rescue:GND #PWR052
 U 1 1 58D82EB1
 P 8650 3150
 F 0 "#PWR052" H 8650 2900 50  0001 C CNN
@@ -179,7 +149,7 @@ F 3 "" H 8650 3150 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L C_Small C15
+L cpu4-rescue:C_Small C15
 U 1 1 58D82F97
 P 7400 3000
 F 0 "C15" H 7410 3070 50  0000 L CNN
@@ -199,7 +169,7 @@ $EndComp
 Text Notes 6250 3950 0    60   ~ 0
 30W\nDoes not need to be isolated\nCould potentially use a TMR 9-2415 or TSR 2-24150\nMax current for 2 W EC-20 = 330 mA -> 8 W per motor * 3 = 24 W
 $Comp
-L Q_NMOS_GDSD Q1
+L cpu4-rescue:Q_NMOS_GDSD Q1
 U 1 1 58D85522
 P 5300 3100
 F 0 "Q1" H 5500 3150 50  0000 L CNN
@@ -221,7 +191,7 @@ F 14 "150" H 5300 3100 60  0001 C CNN "Max temp"
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR053
+L cpu4-rescue:GND #PWR053
 U 1 1 58D85607
 P 5400 3400
 F 0 "#PWR053" H 5400 3150 50  0001 C CNN
@@ -232,7 +202,7 @@ F 3 "" H 5400 3400 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R6
+L cpu4-rescue:R_Small R6
 U 1 1 58D85647
 P 5200 3350
 F 0 "R6" H 5230 3370 50  0000 L CNN
@@ -243,7 +213,7 @@ F 3 "" H 5200 3350 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L R_Small R5
+L cpu4-rescue:R_Small R5
 U 1 1 58D85735
 P 4800 3100
 F 0 "R5" H 4830 3120 50  0000 L CNN
@@ -254,7 +224,7 @@ F 3 "" H 4800 3100 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR054
+L cpu4-rescue:GND #PWR054
 U 1 1 58D85D6A
 P 7800 4550
 F 0 "#PWR054" H 7800 4300 50  0001 C CNN
@@ -266,7 +236,7 @@ F 3 "" H 7800 4550 50  0000 C CNN
 $EndComp
 NoConn ~ 7350 4350
 $Comp
-L +24V #PWR055
+L cpu4-rescue:+24V #PWR055
 U 1 1 58D85F0F
 P 7800 4150
 F 0 "#PWR055" H 7800 4000 50  0001 C CNN
@@ -278,7 +248,7 @@ F 3 "" H 7800 4150 50  0000 C CNN
 $EndComp
 NoConn ~ 6850 2800
 $Comp
-L C_Small C20
+L cpu4-rescue:C_Small C20
 U 1 1 58D87CF0
 P 7950 3000
 F 0 "C20" H 7960 3070 50  0000 L CNN
@@ -289,7 +259,7 @@ F 3 "" H 7950 3000 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C21
+L cpu4-rescue:C_Small C21
 U 1 1 58D87D4F
 P 8250 3000
 F 0 "C21" H 8260 3070 50  0000 L CNN
@@ -300,7 +270,7 @@ F 3 "" H 8250 3000 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C27
+L cpu4-rescue:C_Small C27
 U 1 1 58D87DB1
 P 8250 3300
 F 0 "C27" H 8260 3370 50  0000 L CNN
@@ -311,7 +281,7 @@ F 3 "" H 8250 3300 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C26
+L cpu4-rescue:C_Small C26
 U 1 1 58D87E1C
 P 7950 3300
 F 0 "C26" H 7960 3370 50  0000 L CNN
@@ -322,7 +292,7 @@ F 3 "" H 7950 3300 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C24
+L cpu4-rescue:C_Small C24
 U 1 1 58D87E82
 P 7400 3300
 F 0 "C24" H 7410 3370 50  0000 L CNN
@@ -333,7 +303,7 @@ F 3 "" H 7400 3300 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C16
+L cpu4-rescue:C_Small C16
 U 1 1 58D88051
 P 7150 3000
 F 0 "C16" H 7160 3070 50  0000 L CNN
@@ -344,7 +314,7 @@ F 3 "" H 7150 3000 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C23
+L cpu4-rescue:C_Small C23
 U 1 1 58D880B9
 P 7150 3300
 F 0 "C23" H 7160 3370 50  0000 L CNN
@@ -355,7 +325,7 @@ F 3 "" H 7150 3300 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C18
+L cpu4-rescue:C_Small C18
 U 1 1 58D8842E
 P 7700 3000
 F 0 "C18" H 7710 3070 50  0000 L CNN
@@ -366,7 +336,7 @@ F 3 "" H 7700 3000 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C25
+L cpu4-rescue:C_Small C25
 U 1 1 58D88512
 P 7700 3300
 F 0 "C25" H 7710 3370 50  0000 L CNN
@@ -377,7 +347,7 @@ F 3 "" H 7700 3300 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C28
+L cpu4-rescue:C_Small C28
 U 1 1 58D88583
 P 8500 3300
 F 0 "C28" H 8510 3370 50  0000 L CNN
@@ -388,7 +358,7 @@ F 3 "" H 8500 3300 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C22
+L cpu4-rescue:C_Small C22
 U 1 1 58D885FB
 P 8500 3000
 F 0 "C22" H 8510 3070 50  0000 L CNN
@@ -399,7 +369,7 @@ F 3 "" H 8500 3000 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C31
+L cpu4-rescue:C_Small C31
 U 1 1 58D893DF
 P 7550 4350
 F 0 "C31" H 7560 4420 50  0000 L CNN
@@ -410,7 +380,7 @@ F 3 "" H 7550 4350 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C30
+L cpu4-rescue:C_Small C30
 U 1 1 58D8946D
 P 5050 4450
 F 0 "C30" H 5060 4520 50  0000 L CNN
@@ -421,7 +391,7 @@ F 3 "" H 5050 4450 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C29
+L cpu4-rescue:C_Small C29
 U 1 1 58D89502
 P 4750 4450
 F 0 "C29" H 4760 4520 50  0000 L CNN
@@ -441,7 +411,7 @@ F 12 "125" H 4750 4450 60  0001 C CNN "Max temp"
 	1    0    0    -1  
 $EndComp
 $Comp
-L L_Small L4
+L cpu4-rescue:L_Small L4
 U 1 1 58D8A5A8
 P 7550 2850
 F 0 "L4" H 7580 2890 50  0000 L CNN
@@ -452,7 +422,7 @@ F 3 "" H 7550 2850 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L L_Small L5
+L cpu4-rescue:L_Small L5
 U 1 1 58D8A5EF
 P 8100 2850
 F 0 "L5" H 8130 2890 50  0000 L CNN
@@ -463,7 +433,7 @@ F 3 "" H 8100 2850 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L L_Small L7
+L cpu4-rescue:L_Small L7
 U 1 1 58D8A671
 P 7550 3450
 F 0 "L7" H 7580 3490 50  0000 L CNN
@@ -474,7 +444,7 @@ F 3 "" H 7550 3450 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L L_Small L8
+L cpu4-rescue:L_Small L8
 U 1 1 58D8A712
 P 8100 3450
 F 0 "L8" H 8130 3490 50  0000 L CNN
@@ -488,7 +458,7 @@ Text Notes 7350 2600 0    60   ~ 0
 TMR 6WI can handle 680 µF output capacitance\nInductor is about the smallest we can get with decent current capability\nfc = 11 kHz, -137 dB @ 580 kHz -> 7 nVp-p\nTODO: double-check with ngspice\nR_load = 5/0.1 = 50 Ohm
 NoConn ~ 6650 2800
 $Comp
-L L_Small L6
+L cpu4-rescue:L_Small L6
 U 1 1 58D8C2AB
 P 6350 3150
 F 0 "L6" H 6380 3190 50  0000 L CNN
@@ -499,7 +469,7 @@ F 3 "" H 6350 3150 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L L_Small L3
+L cpu4-rescue:L_Small L3
 U 1 1 58D8ECA0
 P 4800 1400
 F 0 "L3" H 4830 1440 50  0000 L CNN
@@ -510,7 +480,7 @@ F 3 "" H 4800 1400 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C17
+L cpu4-rescue:C_Small C17
 U 1 1 58D8F1C1
 P 7150 1550
 F 0 "C17" H 7160 1620 50  0000 L CNN
@@ -521,7 +491,7 @@ F 3 "" H 7150 1550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L L_Small L2
+L cpu4-rescue:L_Small L2
 U 1 1 58D8F32B
 P 7650 1400
 F 0 "L2" H 7680 1440 50  0000 L CNN
@@ -532,7 +502,7 @@ F 3 "" H 7650 1400 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L C_Small C19
+L cpu4-rescue:C_Small C19
 U 1 1 58D8F493
 P 7400 1550
 F 0 "C19" H 7410 1620 50  0000 L CNN
@@ -543,7 +513,7 @@ F 3 "" H 7400 1550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C32
+L cpu4-rescue:C_Small C32
 U 1 1 58D8F823
 P 7850 1550
 F 0 "C32" H 7860 1620 50  0000 L CNN
@@ -554,7 +524,7 @@ F 3 "" H 7850 1550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C33
+L cpu4-rescue:C_Small C33
 U 1 1 58D8F8BF
 P 8100 1550
 F 0 "C33" H 8110 1620 50  0000 L CNN
@@ -565,7 +535,7 @@ F 3 "" H 8100 1550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR056
+L cpu4-rescue:GND #PWR056
 U 1 1 58D8FE5B
 P 7650 1750
 F 0 "#PWR056" H 7650 1500 50  0001 C CNN
@@ -576,7 +546,7 @@ F 3 "" H 7650 1750 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR057
+L cpu4-rescue:+3.3V #PWR057
 U 1 1 58D904FF
 P 8100 1300
 F 0 "#PWR057" H 8100 1150 50  0001 C CNN
@@ -587,7 +557,7 @@ F 3 "" H 8100 1300 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +5V #PWR058
+L cpu4-rescue:+5V #PWR058
 U 1 1 58D906C2
 P 8500 3500
 F 0 "#PWR058" H 8500 3350 50  0001 C CNN
@@ -777,7 +747,7 @@ Wire Wire Line
 Connection ~ 7650 1700
 Connection ~ 8100 1400
 $Comp
-L -5V #PWR56
+L cpu4-rescue:-5V #PWR56
 U 1 1 58D90B55
 P 8500 2800
 F 0 "#PWR56" H 8500 2900 50  0001 C CNN
@@ -790,7 +760,7 @@ $EndComp
 Connection ~ 8500 2850
 Connection ~ 8500 3450
 $Comp
-L MAX485 U11
+L cpu4-rescue:MAX485 U11
 U 1 1 58D92495
 P 1800 6150
 F 0 "U11" H 1800 6400 60  0000 C CNN
@@ -814,7 +784,7 @@ Wire Wire Line
 Wire Wire Line
 	2750 6200 2250 6200
 $Comp
-L R_Small R8
+L cpu4-rescue:R_Small R8
 U 1 1 58D9277F
 P 2900 6150
 F 0 "R8" H 2930 6170 50  0000 L CNN
@@ -827,7 +797,7 @@ $EndComp
 Wire Wire Line
 	2250 6100 2750 6100
 $Comp
-L GND #PWR059
+L cpu4-rescue:GND #PWR059
 U 1 1 58D92EFA
 P 2400 6350
 F 0 "#PWR059" H 2400 6100 50  0001 C CNN
@@ -838,7 +808,7 @@ F 3 "" H 2400 6350 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR060
+L cpu4-rescue:+3.3V #PWR060
 U 1 1 58D92F66
 P 2400 5650
 F 0 "#PWR060" H 2400 5500 50  0001 C CNN
@@ -849,7 +819,7 @@ F 3 "" H 2400 5650 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C35
+L cpu4-rescue:C_Small C35
 U 1 1 58D930E6
 P 2400 5900
 F 0 "C35" H 2410 5970 50  0000 L CNN
@@ -893,7 +863,7 @@ EN_24V_5V
 Wire Wire Line
 	6150 3150 6150 4150
 $Comp
-L R_Small R34
+L cpu4-rescue:R_Small R34
 U 1 1 58DA910C
 P 2900 5850
 F 0 "R34" H 2930 5870 50  0000 L CNN
@@ -905,7 +875,7 @@ F 4 "dnf" H 3000 5950 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R35
+L cpu4-rescue:R_Small R35
 U 1 1 58DA9218
 P 2900 6450
 F 0 "R35" H 2930 6470 50  0000 L CNN
@@ -933,7 +903,7 @@ Wire Wire Line
 	2900 6250 2900 6350
 Connection ~ 2900 6300
 $Comp
-L +3.3V #PWR061
+L cpu4-rescue:+3.3V #PWR061
 U 1 1 58DA99AF
 P 2900 6550
 F 0 "#PWR061" H 2900 6400 50  0001 C CNN
@@ -944,7 +914,7 @@ F 3 "" H 2900 6550 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR062
+L cpu4-rescue:GND #PWR062
 U 1 1 58DA9A23
 P 2900 5750
 F 0 "#PWR062" H 2900 5500 50  0001 C CNN
@@ -959,7 +929,7 @@ Wire Wire Line
 Text Notes 2700 7200 0    60   ~ 0
 Fail-safe biasing\nMay not be needed if the lander puts the bus in a known idle state\nOnly populate R8 in that case\n3.3 * (120||120) / (350 + 350 + 120||120) = 3.3*60/760 = 260 mV > 200 mV
 $Comp
-L PWR_FLAG #FLG063
+L cpu4-rescue:PWR_FLAG #FLG063
 U 1 1 58DB1A76
 P 5450 4100
 F 0 "#FLG063" H 5450 4195 50  0001 C CNN
@@ -973,7 +943,7 @@ Wire Wire Line
 	5450 4100 5450 4150
 Connection ~ 5450 4150
 $Comp
-L PWR_FLAG #FLG064
+L cpu4-rescue:PWR_FLAG #FLG064
 U 1 1 58DB1EA3
 P 8650 2850
 F 0 "#FLG064" H 8650 2945 50  0001 C CNN
@@ -984,7 +954,7 @@ F 3 "" H 8650 2850 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L PWR_FLAG #FLG065
+L cpu4-rescue:PWR_FLAG #FLG065
 U 1 1 58DB21A4
 P 8250 1400
 F 0 "#FLG065" H 8250 1495 50  0001 C CNN
@@ -995,7 +965,7 @@ F 3 "" H 8250 1400 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L PWR_FLAG #FLG066
+L cpu4-rescue:PWR_FLAG #FLG066
 U 1 1 58DB5743
 P 8650 3450
 F 0 "#FLG066" H 8650 3545 50  0001 C CNN
@@ -1006,7 +976,7 @@ F 3 "" H 8650 3450 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L D_TVS D5
+L cpu4-rescue:D_TVS D5
 U 1 1 58E24817
 P 3550 6150
 F 0 "D5" H 3550 6250 50  0000 C CNN
@@ -1017,7 +987,7 @@ F 3 "" H 3550 6150 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L D_TVS D4
+L cpu4-rescue:D_TVS D4
 U 1 1 58E25B90
 P 3250 5800
 F 0 "D4" H 3250 5900 50  0000 C CNN
@@ -1039,7 +1009,7 @@ F 14 "150" H 3250 5800 60  0001 C CNN "Max temp"
 	0    -1   -1   0   
 $EndComp
 $Comp
-L D_TVS D6
+L cpu4-rescue:D_TVS D6
 U 1 1 58E25C48
 P 3750 6500
 F 0 "D6" H 3750 6600 50  0000 C CNN
@@ -1050,7 +1020,7 @@ F 3 "" H 3750 6500 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR067
+L cpu4-rescue:GND #PWR067
 U 1 1 58E25FF9
 P 3250 5650
 F 0 "#PWR067" H 3250 5400 50  0001 C CNN
@@ -1061,7 +1031,7 @@ F 3 "" H 3250 5650 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR068
+L cpu4-rescue:GND #PWR068
 U 1 1 58E2609D
 P 3750 6650
 F 0 "#PWR068" H 3750 6400 50  0001 C CNN
@@ -1093,7 +1063,7 @@ SCLK_OUT
 Text GLabel 1450 3850 0    60   Input ~ 0
 /RESET
 $Comp
-L +3.3V #PWR069
+L cpu4-rescue:+3.3V #PWR069
 U 1 1 58E3DD70
 P 2000 4550
 F 0 "#PWR069" H 2000 4400 50  0001 C CNN
@@ -1148,7 +1118,7 @@ Wire Wire Line
 Connection ~ 1950 3650
 Connection ~ 1950 3750
 $Comp
-L D_Schottky_Small D8
+L cpu4-rescue:D_Schottky_Small D8
 U 1 1 59286ECB
 P 3100 3900
 F 0 "D8" H 3050 3980 50  0000 L CNN
@@ -1169,7 +1139,7 @@ Wire Wire Line
 	2850 3900 2850 4150
 Connection ~ 2850 4150
 $Comp
-L D_TVS D9
+L cpu4-rescue:D_TVS D9
 U 1 1 592878D4
 P 4300 4450
 F 0 "D9" H 4300 4550 50  0000 C CNN
@@ -1186,7 +1156,7 @@ Wire Wire Line
 	4300 4300 4300 4150
 Connection ~ 4300 4150
 $Comp
-L CONN_02X12 P4
+L cpu4-rescue:CONN_02X12 P4
 U 1 1 5991B9AB
 P 1700 4100
 F 0 "P4" H 1700 4750 50  0000 C CNN
@@ -1217,7 +1187,7 @@ Wire Wire Line
 	6000 4350 6000 2850
 Connection ~ 6000 2850
 $Comp
-L TSR_1 U12
+L cpu4-rescue:TSR_1 U12
 U 1 1 59932821
 P 5900 1400
 F 0 "U12" H 5900 1500 60  0000 C CNN
@@ -1241,7 +1211,7 @@ F 16 "9" H 5900 1400 60  0001 C CNN "No. in lab"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C38
+L cpu4-rescue:C_Small C38
 U 1 1 599335D4
 P 5200 1850
 F 0 "C38" H 5210 1920 50  0000 L CNN
@@ -1259,7 +1229,7 @@ Connection ~ 4400 4150
 Wire Wire Line
 	4900 1400 5450 1400
 $Comp
-L GND #PWR070
+L cpu4-rescue:GND #PWR070
 U 1 1 599341A4
 P 5900 1850
 F 0 "#PWR070" H 5900 1600 50  0001 C CNN
@@ -1273,7 +1243,7 @@ Wire Wire Line
 	5200 1400 5200 1750
 Connection ~ 5200 1400
 $Comp
-L GND #PWR071
+L cpu4-rescue:GND #PWR071
 U 1 1 599346D4
 P 5200 1950
 F 0 "#PWR071" H 5200 1700 50  0001 C CNN
@@ -1284,7 +1254,7 @@ F 3 "" H 5200 1950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L PWR_FLAG #FLG072
+L cpu4-rescue:PWR_FLAG #FLG072
 U 1 1 599350B1
 P 5000 1300
 F 0 "#FLG072" H 5000 1375 50  0001 C CNN
@@ -1298,7 +1268,7 @@ Wire Wire Line
 	5000 1300 5000 1400
 Connection ~ 5000 1400
 $Comp
-L PWR_FLAG #FLG073
+L cpu4-rescue:PWR_FLAG #FLG073
 U 1 1 59935515
 P 5800 2800
 F 0 "#FLG073" H 5800 2875 50  0001 C CNN
@@ -1312,7 +1282,7 @@ Wire Wire Line
 	5800 2800 5800 2850
 Connection ~ 5800 2850
 $Comp
-L C_Small C39
+L cpu4-rescue:C_Small C39
 U 1 1 5993601B
 P 6550 3300
 F 0 "C39" H 6560 3370 50  0000 L CNN
@@ -1323,7 +1293,7 @@ F 3 "" H 6550 3300 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR074
+L cpu4-rescue:GND #PWR074
 U 1 1 599362DB
 P 6550 3400
 F 0 "#PWR074" H 6550 3150 50  0001 C CNN
@@ -1335,7 +1305,7 @@ F 3 "" H 6550 3400 50  0000 C CNN
 $EndComp
 Connection ~ 6550 3150
 $Comp
-L D_TVS D10
+L cpu4-rescue:D_TVS D10
 U 1 1 59933FDC
 P 5750 3100
 F 0 "D10" H 5750 3200 50  0000 C CNN
@@ -1353,7 +1323,7 @@ Connection ~ 5750 2850
 Wire Wire Line
 	7150 1700 8100 1700
 $Comp
-L D_Schottky_Small D2
+L cpu4-rescue:D_Schottky_Small D2
 U 1 1 5AF1BF12
 P 3100 4150
 F 0 "D2" H 3050 4230 50  0000 L CNN
@@ -1379,7 +1349,7 @@ NoConn ~ 1450 4650
 NoConn ~ 1450 3550
 NoConn ~ 1950 3550
 $Comp
-L R_Small R19
+L cpu4-rescue:R_Small R19
 U 1 1 5B02EEFC
 P 6700 1400
 F 0 "R19" H 6730 1420 50  0000 L CNN

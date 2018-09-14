@@ -1,36 +1,6 @@
-EESchema Schematic File Version 2
-LIBS:power
-LIBS:device
-LIBS:transistors
-LIBS:conn
-LIBS:linear
-LIBS:regul
-LIBS:74xx
-LIBS:cmos4000
-LIBS:adc-dac
-LIBS:memory
-LIBS:xilinx
-LIBS:microcontrollers
-LIBS:dsp
-LIBS:microchip
-LIBS:analog_switches
-LIBS:motorola
-LIBS:texas
-LIBS:intel
-LIBS:audio
-LIBS:interface
-LIBS:digital-audio
-LIBS:philips
-LIBS:display
-LIBS:cypress
-LIBS:siliconi
-LIBS:opto
-LIBS:atmel
-LIBS:contrib
-LIBS:valves
-LIBS:scube
+EESchema Schematic File Version 4
 LIBS:fieldmill10-cache
-EELAYER 25 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -49,7 +19,7 @@ SENSORP
 Text Label 9000 3200 2    60   ~ 0
 SENSORN
 $Comp
-L R_Small R30
+L fieldmill10-rescue:R_Small R30
 U 1 1 58060B75
 P 6550 3650
 AR Path="/57B05F2F/58060B75" Ref="R30"  Part="1" 
@@ -70,7 +40,7 @@ F 10 "https://www.digikey.se/product-detail/en/vishay-dale/CRHV1206AF100MFKE5/CR
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C21
+L fieldmill10-rescue:C_Small C21
 U 1 1 58060BBB
 P 6550 3950
 AR Path="/57B05F2F/58060BBB" Ref="C21"  Part="1" 
@@ -105,7 +75,7 @@ VGND
 Text Notes 2200 3750 0    47   ~ 0
 LTC6241: 2*2.4 mA + I/O, 2.8 .. 6 V\nOutputs drive 5V/(10k+10k) -> 0.25 mA\nTotal: 5.05 mA
 $Comp
-L L L1
+L fieldmill10-rescue:L L1
 U 1 1 58CE5B9B
 P 7550 3200
 AR Path="/57B05F2F/58CE5B9B" Ref="L1"  Part="1" 
@@ -181,7 +151,7 @@ Connection ~ 6100 5400
 Connection ~ 6100 4850
 Connection ~ 6100 3950
 $Comp
-L C_Small C15
+L fieldmill10-rescue:C_Small C15
 U 1 1 58CE9E29
 P 7750 3650
 AR Path="/57B05F2F/58CE9E29" Ref="C15"  Part="1" 
@@ -219,7 +189,7 @@ Wire Wire Line
 Text Notes 7000 5550 0    60   ~ 0
 HVCB1206BKE100M is much better\n0.01% tolerance, +-25 ppm/°C\n67 SEK is a bit pricey though\nHVCB2010FKC100M 1% 50 ppm/°C  29 SEK\nCRHV1206AF100MFK* 1% 100 ppm/°C 23 SEK, most available
 $Comp
-L +2V5 #PWR35
+L fieldmill10-rescue:+2V5 #PWR35
 U 1 1 5A7A17A3
 P 6650 2800
 AR Path="/57B05F2F/5A7A17A3" Ref="#PWR35"  Part="1" 
@@ -233,7 +203,7 @@ F 3 "" H 6650 2800 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L -2V5 #PWR36
+L fieldmill10-rescue:-2V5 #PWR36
 U 1 1 5A7A19AE
 P 6650 3400
 AR Path="/57B05F2F/5A7A19AE" Ref="#PWR36"  Part="1" 
@@ -247,7 +217,7 @@ F 3 "" H 6650 3400 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L OP275 U4
+L fieldmill10-rescue:OP275 U4
 U 1 1 5806023E
 P 6550 3100
 AR Path="/57B05F2F/5806023E" Ref="U4"  Part="1" 
@@ -266,7 +236,7 @@ F 8 "https://www.digikey.com/product-detail/en/linear-technology-analog-devices/
 	-1   0    0    -1  
 $EndComp
 $Comp
-L -2V5 #PWR40
+L fieldmill10-rescue:-2V5 #PWR40
 U 1 1 5A7A212C
 P 6650 5150
 AR Path="/57B05F2F/5A7A212C" Ref="#PWR40"  Part="1" 
@@ -280,7 +250,7 @@ F 3 "" H 6650 5150 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L +2V5 #PWR39
+L fieldmill10-rescue:+2V5 #PWR39
 U 1 1 5A7A218B
 P 6650 4550
 AR Path="/57B05F2F/5A7A218B" Ref="#PWR39"  Part="1" 
@@ -294,7 +264,7 @@ F 3 "" H 6650 4550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +2V5 #PWR37
+L fieldmill10-rescue:+2V5 #PWR37
 U 1 1 5A7A2222
 P 5100 4000
 AR Path="/57B05F2F/5A7A2222" Ref="#PWR37"  Part="1" 
@@ -308,7 +278,7 @@ F 3 "" H 5100 4000 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L -2V5 #PWR38
+L fieldmill10-rescue:-2V5 #PWR38
 U 1 1 5A7A2281
 P 5100 4500
 AR Path="/57B05F2F/5A7A2281" Ref="#PWR38"  Part="1" 
@@ -322,7 +292,7 @@ F 3 "" H 5100 4500 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L C_Small C20
+L fieldmill10-rescue:C_Small C20
 U 1 1 5A7A2553
 P 5100 4100
 AR Path="/57B05F2F/5A7A2553" Ref="C20"  Part="1" 
@@ -350,7 +320,7 @@ Wire Wire Line
 Connection ~ 7150 4250
 Connection ~ 5100 4250
 $Comp
-L CONN_01X01 P14
+L fieldmill10-rescue:CONN_01X01 P14
 U 1 1 5A7A2B12
 P 5450 3700
 AR Path="/57B05F2F/5A7A2B12" Ref="P14"  Part="1" 
@@ -370,7 +340,7 @@ Connection ~ 5450 4250
 Text Notes 4950 3500 0    60   ~ 0
 Shield is\nWürth 36103205S frame\nWürth 36903205S lid
 $Comp
-L OP275 U4
+L fieldmill10-rescue:OP275 U4
 U 2 1 5A8C8BB2
 P 6550 4850
 AR Path="/57B05F2F/5A8C8BB2" Ref="U4"  Part="2" 
@@ -389,7 +359,7 @@ F 8 "https://www.digikey.com/product-detail/en/linear-technology-analog-devices/
 	-1   0    0    -1  
 $EndComp
 $Comp
-L L L2
+L fieldmill10-rescue:L L2
 U 1 1 5A8C9302
 P 7950 3200
 AR Path="/57B05F2F/5A8C9302" Ref="L2"  Part="1" 
@@ -408,7 +378,7 @@ F 8 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV
 	0    1    1    0   
 $EndComp
 $Comp
-L L L3
+L fieldmill10-rescue:L L3
 U 1 1 5A8C9355
 P 7550 4950
 AR Path="/57B05F2F/5A8C9355" Ref="L3"  Part="1" 
@@ -427,7 +397,7 @@ F 8 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV
 	0    1    1    0   
 $EndComp
 $Comp
-L L L4
+L fieldmill10-rescue:L L4
 U 1 1 5A8C93DF
 P 7950 4950
 AR Path="/57B05F2F/5A8C93DF" Ref="L4"  Part="1" 
@@ -446,7 +416,7 @@ F 8 "https://www.digikey.se/product-detail/en/johanson-technology-inc/L-14C56NJV
 	0    1    1    0   
 $EndComp
 $Comp
-L R_Small R32
+L fieldmill10-rescue:R_Small R32
 U 1 1 5A8CBBE1
 P 6550 5400
 AR Path="/57B05F2F/5A8CBBE1" Ref="R32"  Part="1" 
@@ -467,7 +437,7 @@ F 10 "https://www.digikey.se/product-detail/en/vishay-dale/CRHV1206AF100MFKE5/CR
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C30
+L fieldmill10-rescue:C_Small C30
 U 1 1 5AA6A1EF
 P 6550 5700
 AR Path="/57B05F2F/5AA6A1EF" Ref="C30"  Part="1" 
@@ -488,7 +458,7 @@ F 10 "https://www.digikey.se/product-detail/en/cornell-dubilier-electronics-cde/
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C27
+L fieldmill10-rescue:C_Small C27
 U 1 1 5AA6AA65
 P 7750 4250
 AR Path="/57B05F2F/5AA6AA65" Ref="C27"  Part="1" 
@@ -510,7 +480,7 @@ F 11 "dnf" H 7900 4250 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C57
+L fieldmill10-rescue:C_Small C57
 U 1 1 5AA7AF95
 P 5100 4400
 AR Path="/57B05F2F/5AA7AF95" Ref="C57"  Part="1" 

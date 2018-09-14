@@ -1,36 +1,6 @@
-EESchema Schematic File Version 2
-LIBS:power
-LIBS:device
-LIBS:transistors
-LIBS:conn
-LIBS:linear
-LIBS:regul
-LIBS:74xx
-LIBS:cmos4000
-LIBS:adc-dac
-LIBS:memory
-LIBS:xilinx
-LIBS:microcontrollers
-LIBS:dsp
-LIBS:microchip
-LIBS:analog_switches
-LIBS:motorola
-LIBS:texas
-LIBS:intel
-LIBS:audio
-LIBS:interface
-LIBS:digital-audio
-LIBS:philips
-LIBS:display
-LIBS:cypress
-LIBS:siliconi
-LIBS:opto
-LIBS:atmel
-LIBS:contrib
-LIBS:valves
-LIBS:scube
+EESchema Schematic File Version 4
 LIBS:fieldmill10-cache
-EELAYER 25 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -45,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L +24V #PWR61
+L fieldmill10-rescue:+24V #PWR61
 U 1 1 5AA668CF
 P 4500 3050
 F 0 "#PWR61" H 4500 2900 50  0001 C CNN
@@ -56,7 +26,7 @@ F 3 "" H 4500 3050 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR62
+L fieldmill10-rescue:GND #PWR62
 U 1 1 5AA668D5
 P 7800 3350
 F 0 "#PWR62" H 7800 3100 50  0001 C CNN
@@ -67,7 +37,7 @@ F 3 "" H 7800 3350 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L CONN_01X05 P11
+L fieldmill10-rescue:CONN_01X05 P11
 U 1 1 5AA668E1
 P 8350 3250
 F 0 "P11" H 8350 3550 50  0000 C CNN
@@ -82,7 +52,7 @@ Text Notes 7800 3450 0    60   ~ 0
 Enable\nMonitor\nSpeed\nGND\n+24V
 NoConn ~ 8150 3150
 $Comp
-L C_Small C50
+L fieldmill10-rescue:C_Small C50
 U 1 1 5AA668EA
 P 3000 3600
 F 0 "C50" H 3010 3670 50  0000 L CNN
@@ -101,7 +71,7 @@ F 11 "+filt" H 3100 3800 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR68
+L fieldmill10-rescue:GND #PWR68
 U 1 1 5AA668F1
 P 4500 3700
 F 0 "#PWR68" H 4500 3450 50  0001 C CNN
@@ -125,7 +95,7 @@ Wire Wire Line
 Text HLabel 7250 3250 0    60   Input ~ 0
 PWM
 $Comp
-L L L13
+L fieldmill10-rescue:L L13
 U 1 1 5AA69BBF
 P 4800 3450
 F 0 "L13" V 4750 3450 50  0000 C CNN
@@ -137,7 +107,7 @@ F 4 "+filt" V 4950 3450 60  0000 C CNN "fit_field"
 	0    -1   -1   0   
 $EndComp
 $Comp
-L L L14
+L fieldmill10-rescue:L L14
 U 1 1 5AA69BFE
 P 5150 3450
 F 0 "L14" V 5100 3450 50  0000 C CNN
@@ -149,7 +119,7 @@ F 4 "+filt" V 5300 3450 60  0000 C CNN "fit_field"
 	0    -1   -1   0   
 $EndComp
 $Comp
-L L L15
+L fieldmill10-rescue:L L15
 U 1 1 5AA69C64
 P 5500 3450
 F 0 "L15" V 5450 3450 50  0000 C CNN
@@ -170,7 +140,7 @@ Wire Wire Line
 	4500 3050 4500 3500
 Connection ~ 4500 3450
 $Comp
-L R R39
+L fieldmill10-rescue:R R39
 U 1 1 5AA6A5CE
 P 5150 3200
 F 0 "R39" V 5230 3200 50  0000 C CNN
@@ -214,7 +184,7 @@ Wire Wire Line
 	4200 3500 4200 3450
 Connection ~ 4200 3450
 $Comp
-L GND #PWR67
+L fieldmill10-rescue:GND #PWR67
 U 1 1 5AA6A932
 P 4200 3700
 F 0 "#PWR67" H 4200 3450 50  0001 C CNN
@@ -225,7 +195,7 @@ F 3 "" H 4200 3700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR66
+L fieldmill10-rescue:GND #PWR66
 U 1 1 5AA6A970
 P 3900 3700
 F 0 "#PWR66" H 3900 3450 50  0001 C CNN
@@ -236,7 +206,7 @@ F 3 "" H 3900 3700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR65
+L fieldmill10-rescue:GND #PWR65
 U 1 1 5AA6A9AE
 P 3600 3700
 F 0 "#PWR65" H 3600 3450 50  0001 C CNN
@@ -247,7 +217,7 @@ F 3 "" H 3600 3700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR64
+L fieldmill10-rescue:GND #PWR64
 U 1 1 5AA6A9EC
 P 3300 3700
 F 0 "#PWR64" H 3300 3450 50  0001 C CNN
@@ -258,7 +228,7 @@ F 3 "" H 3300 3700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR63
+L fieldmill10-rescue:GND #PWR63
 U 1 1 5AA6AA2A
 P 3000 3700
 F 0 "#PWR63" H 3000 3450 50  0001 C CNN
@@ -269,7 +239,7 @@ F 3 "" H 3000 3700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR69
+L fieldmill10-rescue:GND #PWR69
 U 1 1 5AA6AA68
 P 5700 3700
 F 0 "#PWR69" H 5700 3450 50  0001 C CNN
@@ -280,7 +250,7 @@ F 3 "" H 5700 3700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR70
+L fieldmill10-rescue:GND #PWR70
 U 1 1 5AA6AAEA
 P 6000 3700
 F 0 "#PWR70" H 6000 3450 50  0001 C CNN
@@ -291,7 +261,7 @@ F 3 "" H 6000 3700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR71
+L fieldmill10-rescue:GND #PWR71
 U 1 1 5AA6AB28
 P 6300 3700
 F 0 "#PWR71" H 6300 3450 50  0001 C CNN
@@ -302,7 +272,7 @@ F 3 "" H 6300 3700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR72
+L fieldmill10-rescue:GND #PWR72
 U 1 1 5AA6AB66
 P 6600 3700
 F 0 "#PWR72" H 6600 3450 50  0001 C CNN
@@ -313,7 +283,7 @@ F 3 "" H 6600 3700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR73
+L fieldmill10-rescue:GND #PWR73
 U 1 1 5AA6ABA4
 P 6900 3700
 F 0 "#PWR73" H 6900 3450 50  0001 C CNN
@@ -324,7 +294,7 @@ F 3 "" H 6900 3700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR74
+L fieldmill10-rescue:GND #PWR74
 U 1 1 5AA6ABE2
 P 7200 3700
 F 0 "#PWR74" H 7200 3450 50  0001 C CNN
@@ -349,7 +319,7 @@ Cannot have more than 120 µF on this side due to 24V DC/DC\nonly able to drive 
 Text Notes 5700 4050 0    60   ~ 0
 We can have as much capacitance as we can fit on this side
 $Comp
-L C_Small C33
+L fieldmill10-rescue:C_Small C33
 U 1 1 5AA851D2
 P 3300 3600
 F 0 "C33" H 3310 3670 50  0000 L CNN
@@ -368,7 +338,7 @@ F 11 "+filt" H 3400 3800 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C35
+L fieldmill10-rescue:C_Small C35
 U 1 1 5AA8520D
 P 3600 3600
 F 0 "C35" H 3610 3670 50  0000 L CNN
@@ -387,7 +357,7 @@ F 11 "+filt" H 3700 3800 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C37
+L fieldmill10-rescue:C_Small C37
 U 1 1 5AA8524B
 P 3900 3600
 F 0 "C37" H 3910 3670 50  0000 L CNN
@@ -406,7 +376,7 @@ F 11 "+filt" H 4000 3800 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C39
+L fieldmill10-rescue:C_Small C39
 U 1 1 5AA85294
 P 4200 3600
 F 0 "C39" H 4210 3670 50  0000 L CNN
@@ -425,7 +395,7 @@ F 11 "+filt" H 4300 3800 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C40
+L fieldmill10-rescue:C_Small C40
 U 1 1 5AA852D8
 P 4500 3600
 F 0 "C40" H 4510 3670 50  0000 L CNN
@@ -444,7 +414,7 @@ F 11 "+filt" H 4650 3600 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C43
+L fieldmill10-rescue:C_Small C43
 U 1 1 5AA85533
 P 5700 3600
 F 0 "C43" H 5710 3670 50  0000 L CNN
@@ -463,7 +433,7 @@ F 11 "+filt" V 5600 3450 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C46
+L fieldmill10-rescue:C_Small C46
 U 1 1 5AA85540
 P 6000 3600
 F 0 "C46" H 6010 3670 50  0000 L CNN
@@ -482,7 +452,7 @@ F 11 "+filt" H 6100 3800 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C48
+L fieldmill10-rescue:C_Small C48
 U 1 1 5AA8554D
 P 6300 3600
 F 0 "C48" H 6310 3670 50  0000 L CNN
@@ -501,7 +471,7 @@ F 11 "+filt" H 6400 3800 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C49
+L fieldmill10-rescue:C_Small C49
 U 1 1 5AA8555A
 P 6600 3600
 F 0 "C49" H 6610 3670 50  0000 L CNN
@@ -520,7 +490,7 @@ F 11 "+filt" H 6700 3800 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C51
+L fieldmill10-rescue:C_Small C51
 U 1 1 5AA85567
 P 6900 3600
 F 0 "C51" H 6910 3670 50  0000 L CNN
@@ -539,7 +509,7 @@ F 11 "+filt" H 7000 3800 60  0000 C CNN "fit_field"
 	1    0    0    -1  
 $EndComp
 $Comp
-L C_Small C55
+L fieldmill10-rescue:C_Small C55
 U 1 1 5AA85574
 P 7200 3600
 F 0 "C55" H 7210 3670 50  0000 L CNN
