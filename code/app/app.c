@@ -1671,20 +1671,18 @@ static inline void binary_iq(
   //make sure we have enough samples to form averages
   if (fm->NQ[0] && fm->NQ[1] && fm->NQ[2] && fm->NQ[3]) {
     for (uint8_t j = 0; j < 4; j++) {
+      //avr-gcc probably won't know that Q1..Q4 don't alias,
+      //so load q1..4 to avoid accessesing memory more than necessary
+      accu_t q1 = Q1[j];
+      accu_t q2 = Q2[j];
+      accu_t q3 = Q3[j];
+      accu_t q4 = Q4[j];
+
       // I = q1-q2-q3+q4
       // Q = q1+q2-q3-q4
-      //TODO: proper rounding
-      accu_t q1 = Q1[j] / fm->NQ[0];
-      accu_t q2 = Q2[j] / fm->NQ[1];
-      accu_t q3 = Q3[j] / fm->NQ[2];
-      accu_t q4 = Q4[j] / fm->NQ[3];
-
-      //leave data as raw as possible, hence no divisions by 4
-      fm->IQ[j][0] = q1-q2-q3+q4;
-      fm->IQ[j][1] = q1+q2-q3-q4;
-
-      //mean is proper tho
-      fm->mean[j] = (Q1[j] + Q2[j] + Q3[j] + Q4[j]) / N;
+      fm->IQ[j][0]= (q1 - q2 - q3 + q4) / N;
+      fm->IQ[j][1]= (q1 + q2 - q3 - q4) / N;
+      fm->mean[j] = (q1 + q2 + q3 + q4) / N;
     }
   }
 }
@@ -2008,6 +2006,11 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary) {
   }
 
   //sanity check, to prevent q1..3 from having to deal with overflow
+  //we can probably bump this to 65535 (see computation of fm->mean[j]):
+  //  (+)2147483647 / (-)32768 = 65535
+  //   ^               ^         ^ maximum no. frames
+  //   ^               ^ maximum sample amplitude
+  //   ^ minimum accu_t range
   if (max_frames > 16383) {
     max_frames = 16383;
   }
