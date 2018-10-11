@@ -22,13 +22,13 @@
 //     6 +
 //     4 + num_temps*4 +
 //     4 + popcount(adc_mask)*2 +
-//     4 + popcount(fm_mask)*31
+//     4 + popcount(fm_mask)*57
 //
 // The largest this will typically get (6 temperature
 // readings, 5 voltages, 3 FM IQ data structs) is 145 B
 
 typedef struct square_demod_header_s {
-  uint8_t version;      // format version (3)
+  uint8_t version;      // format version (4)
   uint16_t num_frames;  // number of frames sampled
 
   // Number of DS18B20Z outputs (0..6)
@@ -83,7 +83,7 @@ typedef struct fm_s {
   uint8_t num_tachs;// number of tachometer impulses
   uint16_t NQ[4];   // number of frames collected in
                     // each quadrant
-  int16_t IQ[4][2]; // IQ data (IQIQIQIQ)
+  int16_t IQ[3][2]; // IQ data (IQIQIQ)
 
   // ADS131A04 registers:
   uint8_t stat_1;   // STAT_1 (or'd during capture)
@@ -97,7 +97,7 @@ typedef struct fm_s {
   // mean value of samples within tachometer interval
   int16_t mean[4];
 
-  // mean absolute value of samples
+  // mean absolute value of samples within tachometer
   // channel 4 excluded since it would equal mean[3],
   // due to wiring
   uint16_t mean_abs[3];
