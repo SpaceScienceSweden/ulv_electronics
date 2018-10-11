@@ -18,7 +18,7 @@ all:
 avr109:
 	WAIT_VALUE=300 make -C avr109 all
 
-.PHONY: flight programserial manual clean avr109
+.PHONY: flight programserial manual clean avr109 setserial
 flight:
 	make -C app clean all
 	WAIT_VALUE=300 make -C avr109 clean all
@@ -33,10 +33,10 @@ flight:
 	  -U lfuse:w:0xef:m -U hfuse:w:0xCC:m -U efuse:w:0xff:m -U eeprom:w:eeprom.hex -B 10
 	make programserial
 
-setbaud:
+setserial:
 	stty -F /dev/ttyUSB0 -echo -icrnl -ixon -onlcr -echoe -echok -echoctl -echoke raw $(PROGBAUD)
 
-programserial:
+programserial: setserial
 	make -C app all
 	killall picocom minicom || true
 	stty -F /dev/ttyUSB0 $(PROGBAUD)
