@@ -1,4 +1,4 @@
-function [discard, num_tachs, nq, iq, minmax, mean_, mean_abs, temps, volts, stat_1pns] = parseraw (filename)
+function [discard, num_tachs, nq, iq, minmax, mean_, mean_abs, vgnd, temps, volts, stat_1pns] = parseraw (filename)
  % Some limitations with this code:
  % * it assumes exactly 4 temperature sensors
  % * it assumes exactly 5 voltage channels
@@ -31,18 +31,20 @@ function [discard, num_tachs, nq, iq, minmax, mean_, mean_abs, temps, volts, sta
  discard = cast(typecast(datta(offsets+(4+[0:1])'),'int16'),'double');
  num_tachs = cast(datta(offsets+4+2), 'double');
  nq = cast(reshape(typecast(datta(offsets+(4+[3:10])'),'uint16'),4,n)', 'double');
- iq = transpose([1,i,0,0,0,0,0,0;0,0,1,i,0,0,0,0;0,0,0,0,1,i,0,0;0,0,0,0,0,0,1,i]*cast(reshape(typecast(datta(offsets+(4+[11:26])'),'int16'),8,n),'double'));
- stat_1pns = datta(offsets+(4+[27:30])')';
+ iq = transpose([1,i,0,0,0,0;0,0,1,i,0,0;0,0,0,0,1,i]*cast(reshape(typecast(datta(offsets+(4+[11:22])'),'int16'),6,n),'double'));
+ stat_1pns = datta(offsets+(4+[27:30]-4)')';
 
- minmax = cast(reshape(typecast(datta(offsets+(4+[31:46])'),'int16'),8,n)','double');
- mean_ = cast(reshape(typecast(datta(offsets+(4+[47:54])'),'int16'),4,n)','double');
- mean_abs = cast(reshape(typecast(datta(offsets+(4+[55:60])'),'uint16'),3,n)','double');
+ minmax = cast(reshape(typecast(datta(offsets+(4+[31:46]-4)'),'int16'),8,n)','double');
+ mean_ = cast(reshape(typecast(datta(offsets+(4+[47:54]-4)'),'int16'),4,n)','double');
+ mean_abs = cast(reshape(typecast(datta(offsets+(4+[55:60]-4)'),'uint16'),3,n)','double');
+ vgnd = cast(typecast(datta(offsets+(4+[61:62]-4)'),'uint16'),'double');
 
  %temps = datta(toffsets+(0:23)');
 
  %depends on how many temperature sensors we have connected
  %temps = (cast(reshape(typecast(datta(toffsets+(4+[2,3,6,7,10,11,14,15])'),'int16'),4,tn),'double'))'/16;
- temps = (cast(reshape(typecast(datta(toffsets+(4+[2,3,6,7,10,11])'),'int16'),3,tn),'double'))'/16;
+ %temps = (cast(reshape(typecast(datta(toffsets+(4+[2,3,6,7,10,11])'),'int16'),3,tn),'double'))'/16;
+ temps = 0;
 
  volts = cast(reshape(typecast(datta(voffsets+(4+[0:9])'),'uint16'),5,n)', 'double');
 

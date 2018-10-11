@@ -28,7 +28,7 @@
 // readings, 5 voltages, 3 FM IQ data structs) is 145 B
 
 typedef struct square_demod_header_s {
-  uint8_t version;      // format version (4)
+  uint8_t version;      // format version (5)
   uint16_t num_frames;  // number of frames sampled
 
   // Number of DS18B20Z outputs (0..6)
@@ -101,6 +101,9 @@ typedef struct fm_s {
   // channel 4 excluded since it would equal mean[3],
   // due to wiring
   uint16_t mean_abs[3];
+
+  // MAX504 setting (0..1023)
+  uint16_t vgnd;
 } fm_s;
 
 

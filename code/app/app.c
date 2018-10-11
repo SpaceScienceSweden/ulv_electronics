@@ -2072,7 +2072,9 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_fram
   //longer WDT than normal to not have to do WDR inside loops
   wdt_enable(WDTO_2S);
 
-  for (;;) {
+  uint16_t vgnd_next = 512, vgnd_last = 512;
+  set_vgnds(vgnd_next);
+  for (uint8_t vv = 1;; vv = !vv) {
     //discard the first bunch of samples
     //partly to deal with initial F_DRDY
     //but also to allow the sinc3 filter to warm up
@@ -2138,6 +2140,11 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_fram
     } while (num_frames_left > 0);
     PORTD &= ~1;  //debug
 
+    //processing takes enough time that vgnd should have settled
+    vgnd_last = vgnd_next;
+    vgnd_next = vv ? 512 + 200 : 512;
+    set_vgnds(vgnd_next);
+
     if (have_esc()) {
       goto square_demod_analog_done;
     }
@@ -2146,7 +2153,7 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_fram
     if (send_binary) {
       start_section("SQUARE");
       square_demod_header_s hdr;
-      hdr.version = 4;
+      hdr.version = 5;
       hdr.num_frames = max_frames;
       hdr.fm_mask = fm_mask;
 
@@ -2195,6 +2202,8 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_fram
       if (fm_mask & (1<<id)) {
         fm_s fm;
         memset(&fm, 0, sizeof(fm));
+
+        fm.vgnd = vgnd_last;
 
         //we could use a fixed threshold for tach,
         //but want these statistics anyway,
@@ -2294,6 +2303,7 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_fram
 square_demod_analog_done:
   stop_measurement();
   sei();
+  set_vgnds(512);
 
   wdt_enable(WDTO_DEFAULT);
   return;
@@ -2895,7 +2905,7 @@ int main(void)
 
   unlock_adcs();
 
-#define NUM_FMS 2
+#define NUM_FMS 1
 
   //default samplerates and gains
   wreg(0, A_SYS_CFG, 0x23); //tightest analog margin
