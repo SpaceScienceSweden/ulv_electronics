@@ -7,7 +7,7 @@ BAUD=115200
 # Actual baudrate used during programming
 # Will be different from BAUD while changing rates
 PROGBAUD=115200
-CFLAGS_ROOT=-DF_CPU=14745600LL -DBAUD=$(BAUD) -DBOOTSIZE=$(BOOTSIZE)
+CFLAGS_ROOT=-DF_CPU=7372800LL -DBAUD=$(BAUD) -DBOOTSIZE=$(BOOTSIZE)
 export
 
 # We could have some different options when developing,

@@ -97,7 +97,7 @@
 */
 // tabsize: 4
 /* MCU frequency */
-#if F_CPU != 14745600LL
+#if F_CPU != 7372800LL
 #error F_CPU not what we expected
 #endif
 
