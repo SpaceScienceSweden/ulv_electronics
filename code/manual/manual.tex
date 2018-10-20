@@ -8,6 +8,9 @@
 \begin{document}
 \lstset{basicstyle=\ttfamily} % fixed-width listings
 
+\definecolor{lgray}{gray}{0.95}
+\definecolor{dgray}{gray}{0.90}
+
 \title{KUB manual}
 \date{\today}
 \author{Tomas H\"ardin}
@@ -25,7 +28,7 @@
 \section{Assembly}
 
 
-The instrument consists of a stainless steel skeleton into which a number of plates are screwed.
+The instrument consists of a stainless steel skeleton into which a number of aluminium plates are screwed.
 All plates have a printed circuit board (PCB) attached via standoffs or screwed directly to the plate.
 The combination of board and plate is called a module.
 In this section we assume all PCBs have already been soldered and cleaned.
@@ -63,21 +66,24 @@ The following tools and materials are needed:
 \item Maxon EC motor can vice (3D printed)
 \end{itemize}
 
-The subsections that follow are ordered in the recommended order of assembly.
-The way the pin headers fit into corresponding sockets mean that the power4 module must be mounted first,
-then the cpu3 and credits modules can be mounted, and finally the fieldmill9 modules can be mounted.
-It's useful to mount the credits module last so that the mating of the fieldmill9 and cpu3 modules can be checked,
+Each PCB can be screwed to its corresponding aluminium plate in any order, forming modules.
+The modules must be assembled in a certain order however,
+due to the way the connectors fit into eachother.
+The power4 module must be mounted first,
+then the cpu4 and credits modules can be mounted, and finally the fieldmill9 modules can be mounted.
+It's useful to mount the credits module last so that the mating of the fieldmill9 and cpu4 modules can be checked,
 and power-on tests performed.
 
-In order to figure out what ID each DS18B20Z 1-wire temperature sensor has
+In order to figure out what ID each DS18B20Z 1-wire temperature sensor has,
 the instrument should be powered on after each module has been installed and
-a temperature measurement performed.
-The exception to this is when installing power4 and cpu3,
-since both are required to get an initial reading and both have a temperature sensor.
-Touching the DS18B20Z IC on the power4 board at this phase, thus warming it,
-should be enough to distinguish the two at that phase.
+a temperature measurement performed (the 't' command in table \ref{command_table_0}).
+Since the cpu4 and power4 modules must be mounted at the same time in order to use the RS-485 interface,
+the two temperature sensors in that assembly must be distinguished somehow.
+This can easily done by warming one of them with a finger and watching the rise in temperature in one of the sensors.
+Take note of which sensor is which.
+This goes for all modules.
 
-Use white gloves when handling any silver parts, to prevent them from being contaminated.
+Use white cotton gloves when handling any silver parts, to prevent them from being contaminated.
 Each aluminium plate requires 16 silver plates M3 screws (?? mm long, Torx T10) to mount it to the skeleton, 96 total.
 
 All M3 screws are torqued to 0.8 Nm and all M2 screws are torqued to 0.3 Nm.
@@ -97,40 +103,76 @@ Parts needed:
 \item 2.4 mm $\rightarrow$ 1.2 mm Kynar shrink tube
 \item One (1) DE-9 male connector
 \item A set of DE-9 panel mounting screws, washers and nuts
-\item Zip ties
 \end{itemize}
 
-Solder the four PTFE wires to the DE-9 connector, see figure TODO.
-Use Kynar shrink tubing to protect the solder points.
+If soldering the power4 module yourself,
+the pin headers should be inserted from the same side as the DS18B20Z IC and LEDs are on.
+
+Cut four pieces of the PTFE wire to appropriate lengths (TODO: include in table),
+then solder them between the power4 board the the DE-9 connector according to table \ref{power4_table}.
+It is easiest to solder the +28V wire last, since it crosses the other three wires,
+see figure \ref{power4_wires}.
+The pins on the power4 board are numbered from 1 starting from the side closest to cpu4.
+There are two columns of identical pins,
+the purpose of which is so that PTFE wire stripped around 15 mm can be threaded through and soldered to both holes,
+providing increased rigidity.
+Use Kynar shrink tubing to protect the solder points on the DE-9 side.
+
+\begin{table}[H]
+\begin{centering}
+\rowcolors{1}{lgray}{dgray}
+\begin{tabular}{|l|l|l|}
+\hline
+{\bf Description} & {\bf DE-9 pin}    & {\bf power4 pin}\\ \hline
++28V              & 5                 & 1 \\ \hline
+GND               & 1                 & 2 \\ \hline
+RS-485+ A         & 3                 & 3 \\ \hline
+RS-485- B         & 7                 & 4 \\ \hline
+\end{tabular}
+\caption{power4 wiring.}
+\label{power4_table}
+\end{centering}
+\end{table}
+
+
+\begin{figure}
+\centering
+% Cut down on PDF size in git for now
+%\includegraphics[width=12cm]{power4}
+\caption{Photograph of power4 wiring.
+TODO: this should show the weaving of wire through both columns of pins.}
+\label{power4_wires}
+\end{figure}
 
 Fasten the DE-9 connector to the aluminium plate (inside or outside??) using the screws, washers and nuts.
 Torque to 0.8 Nm.
 Screw the standoffs to the plate, 0.8 Nm.
-
-Solder the four PTFE wires to the appropriate places on the power4 board, see figure TODO.
-Zip tie the wires together at both ends or in the middle if there isn't enough room.
 
 Place bottom PEEK washers on the standoffs, then the power4 board on the standoffs and finally the top wasters on top.
 Screw everything in place using M3 screws, 0.8 Nm.
 
 Screw the finished module to the skeleton using M3 screws, 0.8 Nm.
 
-\subsection{cpu3}
+\subsection{cpu4}
 
 Parts needed:
 
 \begin{itemize}
-\item One (1) cpu3 PCB, soldered and cleaned
-\item One (1) silver plated cpu3 aluminium plate
-\item One (1) cpu3/credits aluminium standoff, short kind
-\item One (1) cpu3/credits aluminium standoff, long kind
+\item One (1) cpu4 PCB, soldered and cleaned
+\item One (1) silver plated cpu4 aluminium plate
+\item Two (2) cpu4/credits aluminium standoffs
 \item Four (4) PEEK washers (top kind)
 \item Four (4) PEEK washers (bottom kind)
 \item Twentyfour (24) silver plated M3 screws, ?? length inluding head (Torx T10)
+\item A Debian or Ubuntu GNU/Linux computer with build-essentials, avr-gcc and avrdude installed
+\item An STK600
+\item A USB to RS-485 converter
+\item A lab power supply
+\item Instrument converter cable (female DE-9 instrument connector $\rightarrow$ female RS-485 DE-9 connector(s) + banana plugs)
 \end{itemize}
 
 Be careful to use the aluminium plate with holes countersunk in the correct direction.
-The credits plates are mirror images of the cpu3 plates.
+The credits plates are mirror images of the cpu4 plates.
 
 Screw the standoffs to the plate using M3 screws, 0.8 Nm.
 
@@ -139,8 +181,66 @@ Screw in place using M3 screws, 0.8 Nm.
 
 Screw the finished module to the skeleton using M3 screws, 0.8 Nm.
 
-Perform a power-on test.
-Distinguish the two DS18B20Z temperature sensors now in the instrument by touching one of them, thus warming it.
+\subsubsection{Programming the bootloader}
+
+The bootloader can be programmed without the power4 board.
+Connect the cpu4 board to an STK600 using a 6-pin ISP (2x3 ribbon) cable,
+then connect the STK600 to the computer and turn the STK600 on.
+Run \emph{make bootloader} in the code directory to build and program the bootloader.
+This will enable the crystal oscillator, and programming over RS-485.
+
+After programming, make sure the crystal oscillator is working correctly by measuring the waveform on both its pins.
+The pin closest to the ISP connector should swing between $+0.28 \dots +2.76$ V, $\pm 100$ mV or so.
+This pin is what drives the ADCs' clocks.
+The pin further away from the ISP connector should have a larger swing, between $-0.32 \dots +3.72$ V, $\pm 100$ mV or so.
+Both waveforms should be roughly sinusodial.
+
+\subsubsection{Serial programming}
+
+The next step is to program the application via the RS-485 bus.
+To do this, mount the power4 and cpu4 modules to the skeleton and connect the instrument converter cable to the instrument.
+Connect the USB to RS-485 converter between the computer and the RS-485 end of the instrument cable.
+Set the power supply to somewhere between $18 \dots 30$ V,
+disable its output and connect the banana plugs to it (mind the polarity).
+When you enable the lab supply's output, you have three seconds before the bootloader enters the application automatically.
+Type \emph{make programserial} into a terminal in the code directory, but don't hit enter yet.
+When you are ready, enable the lab supply's output and then hit enter in the terminal.
+If everything went OK then the instrument should now have the application loaded into it.
+You can now proceed to checking system voltages!
+
+\subsubsection{Checking system voltages}
+
+After programming the application,
+the MCU will enable the $\pm 5$ V and $24$ V switching regulators after booting (3 seconds after power-up).
+Once it has done so, you should measure all system voltages to make sure they are reasonable.
+See table \ref{system_voltages}.
+
+\begin{table}[H]
+\begin{centering}
+\rowcolors{1}{lgray}{dgray}
+\begin{tabular}{|l|l|l|}
+\hline
+{\bf Voltage bus} & {\bf Min}    & {\bf Max}\\ \hline
++3.3V             & $+3.2$ V     & $+3.4$ V \\ \hline
++24V              & $+23$  V     & $+25$  V \\ \hline
++5V               & $+4.9$ V     & $+5.1$ V \\ \hline
+-5V               & $-5.1$ V     & $-4.9$ V \\ \hline
+\end{tabular}
+\caption{System voltage ranges.}
+\label{system_voltages}
+\end{centering}
+\end{table}
+
+You should also measure the resistances and voltages across the system voltage dividers
+(R20 through R27, R37 and R38), for calibrating the application.
+After such calibration, issue a 'v' command (table \ref{command_table_0}),
+to ensure that the MCU's idea of what the system voltages are, is in line with the actual measured voltages.
+
+Next up is distinguishing the two temperature sensors now in the system.
+
+\subsubsection{Distinguishing temperature sensors}
+
+Distinguish the two DS18B20Z temperature sensors now in the instrument by touching one of them, thus warming it, then issue a 't' command (table \ref{command_table_0}).
 Write down which ID corresponds to which of the two sensors.
 
 \subsection{fieldmill9}
@@ -254,15 +354,14 @@ The resistance should be less than 10 $\Omega$.
 \begin{itemize}
 \item One (1) credits PCB, soldered and cleaned
 \item One (1) silver plated credits aluminium plate
-\item One (1) cpu3/credits aluminium standoff, short kind
-\item One (1) cpu3/credits aluminium standoff, long kind
+\item Two (2) cpu4/credits aluminium standoffs
 \item Four (4) PEEK washers (top kind)
 \item Four (4) PEEK washers (bottom kind)
 \item Twentyfour (24) silver plated M3 screws, ?? length inluding head (Torx T10)
 \end{itemize}
 
 Be careful to use the aluminium plate with holes countersunk in the correct direction.
-The credits plates are mirror images of the cpu3 plates.
+The credits plates are mirror images of the cpu4 plates.
 
 Screw the standoffs to the plate using M3 screws, 0.8 Nm.
 
@@ -314,9 +413,6 @@ For example, the reply to the "M10 10 10" command example given earlier is of ty
 
 Tables \ref{command_table_0} and \ref{command_table} summarize all commands and their parameters.
 More detailed descriptions of each command and response are given in the sections that follow.
-
-\definecolor{lgray}{gray}{0.95}
-\definecolor{dgray}{gray}{0.90}
 
 \begin{table}[H]
 \begin{centering}

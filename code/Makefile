@@ -18,9 +18,8 @@ all:
 avr109:
 	WAIT_VALUE=300 make -C avr109 all
 
-.PHONY: flight programserial manual clean avr109 setserial
-flight:
-	make -C app clean all
+.PHONY: flight programserial manual clean avr109 setserial burnbootloader
+bootloader:
 	WAIT_VALUE=300 make -C avr109 clean all
 
 	# efuse: ATmega103 compatibility mode *off* (else USART1 won't work)
@@ -31,6 +30,10 @@ flight:
 	#eeprom: Keep motors off
 	avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -e -U flash:w:avr109/main.hex \
 	  -U lfuse:w:0xef:m -U hfuse:w:0xCC:m -U efuse:w:0xff:m -U eeprom:w:eeprom.hex -B 10
+
+flight:
+	make -C app clean all
+	make bootloader
 	make programserial
 
 setserial:
