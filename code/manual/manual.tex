@@ -124,8 +124,8 @@ Use Kynar shrink tubing to protect the solder points on the DE-9 side.
 \begin{tabular}{|l|l|l|}
 \hline
 {\bf Description} & {\bf DE-9 pin}    & {\bf power4 pin}\\ \hline
-+28V              & 5                 & 1 \\ \hline
-GND               & 1                 & 2 \\ \hline
++28V              & 1                 & 1 \\ \hline
+GND               & 5                 & 2 \\ \hline
 RS-485+ A         & 3                 & 3 \\ \hline
 RS-485- B         & 7                 & 4 \\ \hline
 \end{tabular}
@@ -276,6 +276,20 @@ Before doing anything else, perform the following electrical tests using a multi
 Applying power while these values are out of spec may cause PERMANENT DAMAGE to op-amps, DACs and/or linear regulators.
 In the worst case the +-5V regulator (TMR 6-2421WI) may also become damaged.
 Once checked and within spec the assembly process may continue:
+
+\begin{table}[H]
+\begin{centering}
+\rowcolors{1}{lgray}{dgray}
+\begin{tabular}{|l|l|l|}
+\hline
+{\bf fm10 voltage bus} & {\bf Min}    & {\bf Max} \\ \hline
++2.5V                  & $+2.45$ V    & $+2.55$ V \\ \hline
+-2.5V                  & $-2.55$ V    & $-2.45$ V \\ \hline
+\end{tabular}
+\caption{fieldmill10 voltage ranges.}
+\label{fm10_voltages}
+\end{centering}
+\end{table}
 
 Cut motor wires to 6-7 mm length.
 Strip so that 3 mm of insulation remains, with the wire stripper set to 0.4 mm.
