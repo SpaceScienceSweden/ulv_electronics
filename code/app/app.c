@@ -273,8 +273,8 @@ int usart_putchar_printf(char var, FILE *stream) {
 }
 FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE);
 
-//called before main()
-__attribute__ ((naked)) __attribute__ ((section (".init3"))) void setup_xmem (void) {
+//called by setup_xmem() in .init3 (init3.c), before main()
+void clear_xmem (void) {
   //assert /EN_XMEM (PG3)
   DDRG |= (1<<3);
   PORTG &= ~(1<<3);

@@ -247,5 +247,9 @@ printf "  main = %d, worst IV = %d, total = %d\n",
 
 print "\n";
 
-print "The following functions were not resolved:\n";
-foreach (keys %unresolved) { print "  $_\n"; }
+#print "The following functions were not resolved:\n";
+#foreach (keys %unresolved) { print "  $_\n"; }
+# I don't remember enough perl to print the size of a hash, just print dots
+print "This many functions were not resolved:\n";
+foreach (keys %unresolved) { print "."; }
+print "\n";

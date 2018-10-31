@@ -1,5 +1,6 @@
 PRG            = app
 OBJ            = app.o ../avr-ds18b20/src/ds18b20.o ../avr-ds18b20/src/onewire.o ../avr-ds18b20/src/romsearch.o
+DEPS           = wire_structs.h
 OPTIMIZE       = -O3 -frename-registers -funroll-loops
 
 DEFS           =-I/usr/local/avr/include -I../avr-ds18b20/include
@@ -18,20 +19,30 @@ CC             = avr-gcc
 CFLAGS  = $(CFLAGS_ROOT) -Werror -Wno-unused -Wno-return-local-addr -Wno-stringop-overflow \
   -Wall -pedantic $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) -std=gnu99
 LDFLAGS = -Wl,-Map,$(PRG).map -Wl,-u,vfprintf -lprintf_flt -lm \
-	-Wl,--section-start,.bss=0x801100,--defsym=__heap_end=0x80ffff
+	-Wl,--section-start,.bss=0x801100,--defsym=__heap_end=0x80ffff,--print-memory-usage
 # ^ Put .data and stack in SRAM, .bss and heap in XRAM
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
-all: $(PRG).elf lst text eeprom
+all: $(PRG).elf lst text eeprom printstackusage
 	avr-size $(PRG).elf
 
-$(PRG).elf: $(OBJ) wire_structs.h
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
+.PHONY: printstackusage
+printstackusage:
+	./avstack.pl $(OBJ)
+
+init3.o: init3.c
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) -fstack-usage
+
+$(PRG).elf: $(OBJ) init3.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) init3.o $(LIBS)
 
 clean:
-	rm -rf *.o $(PRG).elf *.eps *.png $(PRG).pdf *.bak
+	rm -rf $(OBJ) *.o ../avr-ds18b20/src/*.su *.su $(PRG).elf *.eps *.png $(PRG).pdf *.bak
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
 loadusb: $(PRG).hex
