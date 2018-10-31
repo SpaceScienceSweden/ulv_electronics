@@ -16,11 +16,12 @@
 
 #define WDTO_DEFAULT WDTO_250MS
 
-#define FEATURE_TIMER_TEST 1
+#define FEATURE_TIMER_TEST 0
 #define FEATURE_MEASURE_RPMS 1
-#define FEATURE_TWIDDLE_VGND 1
-#define FEATURE_PROGRAMS 1
-
+#define FEATURE_TWIDDLE_VGND 0
+#define FEATURE_PROGRAMS 0
+#define FEATURE_SAMPLES 0       //raw sample capture, uses INT7 ISR
+#define FEATURE_BSEND 0         //required for FEATURE_SAMPLES
 
 #define BS  '\x08'  //backspace
 #define DEL '\x7F'  //delete - treat same as backspace
@@ -83,6 +84,7 @@ char line[256];
 uint8_t roms[6*8];
 uint8_t romcnt = 0;
 
+#if FEATURE_SAMPLES == 1
 uint8_t measurement_on = 0;
 uint16_t measurement_num_frames = 0;
 volatile uint16_t num_captured_frames = 0;
@@ -106,8 +108,17 @@ __uint24 first_frame;  //set to gettime24() while we're  the first sample
 
 //header, for bsend()
 sample_packet_header_s header;
+
+#else   //FEATURE_SAMPLES
+
+//don't need volatile
+uint8_t sample_data[32767];
+
+#endif  //FEATURE_SAMPLES
+
 temperature_s temps[6];
 
+#if FEATURE_BSEND == 1
 #define MAX_BSENDS 9
 struct {
   //using two pointers is slightly faster than offset + size
@@ -115,6 +126,7 @@ struct {
   //uint16_t len;
 } bsends[MAX_BSENDS];
 volatile uint8_t cur_bsend = 0;
+#endif
 
 const char *TEMP = "TEMP";
 const char *TACH = "TACH";
@@ -138,6 +150,11 @@ static uint8_t adc_connected[3] = {0,0,0};
 
 //initialize MAX504s to 0 V
 static uint16_t vgnds[3] = {512, 512, 512};
+
+#if FEATURE_TWIDDLE_VGND == 1
+//a bit silly
+uint16_t sintab[1024];
+#endif
 
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
@@ -311,6 +328,7 @@ static unsigned freeRam () {
   return 0xffff - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
 
+#if FEATURE_BSEND == 1
 ISR(USART1_UDRE_vect) {
   for (; cur_bsend < MAX_BSENDS; cur_bsend++) {
     if (bsends[cur_bsend].ptr < bsends[cur_bsend].end) {
@@ -357,6 +375,7 @@ static void bsend_start(void) {
     }
   }
 }
+#endif  //FEATURE_BSEND
 
 //used to get view of how much CPU we're using
 //undefine to save some CPU
@@ -1094,6 +1113,7 @@ static uint8_t get_tach_pin(uint8_t id) {
   return PIND & (1<<PD4);
 }
 
+#if FEATURE_SAMPLES == 1
 //returns size of sample buffer
 static size_t sample_setup(uint8_t idx) {
   num_captured_frames = 0;
@@ -1109,10 +1129,13 @@ static size_t sample_setup(uint8_t idx) {
   num_tachs[idx][2] = 0;
   return nbytes;
 }
+#endif
 
 static void stop_measurement(void) {
   EIMSK &= ~(1<<INT7);
+#if FEATURE_SAMPLES == 1
   measurement_on = 0;
+#endif
 
   //put ADCs back in STANDBY mode
   for (uint8_t id = 0; id < 3; id++) {
@@ -1129,6 +1152,15 @@ static void stop_measurement(void) {
 //doing sei() afterward is optional
 //int7 says whether to enable INT7 ISR or not
 static uint8_t adc_wakeup(uint8_t int7) {
+#if FEATURE_SAMPLES == 0
+  //there's no INT7 ISR in non-sample mode
+  if (int7 && !FEATURE_SAMPLES) {
+    start_section("ERROR");
+    printf_P(PSTR("adc_wakeup() called with int7 and FEATURE_SAMPLES == 0\r\n"));
+    return 0;
+  }
+#endif
+
   uint8_t portf = PORTF;
   uint8_t lastena = 0, pc = 0;
   uint8_t someid = 0; //ID of any enabled ADC, for configuring 74153
@@ -1162,7 +1194,9 @@ static uint8_t adc_wakeup(uint8_t int7) {
   //74153
   set_74153(someid);
 
+#if FEATURE_SAMPLES == 1
   sample_setup(sample_data_idx);
+#endif
 
   if (int7) {
     //set up interrupt before WAKEUP, so we don't miss the falling edge
@@ -1179,7 +1213,9 @@ static uint8_t adc_wakeup(uint8_t int7) {
     //clear flag just in case
     EIFR  |= (1<<INTF7);
   }
+#if FEATURE_SAMPLES == 1
   measurement_on = 1;
+#endif
 
   //select all ADCs at the same time
   //this works because MISO is open collector
@@ -1223,6 +1259,7 @@ static uint8_t adc_wakeup(uint8_t int7) {
   return 0;
 }
 
+#if FEATURE_SAMPLES == 1
 // /DRDY ISR
 // also IC3
 ISR(INT7_vect) {
@@ -1367,11 +1404,13 @@ ISR(INT7_vect) {
     num_captured_frames++;
   }
 }
+#endif //FEATURE_SAMPLES
 
 // TACH ISR
 ISR(TIMER1_CAPT_vect) {
 }
 
+#if FEATURE_SAMPLES == 1
 //in-place compress 24-bit samples to 8-bit, update header
 static void compress_24bit_to_8bit(sample_packet_header_s *header, void *data) {
   uint16_t num_samples;
@@ -1434,6 +1473,7 @@ static void reset_measurement(void) {
   num_measurements = 0;
   measurement_sample_fmt = 0;
 }
+#endif  //FEATURE_SAMPLES
 
 // If >= 0, exactly that ADC is enabled
 // IF <  0, not exactly one ADC enabled
@@ -1617,7 +1657,7 @@ void compute_min_max(uint16_t max_frames, sample_t *data_ptr, uint8_t num_fms, f
   //Q1 += p0, Q2 += p1, ..., Q1 += p4, ..., Q4 += p11
   __uint24 psize = p12 - p0;
   __uint24 paccu = psize + rounding;
-  sample_t *data_ptr = ofs + p0*stride + (sample_t*)&sample_data[0][0];
+  sample_t *data_ptr = ofs + p0*stride + (sample_t*)sample_data;
 
   sample_t *data_ptr2 = data_ptr;
   for (uint16_t p00 = p0; p00 < p12; p00++, data_ptr2 += stride) {
@@ -2082,7 +2122,7 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_fram
     uint8_t discard_samples = 5;
     uint16_t num_frames_left = max_frames;
 
-    uint8_t *ptr = (uint8_t*)&sample_data[0][0];
+    uint8_t *ptr = (uint8_t*)sample_data;
 
     set_74153(first_id);
     DDRD |= 1;  //debug
@@ -2222,7 +2262,7 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_fram
         fm.stat_n = rreg(id, STAT_N);
         fm.stat_s = rreg(id, STAT_S);
 
-        sample_t *data_ptr = ofs + (sample_t*)&sample_data[0][0];
+        sample_t *data_ptr = ofs + (sample_t*)sample_data;
 
         compute_min_max(max_frames, data_ptr, num_fms, &fm);
 
@@ -2232,7 +2272,7 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_fram
         int16_t off = fm.minmax[3][0]/2 + mid/2;
 
         //rewind
-        data_ptr = ofs + (sample_t*)&sample_data[0][0];
+        data_ptr = ofs + (sample_t*)sample_data;
         uint8_t state = data_ptr[3]/(1 << (WORDSZ-16)) > mid;
         uint16_t p0 = 0; //index of last tach, or zero
 
@@ -2557,8 +2597,6 @@ static void handle_input(void) {
 #endif //FEATURE_MEASURE_RPMS
 #if FEATURE_TWIDDLE_VGND == 1
       } else if (c == ';') {
-        uint16_t sintab[1024];
-
         start_section("INFO");
         for (uint16_t x = 0; x <1024; x++) {
           //sintab[x] = (1+sin(x*2*M_PI / 1024))*512 - 0.5; //-2 .. +2 V
@@ -2703,6 +2741,7 @@ static void handle_input(void) {
             wreg(id, index, value);
         }
         adc_regs();
+#if FEATURE_SAMPLES == 1
       } else if (c == 'U') {
         //stop_measurement() 'lite'
         EIMSK &= ~(1<<INT7);
@@ -2798,6 +2837,7 @@ static void handle_input(void) {
         }
         cli();
         adc_wakeup(1);
+#endif
       } else if (c == 'o' || c == 'O') {
         //get/set offset voltages
         if (c == 'O') {
@@ -2935,7 +2975,11 @@ int main(void)
 
   for (;;) {
 retry:
-    if (is_busy && !bsend_busy()) {
+    if (is_busy
+#if FEATURE_BSEND == 1
+      && !bsend_busy()
+#endif
+      ) {
       //READY
       READY();
     }
@@ -2947,6 +2991,7 @@ retry:
     }
     wdt_reset();
 
+#if FEATURE_SAMPLES == 1
     if (measurement_on) {
       //check tachometers
       uint8_t tachs_done = 0; //if 1 then tachs are full
@@ -3058,6 +3103,7 @@ retry:
         sei();
       }
     }
+#endif //FEATURE_SAMPLES
   }
 
   return 0;
