@@ -16,13 +16,30 @@
 #include "diskio.h"
 #include "mmc_avr.h"
 
+#define SPI_FAST_SPEED  (1<<(SPI2X+2))  //f_osc/2 -> 3.7 Mbps
+#define SPI_SLOW_SPEED  (1<<SPR1)       //f_osc/64 -> 115.2 kbps
+static void mmc_spi_fast(void) {
+  //enable spi, run at SPI_FAST_SPEED
+  //CPOL=0, CPHA=0
+  SPCR = (1<<SPE) | (1<<MSTR) | (SPI_FAST_SPEED & 3);
+  SPSR = (SPI_FAST_SPEED >> 2);
+}
+
+static void mmc_spi_slow(void) {
+  //enable spi, run at SPI_SLOW_SPEED
+  //CPOL=0, CPHA=0
+  SPCR = (1<<SPE) | (1<<MSTR) | (SPI_SLOW_SPEED & 3);
+  SPSR = (SPI_SLOW_SPEED >> 2);
+}
+
+
 /* Peripheral controls (Platform dependent) */
-#define CS_LOW()		To be filled	/* Set MMC_CS = low */
-#define	CS_HIGH()		To be filled	/* Set MMC_CS = high */
-#define MMC_CD			To be filled	/* Test if card detected.   yes:true, no:false, default:true */
-#define MMC_WP			To be filled	/* Test if write protected. yes:true, no:false, default:false */
-#define	FCLK_SLOW()		To be filled	/* Set SPI clock for initialization (100-400kHz) */
-#define	FCLK_FAST()		To be filled	/* Set SPI clock for read/write (20MHz max) */
+#define CS_LOW()		do { PORTB &= ~(1<<PB4); } while (0)	/* Set MMC_CS = low */
+#define	CS_HIGH()		do { PORTB |=  (1<<PB4); } while (0)	/* Set MMC_CS = high */
+#define MMC_CD			1	/* Test if card detected.   yes:true, no:false, default:true */
+#define MMC_WP			0	/* Test if write protected. yes:true, no:false, default:false */
+#define	FCLK_SLOW()		mmc_spi_slow()	/* Set SPI clock for initialization (100-400kHz) */
+#define	FCLK_FAST()		mmc_spi_fast()	/* Set SPI clock for read/write (20MHz max) */
 
 
 /*--------------------------------------------------------------------------
@@ -76,32 +93,12 @@ BYTE CardType;			/* Card type flags (b0:MMC, b1:SDv1, b2:SDv2, b3:Block addressi
 static
 void power_on (void)
 {
-	/* Trun socket power on and wait for 10ms+ (nothing to do if no power controls) */
-	To be filled
-
-
-	/* Configure MOSI/MISO/SCLK/CS pins */
-	To be filled
-
-
-	/* Enable SPI module in SPI mode 0 */
-	To be filled
 }
 
 
 static
 void power_off (void)
 {
-	/* Disable SPI function */
-	To be filled
-
-
-	/* De-configure MOSI/MISO/SCLK/CS pins (set hi-z) */
-	To be filled
-
-
-	/* Trun socket power off (nothing to do if no power controls) */
-	To be filled
 }
 
 
@@ -111,6 +108,7 @@ void power_off (void)
 /*-----------------------------------------------------------------------*/
 
 /* Exchange a byte */
+//could reuse spi_comm_byte(), but eh
 static
 BYTE xchg_spi (		/* Returns received data */
 	BYTE dat		/* Data to be sent */

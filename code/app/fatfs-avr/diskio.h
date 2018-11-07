@@ -38,13 +38,17 @@ typedef struct {
 /*---------------------------------------*/
 /* Prototypes for disk control functions */
 
+#include "mmc_avr.h"
 
-DSTATUS disk_initialize (BYTE pdrv);
-DSTATUS disk_status (BYTE pdrv);
-DRESULT disk_read (BYTE pdrv, BYTE* buff, DWORD sector, UINT count);
-DRESULT disk_write (BYTE pdrv, const BYTE* buff, DWORD sector, UINT count);
-DRESULT disk_ioctl (BYTE pdrv, BYTE cmd, void* buff);
-void disk_timerproc (void);
+#define disk_initialize(pdrv) mmc_disk_initialize()
+#define disk_status(pdrv) mmc_disk_status()
+#define disk_read(pdrv, buff, sector, count) \
+        mmc_disk_read (buff, sector, count)
+#define disk_write(pdrv, buff, sector, count) \
+        mmc_disk_write (buff, sector, count)
+#define disk_ioctl(pdrv, cmd, buff) \
+        mmc_disk_ioctl (cmd, buff)
+#define disk_timerproc() mmc_disk_timerproc()
 
 
 /* Disk Status Bits (DSTATUS) */
