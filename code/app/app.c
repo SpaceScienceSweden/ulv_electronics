@@ -22,6 +22,7 @@
 #define FEATURE_PROGRAMS 0
 #define FEATURE_SAMPLES 0       //raw sample capture, uses INT7 ISR
 #define FEATURE_BSEND 0         //required for FEATURE_SAMPLES
+#define FEATURE_MMC 1           //MMC/µSD card
 
 #define BS  '\x08'  //backspace
 #define DEL '\x7F'  //delete - treat same as backspace
@@ -71,8 +72,7 @@
 #define UART_CTRL2_DATA  ((1<<UCSZ11) | (1<<UCSZ10))
 #define UART_DATA  UDR1
 
-#define SPI_SPEED (1<<(SPI2X+2))              //f_osc/2 -> 3.7 Mbps
-//#define SPI_SPEED ((1<<SPR0) | (1<<SPR1)) //1/128 speed (57600 bps)
+#define SPI_FAST_SPEED  (1<<(SPI2X+2))  //f_osc/2 -> 3.7 Mbps
 
 //a 32-bit timer is not enough to not overflow over the mission duration
 volatile uint64_t timer1_base = 0;
@@ -377,6 +377,15 @@ static void bsend_start(void) {
 }
 #endif  //FEATURE_BSEND
 
+#if FEATURE_MMC == 1
+#include "mmc_avr.h"
+
+DWORD get_fattime (void) {
+  //TODO
+  return 0;
+}
+#endif
+
 //used to get view of how much CPU we're using
 //undefine to save some CPU
 #define CPU_USAGE_ON()  do { /*PORTF |= (1<<6);*/  } while (0)
@@ -414,12 +423,20 @@ static void bsend_start(void) {
 
 ISR(TIMER1_OVF_vect) {
   //CPU_USAGE_ON();
-#define TIMER1_BASE_OVF_BUMP() \
-  do { \
-    timer1_base += TIMER1_PRESCALER*(TIMER1_TOP + 1 /* TOP + 1 = 1024 */); \
-  } while (0)
-  TIMER1_BASE_OVF_BUMP();
-  //CPU_USAGE_OFF();
+#define TIMER1_OVF_INC (TIMER1_PRESCALER*(TIMER1_TOP + 1 /* TOP + 1 = 1024 */))
+  uint64_t timer1_new = timer1_base + TIMER1_OVF_INC;
+  timer1_base = timer1_new;
+
+#if FEATURE_MMC == 1
+  static __uint24 next_100hz = 0;
+  __uint24 diff = (__uint24)timer1_new - next_100hz;
+
+  //check if we're past next_100hz, modulo 2^24
+  if (diff < (__uint24)0x800000) {
+    mmc_disk_timerproc();
+    next_100hz += F_CPU / 100;
+  }
+#endif
 }
 
 static __uint24 gettime24() {
@@ -556,6 +573,21 @@ static void setup_timers() {
   TIFR |= (1<<TOV1);
 }
 
+static void adc_spi_fast(void) {
+  //enable spi, run at SPI_FAST_SPEED
+  //CPOL=0, CPHA=1
+  SPCR = (1<<SPE) | (1<<MSTR) | (1<<CPHA) | (SPI_FAST_SPEED & 3);
+  SPSR = (SPI_FAST_SPEED >> 2);
+}
+
+//max504
+static void dac_spi_fast(void) {
+  //enable spi, run at SPI_FAST_SPEED
+  //CPOL=0, CPHA=0
+  SPCR = (1<<SPE) | (1<<MSTR) | (SPI_FAST_SPEED & 3);
+  SPSR = (SPI_FAST_SPEED >> 2);
+}
+
 static void setup_spi(void) {
   //set MOSI and SCK as output, obviously
   //but also set /SS as output or a low input will put us in SPI slave mode
@@ -564,10 +596,7 @@ static void setup_spi(void) {
   PORTB |= (1<<0) | (1<<3);
   DDRB |= (1<<0) | (1<<1) | (1<<2);
 
-  //enable spi, run at SPI_SPEED (3.7 Mbps or 57.6 kbps)
-  //CPOL=0, CPHA=1
-  SPCR = (1<<SPE) | (1<<MSTR) | (1<<CPHA) | (SPI_SPEED & 3);
-  SPSR = (SPI_SPEED >> 2); //double speed, possibly
+  adc_spi_fast();
 }
 
 static inline uint8_t spi_comm_byte(uint8_t in) {
@@ -579,16 +608,13 @@ static inline uint8_t spi_comm_byte(uint8_t in) {
 }
 
 static void set_vgnd(uint8_t x, uint16_t codein) {
-  uint8_t spcr_before = SPCR;
-
   vgnds[x] = codein;
 
   //set all DACs to -1.024 V, enable ADG601's
   DDRE |= (1<<2) | (1<<3) | (1<<4);
   PORTE |= (1<<2) | (1<<3) | (1<<4); //de-assert /CS
 
-  //CPOL=0, CPHA=0
-  SPCR &= ~(1<<CPHA);
+  dac_spi_fast();
 
     PORTE &= ~(1<<(x+2));
 
@@ -622,8 +648,8 @@ static void set_vgnd(uint8_t x, uint16_t codein) {
   //DDRF |= (1<<5) | (1<<6);
   //PORTF |= (1<<5) | (1<<6);
 
-  //restore SPCR
-  SPCR = spcr_before;
+  //restore SPI to ADC settings
+  adc_spi_fast();
 }
 
 static void set_vgnds(uint16_t codein) {
@@ -1428,8 +1454,8 @@ ISR(INT7_vect) {
 #endif //FEATURE_SAMPLES
 
 // TACH ISR
-ISR(TIMER1_CAPT_vect) {
-}
+/*ISR(TIMER1_CAPT_vect) {
+}*/
 
 #if FEATURE_SAMPLES == 1
 //in-place compress 24-bit samples to 8-bit, update header
@@ -2961,6 +2987,53 @@ int main(void)
 
   start_section("INFO");
   printf_P(PSTR("Hello, Earth! 👽\r\n"));
+
+#if FEATURE_MMC == 1
+  //must be after sei() because timers
+  wdt_reset();
+  uint8_t mmc_status = mmc_disk_initialize();
+  adc_spi_fast(); //this is likely to get really annoying
+  wdt_reset();
+
+  printf_P(PSTR("mmc_status = %hhu\r\n"), mmc_status);
+
+  FATFS fs;
+  FRESULT res;
+  res = f_mount(&fs, "", 1);
+  if (res == FR_OK) {
+    DIR dir = {0};
+    res = f_opendir(&dir, "");
+    if (res == FR_OK) {
+      FILINFO fno = {0};
+      for (;;) {
+        res = f_readdir(&dir, &fno);
+        if (res != FR_OK || fno.fname[0] == '\0') {
+          printf_P(PSTR("f_readdir res = %i\r\n"), res);
+          break;
+        }
+        printf_P(PSTR("fname: %s\r\n"), fno.fname);
+        FIL f;
+        res = f_open(&f, fno.fname, FA_READ);
+        wdt_reset();
+        if (res == FR_OK) {
+          char data[101] = {0};
+          UINT out;
+          res = f_read(&f, data, 100, &out);
+          printf_P(PSTR("f_read res = %i, out = %i, data = \"%s\"\r\n"), res, out, data);
+          f_close(&f);
+        } else {
+          printf_P(PSTR("f_open res = %i\r\n"), res);
+        }
+      }
+      f_closedir(&dir);
+    } else {
+      printf_P(PSTR("f_opendir res = %i\r\n"), res);
+    }
+  } else {
+    printf_P(PSTR("f_mount res = %i\r\n"), res);
+  }
+  wdt_reset();
+#endif
 
   uint8_t temp_conversion_in_progress = 0;
 
