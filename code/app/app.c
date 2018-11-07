@@ -382,9 +382,23 @@ static void bsend_start(void) {
 #define CPU_USAGE_ON()  do { /*PORTF |= (1<<6);*/  } while (0)
 #define CPU_USAGE_OFF() do { /*PORTF &= ~(1<<6);*/ } while (0)
 
-#define TIMER1_PRESCALER 1  //6% CPU
-//#define TIMER1_PRESCALER 8  //<1% CPU
-#define TIMER1_TOP        0x03FF
+#define TIMER1_PRESCALER 1  //6% CPU  (WGM=7)
+//#define TIMER1_PRESCALER 8  //<1% CPU (WGM=7)
+#define TIMER1_WGM        14
+
+#if TIMER1_WGM == 7         // Fast PWM, 10-bit
+#define TIMER1_TOP  0x03FF  // 7200 Hz
+#elif TIMER1_WGM == 10      // PWM, Phase Correct
+// TOP = OCR1
+// Using TIMER1_TOP = 0xFFFF would be nice, but the motor's speed becomes wobbly.
+// The EC20 datasheet says motor PWM frequency must be >= 500 Hz,
+// while WGM=10 -> ~56 Hz if TIMER1_TOP == 0xFFFF.
+#define TIMER1_TOP  0x0FFF  // ~900.2 Hz
+#elif TIMER1_WGM == 14      // Fast PWM
+#define TIMER1_TOP  0x1FFF  // 900 Hz
+#else
+#error Unsupported TIMER1_WGM
+#endif
 
 #define TIMER3_PRESCALER TIMER1_PRESCALER
 #define TIMER3_TOP        0xFFFF
@@ -399,9 +413,13 @@ static void bsend_start(void) {
 #endif
 
 ISR(TIMER1_OVF_vect) {
-  CPU_USAGE_ON();
-  timer1_base += TIMER1_PRESCALER*(TIMER1_TOP + 1 /* TOP + 1 = 1024 */);
-  CPU_USAGE_OFF();
+  //CPU_USAGE_ON();
+#define TIMER1_BASE_OVF_BUMP() \
+  do { \
+    timer1_base += TIMER1_PRESCALER*(TIMER1_TOP + 1 /* TOP + 1 = 1024 */); \
+  } while (0)
+  TIMER1_BASE_OVF_BUMP();
+  //CPU_USAGE_OFF();
 }
 
 static __uint24 gettime24() {
@@ -491,7 +509,10 @@ static void setup_timers() {
   //PB5 = OC1A, PB6 = OC1B, PB7 = OC1C. inverted drive signals
   //pwm frequency range is 500 Hz .. 20 kHz
   //WGM=3 -> TOP=0x3FF -> (14745600/1024) = 14400 Hz (10-bit fast PWM)
-  uint8_t wgm = 7;
+  uint8_t wgm = TIMER1_WGM;
+#if TIMER1_WGM == 10 || TIMER1_WGM == 14
+  ICR1 = TIMER1_TOP;
+#endif
   TCCR1A = (3<<COM1A0) | (3<<COM1B0) | (3<<COM1C0) | ((wgm&3) << WGM10);
   //enable clock, set prescaler
 #if TIMER1_PRESCALER == 1
