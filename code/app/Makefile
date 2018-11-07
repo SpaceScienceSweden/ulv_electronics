@@ -1,9 +1,9 @@
 PRG            = app
-OBJ            = app.o ../avr-ds18b20/src/ds18b20.o ../avr-ds18b20/src/onewire.o ../avr-ds18b20/src/romsearch.o
+OBJ            = app.o avr-ds18b20/src/ds18b20.o avr-ds18b20/src/onewire.o avr-ds18b20/src/romsearch.o
 DEPS           = wire_structs.h
 OPTIMIZE       = -O3 -frename-registers -funroll-loops
 
-DEFS           =-I/usr/local/avr/include -I../avr-ds18b20/include
+DEFS           =-I/usr/local/avr/include -Iavr-ds18b20/include
 LIBS           =-L/usr/local/avr/lib -L/usr/local/avr/lib/avr5
 
 # You should not have to change anything below here.
@@ -42,7 +42,7 @@ $(PRG).elf: $(OBJ) init3.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) init3.o $(LIBS)
 
 clean:
-	rm -rf $(OBJ) *.o ../avr-ds18b20/src/*.su *.su $(PRG).elf *.eps *.png $(PRG).pdf *.bak
+	rm -rf $(OBJ) *.o avr-ds18b20/src/*.su *.su $(PRG).elf *.eps *.png $(PRG).pdf *.bak
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
 loadusb: $(PRG).hex
