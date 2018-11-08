@@ -7,7 +7,13 @@ OBJ            = \
 	fatfs-avr/ff.o\
 	fatfs-avr/mmc_avr_spi.o\
 
-DEPS           = wire_structs.h
+DEPS           = \
+	wire_structs.h\
+	fatfs-avr/diskio.h\
+	fatfs-avr/ffconf.h\
+	fatfs-avr/ff.h\
+	fatfs-avr/mmc_avr.h\
+
 OPTIMIZE       = -O3 -frename-registers -funroll-loops
 
 DEFS           =-I/usr/local/avr/include -Iavr-ds18b20/include -Ifatfs-avr
@@ -33,6 +39,7 @@ OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
 all: $(PRG).elf lst text eeprom printstackusage
+	avr-nm --size-sort --radix=d $(PRG).elf | sed -e 's/^0*//' | tail -n15
 	avr-size $(PRG).elf
 
 .PHONY: printstackusage

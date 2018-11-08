@@ -531,6 +531,7 @@ DRESULT mmc_disk_ioctl (
 		deselect();
 		break;
 
+#if FF_USE_TRIM
 	case CTRL_TRIM:		/* Erase a block of sectors (used when _USE_TRIM in ffconf.h is 1) */
 		if (!(CardType & CT_SDC)) break;				/* Check if the card is SDC */
 		if (mmc_disk_ioctl(MMC_GET_CSD, csd)) break;	/* Get CSD */
@@ -543,21 +544,24 @@ DRESULT mmc_disk_ioctl (
 			res = RES_OK;	/* FatFs does not check result of this command */
 		}
 		break;
+#endif
 
 	/* Following commands are never used by FatFs module */
-
+#if 0
 	case MMC_GET_TYPE :		/* Get card type flags (1 byte) */
 		*ptr = CardType;
 		res = RES_OK;
 		break;
-
+#endif
+#if FF_USE_TRIM
 	case MMC_GET_CSD :		/* Receive CSD as a data block (16 bytes) */
 		if (send_cmd(CMD9, 0) == 0 && rcvr_datablock(ptr, 16)) {	/* READ_CSD */
 			res = RES_OK;
 		}
 		deselect();
 		break;
-
+#endif
+#if 0
 	case MMC_GET_CID :		/* Receive CID as a data block (16 bytes) */
 		if (send_cmd(CMD10, 0) == 0 && rcvr_datablock(ptr, 16)) {	/* READ_CID */
 			res = RES_OK;
@@ -586,6 +590,7 @@ DRESULT mmc_disk_ioctl (
 		Stat |= STA_NOINIT;
 		res = RES_OK;
 		break;
+#endif
 #if _USE_ISDIO
 	case ISDIO_READ:
 		sdi = buff;

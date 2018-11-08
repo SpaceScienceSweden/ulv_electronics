@@ -3000,34 +3000,35 @@ int main(void)
   FATFS fs;
   FRESULT res;
   res = f_mount(&fs, "", 1);
+  /*res = f_mkdir("TLMTRY"); printf_P(PSTR("f_mkdir(TLMTRY) = %i\r\n"), res);
+  res = f_mkdir("DATA"); printf_P(PSTR("f_mkdir(DATA) = %i\r\n"), res);*/
+  wdt_reset();
+
   if (res == FR_OK) {
-    DIR dir = {0};
-    res = f_opendir(&dir, "");
-    if (res == FR_OK) {
-      FILINFO fno = {0};
-      for (;;) {
-        res = f_readdir(&dir, &fno);
-        if (res != FR_OK || fno.fname[0] == '\0') {
-          printf_P(PSTR("f_readdir res = %i\r\n"), res);
-          break;
-        }
-        printf_P(PSTR("fname: %s\r\n"), fno.fname);
-        FIL f;
-        res = f_open(&f, fno.fname, FA_READ);
-        wdt_reset();
-        if (res == FR_OK) {
-          char data[101] = {0};
-          UINT out;
-          res = f_read(&f, data, 100, &out);
-          printf_P(PSTR("f_read res = %i, out = %i, data = \"%s\"\r\n"), res, out, data);
-          f_close(&f);
-        } else {
-          printf_P(PSTR("f_open res = %i\r\n"), res);
-        }
+    FIL fp;
+    if ((res = f_open(&fp, "DATA/DATA1", FA_WRITE | FA_CREATE_NEW)) == FR_OK) {
+      UINT bw;
+      if ((res = f_write(&fp, "data1", 6, &bw)) == FR_OK) {
+        printf_P(PSTR("%u bytes written\r\n"), bw);
+      } else {
+        printf_P(PSTR("f_write res = %i\r\n"), res);
       }
-      f_closedir(&dir);
+      f_close(&fp);
     } else {
-      printf_P(PSTR("f_opendir res = %i\r\n"), res);
+      printf_P(PSTR("f_open for writing gave res = %i, FR_EXIST = %i\r\n"), res, FR_EXIST);
+    }
+
+    if ((res = f_open(&fp, "DATA/DATA1", FA_READ)) == FR_OK) {
+      UINT bw;
+      char buffer[101] = {0};
+      if ((res = f_read(&fp, buffer, 100, &bw)) == FR_OK) {
+        printf_P(PSTR("DATA/DATA1 contains: '%s'\r\n"), buffer);
+      } else {
+        printf_P(PSTR("f_read res = %i\r\n"), res);
+      }
+      f_close(&fp);
+    } else {
+      printf_P(PSTR("f_open res = %i\r\n"), res);
     }
   } else {
     printf_P(PSTR("f_mount res = %i\r\n"), res);
@@ -3064,8 +3065,8 @@ int main(void)
   wreg(1, 0x12, 0x04);
   wreg(1, 0x13, 0x04);
   wreg(1, 0x14, 0x00);
-  OCR1A = TIMER1_TOP/2;
-  OCR1B = TIMER1_TOP/2;
+  //OCR1A = TIMER1_TOP/2;
+  //OCR1B = TIMER1_TOP/2;
 
   for (;;) {
 retry:

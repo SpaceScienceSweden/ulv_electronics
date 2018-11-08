@@ -12,7 +12,7 @@ extern "C" {
 
 #define _USE_WRITE	1	/* 1: Enable disk_write function */
 #define _USE_IOCTL	1	/* 1: Enable disk_ioctl fucntion */
-#define _USE_ISDIO	1	/* 1: Enable iSDIO controls via disk_ioctl */
+#define _USE_ISDIO	0	/* 1: Enable iSDIO controls via disk_ioctl */
 
 /* Status of Disk Functions */
 typedef BYTE	DSTATUS;
