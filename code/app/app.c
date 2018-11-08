@@ -1731,12 +1731,12 @@ void compute_min_max(uint16_t max_frames, sample_t *data_ptr, uint8_t num_fms, f
   } while (0)
 
   //ROM: 51326 -> 57456, but 106 ms -> 98 ms
-  //for (uint8_t j = 0; j < 3; j++) {
+  for (uint8_t j = 0; j < 3; j++) {
   DO_QUADRANT(Q1, 0); paccu += psize;
   DO_QUADRANT(Q2, 1); paccu += psize;
   DO_QUADRANT(Q3, 2); paccu += psize;
   DO_QUADRANT(Q4, 3); paccu += psize;
-  //}
+  }/*
   DO_QUADRANT(Q1, 0); paccu += psize;
   DO_QUADRANT(Q2, 1); paccu += psize;
   DO_QUADRANT(Q3, 2); paccu += psize;
@@ -1744,41 +1744,7 @@ void compute_min_max(uint16_t max_frames, sample_t *data_ptr, uint8_t num_fms, f
   DO_QUADRANT(Q1, 0); paccu += psize;
   DO_QUADRANT(Q2, 1); paccu += psize;
   DO_QUADRANT(Q3, 2); paccu += psize;
-  DO_QUADRANT(Q4, 3); //no need to paccu here
-}
-
-static inline void print_iq(
-  uint8_t j,
-  accu_t *Q1,
-  accu_t *Q2,
-  accu_t *Q3,
-  accu_t *Q4,
-  uint16_t *NQ
-) {
-  //make sure we have enough samples to form averages
-  if (NQ[0] && NQ[1] && NQ[2] && NQ[3]) {
-    // This diagram illustrates how the different quadrant values get summed into I and Q respectively:
-    //
-    // I:‾__‾
-    // Q:‾‾__
-    // q:1234
-    //
-    // In other words:
-    //
-    // I = q1-q2-q3+q4
-    // Q = q1+q2-q3-q4
-    float q1 = Q1[j] / (float)NQ[0];
-    float q2 = Q2[j] / (float)NQ[1];
-    float q3 = Q3[j] / (float)NQ[2];
-    float q4 = Q4[j] / (float)NQ[3];
-    //4 << (WORDSZ-1) to get the result in [-1,1]
-    float I = (q1-q2-q3+q4) / (float)(4L << (WORDSZ-1));
-    float Q = (q1+q2-q3-q4) / (float)(4L << (WORDSZ-1));
-    printf_P(PSTR("%+.5f %+.5f "), I, Q);
-  } else {
-    //print zeros
-    printf_P(PSTR("0 0 "));
-  }
+  DO_QUADRANT(Q4, 3); //no need to paccu here*/
 }
 
 //only works with 16-bit samples
@@ -1808,201 +1774,6 @@ static inline void binary_iq(
     }
   }
 }
-
-#if 0
-// General idea is to sample as fast as possible (57.6 kHz)
-// Makes use of input capture, no interrupts
-// Highest speed this can capture four channels is 14400 Hz @ 14 MHz
-void square_demod_tach(void) {
-  //exactly one FM must be enabled
-  int8_t id1 = exactly_one_adc();
-  if (id1 < 0) {
-    start_section("ERROR");
-    printf_P(PSTR("Must have exactly one ADC enabled to run square_demod_tach\n"));
-    return;
-  }
-  uint8_t id = (uint8_t)id1;
-
-  cli();
-
-  //WAKEUP without INT7 ISR
-  if (adc_wakeup(0)) {
-    //fail
-    goto square_demod_tach_done;
-  }
-  
-#if WORDSZ != 24
-#error WORDSZ != 24 not supported currently
-#endif
-
-  uint8_t pc = adc_popcount[id];
-  uint32_t cycles_per_sample = adc_cycles_per_sample();
-
-  //note that this makes use of the entire sample_data array
-  //we're not doing any double buffering here,
-  //and we're not indexing into the array
-  //this makes it possible to make use of all 32k of it
-  uint16_t max_frames = sizeof(sample_data)/(WORDSZ/8*pc);
-  //measure no longer than one second
-  uint32_t max_frames2 = F_CPU / cycles_per_sample;
-
-  if (max_frames2 < max_frames) {
-    max_frames = max_frames2;
-  }
-
-  //sanity check, to prevent q1..3 from having to deal with overflow
-  if (max_frames > 16383) {
-    max_frames > 16383;
-  }
-
-  start_section("INFO");
-  printf_P(PSTR("max_frames = %i\n"), max_frames);
-
-  __uint24 time_base = 0;
-
-  for (;;) {
-    //discard the first bunch of samples
-    //partly to deal with initial F_DRDY
-    //but also to allow the sinc3 filter to warm up
-    //experiments show that five samples are about the right amount to discard
-    uint8_t discard_samples = 5;
-    uint16_t num_frames = 0;
-    uint16_t num_tachs = 0;
-
-    uint8_t *ptr = (uint8_t*)&sample_data[0][0];
-
-    //pre-clear both ICF bits by writing ones
-    TIFR |= 1<<ICF1;
-    ETIFR |= 1<<ICF3;
-
-    set_74153(id);
-
-    //sync up Timer1 and Timer3
-    TCNT1 = 0;
-    //setting TCNT3 is 2x ldi followed by 2x sts = 6 cy
-    //a smarter compiler would just sts TCNT3H, r1 (avoiding one ldi) but gcc is not smart
-    TCNT3 = 6;
-
-    uint16_t last10 = 0;  //last time 10-bit time
-    __uint24 sample_time_base = 0;
-
-    while (num_tachs < MAX_TACHS && num_frames < max_frames) {
-      //we have to be careful here since we're doing mod-1024 time
-      uint8_t ic1 = TIFR & (1<<ICF1);
-      uint8_t ic3 = ETIFR & (1<<ICF3);
-      uint16_t cur10 = TCNT1;
-
-      if (ic1) {
-        //clear by writing a one
-        TIFR |= 1<<ICF1;
-
-        //IC1 is tachometer
-        //don't bother until we've gone through the discard samples
-        if (discard_samples == 0) {
-          uint16_t delta = (ICR1 - last10) & TIMER1_TOP;
-          tachs[0][0][num_tachs++] = time_base + last10 + delta;
-        }
-      }
-      if (ic3) {
-        //IC3 is /DRDY
-        //clear by writing a one
-        ETIFR |= 1<<ICF3;
-
-        adc_select(id);
-        uint8_t stat1_data = 0;
-        if (discard_samples > 0) {
-          discard_samples_fast(pc);
-        } else {
-          ptr = read_samples_fast(ptr, pc, &stat1_data);
-        }
-        adc_deselect();
-
-        if (discard_samples > 0) {
-          uint16_t delta = (ICR3 - last10) & TIMER1_TOP;
-          //compute sample_time_base such that it will point to the time of sample zero
-          sample_time_base = time_base + last10 + delta + cycles_per_sample;
-
-          discard_samples--;
-        } else {
-          if (stat1_data) {
-            start_section("ERROR");
-            printf_P(PSTR("Got STAT_1 = %02hhx\n"), stat1_data);
-            goto square_demod_tach_done;
-          }
-
-          /*start_section("INFO");
-          printf_P(PSTR("Got a frame woo\n"));
-          break;*/
-          num_frames++;
-        }
-      }
-
-      if (cur10 < last10) {
-        time_base += TIMER1_TOP+1;
-      }
-      last10 = cur10;
-      wdt_reset();
-    }
-
-    //done capturing. swap buffers and set up bsend
-    //size_t nbytes = sample_setup(!sample_data_idx);
-    //start_section("INFO");
-    //printf_P(PSTR("would have sent %i bytes\n"), nbytes);
-
-    uint16_t cur_frame = 0;
-    uint16_t cur_tach = 0;
-
-    accu_t Q1[4] = {0};
-    accu_t Q2[4] = {0};
-    accu_t Q3[4] = {0};
-    accu_t Q4[4] = {0};
-    uint16_t NQ[4] = {0};
-
-    //skip any tach(s) which are before the first sample
-    //printf_P(PSTR("%u tachs\n"), num_tachs);
-    while (tachs[0][0][cur_tach] < sample_time_base && cur_tach < num_tachs-1) {
-      //printf_P(PSTR("skip %u\n"), cur_tach);
-      cur_tach++;
-    }
-    //keep going while we're between two tach pulses
-    for (; cur_tach < num_tachs-1; cur_tach++) {
-      //sample_time_base is the time of the first sample
-      //compute at each sample each quadrant ends
-      //just averaging the indices should be good enough,
-      //but a more accurate computation might reduce jitter
-      uint16_t q0 = (tachs[0][0][cur_tach]   - sample_time_base + cycles_per_sample-1) / cycles_per_sample;
-      uint16_t q4 = (tachs[0][0][cur_tach+1] - sample_time_base + cycles_per_sample-1) / cycles_per_sample;
-
-      if (q4 > max_frames) {
-        //printf_P(PSTR("tach %u skipped, done\n"), cur_tach);
-        break;
-      }
-
-      accumulate_square_interval(pc, q0, q4, 0, pc, Q1, Q2, Q3, Q4, NQ);
-      wdt_reset();
-    }
-    //printf_P(PSTR("\n"));
-
-    if (have_esc()) {
-      goto square_demod_tach_done;
-    }
-
-    start_section("INFO");
-    printf_P(PSTR("%5u %5u %5u %5u "), NQ[0], NQ[1], NQ[2], NQ[3]);
-    for (uint8_t j = 0; j < pc; j++) {
-      print_iq(j, Q1, Q2, Q3, Q4, NQ);
-      wdt_reset();
-    }
-    printf_P(PSTR("\r\n"));
-    READY();
-  }
-
-square_demod_tach_done:
-  stop_measurement();
-  sei();
-  return;
-}
-#endif
 
 static void read_temps(void) {
   for (uint8_t x = 0; x < romcnt; x++) {
@@ -2050,16 +1821,14 @@ static int read_adc(uint8_t x) {
 //
 // In other words at max gain ENOB is low enough that we can get away with 16 bit samples
 // The code currently has a bit too much overhead to bump the sample rate to 57.6 kHz for 1x
-void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_frames_max) {
+void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
   fm_mask &= 7;
   uint8_t num_fms = popcount(fm_mask);
 
 #if WORDSZ > 16
-  if (send_binary) {
-    start_section("ERROR");
-    printf_P(PSTR("can only send binary with 16-bit samples for now\r\n"));
-    return;
-  }
+  start_section("ERROR");
+  printf_P(PSTR("can only square_demod_analog with 16-bit samples for now\r\n"));
+  return;
 #endif
 
   if (fm_mask == 0) {
@@ -2237,7 +2006,6 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_fram
     }
 
     //start transmitting
-    if (send_binary) {
       start_section("SQUARE");
       square_demod_header_s hdr;
       hdr.version = 5;
@@ -2279,9 +2047,6 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_fram
         sendbuf(adcs, sizeof(adcs[0])*ofs);
       }
       sendbuf("FMIQ", 4);
-    } else {
-      start_section("INFO");
-    }
 
     //synthesize TACH from fourth channel in each FM data stream
     uint8_t ofs = 0;  //FM offset into sample_data
@@ -2366,19 +2131,8 @@ void square_demod_analog(uint8_t fm_mask, uint8_t send_binary, uint16_t max_fram
           fm.mean[3]     = sum_abs[3] / N;
         }
 
-        if (send_binary) {
-          binary_iq(&fm, Q1, Q2, Q3, Q4, N);
-          sendbuf(&fm, sizeof(fm));
-        } else {
-          //print it
-          printf_P(PSTR("%hhu %hhu %5u %5u %5u %5u "),
-            id, fm.num_tachs, fm.NQ[0], fm.NQ[1], fm.NQ[2], fm.NQ[3]);
-
-          for (uint8_t j = 0; j < 3; j++) {
-            print_iq(j, Q1, Q2, Q3, Q4, fm.NQ);
-          }
-          printf_P(PSTR("\r\n"));
-        }
+        binary_iq(&fm, Q1, Q2, Q3, Q4, N);
+        sendbuf(&fm, sizeof(fm));
 
         ofs += 4;
       }
@@ -2930,15 +2684,13 @@ static void handle_input(void) {
         printf_P(PSTR("'G' not ported to 16-bit mode yet\r\n"));
 #endif
       } else if (c == 'H') {
-        uint8_t fm_mask = 0, send_binary = 0;
+        uint8_t fm_mask = 0;
         uint16_t max_frames_max = 0;
-        int n = sscanf(line, "%hhu %hhu %u", &fm_mask, &send_binary, &max_frames_max);
+        int n = sscanf(line, "%hhu %u", &fm_mask, &max_frames_max);
         if (n == 1) {
-          square_demod_analog(fm_mask, 0, 0);
+          square_demod_analog(fm_mask, 0);
         } else if (n == 2) {
-          square_demod_analog(fm_mask, send_binary, 0);
-        } else if (n == 3) {
-          square_demod_analog(fm_mask, send_binary, max_frames_max);
+          square_demod_analog(fm_mask, max_frames_max);
         } else {
           start_section("ERROR");
           printf_P(PSTR("'H' requires one or two arguments\r\n"));
