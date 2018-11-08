@@ -22,7 +22,7 @@
 #define FEATURE_PROGRAMS 0
 #define FEATURE_SAMPLES 0       //raw sample capture, uses INT7 ISR
 #define FEATURE_BSEND 0         //required for FEATURE_SAMPLES
-#define FEATURE_MMC 1           //MMC/µSD card
+//#define FEATURE_MMC 1           //MMC/µSD card, defined in makefile
 
 #define BS  '\x08'  //backspace
 #define DEL '\x7F'  //delete - treat same as backspace

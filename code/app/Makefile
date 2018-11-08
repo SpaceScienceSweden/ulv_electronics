@@ -1,11 +1,17 @@
 PRG            = app
+FEATURE_MMC    = 0
 OBJ            = \
 	app.o\
 	avr-ds18b20/src/ds18b20.o\
 	avr-ds18b20/src/onewire.o\
 	avr-ds18b20/src/romsearch.o\
+
+ifeq "$(FEATURE_MMC)" "1"
+OBJ += \
 	fatfs-avr/ff.o\
 	fatfs-avr/mmc_avr_spi.o\
+
+endif
 
 DEPS           = \
 	wire_structs.h\
@@ -30,7 +36,7 @@ CC             = avr-gcc
 #freeRam() needs -Wno-return-local-addr
 #LDFLAGS enable float functionality in printf()
 CFLAGS  = $(CFLAGS_ROOT) -Werror -Wno-unused -Wno-return-local-addr -Wno-stringop-overflow \
-  -Wall -pedantic $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) -std=gnu99
+  -Wall -pedantic $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) -std=gnu99 -DFEATURE_MMC=$(FEATURE_MMC)
 LDFLAGS = -Wl,-Map,$(PRG).map -Wl,-u,vfprintf -lprintf_flt -lm \
 	-Wl,--section-start,.bss=0x801100,--defsym=__heap_end=0x80ffff,--print-memory-usage
 # ^ Put .data and stack in SRAM, .bss and heap in XRAM
