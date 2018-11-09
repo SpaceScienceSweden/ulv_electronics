@@ -76,6 +76,13 @@ typedef struct temperature_s {
 
 // FMIQ
 
+typedef struct {
+  uint8_t stat_1;   // STAT_1 (or'd during capture)
+  uint8_t stat_p;   // STAT_P
+  uint8_t stat_n;   // STAT_N
+  uint8_t stat_s;   // STAT_S
+} stat_1pns_s;
+
 // There are popcount(fm_mask) instances of this
 typedef struct fm_s {
   uint16_t discard; // how many samples were discarded
@@ -86,10 +93,7 @@ typedef struct fm_s {
   int16_t IQ[3][2]; // IQ data (IQIQIQ)
 
   // ADS131A04 registers:
-  uint8_t stat_1;   // STAT_1 (or'd during capture)
-  uint8_t stat_p;   // STAT_P
-  uint8_t stat_n;   // STAT_N
-  uint8_t stat_s;   // STAT_S
+  stat_1pns_s stat;
 
   // min/max of all samples in each channel
   int16_t minmax[4][2];
@@ -222,3 +226,86 @@ typedef struct sample_packet_s {
   uint8_t   *sample_data;
 
 } sample_packet_s;
+
+
+typedef struct {
+  __uint24 t;       // timestamp, in cycles (mod 2^24)
+  uint8_t num_tachs;// number of tachometer impulses
+  uint16_t N;       // number of frames in tach interval
+  int16_t IQ[3][2]; // IQ data (IQIQIQ)
+} capture_entry_s;
+
+
+typedef struct {
+  // ADS131A04 registers ($00 .. $14)
+  // Collected at the end of each block so that STAT_* ($02 .. $05) applies to
+  // the block just captured.
+  uint8_t ads131a04_regs[21];
+
+  // Number of frames collected in each quadrant, across the entire block
+  uint32_t NQ[4];
+
+  // Min/max of all samples in each channel across the entire block
+  int16_t minmax[4][2]; //min,max,min,max,...
+
+  // Mean value of samples within tachometer interval
+  // Only computed for the last capture of each FM
+  int16_t mean[4];
+
+  // Mean absolute value of samples within tachometer intervals
+  // Channel 4 is excluded since its voltages are always positive, thus its
+  // values would equal mean[3]
+  // Like mean, only computed for the last capture of each FM
+  uint16_t mean_abs[3];
+
+  // Motor OCR1A/B/C (PWM) settings
+  uint16_t OCR1n;
+} fm_stat_s;
+
+typedef struct {
+  uint8_t version;  // version (0)
+  uint32_t f_cpu;   // CPU clock in Hz
+  uint64_t t;       // full timestamp at start of block
+  uint8_t fm_mask;  // bits 0..2 = corresponding FM enabled
+
+  // Number of frames collected for each entry
+  // entris[x].N <= num_frames
+  uint16_t num_frames;
+
+  //TODO: temperatures and voltages
+
+  // Statistics for each FM. Zeroed for all disabled FMs.
+  fm_stat_s stats[3];
+
+  // How many FM capture rounds there are for each VGND setting
+  // Unbiased data starts at round 2*vgnd_rounds*popcount(fm_mask)
+  uint8_t vgnd_rounds;
+
+  // MAX504 settings (0..1023)
+  // Each VGND is toggled negative and positive in turn, meaning that for
+  // fm_mask = 7 each VGND is set thusly:
+  //
+  // VGND0 VGND1 VGND2
+  // -     0     0    For vgnd_rounds rounds for each of these
+  // +     0     0
+  // 0     -     0
+  // 0     +     0
+  // 0     0     -
+  // 0     0     +
+  // 0     0     0   For the rest of the block
+  uint16_t vgnd_zero;   // 0 level
+  uint16_t vgnd_minus;  // - level
+  uint16_t vgnd_plus;   // + level
+
+  // If instrument is not interrupted, the following should hold:
+  //   nentries > 2*vgnd_rounds*popcount(fm_mask)^2
+  //   nentries = 0 (mod popcount(fm_mask))
+  uint8_t nentries;
+
+  // Entries for each FM in each round are stored in round-robin order
+  // For example, if fm_mask = 7:
+  //   0, 1, 2, 0, 1, 2, etc.
+  // Truncated to nentries*sizeof(capture_entry_s) bytes
+  capture_entry_s entries[255];
+} capture_block_s;
+

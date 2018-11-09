@@ -156,6 +156,8 @@ static uint16_t vgnds[3] = {512, 512, 512};
 uint16_t sintab[1024];
 #endif
 
+capture_block_s cb;
+
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
   RS485_DE_PORT |= RS485_DE_BIT;
@@ -517,7 +519,7 @@ static void settime64(uint64_t t) {
   timer1_base = t;
   TCNT1 = 0;
   TCNT3 = TIMER3_OFS;
-  TIFR |= (1<<TOV1);
+  TIFR = (1<<TOV1);
   sei();
 }
 
@@ -570,7 +572,7 @@ static void setup_timers() {
   //this gives main() a little time to do stuff before the first TOV1 interrupt fires
   TCNT1 = 0;
   TCNT3 = TIMER3_OFS;
-  TIFR |= (1<<TOV1);
+  TIFR = (1<<TOV1);
 }
 
 static void adc_spi_fast(void) {
@@ -852,12 +854,14 @@ static const uint16_t osrtab[16] = {
 };
 
 static inline void adc_deselect(void) {
-  PORTF |= (1<<5) | (1<<6) | (1<<7);
+  //PF0..4 = ADC (must be zero)
+  //PF5..7 = /CS_ADCn
+  PORTF = 7<<5;
 }
 
 static inline void adc_select(uint8_t id) {
   //assert relevant /CS pin
-  PORTF &= ~(1<<(PF5+id));
+  PORTF = (7<<5) & ~(1<<(PF5+id));
 
   //t_d(CSSC) = 16 ns, each instruction takes 135 ns
   //hence no need to delay further after asserting /CS
@@ -1548,9 +1552,9 @@ static int8_t exactly_one_adc(void) {
 #if WORDSZ > 24
 #error read_samples_fast() doesnt support >24-bit
 #endif
+//always reads 4 samples
 static inline uint8_t* read_samples_fast(
     uint8_t *ptr,
-    uint8_t pc,
     uint8_t *stat1_data) {
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
   //001a aaaa
@@ -1565,30 +1569,7 @@ static inline uint8_t* read_samples_fast(
   while(!(SPSR & (1<<SPIF))); SPDR = 0;
 #endif
   ptr[1] = SPDR;
-  if (pc < 3) {
-    if (pc == 1) {
-    } else { // 2
-      while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
-#if WORDSZ == 24
-      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-#endif
-      SPDR = 0; ptr[1] = SPDR;
-    }
-  } else {
-    if (pc == 3) {
-      while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
-#if WORDSZ == 24
-      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-#endif
-      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
-#if WORDSZ == 24
-      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-#endif
-      SPDR = 0; ptr[1] = SPDR;
-    } else { // 4
+
       while(!(SPSR & (1<<SPIF)));
       SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
 #if WORDSZ == 24
@@ -1605,8 +1586,7 @@ static inline uint8_t* read_samples_fast(
       SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
 #endif
       SPDR = 0; ptr[1] = SPDR;
-    }
-  }
+
   while(!(SPSR & (1<<SPIF)));
   ptr[0] = SPDR; ptr += WORDSZ/8;
 
@@ -1616,7 +1596,8 @@ static inline uint8_t* read_samples_fast(
 #if WORDSZ > 24
 #error discard_samples_fast() doesnt support >24-bit
 #endif
-static inline void discard_samples_fast(uint8_t pc) {
+//always discards 4 samples
+static inline void discard_samples_fast(void) {
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
   //001a aaaa
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
@@ -1627,28 +1608,7 @@ static inline void discard_samples_fast(uint8_t pc) {
 #endif
   SPDR = 0; while(!(SPSR & (1<<SPIF)));
   SPDR = 0;
-  if (pc < 3) {
-    if (pc == 1) {
-    } else { // 2
-      while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-#if WORDSZ == 24
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-#endif
-      SPDR = 0;
-    }
-  } else {
-    if (pc == 3) {
-      while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-#if WORDSZ == 24
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-#endif
-      SPDR = 0;
-    } else { // 4
+
       while(!(SPSR & (1<<SPIF)));
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
@@ -1661,8 +1621,7 @@ static inline void discard_samples_fast(uint8_t pc) {
       SPDR = 0; while(!(SPSR & (1<<SPIF)));
 #endif
       SPDR = 0;
-    }
-  }
+
   //might be possible to skip this last wait, but we'd have to
   //be careful that we don't re-enter this function too quickly
   while(!(SPSR & (1<<SPIF)));
@@ -1674,13 +1633,17 @@ typedef int32_t accu_t;
 typedef int64_t accu_t;
 #endif
 
-void compute_min_max(uint16_t max_frames, sample_t *data_ptr, uint8_t num_fms, fm_s *fm) {
-  for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4*num_fms) {
-    for (uint8_t l = 0; l < 4; l++) {
+void compute_min_max(
+    uint16_t max_frames,
+    sample_t *data_ptr, int16_t minmax[4][2],
+    uint8_t compute_tach_minmax
+) {
+  for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4) {
+    for (uint8_t l = 0; l < (compute_tach_minmax ? 4 : 3); l++) {
       //deal with >=24-bit
       int16_t s = data_ptr[l] / (1 << (WORDSZ-16));
-      if (s < fm->minmax[l][0]) fm->minmax[l][0] = s;
-      if (s > fm->minmax[l][1]) fm->minmax[l][1] = s;
+      if (s < minmax[l][0]) minmax[l][0] = s;
+      if (s > minmax[l][1]) minmax[l][1] = s;
     }
   }
 }
@@ -1689,30 +1652,31 @@ void compute_min_max(uint16_t max_frames, sample_t *data_ptr, uint8_t num_fms, f
 /*static inline*/ void accumulate_square_interval(
   uint16_t p0,
   uint16_t p12,
-  uint16_t ofs,
-  uint16_t stride,
   accu_t Q1[3],
   accu_t Q2[3],
   accu_t Q3[3],
   accu_t Q4[3],
   uint16_t NQ[4],
   uint32_t sum_abs[4],
-  uint8_t rounding
+  uint8_t rounding,
+  uint8_t compute_sum_abs
 ) {
   //we chop the interval [p0,p12) into twelve pieces
   //each piece gets accumulated into Q1..4 in round-robin order
   //Q1 += p0, Q2 += p1, ..., Q1 += p4, ..., Q4 += p11
   __uint24 psize = p12 - p0;
   __uint24 paccu = psize + rounding;
-  sample_t *data_ptr = ofs + p0*stride + (sample_t*)sample_data;
+  sample_t *data_ptr = p0*4 + (sample_t*)sample_data;
 
-  sample_t *data_ptr2 = data_ptr;
-  for (uint16_t p00 = p0; p00 < p12; p00++, data_ptr2 += stride) {
+  if (compute_sum_abs) {
+    sample_t *data_ptr2 = data_ptr;
+    for (uint16_t p00 = p0; p00 < p12; p00++, data_ptr2 += 4) {
       sample_t s;
       s = data_ptr2[0]; if(s >= 0){sum_abs[0] += s;}else{sum_abs[0] -= s;}
       s = data_ptr2[1]; if(s >= 0){sum_abs[1] += s;}else{sum_abs[1] -= s;}
       s = data_ptr2[2]; if(s >= 0){sum_abs[2] += s;}else{sum_abs[2] -= s;}
       sum_abs[3] += data_ptr2[3]; /* no need to abs tach, always positive */
+    }
   }
 
   //i = offset in interval [p0,p12)
@@ -1722,7 +1686,7 @@ void compute_min_max(uint16_t max_frames, sample_t *data_ptr, uint8_t num_fms, f
     uint16_t p = (paccu*1398101LL) >> 24 /*paccu / 12, 98 ms -> 96 ms*/;\
     NQ[k] += p-i;\
     accu_t q0 = Q[0], q1 = Q[1], q2 = Q[2];\
-    for (; i < p; i++, data_ptr += stride) {\
+    for (; i < p; i++, data_ptr += 4) {\
       q0 += data_ptr[0];\
       q1 += data_ptr[1];\
       q2 += data_ptr[2];\
@@ -1749,28 +1713,29 @@ void compute_min_max(uint16_t max_frames, sample_t *data_ptr, uint8_t num_fms, f
 
 //only works with 16-bit samples
 static inline void binary_iq(
-  fm_s *fm,
   accu_t *Q1,
   accu_t *Q2,
   accu_t *Q3,
   accu_t *Q4,
-  uint16_t N
+  uint16_t N, //N > 0
+  int16_t IQ[3][2],
+  int16_t mean[4],
+  uint8_t compute_mean
 ) {
-  //make sure we have enough samples to form averages
-  if (N > 0) {
-    for (uint8_t j = 0; j < 3; j++) {
-      //avr-gcc probably won't know that Q1..Q4 don't alias,
-      //so load q1..4 to avoid accessesing memory more than necessary
-      accu_t q1 = Q1[j];
-      accu_t q2 = Q2[j];
-      accu_t q3 = Q3[j];
-      accu_t q4 = Q4[j];
+  for (uint8_t j = 0; j < 3; j++) {
+    //avr-gcc probably won't know that Q1..Q4 don't alias,
+    //so load q1..4 to avoid accessesing memory more than necessary
+    accu_t q1 = Q1[j];
+    accu_t q2 = Q2[j];
+    accu_t q3 = Q3[j];
+    accu_t q4 = Q4[j];
 
-      // I = q1-q2-q3+q4
-      // Q = q1+q2-q3-q4
-      fm->IQ[j][0]= (q1 - q2 - q3 + q4) / N;
-      fm->IQ[j][1]= (q1 + q2 - q3 - q4) / N;
-      fm->mean[j] = (q1 + q2 + q3 + q4) / N;
+    // I = q1-q2-q3+q4
+    // Q = q1+q2-q3-q4
+    IQ[j][0]= (q1 - q2 - q3 + q4) / N;
+    IQ[j][1]= (q1 + q2 - q3 - q4) / N;
+    if (compute_mean) {
+      mean[j] = (q1 + q2 + q3 + q4) / N;
     }
   }
 }
@@ -1804,23 +1769,157 @@ static int read_adc(uint8_t x) {
   return adc;
 }
 
-// Similar to square_demod_tach except it uses the analog signal
-// in channel 4 in each FM for synchronization. This allows sampling
-// all FMs at the same time.
-//
+//captures and demodulates data coming out of a single FM
+//capturing one at a time is better phase-jitter-wise
+void capture_and_demod(
+        uint8_t id,
+        uint16_t max_frames,
+        uint8_t *stat1_out,
+        int16_t minmax[4][2],
+        uint16_t NQ[4],
+        int16_t IQ[3][2],
+        int16_t mean[4],
+        uint8_t *num_tachs_out,
+        uint16_t *discard,
+        uint16_t mean_abs[3],
+        uint8_t *rounding_inout,
+        uint8_t first_round,    //minmax for tach only computed during the first round
+        uint8_t biased_round,   //minmax computed only during biased rounds
+        uint8_t last_round      //only certain stats during the last round
+        ) {
+  //discard the first bunch of samples
+  //partly to deal with initial F_DRDY
+  //but also to allow the sinc3 filter to warm up
+  //experiments show that five samples are about the right amount to discard
+  uint8_t discard_samples = 5;
+  uint16_t num_frames_left = max_frames;
+  uint8_t *ptr = (uint8_t*)sample_data;
+  uint8_t stat1 = 0;
+
+  set_74153(id);
+  DDRD |= 1;  //debug
+
+  cli();
+  for (; discard_samples > 0; discard_samples--) {
+    //poll /DRDY and TOV1
+    do {
+      if (TIFR & (1<<TOV1)) {
+        timer1_base += TIMER1_OVF_INC;
+        TIFR = (1<<TOV1);
+      }
+    } while (PINE & (1<<PE7));
+
+    adc_select(id);
+    discard_samples_fast();
+    adc_deselect();
+  }
+
+  do {
+    do {
+      if (TIFR & (1<<TOV1)) {
+        timer1_base += TIMER1_OVF_INC;
+        TIFR = (1<<TOV1);
+      }
+    } while (PINE & (1<<PE7));
+
+    adc_select(id);
+    ptr = read_samples_fast(ptr, &stat1);
+    adc_deselect();
+
+    num_frames_left--;
+  } while (num_frames_left > 0);
+  sei();
+
+  PORTD &= ~1;  //debug
+
+  //synthesize TACH from fourth channel in each FM data stream
+
+  //we could use a fixed threshold for tach,
+  //but want these statistics anyway,
+  //so we get automagic tach threshold for free
+  sample_t *data_ptr = (sample_t*)sample_data;
+
+  if (biased_round) {
+    compute_min_max(max_frames, data_ptr, minmax, first_round);
+  }
+
+  //hysteresis: >75% -> on, <25% -> off
+  int16_t mid = minmax[3][0]/2 + minmax[3][1]/2;
+  int16_t on  = minmax[3][1]/2 + mid/2;
+  int16_t off = minmax[3][0]/2 + mid/2;
+
+  //rewind
+  data_ptr = (sample_t*)sample_data;
+  uint8_t state = data_ptr[3]/(1 << (WORDSZ-16)) > mid;
+  uint16_t p0 = 0; //index of last tach, or zero
+
+  //demodulation stuff
+  accu_t Q1[3] = {0};
+  accu_t Q2[3] = {0};
+  accu_t Q3[3] = {0};
+  accu_t Q4[3] = {0};
+
+  //sum_abs[3] is just the sum, should save some cycles
+  uint32_t sum_abs[4] = {0,0,0,0};
+
+  uint8_t num_tachs = 0;
+  uint8_t rounding = *rounding_inout;
+  for (uint16_t k = 0;
+        k < max_frames && num_tachs < 255;
+        k++, data_ptr += 4) {
+    int16_t s = data_ptr[3] / (1 << (WORDSZ-16));
+    //look for rising edge
+    if (state == 0 && s > on) {
+      state = 1;
+      uint16_t p12 = k;
+      if (p0 > 0) {
+        num_tachs++;
+
+        //~85% of time between captures is spent here
+        accumulate_square_interval(
+          p0, p12,
+          Q1, Q2, Q3, Q4, NQ,
+          sum_abs, rounding, last_round
+        );
+
+        //four numbers are relative prime 12: 1, 5, 7, 11
+        rounding = (rounding + 5) % 12;
+      } else {
+        //first sample - record discard
+        *discard = p12;
+      }
+      p0 = p12;
+    } else if (state == 1 && s < off) {
+      state = 0;
+    }
+  }
+
+  uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
+  if (N > 0) {
+    if (last_round) {
+      mean_abs[0] = sum_abs[0] / N;
+      mean_abs[1] = sum_abs[1] / N;
+      mean_abs[2] = sum_abs[2] / N;
+      //mean[0..2] are computed in binary_iq
+      mean[3]     = sum_abs[3] / N;
+    }
+
+    binary_iq(Q1, Q2, Q3, Q4, N, IQ, mean, last_round);
+  }
+
+  *num_tachs_out = num_tachs;
+  *rounding_inout = rounding;
+  *stat1_out = stat1;
+}
+
+// Uses the analog signal in channel 4 in each FM for synchronization
 // Max sample rates @ 14 MHz, 24-bit:
 //
-// 1x @ 38400 Hz (DIV1 = 0x02, DIV2 = 0x2C), ENOB = 15.73 .. 19.79
-//       5.10 Hz packet frequency, 109 B (556 B/s), 106 ms gate, 90 ms crunch + TX
-//
-// 2x @ 19200 Hz (DIV1 = 0x02, DIV2 = 0x2A), ENOB = 14.79 .. 18.80
-//       4.90 Hz packet frequency, 166 B (813 B/s), 106 ms gate, 98 ms crunch + TX
-//
-// 3x @ ????? Hz
-//       5.?? Hz packet frequency, 223 B (1175? B/s)
+// 38400 Hz (DIV1 = 0x02, DIV2 = 0x2C), ENOB = 15.73 .. 19.79
+//  5.10 Hz packet frequency, 109 B (556 B/s), 106 ms gate, 90 ms crunch + TX
 //
 // In other words at max gain ENOB is low enough that we can get away with 16 bit samples
-// The code currently has a bit too much overhead to bump the sample rate to 57.6 kHz for 1x
+// The code currently has a bit too much overhead to bump the sample rate to 57.6 kHz
 void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
   fm_mask &= 7;
   uint8_t num_fms = popcount(fm_mask);
@@ -1844,45 +1943,48 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     return;
   }
 
-  uint8_t first_id;
-  if (fm_mask & 1) {
-    first_id = 0;
-  } else if (fm_mask & 2) {
-    first_id = 1;
-  } else {
-    first_id = 2;
+  //maps FM order to FM id
+  uint8_t fm_map[3] = {0};
+  switch (fm_mask) {
+  case 1: fm_map[0] = 0;                               break;
+  case 2: fm_map[0] = 1;                               break;
+  case 3: fm_map[0] = 0; fm_map[1] = 1;                break;
+  case 4: fm_map[0] = 2;                               break;
+  case 5: fm_map[0] = 0; fm_map[1] = 2;                break;
+  case 6: fm_map[0] = 1; fm_map[1] = 2;                break;
+  case 7: fm_map[0] = 0; fm_map[1] = 1; fm_map[2] = 2; break;
   }
 
-  if (!adc_connected[first_id]) {
+  if (!adc_connected[fm_map[0]]) {
     start_section("ERROR");
-    printf_P(PSTR("ADCs %hhu not connected\r\n"), first_id);
+    printf_P(PSTR("ADCs %hhu not connected\r\n"), fm_map[0]);
     return;
   }
 
   //make sure they're all configured the same way
-  for (uint8_t i = first_id + 1; i < 3; i++) {
+  for (uint8_t i = fm_map[0] + 1; i < 3; i++) {
     if (fm_mask & (1<<i)) {
       if (!adc_connected[i]) {
         start_section("ERROR");
-        printf_P(PSTR("ADCs %hhu not connected\r\n"), first_id);
+        printf_P(PSTR("ADCs %hhu not connected\r\n"), fm_map[0]);
         return;
       }
-      if (rreg(first_id, CLK1) != rreg(i, CLK1) ||
-          rreg(first_id, CLK2) != rreg(i, CLK2)) {
+      if (rreg(fm_map[0], CLK1) != rreg(i, CLK1) ||
+          rreg(fm_map[0], CLK2) != rreg(i, CLK2)) {
         start_section("ERROR");
-        printf_P(PSTR("ADCs %hhu and %hhu don't seem to be configured for the same samplerate\r\n"), first_id, i);
+        printf_P(PSTR("ADCs %hhu and %hhu don't seem to be configured for the same samplerate\r\n"), fm_map[0], i);
         return;
       }
     }
   }
 
-  cli();
-
-  //WAKEUP without INT7 ISR
+  //FIXME: necessary?
+  //cli();
   if (adc_wakeup(0)) {
     //fail
     goto square_demod_analog_done;
   }
+  //sei();
   
 #if WORDSZ > 24
 #error WORDSZ > 24 not supported currently
@@ -1894,7 +1996,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
   //we're not doing any double buffering here,
   //and we're not indexing into the array
   //this makes it possible to make use of all 32k of it
-  uint16_t max_frames = sizeof(sample_data)/(WORDSZ/8*4*num_fms); //notice num_fms
+  uint16_t max_frames = sizeof(sample_data)/(WORDSZ/8*4);
   //measure no longer than one second
   uint32_t max_frames2 = F_CPU / cycles_per_sample;
 
@@ -1916,33 +2018,114 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     max_frames = 16383;
   }
 
-  start_section("INFO");
-  printf_P(PSTR("max_frames = %i\n"), max_frames);
-
   uint8_t temp_conversion_in_progress = 0;
-
-  //what to add before clamping division by 12 in accumulate_square_interval()
-  //moves around in the interval [0,12) in order to unbias Q1..4 binning
-  uint8_t rounding = 6;
 
   //longer WDT than normal to not have to do WDR inside loops
   wdt_enable(WDTO_2S);
 
-  uint16_t vgnd_next = 512, vgnd_last = 512;
-  set_vgnds(vgnd_next);
-  for (uint8_t vv = 1;; vv = !vv) {
-    //discard the first bunch of samples
-    //partly to deal with initial F_DRDY
-    //but also to allow the sinc3 filter to warm up
-    //experiments show that five samples are about the right amount to discard
-    uint8_t discard_samples = 5;
-    uint16_t num_frames_left = max_frames;
+  while (!have_esc()) {
+    memset(&cb, 0, sizeof(cb));
+    cb.version        = 0;
+    cb.f_cpu          = F_CPU;
+    cb.t              = gettime64();
+    cb.fm_mask        = fm_mask;
+    cb.stats[0].OCR1n = OCR1A;
+    cb.stats[1].OCR1n = OCR1A;
+    cb.stats[2].OCR1n = OCR1A;
+    cb.vgnd_rounds    = 5;    //should be <= 7, else >50% time is spent biasing
+    cb.vgnd_zero      = 512;
+    cb.vgnd_minus     = cb.vgnd_zero - 100;
+    cb.vgnd_plus      = cb.vgnd_zero + 100;
 
-    uint8_t *ptr = (uint8_t*)sample_data;
+    for (uint8_t id = 0; id < 3; id++) {
+      if (fm_mask & (1<<id)) {
+        cb.stats[id].minmax[0][0] = INT16_MAX;
+        cb.stats[id].minmax[1][0] = INT16_MAX;
+        cb.stats[id].minmax[2][0] = INT16_MAX;
+        cb.stats[id].minmax[3][0] = INT16_MAX;
+        cb.stats[id].minmax[0][1] = INT16_MIN;
+        cb.stats[id].minmax[1][1] = INT16_MIN;
+        cb.stats[id].minmax[2][1] = INT16_MIN;
+        cb.stats[id].minmax[3][1] = INT16_MIN;
+      }
+    }
 
-    set_74153(first_id);
-    DDRD |= 1;  //debug
+    uint8_t nentries_vgnd = 2 * cb.vgnd_rounds * num_fms * num_fms;
+    uint8_t nentries_max = (255 / num_fms) * num_fms;
+    if (nentries_max > 2*nentries_vgnd) {
+      nentries_max = 2*nentries_vgnd;
+    }
+    uint8_t nentries_last = nentries_max - num_fms; //where the last round starts
+    uint8_t stat1[3] = {0};
+    //what to add before clamping division by 12 in accumulate_square_interval()
+    //moves around in the interval [0,12) in order to unbias Q1..4 binning
+    uint8_t rounding[3] = {0};
 
+    //start_section("INFO");
+    //printf_P(PSTR("Capturing block @ t = %f\r\n"), cb.t / (float)F_CPU);
+    //READY();
+
+    for (; cb.nentries < nentries_max && !have_esc(); cb.nentries++) {
+      uint16_t NQ[4] = {0};
+      uint8_t id = fm_map[cb.nentries % num_fms];
+
+      if (cb.nentries < nentries_vgnd) {
+        uint8_t temp = cb.nentries / (cb.vgnd_rounds * num_fms);
+        uint8_t vgnd_pm = temp % 2;
+        uint8_t vgnd_id = temp / 2;
+        set_vgnds(cb.vgnd_zero);
+        set_vgnd(vgnd_id, vgnd_pm ? cb.vgnd_plus : cb.vgnd_minus);
+        //printf_P(PSTR("cb.nentries = %hhu / %hhu bias %hhu %c\r\n"), cb.nentries, nentries_max, vgnd_id, vgnd_pm ? '+' : '-');
+      } else {
+        set_vgnds(cb.vgnd_zero);
+        //printf_P(PSTR("cb.nentries = %hhu / %hhu\r\n"), cb.nentries, nentries_max);
+      }
+
+      //a few µs before the actual first sample, probably fine
+      cb.entries[cb.nentries].t = gettime24();
+
+      uint16_t discard; //don't think we need this
+      capture_and_demod(
+        id,
+        max_frames,
+        &stat1[id],
+        cb.stats[id].minmax,
+        NQ,
+        cb.entries[cb.nentries].IQ,
+        cb.stats[id].mean,
+        &cb.entries[cb.nentries].num_tachs,
+        &discard,
+        cb.stats[id].mean_abs,
+        &rounding[id],
+        cb.nentries >= num_fms,
+        cb.nentries >= nentries_vgnd,
+        cb.nentries >= nentries_last
+      );
+
+      wdt_reset();
+    }
+
+    for (uint8_t id = 0; id < 3; id++) {
+      if (fm_mask & (1<<id)) {
+        for (uint8_t addr = 0x00; addr <= 0x14; addr++) {
+          if (addr == STAT_1) {
+            //use aggregate STAT_1
+            cb.stats[id].ads131a04_regs[addr] = stat1[id];
+          } else {
+            cb.stats[id].ads131a04_regs[addr] = rreg(id, addr);
+          }
+        }
+      }
+    }
+
+    uint16_t sz = sizeof(cb) - (255 - cb.nentries)*sizeof(capture_entry_s);
+    //printf_P(PSTR("TX %hu bytes\r\n"), sz);
+    start_section("BLOCK");
+    sendbuf(&cb, sz);
+    READY();
+  }
+  
+  /*for (uint8_t vv = 1;; vv = !vv) {
     //start temperature conversion if the 1-Wire bus is free
     //use the same kind of flag as in main() to keep track of it,
     //in case we get into a situation where conversions will always finish between
@@ -1953,74 +2136,15 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       temp_conversion_in_progress = 1;
     }
 
-    uint8_t stat1[3] = {0,0,0};
-
-    for (; discard_samples > 0; discard_samples--) {
-      //poll /DRDY
-      while (PINE & (1<<PE7));
-
-#define DISCARD_FM(i) \
-        if (fm_mask & (1<<i)) {\
-          adc_select(i);\
-          discard_samples_fast(4);\
-          adc_deselect();\
-        }
-      DISCARD_FM(0);
-      DISCARD_FM(1);
-      DISCARD_FM(2);
-    }
-
-    PORTD |= 1; //debug
-    do {
-      //poll /DRDY
-      while (PINE & (1<<PE7));
-#define READ_FM(i) \
-          if (fm_mask & (1<<i)) {\
-            adc_select(i);\
-            ptr = read_samples_fast(ptr, 4, &stat1[i]);\
-            adc_deselect();\
-          }
-      READ_FM(0);
-      READ_FM(1);
-      READ_FM(2);
-
-      /*if (stat1[0] || stat1[1] || stat1[2]) {
-        start_section("ERROR");
-        printf_P(PSTR("Got STAT_1 = {%02hhx, %02hhx, %02hhx}\n"),
-          stat1[0], stat1[1], stat1[2]);
-        goto square_demod_analog_done;
-      }*/
-
-      //wdt_reset();
-      num_frames_left--;
-    } while (num_frames_left > 0);
-    PORTD &= ~1;  //debug
-
-    //processing takes enough time that vgnd should have settled
-    vgnd_last = vgnd_next;
-    vgnd_next = vv ? 512 + 200 : 512;
-    set_vgnds(vgnd_next);
-
-    if (have_esc()) {
-      goto square_demod_analog_done;
-    }
-
-    //start transmitting
-      start_section("SQUARE");
-      square_demod_header_s hdr;
-      hdr.version = 5;
-      hdr.num_frames = max_frames;
-      hdr.fm_mask = fm_mask;
-
       //check for finished temperature conversion
-      if (temp_conversion_in_progress &&
+      if (hdr.num_temps == 0 && temp_conversion_in_progress &&
           onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK )) {
         //hooray!
         hdr.num_temps = romcnt;
         read_temps();
         temp_conversion_in_progress = 0;
       } else {
-        hdr.num_temps = 0;
+        //hdr.num_temps = 0;
       }
 
       //read ADC0..4
@@ -2047,105 +2171,15 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
         sendbuf(adcs, sizeof(adcs[0])*ofs);
       }
       sendbuf("FMIQ", 4);
-
-    //synthesize TACH from fourth channel in each FM data stream
-    uint8_t ofs = 0;  //FM offset into sample_data
-    for (uint8_t id = first_id; id < 3; id++) {
-      if (fm_mask & (1<<id)) {
-        fm_s fm;
-        memset(&fm, 0, sizeof(fm));
-
-        fm.vgnd = vgnd_last;
-
-        //we could use a fixed threshold for tach,
-        //but want these statistics anyway,
-        //so we get automagic tach threshold for free
-        fm.minmax[0][0] = INT16_MAX;
-        fm.minmax[1][0] = INT16_MAX;
-        fm.minmax[2][0] = INT16_MAX;
-        fm.minmax[3][0] = INT16_MAX;
-        fm.minmax[0][1] = INT16_MIN;
-        fm.minmax[1][1] = INT16_MIN;
-        fm.minmax[2][1] = INT16_MIN;
-        fm.minmax[3][1] = INT16_MIN;
-
-        fm.stat_1 = stat1[id];
-        fm.stat_p = rreg(id, STAT_P);
-        fm.stat_n = rreg(id, STAT_N);
-        fm.stat_s = rreg(id, STAT_S);
-
-        sample_t *data_ptr = ofs + (sample_t*)sample_data;
-
-        compute_min_max(max_frames, data_ptr, num_fms, &fm);
-
-        //hysteresis: >75% -> on, <25% -> off
-        int16_t mid = fm.minmax[3][0]/2 + fm.minmax[3][1]/2;
-        int16_t on  = fm.minmax[3][1]/2 + mid/2;
-        int16_t off = fm.minmax[3][0]/2 + mid/2;
-
-        //rewind
-        data_ptr = ofs + (sample_t*)sample_data;
-        uint8_t state = data_ptr[3]/(1 << (WORDSZ-16)) > mid;
-        uint16_t p0 = 0; //index of last tach, or zero
-
-        //demodulation stuff
-        accu_t Q1[3] = {0};
-        accu_t Q2[3] = {0};
-        accu_t Q3[3] = {0};
-        accu_t Q4[3] = {0};
-
-        //sum_abs[3] is just the sum, should save some cycles
-        uint32_t sum_abs[4] = {0,0,0,0};
-
-        for (uint16_t k = 0;
-              k < max_frames && fm.num_tachs < 255;
-              k++, data_ptr += 4*num_fms) {
-          int16_t s = data_ptr[3] / (1 << (WORDSZ-16));
-          //look for rising edge
-          if (state == 0 && s > on) {
-            state = 1;
-            //printf_P(PSTR("rising edge @ %u\r\n"), k);
-            uint16_t p12 = k;
-            if (p0 > 0) {
-              fm.num_tachs++;
-              //~85% of time between captures is spent here
-              accumulate_square_interval(p0, p12, ofs, 4*num_fms, Q1, Q2, Q3, Q4, fm.NQ, sum_abs, rounding);
-              //four numbers are relative prime 12: 1, 5, 7, 11
-              rounding = (rounding + 5) % 12;
-            } else {
-              //first sample - record discard
-              fm.discard = p12;
-            }
-            p0 = p12;
-          } else if (state == 1 && s < off) {
-            state = 0;
-          }
-        }
-
-        uint16_t N = fm.NQ[0] + fm.NQ[1] + fm.NQ[2] + fm.NQ[3];
-        if (N > 0) {
-          fm.mean_abs[0] = sum_abs[0] / N;
-          fm.mean_abs[1] = sum_abs[1] / N;
-          fm.mean_abs[2] = sum_abs[2] / N;
-          //mean[0..2] computed in binary_iq
-          fm.mean[3]     = sum_abs[3] / N;
-        }
-
-        binary_iq(&fm, Q1, Q2, Q3, Q4, N);
         sendbuf(&fm, sizeof(fm));
-
-        ofs += 4;
-      }
-    }
     READY();
+
     wdt_reset();
-  }
+  }*/
 
 square_demod_analog_done:
   stop_measurement();
-  sei();
   set_vgnds(512);
-
   wdt_enable(WDTO_DEFAULT);
   return;
 }
@@ -2817,8 +2851,10 @@ int main(void)
   wreg(1, 0x12, 0x04);
   wreg(1, 0x13, 0x04);
   wreg(1, 0x14, 0x00);
-  //OCR1A = TIMER1_TOP/2;
-  //OCR1B = TIMER1_TOP/2;
+  OCR1A = TIMER1_TOP/2;
+  OCR1B = TIMER1_TOP/2;
+
+  //square_demod_analog(2, 0);
 
   for (;;) {
 retry:
