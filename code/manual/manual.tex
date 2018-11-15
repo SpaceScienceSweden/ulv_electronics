@@ -70,8 +70,8 @@ Each PCB can be screwed to its corresponding aluminium plate in any order, formi
 The modules must be assembled in a certain order however,
 due to the way the connectors fit into eachother.
 The power4 module must be mounted first,
-then the cpu4 and credits modules can be mounted, and finally the fieldmill9 modules can be mounted.
-It's useful to mount the credits module last so that the mating of the fieldmill9 and cpu4 modules can be checked,
+then the cpu4 and credits modules can be mounted, and finally the fieldmill10 modules can be mounted.
+It's useful to mount the credits module last so that the mating of the fieldmill10 and cpu4 modules can be checked,
 and power-on tests performed.
 
 In order to figure out what ID each DS18B20Z 1-wire temperature sensor has,
@@ -243,18 +243,18 @@ Next up is distinguishing the two temperature sensors now in the system.
 Distinguish the two DS18B20Z temperature sensors now in the instrument by touching one of them, thus warming it, then issue a 't' command (table \ref{command_table_0}).
 Write down which ID corresponds to which of the two sensors.
 
-\subsection{fieldmill9}
+\subsection{fieldmill10}
 
 Parts needed:
 
 \begin{itemize}
-\item One (1) fieldmill9 / fieldmill\_top\_plate4 PCB assembly
+\item One (1) fieldmill10 PCB
 \item One (1) fieldmill aluminium top plate
 \item One (1) fieldmill shutter plate
 \item One (1) Maxon 349694 EC motor
 \item Stencil with a 15x5 mm hole
-\item Two (2) 100 µm stainless steel motor shims
 \item One (1) ITR20001/T IR reflex coupler
+\item One (1) 0805 4.7 $k\Omega$ resistor
 \item Three (3) M2 screws, 6 mm length including head (Phillips PH1)
 \item Four (4) silver plated M3 screws, 10 mm length including head (Torx T10)
 \item Sixteen (16) silver plated M3 screws. Same as above??
@@ -267,15 +267,13 @@ Parts needed:
 Before doing anything else, perform the following electrical tests using a multimeter
 
 \begin{itemize}
-\item Check connections to every +2.5V and -2.5V regulator. There's eight ($4 + 4 = 8$) regulators per board
-\item Measure resistance from GND to every rail; +3.3V, +24V, +5V, -5V, every +2.5V and every -2.5V. Measure in both directions. Values should all be at least 1 k$\Omega$
+\item Measure resistance from GND to every rail; +3.3V, +24V, +5V, -5V, +2.5V and -2.5V. Measure in both directions. Values should all be at least 1 k$\Omega$
 \item Measure resistance from either side of R56 to GND. Measure in both directions. Value should be at least 8 k$\Omega$
-\item Measure resistance across every NANOSMD PTC. Direction is not important. Values should be no more than 10 $\Omega$. Each board has thirteen (13) PTCs
 \end{itemize}
 
 Applying power while these values are out of spec may cause PERMANENT DAMAGE to op-amps, DACs and/or linear regulators.
 In the worst case the +-5V regulator (TMR 6-2421WI) may also become damaged.
-Once checked and within spec the assembly process may continue:
+Once checked and within spec the assembly process may continue.
 
 \begin{table}[H]
 \begin{centering}
@@ -318,11 +316,12 @@ See figure \vref{reflectometer}.
 \label{reflectometer}
 \end{figure}
 
-Use a small semi-round file to grind away the perforation remains in the middle hole of the PCB,
-so that a motor will fit loosely.
+If the motor doesn't fit in the central hole in the PCB, use a small semi-round file
+to grind away some of the PCB material until the motor fits.
 
-Mount the Maxon EC motor in the motor hole with two motor shims inbetween.
-The shims should raise the motor enough that a small lip / edge can be felt on the top side of the assembly between the motor housing and the fieldmill\_top\_plate4 PCB.
+Put the Maxon EC motor in the motor hole,
+then shim the PCB + motor combination up from the bottom so that
+the motor can lie flush with the PCB while working on it.
 Solder the five motor wires to the motor wire pads on the PCB.
 
 Bend and cut the IR reflex coupler leads so that the reflex coupler looks directly at the EC motor's rotor can when inserted into its 2x3 socket (IR2 reference on PCB). See figure \vref{reflectometer}.
@@ -334,6 +333,8 @@ Solder the reflex coupler into the socket. Use plenty of flux so the leads and s
 Some extra solder can be applied to the 2x3 socket pads at this point.
 Carefully test that pulling on the reflex coupler doesn't cause it to come out.
 Check continuity with a multimeter, and that adjacent pins aren't shorted.
+
+Replace R56 with a 4.7 $k\Omega$ 0805 resistor.
 
 Screw the motor + PCB assembly to the aluminium plate using the M2 screws for the motor and silver plated M3 screws, washers and nuts for the PCB.
 First screw in the screws lightly, then tighten using the torque wrench. Use 0.3 Nm for the M2 screws and 0.8 Nm for the M3 nuts.
@@ -353,10 +354,10 @@ Drop some SCP03G silver paint into the top of the screw so that it gets a good e
 Screw each module to the skeleton using M3 screws, 0.8 Nm.
 
 Perform a power-on test.
-Check that the +5V, -5V and +3.3V rails, and every +2.5V and every -2.5V rail are as expected.
-Measure the output of every channel while VGND = 0 V. The average voltage of each output should be within +- 200 mV of VGND.
+Check that the +5V, -5V, +3.3V, +2.5V and -2.5V rails are within spec (tables \ref{system_voltages} and \ref{fm10_voltages}).
+Measure the output of every channel while VGND = 0 V. The average voltage of each output should be within $\pm$200 mV of VGND.
 
-Take a temperature reading after each fieldmill9 module has been inserted,
+Take a temperature reading after each fieldmill10 module has been inserted,
 and make a note of the new sensor ID each time and what module it corresponds to.
 
 Start the motors and run them for at least five minutes.
