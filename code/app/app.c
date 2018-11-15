@@ -2072,7 +2072,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       if (cb.nentries < nentries_vgnd) {
         uint8_t temp = cb.nentries / (cb.vgnd_rounds * num_fms);
         uint8_t vgnd_pm = temp % 2;
-        uint8_t vgnd_id = temp / 2;
+        uint8_t vgnd_id = fm_map[temp / 2];
         set_vgnds(cb.vgnd_zero);
         set_vgnd(vgnd_id, vgnd_pm ? cb.vgnd_plus : cb.vgnd_minus);
         //printf_P(PSTR("cb.nentries = %hhu / %hhu bias %hhu %c\r\n"), cb.nentries, nentries_max, vgnd_id, vgnd_pm ? '+' : '-');
