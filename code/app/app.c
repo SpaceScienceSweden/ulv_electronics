@@ -1769,6 +1769,83 @@ static int read_adc(uint8_t x) {
   return adc;
 }
 
+//does the actual sample capturing,
+//while taking care of TIMER1
+void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames) {
+  //discard the first bunch of samples
+  //partly to deal with initial F_DRDY
+  //but also to allow the sinc3 filter to warm up
+  //experiments show that five samples are about the right amount to discard
+  uint8_t discard_samples = 5;
+
+  uint8_t *ptr = (uint8_t*)sample_data;
+  uint8_t stat1 = 0;
+
+  // Max sample rates @ 7.3728 MHz, 16-bit:
+  //
+  // 19200 Hz (DIV1 = 0x02, DIV2 = 0x2C), ENOB = 14.79 .. 18.80
+  // 28800 Hz (DIV1 = 0x02, DIV2 = 0x2D), ENOB = 13.87 .. 17.92
+  // 38400 Hz (DIV1 = 0x02, DIV2 = 0x2E), ENOB = 12.98 .. 17.00 too fast (STAT_S)
+  //
+  // In other words at max gain ENOB is low enough that we can get away with 16 bit samples
+
+  cli();
+  //just count overflow, adjust timer1_base at the end
+  uint8_t timer1_ovfs = 0;
+  //used when computing max_frames
+  //typically timer1_ovfs will reach TIMER1_OVFS_MAX+1
+#define TIMER1_OVFS_MAX 250L
+
+  do {
+    //poll /DRDY and TOV1
+    do {
+      if (TIFR & (1<<TOV1)) {
+        timer1_ovfs++;
+        TIFR = (1<<TOV1);
+      }
+    } while (PINE & (1<<PE7));
+
+    // This grabs ten bytes every time
+    // Doing so takes a minimum of 160 clock cycles (SPI2X)
+    //
+    //  DIV1 = 0x02, DIV2 = 0x2C ==> 4*96 = 384 cy
+    //  DIV1 = 0x02, DIV2 = 0x2D ==> 4*64 = 256 cy <-- you are here
+    //  DIV1 = 0x02, DIV2 = 0x2E ==> 4*48 = 192 cy
+    //  DIV1 = 0x02, DIV2 = 0x2F ==> 4*32 = 128 cu <-- geht nicht!
+    //
+    // The best we can do is DIV2 = 0x2E (38400 Hz),
+    // leaving only 32 cy for housekeeping
+    adc_select(id);
+    discard_samples_fast();
+    adc_deselect();
+
+    discard_samples--;
+  } while(discard_samples > 0);
+
+  //gcc puts some crap here, move the PINE check around to compensate
+
+  do {
+    while (PINE & (1<<PE7));
+
+    adc_select(id);
+    ptr = read_samples_fast(ptr, &stat1);
+    adc_deselect();
+
+    //this is different from the discard loop because gcc puts a bunch of ldi's between the loops
+    if (TIFR & (1<<TOV1)) {
+      timer1_ovfs++;
+      TIFR = (1<<TOV1);
+    }
+
+    num_frames--;
+  } while (num_frames > 0);
+
+  timer1_base += (uint64_t)timer1_ovfs * TIMER1_OVF_INC;
+  sei();
+
+  *stat1_out = stat1;
+}
+
 //captures and demodulates data coming out of a single FM
 //capturing one at a time is better phase-jitter-wise
 void capture_and_demod(
@@ -1787,49 +1864,10 @@ void capture_and_demod(
         uint8_t biased_round,   //minmax computed only during biased rounds
         uint8_t last_round      //only certain stats during the last round
         ) {
-  //discard the first bunch of samples
-  //partly to deal with initial F_DRDY
-  //but also to allow the sinc3 filter to warm up
-  //experiments show that five samples are about the right amount to discard
-  uint8_t discard_samples = 5;
-  uint16_t num_frames_left = max_frames;
-  uint8_t *ptr = (uint8_t*)sample_data;
-  uint8_t stat1 = 0;
 
   set_74153(id);
-  DDRD |= 1;  //debug
-
-  cli();
-  for (; discard_samples > 0; discard_samples--) {
-    //poll /DRDY and TOV1
-    do {
-      if (TIFR & (1<<TOV1)) {
-        timer1_base += TIMER1_OVF_INC;
-        TIFR = (1<<TOV1);
-      }
-    } while (PINE & (1<<PE7));
-
-    adc_select(id);
-    discard_samples_fast();
-    adc_deselect();
-  }
-
-  do {
-    do {
-      if (TIFR & (1<<TOV1)) {
-        timer1_base += TIMER1_OVF_INC;
-        TIFR = (1<<TOV1);
-      }
-    } while (PINE & (1<<PE7));
-
-    adc_select(id);
-    ptr = read_samples_fast(ptr, &stat1);
-    adc_deselect();
-
-    num_frames_left--;
-  } while (num_frames_left > 0);
-  sei();
-
+  DDRD |= 1;    //debug
+  capture(id, stat1_out, max_frames);
   PORTD &= ~1;  //debug
 
   //synthesize TACH from fourth channel in each FM data stream
@@ -1909,17 +1947,9 @@ void capture_and_demod(
 
   *num_tachs_out = num_tachs;
   *rounding_inout = rounding;
-  *stat1_out = stat1;
 }
 
 // Uses the analog signal in channel 4 in each FM for synchronization
-// Max sample rates @ 14 MHz, 24-bit:
-//
-// 38400 Hz (DIV1 = 0x02, DIV2 = 0x2C), ENOB = 15.73 .. 19.79
-//  5.10 Hz packet frequency, 109 B (556 B/s), 106 ms gate, 90 ms crunch + TX
-//
-// In other words at max gain ENOB is low enough that we can get away with 16 bit samples
-// The code currently has a bit too much overhead to bump the sample rate to 57.6 kHz
 void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
   fm_mask &= 7;
   uint8_t num_fms = popcount(fm_mask);
@@ -1997,13 +2027,21 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
   //and we're not indexing into the array
   //this makes it possible to make use of all 32k of it
   uint16_t max_frames = sizeof(sample_data)/(WORDSZ/8*4);
+
   //measure no longer than one second
-  uint32_t max_frames2 = F_CPU / cycles_per_sample;
+  uint32_t frames_per_second = F_CPU / cycles_per_sample;
 
-  if (max_frames2 < max_frames) {
-    max_frames = max_frames2;
+  //measure no longer than then number of Timer1 overflows
+  //we can keep track of in one byte, comfortably
+  //                                 1024000    / 256 = 4000;
+  uint32_t max_ovf_frames = ((uint32_t)TIMER1_OVF_INC * TIMER1_OVFS_MAX) / cycles_per_sample;
+
+  if (frames_per_second < max_frames) {
+    max_frames = frames_per_second;
   }
-
+  if (max_frames > max_ovf_frames) {
+    max_frames = max_ovf_frames;
+  }
   if (max_frames_max > 0 && max_frames > max_frames_max) {
     max_frames = max_frames_max;
   }
@@ -2023,7 +2061,19 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
   //longer WDT than normal to not have to do WDR inside loops
   wdt_enable(WDTO_2S);
 
-  while (!have_esc()) {
+  if (max_frames > 0) {
+    start_section("INFO");
+  } else {
+    start_section("ERROR");
+  }
+  printf_P(PSTR("rate: %lu Hz, %u frames, max_ovf_frames = %lu\n"), frames_per_second, max_frames, max_ovf_frames);
+  READY();
+  if (max_frames == 0) {
+    return;
+  }
+  uint8_t got_esc = 0;
+
+  while (!have_esc() && !got_esc) {
     memset(&cb, 0, sizeof(cb));
     cb.version        = 0;
     cb.f_cpu          = F_CPU;
@@ -2065,7 +2115,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     //printf_P(PSTR("Capturing block @ t = %f\r\n"), cb.t / (float)F_CPU);
     //READY();
 
-    for (; cb.nentries < nentries_max && !have_esc(); cb.nentries++) {
+    for (; cb.nentries < nentries_max && !got_esc; cb.nentries++) {
       uint16_t NQ[4] = {0};
       uint8_t id = fm_map[cb.nentries % num_fms];
 
@@ -2102,6 +2152,10 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
         cb.nentries >= nentries_last
       );
 
+      if (have_esc()) {
+        got_esc = 1;
+      }
+
       wdt_reset();
     }
 
@@ -2111,6 +2165,10 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
           if (addr == STAT_1) {
             //use aggregate STAT_1
             cb.stats[id].ads131a04_regs[addr] = stat1[id];
+            if (stat1[id]) {
+              start_section("ERROR");
+              printf_P(PSTR("stat1[%hhu] = %hhx\n"), id, stat1[id]);
+            }
           } else {
             cb.stats[id].ads131a04_regs[addr] = rreg(id, addr);
           }
@@ -2826,31 +2884,18 @@ int main(void)
 
   unlock_adcs();
 
-#define NUM_FMS 1
-
-  //default samplerates and gains
-  wreg(0, A_SYS_CFG, 0x23); //tightest analog margin
-  wreg(0, 0x0d, 0x02);
-#if NUM_FMS == 2
-  wreg(0, 0x0e, 0x2a);
-#else //NUM_FMS == 1
-  wreg(0, 0x0e, 0x2c);
-#endif
-  wreg(0, 0x11, 0x04);
-  wreg(0, 0x12, 0x04);
-  wreg(0, 0x13, 0x04);
-  wreg(0, 0x14, 0x00);
-  wreg(1, A_SYS_CFG, 0x23); //tightest analog margin
-  wreg(1, 0x0d, 0x02);
-#if NUM_FMS == 2
-  wreg(1, 0x0e, 0x2a);
-#else //NUM_FMS == 1
-  wreg(1, 0x0e, 0x2c);
-#endif
-  wreg(1, 0x11, 0x04);
-  wreg(1, 0x12, 0x04);
-  wreg(1, 0x13, 0x04);
-  wreg(1, 0x14, 0x00);
+  for (uint8_t id = 0; id < 3; id++) {
+    if (adc_connected[id]) {
+      //default samplerates and gains
+      wreg(id, A_SYS_CFG, 0x23); //tightest analog margin
+      wreg(id, CLK1, 0x02);
+      wreg(id, CLK2, 0x2D); //28.8 kHz
+      wreg(id, ADC1, 0x04); //gain = 16x
+      wreg(id, ADC2, 0x04); //gain = 16x
+      wreg(id, ADC3, 0x04); //gain = 16x
+      wreg(id, ADC4, 0x00); //gain = 1x
+    }
+  }
   OCR1A = TIMER1_TOP/2;
   OCR1B = TIMER1_TOP/2;
 
