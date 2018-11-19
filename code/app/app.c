@@ -1546,87 +1546,6 @@ static int8_t exactly_one_adc(void) {
   }
 }
 
-//~5 Mbps with a 14 MHz clock   (24.2 µs to read 15 bytes)
-//~4.7 Mbps with 16-bit samples (16.9 µs to read 10 bytes)
-//currently wasting ~350 ns between cycles = 5 cycles
-#if WORDSZ > 24
-#error read_samples_fast() doesnt support >24-bit
-#endif
-//always reads 4 samples
-static inline uint8_t* read_samples_fast(
-    uint8_t *ptr,
-    uint8_t *stat1_data) {
-  SPDR = 0; while(!(SPSR & (1<<SPIF)));
-  //001a aaaa
-  SPDR = 0; while(!(SPSR & (1<<SPIF)));
-  //dddd dddd
-  SPDR = 0; *stat1_data |= SPDR; while(!(SPSR & (1<<SPIF)));
-  SPDR = 0;
-
-  //grab samples in big endian order, store as little endian
-#if WORDSZ == 24
-  while(!(SPSR & (1<<SPIF))); SPDR = 0; ptr[2] = SPDR;
-  while(!(SPSR & (1<<SPIF))); SPDR = 0;
-#endif
-  ptr[1] = SPDR;
-
-      while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
-#if WORDSZ == 24
-      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-#endif
-      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
-#if WORDSZ == 24
-      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-#endif
-      SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; ptr[0] = SPDR; ptr += WORDSZ/8; while(!(SPSR & (1<<SPIF)));
-#if WORDSZ == 24
-      SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
-#endif
-      SPDR = 0; ptr[1] = SPDR;
-
-  while(!(SPSR & (1<<SPIF)));
-  ptr[0] = SPDR; ptr += WORDSZ/8;
-
-  return ptr;
-}
-
-#if WORDSZ > 24
-#error discard_samples_fast() doesnt support >24-bit
-#endif
-//always discards 4 samples
-static inline void discard_samples_fast(void) {
-  SPDR = 0; while(!(SPSR & (1<<SPIF)));
-  //001a aaaa
-  SPDR = 0; while(!(SPSR & (1<<SPIF)));
-  //dddd dddd
-#if WORDSZ == 24
-  SPDR = 0; while(!(SPSR & (1<<SPIF)));
-  SPDR = 0; while(!(SPSR & (1<<SPIF)));
-#endif
-  SPDR = 0; while(!(SPSR & (1<<SPIF)));
-  SPDR = 0;
-
-      while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-#if WORDSZ == 24
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-      SPDR = 0; while(!(SPSR & (1<<SPIF)));
-#endif
-      SPDR = 0;
-
-  //might be possible to skip this last wait, but we'd have to
-  //be careful that we don't re-enter this function too quickly
-  while(!(SPSR & (1<<SPIF)));
-}
-
 #if WORDSZ == 16
 typedef int32_t accu_t;
 #else
@@ -1769,9 +1688,16 @@ static int read_adc(uint8_t x) {
   return adc;
 }
 
+//used when computing max_frames
+//typically timer1_ovfs will reach TIMER1_OVFS_MAX+1
+#define TIMER1_OVFS_MAX 250L
+void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
+#if FEATURE_ASM == 1
+;
+#else
+{
 //does the actual sample capturing,
 //while taking care of TIMER1
-void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames) {
   //discard the first bunch of samples
   //partly to deal with initial F_DRDY
   //but also to allow the sinc3 filter to warm up
@@ -1792,18 +1718,10 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames) {
   cli();
   //just count overflow, adjust timer1_base at the end
   uint8_t timer1_ovfs = 0;
-  //used when computing max_frames
-  //typically timer1_ovfs will reach TIMER1_OVFS_MAX+1
-#define TIMER1_OVFS_MAX 250L
 
   do {
-    //poll /DRDY and TOV1
-    do {
-      if (TIFR & (1<<TOV1)) {
-        timer1_ovfs++;
-        TIFR = (1<<TOV1);
-      }
-    } while (PINE & (1<<PE7));
+    //poll /DRDY
+    while (PINE & (1<<PE7));
 
     // This grabs ten bytes every time
     // Doing so takes a minimum of 160 clock cycles (SPI2X)
@@ -1816,39 +1734,65 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames) {
     // The best we can do is DIV2 = 0x2E (38400 Hz),
     // leaving only 32 cy for housekeeping
     adc_select(id);
-    discard_samples_fast();
+    SPDR = 0; if (TIFR & (1<<TOV1)) {
+                timer1_ovfs++;
+                TIFR = (1<<TOV1);
+              }
+              while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; discard_samples--;
+              while(!(SPSR & (1<<SPIF)));
     adc_deselect();
-
-    discard_samples--;
   } while(discard_samples > 0);
-
-  //gcc puts some crap here, move the PINE check around to compensate
 
   do {
     while (PINE & (1<<PE7));
 
     adc_select(id);
-    ptr = read_samples_fast(ptr, &stat1);
+    SPDR = 0; if (TIFR & (1<<TOV1)) {
+                timer1_ovfs++;
+                TIFR = (1<<TOV1);
+              }
+              while(!(SPSR & (1<<SPIF)));
+    //001a aaaa
+    SPDR = 0; while(!(SPSR & (1<<SPIF)));
+    //dddd dddd
+    SPDR = 0; stat1 |= SPDR; while(!(SPSR & (1<<SPIF)));
+    //grab samples in big endian order, store as little endian
+    SPDR = 0; ptr[1] = SPDR; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; ptr[0] = SPDR; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; ptr[3] = SPDR; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; ptr[2] = SPDR; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; ptr[5] = SPDR; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; ptr[4] = SPDR; while(!(SPSR & (1<<SPIF)));
+    SPDR = 0; ptr[7] = SPDR; while(!(SPSR & (1<<SPIF)));
+              ptr[6] = SPDR;
+    ptr += 4*(WORDSZ/8);
     adc_deselect();
 
-    //this is different from the discard loop because gcc puts a bunch of ldi's between the loops
-    if (TIFR & (1<<TOV1)) {
-      timer1_ovfs++;
-      TIFR = (1<<TOV1);
-    }
-
+    //consider moving this into the wait before ptr[6]
     num_frames--;
   } while (num_frames > 0);
 
+  //using 64-bit shift and add is smaller than 32-bit followed by upcasting to 64-bit
   timer1_base += (uint64_t)timer1_ovfs * TIMER1_OVF_INC;
   sei();
 
   *stat1_out = stat1;
 }
+#endif
 
 //captures and demodulates data coming out of a single FM
 //capturing one at a time is better phase-jitter-wise
-void capture_and_demod(
+//returns non-zero on error
+uint8_t capture_and_demod(
         uint8_t id,
         uint16_t max_frames,
         uint8_t *stat1_out,
@@ -1864,6 +1808,12 @@ void capture_and_demod(
         uint8_t biased_round,   //minmax computed only during biased rounds
         uint8_t last_round      //only certain stats during the last round
         ) {
+
+  if ((intptr_t)sample_data < 0x1100) {
+    start_section("ERROR");
+    printf_P(PSTR("sample_data not in XMEM\r\n"));
+    return 1;
+  }
 
   set_74153(id);
   DDRD |= 1;    //debug
@@ -1947,6 +1897,7 @@ void capture_and_demod(
 
   *num_tachs_out = num_tachs;
   *rounding_inout = rounding;
+  return 0;
 }
 
 // Uses the analog signal in channel 4 in each FM for synchronization
@@ -2135,7 +2086,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       cb.entries[cb.nentries].t = gettime24();
 
       uint16_t discard; //don't think we need this
-      capture_and_demod(
+      if (capture_and_demod(
         id,
         max_frames,
         &stat1[id],
@@ -2150,7 +2101,10 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
         cb.nentries >= num_fms,
         cb.nentries >= nentries_vgnd,
         cb.nentries >= nentries_last
-      );
+      )) {
+        //pretend we got an ESC
+        got_esc = 1;
+      }
 
       if (have_esc()) {
         got_esc = 1;

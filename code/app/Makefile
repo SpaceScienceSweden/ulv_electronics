@@ -1,5 +1,6 @@
 PRG            = app
 FEATURE_MMC    = 0
+FEATURE_ASM    = 1
 OBJ            = \
 	app.o\
 	avr-ds18b20/src/ds18b20.o\
@@ -11,6 +12,10 @@ OBJ += \
 	fatfs-avr/ff.o\
 	fatfs-avr/mmc_avr_spi.o\
 
+endif
+
+ifeq "$(FEATURE_ASM)" "1"
+OBJ += asm.O
 endif
 
 DEPS           = \
@@ -36,7 +41,7 @@ CC             = avr-gcc
 #freeRam() needs -Wno-return-local-addr
 #LDFLAGS enable float functionality in printf()
 CFLAGS  = $(CFLAGS_ROOT) -Werror -Wno-unused -Wno-return-local-addr -Wno-stringop-overflow \
-  -Wall -pedantic $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) -std=gnu99 -DFEATURE_MMC=$(FEATURE_MMC)
+  -Wall -pedantic $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) -std=gnu99 -DFEATURE_MMC=$(FEATURE_MMC) -DFEATURE_ASM=$(FEATURE_ASM)
 LDFLAGS = -Wl,-Map,$(PRG).map -Wl,-u,vfprintf -lprintf_flt -lm \
 	-Wl,--section-start,.bss=0x801100,--defsym=__heap_end=0x80ffff,--print-memory-usage
 # ^ Put .data and stack in SRAM, .bss and heap in XRAM
@@ -54,6 +59,9 @@ printstackusage:
 
 init3.o: init3.c
 	$(CC) -c -o $@ $< $(CFLAGS)
+
+%.O: %.S
+	$(CC) -c -o $@ $< $(CFLAGS) -fstack-usage
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) -fstack-usage
