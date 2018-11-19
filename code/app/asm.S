@@ -91,12 +91,9 @@ discard_loop:
 	rjmp	discard_loop
 exit_discard_loop:
 
-  ; we could optimize some of these out, like r17
 	ldi	r26, 0x00	; stat1
-	ldi	r30, 0x30	; Z = sample_data
-	ldi	r31, 0x25
-	ldi	r16, 0x04	; for resetting TOV1
-	ldi	r17, 0xE0	; for adc_deselect
+	ldi	r30, lo8(sample_data)	; Z = sample_data
+	ldi	r31, hi8(sample_data)
 
 capture_loop:
 	sbic	0x01, 7	; 1
@@ -113,7 +110,7 @@ capture_loop:
 	sbrs	r0, 2   ; 1 cy or 2 cy
 	rjmp	.+4     ; 2 cy
 	subi	r18, 0xFF	;       1 cy
-	out	0x36, r16	; 1 cy
+	out	0x36, r22	; 1 cy
 	              ; 5 cy
   delay           10
 	out	0x0f, r1	; 1 cy
@@ -160,7 +157,7 @@ capture_loop:
 	std	Z+7, r27	; 3 cy
 	delay           10
   ;adc_deselect();
-	sts	0x0062, r17	; 2 cy, no flags
+	sts	0x0062, r19	; 2 cy, no flags
 
 	in	r25, 0x0f	; 15
 	std	Z+6, r25	; 3 cy
