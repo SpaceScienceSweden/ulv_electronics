@@ -6,10 +6,16 @@
   .section .text
 
   ;delays some number of cycles
+  ;using rjmp .+0 saves some ROM
   .macro  delay cy
+  .if     \cy >= 2
+  rjmp    .+0
+  delay   "(\cy-2)"
+  .else
   .if     \cy
   nop
   delay   "(\cy-1)"
+  .endif
   .endif
   .endm
 
@@ -54,8 +60,7 @@ discard_loop:
   ;adc_select(id);
 	sts	0x0062, r24	; 0x800062 <__TEXT_REGION_LENGTH__+0x7e0062>
 
-  ;in here we always do SPDR=0 then delay 15 cycles in various ways,
-  ;such that the next out happens on cycle 16, giving maximum SPI speed
+  ;write to SPDR then delay 16+ cycles in various ways
 	out	0x0f, r1  ; 1 cy
 
   ;if (TIFR & (1<<TOV1)) { timer1_ovfs++; TIFR = (1<<TOV1); }
@@ -65,6 +70,8 @@ discard_loop:
 	subi	r18, 0xFF	;       1 cy
 	out	0x36, r22	; 1 cy
 	              ; total: 5 or 5 cycles
+  ;I probably miscalculated cycles above, because if I wait only
+  ;11 or 12 cycles here then certain bits in STAT_S get set
   delay 13
 	out	0x0f, r1  ; 1 cy
 
@@ -85,6 +92,8 @@ discard_loop:
 	out	0x0f, r1	; 1 cy
 	delay 16
 	out	0x0f, r1	; 1 cy
+	;must wait 1 more cycle than expected,
+	;SCLK can't toggle at the same time as /CS
 	delay 15
   ;adc_deselect();
 	sts	0x0062, r19	; 2 cy, no flags
