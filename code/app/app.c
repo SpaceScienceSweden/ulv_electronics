@@ -1711,7 +1711,7 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
   //
   // 19200 Hz (DIV1 = 0x02, DIV2 = 0x2C), ENOB = 14.79 .. 18.80
   // 28800 Hz (DIV1 = 0x02, DIV2 = 0x2D), ENOB = 13.87 .. 17.92
-  // 38400 Hz (DIV1 = 0x02, DIV2 = 0x2E), ENOB = 12.98 .. 17.00 too fast (STAT_S)
+  // 38400 Hz (DIV1 = 0x02, DIV2 = 0x2E), ENOB = 12.98 .. 17.00
   //
   // In other words at max gain ENOB is low enough that we can get away with 16 bit samples
 
@@ -1724,15 +1724,15 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
     while (PINE & (1<<PE7));
 
     // This grabs ten bytes every time
-    // Doing so takes a minimum of 160 clock cycles (SPI2X)
+    // Doing so takes a minimum of 170 clock cycles (SPI2X, no double buffering)
     //
     //  DIV1 = 0x02, DIV2 = 0x2C ==> 4*96 = 384 cy
-    //  DIV1 = 0x02, DIV2 = 0x2D ==> 4*64 = 256 cy <-- you are here
-    //  DIV1 = 0x02, DIV2 = 0x2E ==> 4*48 = 192 cy
+    //  DIV1 = 0x02, DIV2 = 0x2D ==> 4*64 = 256 cy
+    //  DIV1 = 0x02, DIV2 = 0x2E ==> 4*48 = 192 cy <-- you are here
     //  DIV1 = 0x02, DIV2 = 0x2F ==> 4*32 = 128 cu <-- geht nicht!
     //
     // The best we can do is DIV2 = 0x2E (38400 Hz),
-    // leaving only 32 cy for housekeeping
+    // leaving only 22 cy for housekeeping
     adc_select(id);
     SPDR = 0; if (TIFR & (1<<TOV1)) {
                 timer1_ovfs++;
@@ -1750,6 +1750,7 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
     SPDR = 0; discard_samples--;
               while(!(SPSR & (1<<SPIF)));
     adc_deselect();
+    while (!(PINE & (1<<PE7)));
   } while(discard_samples > 0);
 
   do {
@@ -1776,6 +1777,7 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
               ptr[6] = SPDR;
     ptr += 4*(WORDSZ/8);
     adc_deselect();
+    while (!(PINE & (1<<PE7)));
 
     //consider moving this into the wait before ptr[6]
     num_frames--;
@@ -2113,6 +2115,9 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       wdt_reset();
     }
 
+    if (stat1[0] || stat1[1] || stat1[2]) {
+      start_section("ERROR");
+    }
     for (uint8_t id = 0; id < 3; id++) {
       if (fm_mask & (1<<id)) {
         for (uint8_t addr = 0x00; addr <= 0x14; addr++) {
@@ -2120,11 +2125,14 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
             //use aggregate STAT_1
             cb.stats[id].ads131a04_regs[addr] = stat1[id];
             if (stat1[id]) {
-              start_section("ERROR");
-              printf_P(PSTR("stat1[%hhu] = %hhx\n"), id, stat1[id]);
+              printf_P(PSTR("STAT_1[%hhu] = %hh02x\n"), id, stat1[id]);
             }
           } else {
-            cb.stats[id].ads131a04_regs[addr] = rreg(id, addr);
+            uint8_t val = rreg(id, addr);
+            if (addr == STAT_S && val) {
+              printf_P(PSTR("STAT_S[%hhu] = %hh02x\n"), id, val);
+            }
+            cb.stats[id].ads131a04_regs[addr] = val;
           }
         }
       }
@@ -2843,7 +2851,7 @@ int main(void)
       //default samplerates and gains
       wreg(id, A_SYS_CFG, 0x23); //tightest analog margin
       wreg(id, CLK1, 0x02);
-      wreg(id, CLK2, 0x2D); //28.8 kHz
+      wreg(id, CLK2, 0x2E); //38.4 kHz
       wreg(id, ADC1, 0x04); //gain = 16x
       wreg(id, ADC2, 0x04); //gain = 16x
       wreg(id, ADC3, 0x04); //gain = 16x

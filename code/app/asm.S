@@ -65,28 +65,35 @@ discard_loop:
 	subi	r18, 0xFF	;       1 cy
 	out	0x36, r22	; 1 cy
 	              ; total: 5 or 5 cycles
-  delay 10
+  delay 13
 	out	0x0f, r1  ; 1 cy
-	delay 15
+
+	;SPDR is not double buffered :c
+	delay 16
+	out	0x0f, r1	; 1 cy
+	delay 16
+	out	0x0f, r1	; 1 cy
+	delay 16
+	out	0x0f, r1	; 1 cy
+	delay 16
+	out	0x0f, r1	; 1 cy
+	delay 16
+	out	0x0f, r1	; 1 cy
+	delay 16
+	out	0x0f, r1	; 1 cy
+	delay 16
+	out	0x0f, r1	; 1 cy
+	delay 16
 	out	0x0f, r1	; 1 cy
 	delay 15
-	out	0x0f, r1	; 1 cy
-	delay 15
-	out	0x0f, r1	; 1 cy
-	delay 15
-	out	0x0f, r1	; 1 cy
-	delay 15
-	out	0x0f, r1	; 1 cy
-	delay 15
-	out	0x0f, r1	; 1 cy
-	delay 15
-	out	0x0f, r1	; 1 cy
-	delay 15
-	out	0x0f, r1	; 1 cy
-	delay 13
-	subi	r25, 0x01	; 1 cy
   ;adc_deselect();
 	sts	0x0062, r19	; 2 cy, no flags
+
+  ;wait for PE7 to go high
+  sbis	0x01, 7
+  rjmp	.-4
+
+	subi	r25, 0x01	; 1 cy
 	breq  exit_discard_loop
 	rjmp	discard_loop
 exit_discard_loop:
@@ -112,56 +119,60 @@ capture_loop:
 	subi	r18, 0xFF	;       1 cy
 	out	0x36, r22	; 1 cy
 	              ; 5 cy
-  delay           10
+  delay           13
 	out	0x0f, r1	; 1 cy
 
-	delay           15
+	delay           16
 	out	0x0f, r1	; 1 cy
 
 	in	r10, 0x0f	; 1 cy
 	or	r26, r10  ; 1 cy
-	delay           13
+	delay           14
 	out	0x0f, r1	; 1 cy
 
 	in	r11, 0x0f	; 1 cy
 	std	Z+1, r11	; 3 cy because XMEM
-	delay           11
+	delay           12
 	out	0x0f, r1	; 1 cy
 
 	in	r12, 0x0f	; 1 cy
 	st	Z, r12    ; 3 cy
-	delay           11
+	delay           12
 	out	0x0f, r1	; 1 cy
 
 	in	r13, 0x0f	; 1 cy
 	std	Z+3, r13	; 3 cy
-	delay           11
+	delay           12
 	out	0x0f, r1	; 1 cy
 
 	in	r14, 0x0f	; 1 cy
 	std	Z+2, r14	; 3 cy
-	delay           11
+	delay           12
 	out	0x0f, r1	; 1 cy
 
 	in	r15, 0x0f	; 1 cy
 	std	Z+5, r15	; 3 cy
-	delay           11
+	delay           12
 	out	0x0f, r1	; 1 cy
 
 	in	r23, 0x0f	; 1 cy
 	std	Z+4, r23	; 3 cy
-	delay           11
+	delay           12
 	out	0x0f, r1	; 1 cy
 
 	in	r27, 0x0f	; 1 cy
 	std	Z+7, r27	; 3 cy
-	delay           10
+	delay           11
   ;adc_deselect();
 	sts	0x0062, r19	; 2 cy, no flags
 
 	in	r25, 0x0f	; 15
 	std	Z+6, r25	; 3 cy
 	adiw	r30, 0x08	; Z += 8
+
+  ;wait for PE7 to go high
+  sbis	0x01, 7
+  rjmp	.-4
 
 	subi	r20, 0x01	; 1 cy
 	sbc	r21, r1     ; 1 cy
