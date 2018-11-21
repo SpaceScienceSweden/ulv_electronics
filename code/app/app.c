@@ -1817,6 +1817,16 @@ uint8_t capture_and_demod(
     return 1;
   }
 
+  // There might be some stray error codes if num_fms > 1
+  // In one case STAT_P=7 and STAT_N=7 would always get set,
+  // but reading them here before capture() clears them.
+  // My hypothesis is that this has to do with dV/dt's during
+  // VGND change inducing out-of-range signals in channels 1-3.
+  rreg(id, STAT_1);
+  rreg(id, STAT_P);
+  rreg(id, STAT_N);
+  rreg(id, STAT_S);
+
   set_74153(id);
   DDRD |= 1;    //debug
   capture(id, stat1_out, max_frames);
@@ -2131,6 +2141,12 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
             uint8_t val = rreg(id, addr);
             if (addr == STAT_S && val) {
               printf_P(PSTR("STAT_S[%hhu] = %hh02x\n"), id, val);
+            }
+            if (addr == STAT_P && val) {
+              printf_P(PSTR("STAT_P[%hhu] = %hh02x\n"), id, val);
+            }
+            if (addr == STAT_N && val) {
+              printf_P(PSTR("STAT_N[%hhu] = %hh02x\n"), id, val);
             }
             cb.stats[id].ads131a04_regs[addr] = val;
           }
