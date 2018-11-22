@@ -65,6 +65,7 @@
 #define UART_TXCOMPLETE  TXC1
 #define UART_RXREADY  RXC1
 #define UART_DOUBLE  U2X1
+#define UART_STATUS_BASE (1<<UART_DOUBLE)
 #define UART_CTRL  UCSR1B
 #define UART_CTRL_DATA_TX (1<<TXEN1)
 #define UART_CTRL_DATA_RX (1<<RXEN1)
@@ -202,7 +203,7 @@ static void sendchar(uint8_t data)
   //don't enable_tx() here, that is dangerous
   while (!(UART_STATUS & (1<<UART_TXREADY)));
   //clear TXC so we can detect it being set later, by writing a one to it
-  UART_STATUS |= (1<<UART_TXCOMPLETE);
+  UART_STATUS = (1<<UART_TXCOMPLETE) | UART_STATUS_BASE;
   UART_DATA = data;
 }
 
@@ -310,7 +311,7 @@ void clear_xmem (void) {
 
 static void setup_uart1() {
   //double speed for higher UBRR resolution
-  UART_STATUS = ( 1<<UART_DOUBLE );
+  UART_STATUS = UART_STATUS_BASE;
   //enable RX
   UART_CTRL = UART_CTRL_DATA_RX;
   UART_CTRL2 = UART_CTRL2_DATA;
@@ -336,7 +337,7 @@ ISR(USART1_UDRE_vect) {
     if (bsends[cur_bsend].ptr < bsends[cur_bsend].end) {
       //send data, clear TXC1
       UART_DATA = *bsends[cur_bsend].ptr++;
-      UART_STATUS |= (1<<UART_TXCOMPLETE);
+      UART_STATUS = (1<<UART_TXCOMPLETE) | UART_STATUS_BASE;
       return;
     }
   }
