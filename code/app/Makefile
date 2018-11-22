@@ -43,7 +43,7 @@ CC             = avr-gcc
 CFLAGS  = $(CFLAGS_ROOT) -Werror -Wno-unused -Wno-return-local-addr -Wno-stringop-overflow \
   -Wall -pedantic $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) -std=gnu99 -DFEATURE_MMC=$(FEATURE_MMC) -DFEATURE_ASM=$(FEATURE_ASM)
 LDFLAGS = -Wl,-Map,$(PRG).map -Wl,-u,vfprintf -lprintf_flt -lm \
-	-Wl,--section-start,.bss=0x801100,--defsym=__heap_end=0x80ffff,--print-memory-usage,--script=app.xn
+	-Wl,--defsym=__heap_end=0x80ffff,--print-memory-usage,--script=app.xn
 # ^ Put .data and stack in SRAM, .bss and heap in XRAM
 
 OBJCOPY        = avr-objcopy

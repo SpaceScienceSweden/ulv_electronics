@@ -6,7 +6,7 @@
 OUTPUT_FORMAT("elf32-avr","elf32-avr","elf32-avr")
 OUTPUT_ARCH(avr:51)
 __TEXT_REGION_LENGTH__ = DEFINED(__TEXT_REGION_LENGTH__) ? __TEXT_REGION_LENGTH__ : 128K;
-__DATA_REGION_LENGTH__ = DEFINED(__DATA_REGION_LENGTH__) ? __DATA_REGION_LENGTH__ : 0xff00;
+__DATA_REGION_LENGTH__ = 0xf00; /*DEFINED(__DATA_REGION_LENGTH__) ? __DATA_REGION_LENGTH__ : 0xff00;*/
 __EEPROM_REGION_LENGTH__ = DEFINED(__EEPROM_REGION_LENGTH__) ? __EEPROM_REGION_LENGTH__ : 64K;
 __FUSE_REGION_LENGTH__ = DEFINED(__FUSE_REGION_LENGTH__) ? __FUSE_REGION_LENGTH__ : 1K;
 __LOCK_REGION_LENGTH__ = DEFINED(__LOCK_REGION_LENGTH__) ? __LOCK_REGION_LENGTH__ : 1K;
@@ -16,6 +16,7 @@ MEMORY
 {
   text   (rx)   : ORIGIN = 0, LENGTH = __TEXT_REGION_LENGTH__
   data   (rw!x) : ORIGIN = 0x800100, LENGTH = __DATA_REGION_LENGTH__
+  xmem   (rw!x) : ORIGIN = 0x801100, LENGTH = 0xEF00
   eeprom (rw!x) : ORIGIN = 0x810000, LENGTH = __EEPROM_REGION_LENGTH__
   fuse      (rw!x) : ORIGIN = 0x820000, LENGTH = __FUSE_REGION_LENGTH__
   lock      (rw!x) : ORIGIN = 0x830000, LENGTH = __LOCK_REGION_LENGTH__
@@ -167,6 +168,9 @@ SECTIONS
   .data          :
   {
      PROVIDE (__data_start = .) ;
+     /* align bsend */
+     . = ALIGN(256);
+     *(.bsend*)
     *(.data)
      *(.data*)
     *(.rodata)  /* We need to include .rodata here if gcc is used */
@@ -193,8 +197,11 @@ SECTIONS
     *(.noinit*)
      PROVIDE (__noinit_end = .) ;
      _end = . ;
-     PROVIDE (__heap_start = .) ;
   }  > data
+  .xmem : {
+    *(.xmem )
+     PROVIDE (__heap_start = .) ;
+  } >xmem AT>xmem
   .eeprom  :
   {
     /* See .data above...  */

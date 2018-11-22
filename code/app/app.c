@@ -21,7 +21,9 @@
 #define FEATURE_TWIDDLE_VGND 0
 #define FEATURE_PROGRAMS 0
 #define FEATURE_SAMPLES 0       //raw sample capture, uses INT7 ISR
+#define FEATURE_BLOCK 1         //capturing and demodulating samples into blocks
 #define FEATURE_BSEND 0         //required for FEATURE_SAMPLES
+#define FEATURE_BSEND_SIMPLE 0  //simpler bsend, only a single buffer, aligned
 //#define FEATURE_MMC 1           //MMC/µSD card, defined in makefile
 
 #define BS  '\x08'  //backspace
@@ -112,8 +114,13 @@ sample_packet_header_s header;
 
 #else   //FEATURE_SAMPLES
 
+#if FEATURE_BLOCK
 //don't need volatile
-uint8_t sample_data[32767];
+//put sample data and capture block in .xmem
+uint8_t __attribute__((section(".xmem"))) sample_data[32767];
+capture_block_s __attribute__((section(".xmem"))) cb;
+
+#endif
 
 #endif  //FEATURE_SAMPLES
 
@@ -156,8 +163,6 @@ static uint16_t vgnds[3] = {512, 512, 512};
 //a bit silly
 uint16_t sintab[1024];
 #endif
-
-capture_block_s cb;
 
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
@@ -331,6 +336,7 @@ static unsigned freeRam () {
   return 0xffff - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
 
+#if FEATURE_BSEND || FEATURE_BSEND_SIMPLE
 #if FEATURE_BSEND == 1
 ISR(USART1_UDRE_vect) {
   for (; cur_bsend < MAX_BSENDS; cur_bsend++) {
@@ -347,6 +353,58 @@ ISR(USART1_UDRE_vect) {
     UCSR1B &= ~(1<<UDRIE1);
   }
 }
+#else //FEATURE_BSEND_SIMPLE
+/* The asm should look something like this:
+00000e88 <__vector_31>:
+2     e8a:	0f 92       	push	r24
+1     e8c:	0f b6       	in	r24, 0x3f	; 63
+2     e8e:	0f 92       	push	r24
+2     e98:	9f 93       	push	r25
+2     e9a:	ef 93       	push	r30
+2     e9c:	ff 93       	push	r31
+11
+
+2     e9e:	80 91 33 02 	lds	r24, 0x0233	; 0x800233 <bsend_ofs>
+1     ea2:	e8 2f       	mov	r30, r24
+1     ea4:	f0 e0       	ldi	r31, 0x01
+2     eaa:	90 81       	ld	r25, Z
+2     eac:	90 93 9c 00 	sts	0x009C, r25	; 0x80009c <__TEXT_REGION_LENGTH__+0x7e009c>
+1     eb0:	e2 e4       	ldi	r30, 0x42	; 66
+2     eb2:	e0 93 9b 00 	sts	0x009B, r30	; 0x80009b <__TEXT_REGION_LENGTH__+0x7e009b>
+1     eb6:	8f 5f       	subi	r24, 0xFF	; 255
+1     eb8:	69 f0       	breq	.+26     	; 0xed4 <__vector_31+0x4c>
+2     eba:	80 93 33 02 	sts	0x0233, r24	; 0x800233 <bsend_ofs>
+15
+
+2     ebe:	ff 91       	pop	r31
+2     ec0:	ef 91       	pop	r30
+2     ec2:	9f 91       	pop	r25
+2     ec4:	8f 91       	pop	r24
+1     ecc:	0f be       	out	0x3f, r24	; 63
+2     ece:	0f 90       	pop	r24
+11
+4     ed2:	18 95       	reti ;PC == 16 bits
+
+le grand totale: 11+15+11+4 = 41
+*/
+//aligning this allows speeding the asm up
+uint8_t __attribute__((section(".bsend"))) bsend_buf[256];
+volatile uint8_t bsend_ofs;
+ISR(USART1_UDRE_vect) {
+  uint8_t ofs = bsend_ofs;
+  UART_DATA = bsend_buf[ofs];
+  UART_STATUS = (1<<UART_TXCOMPLETE) | UART_STATUS_BASE;
+
+  ofs++;
+  if (ofs == 0) {
+    //disable USART1 interrupt
+    //we could put some code that loads in another 256 bytes to send here
+    UCSR1B &= ~(1<<UDRIE1);
+  } else {
+    bsend_ofs = ofs;
+  }
+}
+#endif
 
 static inline uint8_t bsend_busy(void) {
   return (UCSR1B & (1<<UDRIE1)) || !(UART_STATUS & (1<<UART_TXREADY));
@@ -369,6 +427,7 @@ static void bsend_start(void) {
 
   bwait();
 
+#if FEATURE_BSEND == 1
   for (cur_bsend = 0; cur_bsend < MAX_BSENDS; cur_bsend++) {
     if (bsends[cur_bsend].ptr < bsends[cur_bsend].end) {
       sendchar(*bsends[cur_bsend].ptr++);
@@ -377,8 +436,13 @@ static void bsend_start(void) {
       break;
     }
   }
+#else //FEATURE_BSEND_SIMPLE
+  sendchar(TODO);
+  //enable USART1 interrupt
+  UCSR1B |= (1<<UDRIE1);
+#endif
 }
-#endif  //FEATURE_BSEND
+#endif  //FEATURE_BSEND || FEATURE_BSEND_SIMPLE
 
 #if FEATURE_MMC == 1
 #include "mmc_avr.h"
@@ -1547,6 +1611,7 @@ static int8_t exactly_one_adc(void) {
   }
 }
 
+#if FEATURE_BLOCK
 #if WORDSZ == 16
 typedef int32_t accu_t;
 #else
@@ -1659,6 +1724,7 @@ static inline void binary_iq(
     }
   }
 }
+#endif //FEATURE_BLOCK
 
 static void read_temps(void) {
   for (uint8_t x = 0; x < romcnt; x++) {
@@ -1689,6 +1755,7 @@ static int read_adc(uint8_t x) {
   return adc;
 }
 
+#if FEATURE_BLOCK
 //used when computing max_frames
 //typically timer1_ovfs will reach TIMER1_OVFS_MAX+1
 #define TIMER1_OVFS_MAX 250L
@@ -2220,6 +2287,7 @@ square_demod_analog_done:
   wdt_enable(WDTO_DEFAULT);
   return;
 }
+#endif
 
 static void handle_input(void) {
       int len = recvline();
@@ -2758,6 +2826,7 @@ static void handle_input(void) {
         uint8_t fm_mask = 0;
         uint16_t max_frames_max = 0;
         int n = sscanf(line, "%hhu %u", &fm_mask, &max_frames_max);
+#if FEATURE_BLOCK
         if (n == 1) {
           square_demod_analog(fm_mask, 0);
         } else if (n == 2) {
@@ -2766,6 +2835,10 @@ static void handle_input(void) {
           start_section("ERROR");
           printf_P(PSTR("'H' requires one or two arguments\r\n"));
         }
+#else
+        start_section("ERROR");
+        printf_P(PSTR("FEATURE_BLOCK not enabled\r\n"));
+#endif //FEATURE_BLOCK
       } else if (c == '?') {
         //print help
         start_section("INFO");
@@ -2878,7 +2951,9 @@ int main(void)
   OCR1A = TIMER1_TOP/2;
   OCR1B = TIMER1_TOP/2;
 
-  //square_demod_analog(2, 0);
+#if FEATURE_BLOCK
+  square_demod_analog(6, 0);
+#endif
 
   for (;;) {
 retry:
