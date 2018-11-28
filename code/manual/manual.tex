@@ -255,6 +255,7 @@ Parts needed:
 \item Stencil with a 15x5 mm hole
 \item One (1) ITR20001/T IR reflex coupler
 \item One (1) 0805 4.7 $k\Omega$ resistor
+\item Three (3) Würth 36903205S 20x20x3 mm shielding cans.
 \item Three (3) M2 screws, 6 mm length including head (Phillips PH1)
 \item Four (4) silver plated M3 screws, 10 mm length including head (Torx T10)
 \item Sixteen (16) silver plated M3 screws. Same as above??
@@ -322,19 +323,24 @@ to grind away some of the PCB material until the motor fits.
 Put the Maxon EC motor in the motor hole,
 then shim the PCB + motor combination up from the bottom so that
 the motor can lie flush with the PCB while working on it.
-Solder the five motor wires to the motor wire pads on the PCB.
+Don't solder the motor in just yet, as that will make mounting the reflex coupler and shielding cans more difficult.
 
 Bend and cut the IR reflex coupler leads so that the reflex coupler looks directly at the EC motor's rotor can when inserted into its 2x3 socket (IR2 reference on PCB). See figure \vref{reflectometer}.
 Bending then trimming all leads to the same length as the shortest lead will accomplish this,
 The resulting lead length should be 7 mm from the bottom of the reflex coupler.
 Insert the reflex coupler into its socket.
 The gap between the top of the 2x3 socket and the bottom of the reflex coupler should be 2 - 3 mm.
-Solder the reflex coupler into the socket. Use plenty of flux so the leads and socket are guaranteed to be soldered together.
+Remove the motor, then solder the reflex coupler into the socket.
+Use plenty of flux so the leads and socket are guaranteed to be soldered together.
 Some extra solder can be applied to the 2x3 socket pads at this point.
 Carefully test that pulling on the reflex coupler doesn't cause it to come out.
 Check continuity with a multimeter, and that adjacent pins aren't shorted.
 
 Replace R56 with a 4.7 $k\Omega$ 0805 resistor.
+
+Solder the shielding cans in place over each of the three analog frontends.
+
+Reinstall the motor and solder the five motor wires to the motor wire pads on the PCB.
 
 Screw the motor + PCB assembly to the aluminium plate using the M2 screws for the motor and silver plated M3 screws, washers and nuts for the PCB.
 First screw in the screws lightly, then tighten using the torque wrench. Use 0.3 Nm for the M2 screws and 0.8 Nm for the M3 nuts.
