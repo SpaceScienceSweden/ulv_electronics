@@ -1,3 +1,5 @@
+/* Everything that is commited in here has been proven correct by Frama-C */
+
 #include <stdint.h>
 #include "proven.h"
 
@@ -159,4 +161,35 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
 }
 #endif
 #endif //FEATURE_BLOCK
+
+void compute_min_max(
+    uint16_t max_frames,
+    sample_t *data_ptr_in, int16_t minmax[4][2],
+    uint8_t compute_tach_minmax
+) {
+  sample_t *data_ptr = data_ptr_in;
+  uint8_t max_chan = compute_tach_minmax ? 4 : 3;
+
+  /*@ loop invariant \forall integer x; 0 <= x < max_chan ==>
+        minmax[x][0] <= \at(minmax[x][0], LoopEntry);
+      loop invariant \forall integer x; 0 <= x < max_chan ==>
+        minmax[x][1] >= \at(minmax[x][1], LoopEntry);
+      loop invariant data_ptr == data_ptr_in + k*4;
+      loop assigns k, data_ptr, ((int16_t*)minmax)[0..2*max_chan-1];
+   */
+  for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4) {
+    /*@ loop invariant \forall integer x; 0 <= x < max_chan ==>
+          minmax[x][0] <= \at(minmax[x][0], LoopEntry);
+        loop invariant \forall integer x; 0 <= x < max_chan ==>
+          minmax[x][1] >= \at(minmax[x][1], LoopEntry);
+        loop assigns l, ((int16_t*)minmax)[0..2*max_chan-1];
+     */
+    for (uint8_t l = 0; l < max_chan; l++) {
+      //deal with >=24-bit
+      int16_t s = data_ptr[l] / (1 << (WORDSZ-16));
+      if (s < minmax[l][0]) minmax[l][0] = s;
+      if (s > minmax[l][1]) minmax[l][1] = s;
+    }
+  }
+}
 

@@ -1598,21 +1598,6 @@ static int8_t exactly_one_adc(void) {
 }
 
 #if FEATURE_BLOCK
-void compute_min_max(
-    uint16_t max_frames,
-    sample_t *data_ptr, int16_t minmax[4][2],
-    uint8_t compute_tach_minmax
-) {
-  for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4) {
-    for (uint8_t l = 0; l < (compute_tach_minmax ? 4 : 3); l++) {
-      //deal with >=24-bit
-      int16_t s = data_ptr[l] / (1 << (WORDSZ-16));
-      if (s < minmax[l][0]) minmax[l][0] = s;
-      if (s > minmax[l][1]) minmax[l][1] = s;
-    }
-  }
-}
-
 //not being static inline is faster? 136 ms vs 98 ms
 /*static inline*/ void accumulate_square_interval(
   uint16_t p0,
