@@ -25,6 +25,9 @@ DEPS           = \
 	fatfs-avr/ffconf.h\
 	fatfs-avr/ff.h\
 	fatfs-avr/mmc_avr.h\
+	config.h\
+	proven.h\
+	frama-c-stub.h\
 
 OPTIMIZE       = -O3 -frename-registers -funroll-loops
 

@@ -882,7 +882,6 @@ static void print64(uint64_t i) {
 }
 
 #define FADC      F_CPU
-#define WORDSZ    16    //ADC word size
 #define CLK_DIV   2
 #define ICLK_DIV  2
 #define OSR       5     //0..15 -> 4096 .. 32, see osrtab below
@@ -899,20 +898,6 @@ static void print64(uint64_t i) {
 #endif
 #if GAIN < 0 || GAIN > 4
 #error Illegal GAIN
-#endif
-
-#if WORDSZ > 16
-typedef uint32_t adc_word_t;
-#else
-typedef uint16_t adc_word_t;
-#endif
-
-#if WORDSZ == 16
-typedef int16_t sample_t;
-#elif WORDSZ == 24
-typedef __int24 sample_t;
-#else
-typedef int32_t sample_t;
 #endif
 
 static const uint16_t osrtab[16] = {
@@ -1613,12 +1598,6 @@ static int8_t exactly_one_adc(void) {
 }
 
 #if FEATURE_BLOCK
-#if WORDSZ == 16
-typedef int32_t accu_t;
-#else
-typedef int64_t accu_t;
-#endif
-
 void compute_min_max(
     uint16_t max_frames,
     sample_t *data_ptr, int16_t minmax[4][2],

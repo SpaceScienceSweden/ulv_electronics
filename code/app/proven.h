@@ -1,6 +1,7 @@
 #ifndef _PROVEN_H
 #define _PROVEN_H
 
+#include "config.h"
 #include "frama-c-stub.h"
 
 //used when computing max_frames

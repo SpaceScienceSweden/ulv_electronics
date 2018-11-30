@@ -15,7 +15,6 @@ uint8_t sample_data[32767];
 #define PE7 7
 #define TOV1 2
 #define SPIF 7
-#define WORDSZ 16
 
 #define TIMER1_TOP 0x1FFF
 #define TIMER1_PRESCALER 1
