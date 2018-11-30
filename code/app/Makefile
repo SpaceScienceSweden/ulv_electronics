@@ -3,6 +3,7 @@ FEATURE_MMC    = 0
 FEATURE_ASM    = 1
 OBJ            = \
 	app.o\
+	proven.o\
 	avr-ds18b20/src/ds18b20.o\
 	avr-ds18b20/src/onewire.o\
 	avr-ds18b20/src/romsearch.o\
@@ -53,6 +54,10 @@ all: $(PRG).elf lst text eeprom printstackusage
 	avr-nm --size-sort --radix=d $(PRG).elf | sed -e 's/^0*//' | tail -n15
 	avr-size $(PRG).elf
 
+prove: proven.c
+	frama-c -wp -wp-rte -wp-prover z3,cvc4,alt-ergo,qed $<
+	touch prove
+
 .PHONY: printstackusage
 printstackusage:
 	./avstack.pl $(OBJ)
@@ -72,6 +77,7 @@ $(PRG).elf: $(OBJ) init3.o
 clean:
 	rm -rf $(OBJ) *.o avr-ds18b20/src/*.su fatfs-avr/*.su *.su $(PRG).elf *.eps *.png $(PRG).pdf *.bak
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
+	rm -f prove
 
 loadusb: $(PRG).hex
 	avrdude -c $(AVRDUDE_PROGRAMMER) -e -p $(MCU)
