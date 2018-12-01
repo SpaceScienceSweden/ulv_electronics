@@ -58,7 +58,7 @@ all: $(PRG).elf lst text eeprom printstackusage
 	avr-size $(PRG).elf
 
 prove: proven.c
-	frama-c -wp -wp-rte -wp-prover z3,cvc4,alt-ergo,qed $<
+	frama-c -wp -wp-rte -wp-invariants -wp-prover z3,cvc4,alt-ergo,qed $<
 	touch prove
 
 .PHONY: printstackusage

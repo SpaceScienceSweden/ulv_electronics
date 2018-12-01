@@ -12,6 +12,7 @@
 
 /*@ requires 0 <= id <= 2;
     requires \valid(stat1_out);
+    requires \valid((uint8_t*)sample_data + (0..8*num_frames-1));
     requires 1 <= num_frames <= MAX_FRAMES;
     assigns *stat1_out, timer1_base, SPDR, TIFR, sample_data[0..8*num_frames-1];
  */
