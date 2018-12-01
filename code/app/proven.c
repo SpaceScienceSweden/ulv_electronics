@@ -198,41 +198,52 @@ void compute_min_max(
 #else
 
 
-/*@ requires \valid_read(sample_data + (4*p0..4*p12-1));
+/*@ requires 0 <= p0 < p12;
+    requires \valid_read(sample_data + (4*p0..4*p12-1));
     requires \valid(&sum_abs[0] + (0..3));
 
     requires \forall integer x; 0 <= x < 3 ==>
-      sum_abs[x] <= UINT32_MAX - (p12-p0)*(INT16_MAX+1);
-    requires sum_abs[3] <= UINT32_MAX - (p12-p0)*INT16_MAX;
+      0 <= sum_abs[x]
+        <= INT32_MAX - (p12-p0)*(INT16_MAX+1);
+    requires
+      0 <= sum_abs[3]
+        <= INT32_MAX - (p12-p0)*INT16_MAX;
 
     ensures \forall integer x; 0 <= x < 3 ==>
-      \old(sum_abs[x]) <= sum_abs[x] <= \old(sum_abs[x]) + (p12-p0)*(INT16_MAX+1);
-    ensures \old(sum_abs[3]) <= sum_abs[3];
+      \old(sum_abs[x]) <= sum_abs[x]
+      <= \old(sum_abs[x]) + (p12-p0)*(INT16_MAX+1);
+    ensures
+      \old(sum_abs[3]) <= sum_abs[3]
+      <= \old(sum_abs[3]) + (p12-p0)*INT16_MAX;
 
-    //ensures \old(sum_abs[3]) <= sum_abs[3] <= \old(sum_abs[3]) + (p12-p0-1)*INT16_MAX;
     assigns sum_abs[0..3];
  */
 void compute_sum_abs(
   uint16_t p0,
   uint16_t p12,
+#ifndef FRAMA_C
   uint32_t sum_abs[4]
-#ifdef FRAMA_C
+#else
+  //WP doesn't seem able to deal with unsigned overflow
+  int32_t sum_abs[4],
   //fake sample_data to suppress cast warnings
-  , sample_t* sample_data
+  sample_t* sample_data
 #endif
 ) {
-  sample_t *data_ptr = (sample_t*)sample_data + p0*4;
+  /*@ loop invariant \forall integer x; 0 <= x < 3 ==>
+        \at(sum_abs[x], LoopEntry) <= sum_abs[x]
+        <= \at(sum_abs[x], LoopEntry) + (i-p0)*(INT16_MAX+1);
+      loop invariant
+        \at(sum_abs[3], LoopEntry) <= sum_abs[3]
+        <= \at(sum_abs[3], LoopEntry) + (i-p0)*INT16_MAX;
 
-  /*@ loop invariant data_ptr == sample_data + p00*4;
-  
-      loop invariant \forall integer x; 0 <= x < 3 ==>
-          \at(sum_abs[x], LoopEntry) <= sum_abs[x] <= \at(sum_abs[x], LoopEntry) + (p00-p0)*(INT16_MAX+1);
-
-      loop assigns p00, data_ptr, sum_abs[0..3];
-      loop variant p12 - p00;
+      loop invariant p0 <= i <= p12;
+      loop assigns i, sum_abs[0..3];
+      loop variant p12 - i;
    */
-  for (uint16_t p00 = p0; p00 < p12; p00++, data_ptr += 4) {
-    //@ invariant data_inv2: \valid_read(data_ptr + (0..3));
+  for (uint16_t i = p0; i < p12; i++) {
+    sample_t *data_ptr = (sample_t*)sample_data + i*4;
+    //@ assert data_ok: \valid_read(data_ptr + (0..3));
     sample_t s;
     s = data_ptr[0]; if(s >= 0){sum_abs[0] += s;}else{sum_abs[0] -= s;}
     s = data_ptr[1]; if(s >= 0){sum_abs[1] += s;}else{sum_abs[1] -= s;}

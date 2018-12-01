@@ -3,6 +3,7 @@
 
 //detect Frama-C, fake some things
 #ifndef F_CPU
+#define FRAMA_C
 
 volatile uint8_t PINE;
 volatile uint8_t SPDR;
