@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include "proven.h"
 
-#if 0
-
 #if FEATURE_BLOCK
 #if FEATURE_ASM == 0
 void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
@@ -195,29 +193,6 @@ void compute_min_max(
   }
 }
 
-#else
-
-
-/*@ requires 0 <= p0 < p12;
-    requires \valid_read(sample_data + (4*p0..4*p12-1));
-    requires \valid(&sum_abs[0] + (0..3));
-
-    requires \forall integer x; 0 <= x < 3 ==>
-      0 <= sum_abs[x]
-        <= INT32_MAX - (p12-p0)*(INT16_MAX+1);
-    requires
-      0 <= sum_abs[3]
-        <= INT32_MAX - (p12-p0)*INT16_MAX;
-
-    ensures \forall integer x; 0 <= x < 3 ==>
-      \old(sum_abs[x]) <= sum_abs[x]
-      <= \old(sum_abs[x]) + (p12-p0)*(INT16_MAX+1);
-    ensures
-      \old(sum_abs[3]) <= sum_abs[3]
-      <= \old(sum_abs[3]) + (p12-p0)*INT16_MAX;
-
-    assigns sum_abs[0..3];
- */
 void compute_sum_abs(
   uint16_t p0,
   uint16_t p12,
@@ -230,6 +205,12 @@ void compute_sum_abs(
   sample_t* sample_data
 #endif
 ) {
+#ifndef FRAMA_C
+  //This is a bit hacky, Frama-C can't seem to figure out
+  //that data_ptr == sample_data + i*4..
+  sample_t *data_ptr = (sample_t*)sample_data + p0*4;
+#endif
+
   /*@ loop invariant \forall integer x; 0 <= x < 3 ==>
         \at(sum_abs[x], LoopEntry) <= sum_abs[x]
         <= \at(sum_abs[x], LoopEntry) + (i-p0)*(INT16_MAX+1);
@@ -241,8 +222,16 @@ void compute_sum_abs(
       loop assigns i, sum_abs[0..3];
       loop variant p12 - i;
    */
-  for (uint16_t i = p0; i < p12; i++) {
+  for (uint16_t i = p0; i < p12; i++
+#ifndef FRAMA_C
+      , data_ptr += 4
+#endif
+  ) {
+#ifdef FRAMA_C
+    //doing things this way is easier to prove,
+    //but probably will compile to slower code
     sample_t *data_ptr = (sample_t*)sample_data + i*4;
+#endif
     //@ assert data_ok: \valid_read(data_ptr + (0..3));
     sample_t s;
     s = data_ptr[0]; if(s >= 0){sum_abs[0] += s;}else{sum_abs[0] -= s;}
@@ -257,4 +246,3 @@ void compute_sum_abs(
   }
 }
 
-#endif

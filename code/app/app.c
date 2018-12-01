@@ -1598,22 +1598,6 @@ static int8_t exactly_one_adc(void) {
 }
 
 #if FEATURE_BLOCK
-void compute_sum_abs(
-  uint16_t p0,
-  uint16_t p12,
-  uint32_t sum_abs[4]
-) {
-  sample_t *data_ptr = p0*4 + (sample_t*)sample_data;
-  for (uint16_t p00 = p0; p00 < p12; p00++, data_ptr += 4) {
-    sample_t s;
-    s = data_ptr[0]; if(s >= 0){sum_abs[0] += s;}else{sum_abs[0] -= s;}
-    s = data_ptr[1]; if(s >= 0){sum_abs[1] += s;}else{sum_abs[1] -= s;}
-    s = data_ptr[2]; if(s >= 0){sum_abs[2] += s;}else{sum_abs[2] -= s;}
-    sum_abs[3] += data_ptr[3]; /* no need to abs tach, always positive */
-  }
-}
-
-
 //not being static inline is faster? 136 ms vs 98 ms
 /*static inline*/ void accumulate_square_interval(
   uint16_t p0,
