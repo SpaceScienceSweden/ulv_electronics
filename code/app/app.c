@@ -118,7 +118,7 @@ sample_packet_header_s header;
 #if FEATURE_BLOCK
 //don't need volatile
 //put sample data and capture block in .xmem
-uint8_t __attribute__((section(".xmem"))) sample_data[32767];
+int16_t __attribute__((section(".xmem"))) sample_data[4*MAX_FRAMES];
 capture_block_s __attribute__((section(".xmem"))) cb;
 
 #endif

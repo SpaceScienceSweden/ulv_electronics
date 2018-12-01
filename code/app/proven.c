@@ -200,9 +200,7 @@ void compute_sum_abs(
   uint32_t sum_abs[4]
 #else
   //WP doesn't seem able to deal with unsigned overflow
-  int32_t sum_abs[4],
-  //fake sample_data to suppress cast warnings
-  sample_t* sample_data
+  int32_t sum_abs[4]
 #endif
 ) {
 #ifndef FRAMA_C

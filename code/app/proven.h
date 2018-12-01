@@ -8,13 +8,13 @@
 //typically timer1_ovfs will reach TIMER1_OVFS_MAX+1
 #define TIMER1_OVFS_MAX 250L
 
-#define MAX_FRAMES (sizeof(sample_data)/8)
+#define MAX_FRAMES 4095
 
-extern uint8_t sample_data[32767];
+extern int16_t sample_data[4*MAX_FRAMES];
 
 /*@ requires 0 <= id <= 2;
     requires \valid(stat1_out);
-    requires \valid((uint8_t*)sample_data + (0..8*num_frames-1));
+    requires \valid(&sample_data[0] + (0..4*num_frames-1));
     requires 1 <= num_frames <= MAX_FRAMES;
     assigns *stat1_out, timer1_base, SPDR, TIFR, sample_data[0..8*num_frames-1];
  */
@@ -61,9 +61,7 @@ void compute_sum_abs(
   uint32_t sum_abs[4]
 #else
   //WP doesn't seem able to deal with unsigned overflow
-  int32_t sum_abs[4],
-  //fake sample_data to suppress cast warnings
-  sample_t* sample_data
+  int32_t sum_abs[4]
 #endif
 );
 
