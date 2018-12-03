@@ -5,6 +5,7 @@
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{geometry} %gives less margins automagically
+\usepackage{gensymb} %°
 \begin{document}
 \lstset{basicstyle=\ttfamily} % fixed-width listings
 
@@ -252,7 +253,7 @@ Parts needed:
 \item One (1) fieldmill aluminium top plate
 \item One (1) fieldmill shutter plate
 \item One (1) Maxon 349694 EC motor
-\item Stencil with a 15x5 mm hole
+\item Masking tape
 \item One (1) ITR20001/T IR reflex coupler
 \item One (1) 0805 4.7 $k\Omega$ resistor
 \item Three (3) Würth 36903205S 20x20x3 mm shielding cans.
@@ -303,18 +304,27 @@ Twist and tin the ends of the wires. See figure \vref{motorwires}.
 \label{motorwires}
 \end{figure}
 
-Put the stencil on the rotor can, tape it down using masking tape and paint the area matt black.
+\begin{figure}
+\centering
+% Cut down on PDF size in git for now
+%\includegraphics[width=12cm]{motors}
+\caption{Motors with rotor cans painted black 180$\degree$ around}
+\label{motors}
+\end{figure}
+
+
+Mask off half the motor can using masking tape and paint the exposed area matt black.
 One way to do this is to spray primer into a glass or glazed ceramic cup then dip a fine paintbrush into the primer and paint it onto the can.
 DO NOT USE A PLASTIC CUP TO HOLD THE PRIMER - IT WILL MELT.
 Wait at least 30 minutes for the primer to dry, then apply the matt black paint on top of it.
-The black painted area should cover roughly a 90° arc of the edge of the can.
-See figure \vref{reflectometer}.
+The black painted area should cover a 180$\degree$ arc of the of the can, especially the edge.
+See figure \vref{motors}.
 
 \begin{figure}
 \centering
 % Cut down on PDF size in git for now
 %\includegraphics[width=12cm]{reflectometer}
-\caption{Reflex coupler and motor can. Black paint also visible on motor can.}
+\caption{Reflex coupler and motor can. Black paint also visible on motor can (earlier 90$\degree$ arc)}
 \label{reflectometer}
 \end{figure}
 
