@@ -1972,9 +1972,10 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     cb.f_cpu          = F_CPU;
     cb.t              = gettime64();
     cb.fm_mask        = fm_mask;
+    cb.num_frames     = max_frames;
     cb.stats[0].OCR1n = OCR1A;
-    cb.stats[1].OCR1n = OCR1A;
-    cb.stats[2].OCR1n = OCR1A;
+    cb.stats[1].OCR1n = OCR1B;
+    cb.stats[2].OCR1n = OCR1C;
     cb.vgnd_rounds    = 5;    //should be <= 7, else >50% time is spent biasing
     cb.vgnd_zero      = 512;
     cb.vgnd_minus     = cb.vgnd_zero - 100;
