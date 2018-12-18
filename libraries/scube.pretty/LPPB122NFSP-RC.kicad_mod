@@ -35,9 +35,9 @@
   (pad 24 smd rect (at 6.985 -2.1) (size 0.76 1.8) (layers F.Cu F.Paste F.Mask))
   (pad "" np_thru_hole circle (at 6.35 0) (size 0.8 0.8) (drill 0.8) (layers *.Cu))
   (pad "" np_thru_hole circle (at -6.35 0) (size 0.8 0.8) (drill 0.8) (layers *.Cu))
-  (model ${KIPRJMOD}/../libraries/packages3d/LPPB122NFSP-RC.wrl
+  (model ${KIPRJMOD}/../libraries/packages3d/LPPB122NFSP.step
     (at (xyz 0 0 0))
-    (scale (xyz 0.3937 0.3937 0.3937))
+    (scale (xyz 1 1 1))
     (rotate (xyz -90 0 0))
   )
 )

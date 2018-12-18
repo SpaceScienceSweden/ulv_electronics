@@ -57,9 +57,9 @@
   (pad 19 thru_hole circle (at 4.445 1.905) (size 1 1) (drill 0.6) (layers *.Cu *.Mask F.SilkS))
   (pad 23 thru_hole circle (at 6.985 1.905) (size 1 1) (drill 0.6) (layers *.Cu *.Mask F.SilkS))
   (pad 21 thru_hole circle (at 5.715 1.905) (size 1 1) (drill 0.6) (layers *.Cu *.Mask F.SilkS))
-  (model ${KIPRJMOD}/../libraries/packages3d/FTSH-112-04-L-D-RA.wrl
+  (model ${KIPRJMOD}/../libraries/packages3d/FTSH-112-04-L-D-RA.step
     (at (xyz 0 -0.05 0))
-    (scale (xyz 0.3937 0.3937 0.3937))
+    (scale (xyz 1 1 1))
     (rotate (xyz 0 0 -90))
   )
 )
