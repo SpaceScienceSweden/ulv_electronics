@@ -2049,6 +2049,12 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
         got_esc = 1;
       }
 
+      cb.stats[id].NQ[0] += NQ[0];
+      cb.stats[id].NQ[1] += NQ[1];
+      cb.stats[id].NQ[2] += NQ[2];
+      cb.stats[id].NQ[3] += NQ[3];
+      cb.entries[cb.nentries].N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
+
       if (have_esc()) {
         got_esc = 1;
       }
