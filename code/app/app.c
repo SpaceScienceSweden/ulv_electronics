@@ -118,7 +118,7 @@ sample_packet_header_s header;
 #if FEATURE_BLOCK
 //don't need volatile
 //put sample data and capture block in .xmem
-uint8_t __attribute__((section(".xmem"))) sample_data[32767];
+int16_t __attribute__((section(".xmem"))) sample_data[4*MAX_FRAMES];
 capture_block_s __attribute__((section(".xmem"))) cb;
 
 #endif
@@ -1607,9 +1607,7 @@ static int8_t exactly_one_adc(void) {
   accu_t Q3[3],
   accu_t Q4[3],
   uint16_t NQ[4],
-  uint32_t sum_abs[4],
-  uint8_t rounding,
-  uint8_t compute_sum_abs
+  uint8_t rounding
 ) {
   //we chop the interval [p0,p12) into twelve pieces
   //each piece gets accumulated into Q1..4 in round-robin order
@@ -1617,17 +1615,6 @@ static int8_t exactly_one_adc(void) {
   __uint24 psize = p12 - p0;
   __uint24 paccu = psize + rounding;
   sample_t *data_ptr = p0*4 + (sample_t*)sample_data;
-
-  if (compute_sum_abs) {
-    sample_t *data_ptr2 = data_ptr;
-    for (uint16_t p00 = p0; p00 < p12; p00++, data_ptr2 += 4) {
-      sample_t s;
-      s = data_ptr2[0]; if(s >= 0){sum_abs[0] += s;}else{sum_abs[0] -= s;}
-      s = data_ptr2[1]; if(s >= 0){sum_abs[1] += s;}else{sum_abs[1] -= s;}
-      s = data_ptr2[2]; if(s >= 0){sum_abs[2] += s;}else{sum_abs[2] -= s;}
-      sum_abs[3] += data_ptr2[3]; /* no need to abs tach, always positive */
-    }
-  }
 
   //i = offset in interval [p0,p12)
   uint16_t i = 0;
@@ -1805,11 +1792,15 @@ uint8_t capture_and_demod(
       if (p0 > 0) {
         num_tachs++;
 
+        if (last_round) {
+          compute_sum_abs(p0, p12, sum_abs);
+        }
+
         //~85% of time between captures is spent here
         accumulate_square_interval(
           p0, p12,
           Q1, Q2, Q3, Q4, NQ,
-          sum_abs, rounding, last_round
+          rounding
         );
 
         //four numbers are relative prime 12: 1, 5, 7, 11

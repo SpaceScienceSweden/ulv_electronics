@@ -193,3 +193,54 @@ void compute_min_max(
   }
 }
 
+void compute_sum_abs(
+  uint16_t p0,
+  uint16_t p12,
+#ifndef FRAMA_C
+  uint32_t sum_abs[4]
+#else
+  //WP doesn't seem able to deal with unsigned overflow
+  int32_t sum_abs[4]
+#endif
+) {
+#ifndef FRAMA_C
+  //This is a bit hacky, Frama-C can't seem to figure out
+  //that data_ptr == sample_data + i*4..
+  sample_t *data_ptr = (sample_t*)sample_data + p0*4;
+#endif
+
+  /*@ loop invariant \forall integer x; 0 <= x < 3 ==>
+        \at(sum_abs[x], LoopEntry) <= sum_abs[x]
+        <= \at(sum_abs[x], LoopEntry) + (i-p0)*(INT16_MAX+1);
+      loop invariant
+        \at(sum_abs[3], LoopEntry) <= sum_abs[3]
+        <= \at(sum_abs[3], LoopEntry) + (i-p0)*INT16_MAX;
+
+      loop invariant p0 <= i <= p12;
+      loop assigns i, sum_abs[0..3];
+      loop variant p12 - i;
+   */
+  for (uint16_t i = p0; i < p12; i++
+#ifndef FRAMA_C
+      , data_ptr += 4
+#endif
+  ) {
+#ifdef FRAMA_C
+    //doing things this way is easier to prove,
+    //but probably will compile to slower code
+    sample_t *data_ptr = (sample_t*)sample_data + i*4;
+#endif
+    //@ assert data_ok: \valid_read(data_ptr + (0..3));
+    sample_t s;
+    s = data_ptr[0]; if(s >= 0){sum_abs[0] += s;}else{sum_abs[0] -= s;}
+    s = data_ptr[1]; if(s >= 0){sum_abs[1] += s;}else{sum_abs[1] -= s;}
+    s = data_ptr[2]; if(s >= 0){sum_abs[2] += s;}else{sum_abs[2] -= s;}
+
+#ifdef FRAMA_C
+    //the prover doesn't know channel 4 is always positive
+    if (data_ptr[3] >= 0)
+#endif
+    sum_abs[3] += data_ptr[3]; /* no need to abs tach, always positive */
+  }
+}
+

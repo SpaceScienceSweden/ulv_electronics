@@ -3,6 +3,7 @@
 
 //detect Frama-C, fake some things
 #ifndef F_CPU
+#define FRAMA_C
 
 volatile uint8_t PINE;
 volatile uint8_t SPDR;
@@ -10,7 +11,6 @@ volatile uint8_t TIFR;
 volatile uint8_t PINE;
 volatile uint8_t SPSR;
 volatile uint64_t timer1_base;
-uint8_t sample_data[32767];
 
 #define PE7 7
 #define TOV1 2
