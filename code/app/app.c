@@ -1781,9 +1781,9 @@ uint8_t capture_and_demod(
 
   uint8_t num_tachs = 0;
   uint8_t rounding = *rounding_inout;
+  int skip = 96; //90° at 6000 RPM at 38400 Hz (sample_rate / 400)
   for (uint16_t k = 0;
-        k < max_frames && num_tachs < 255;
-        k++, data_ptr += 4) {
+        k < max_frames && num_tachs < 255;) {
     int16_t s = data_ptr[3] / (1 << (WORDSZ-16));
     //look for rising edge
     if (state == 0 && s > on) {
@@ -1805,13 +1805,29 @@ uint8_t capture_and_demod(
 
         //four numbers are relative prime 12: 1, 5, 7, 11
         rounding = (rounding + 5) % 12;
+
+        //we could continually update the skip,
+        //so that we always skip 90°
+        //skip = (p12 - p0) / 4;
       } else {
         //first sample - record discard
         *discard = p12;
       }
       p0 = p12;
+
+      //skip 90° ahead
+      k += skip;
+      data_ptr += skip*4;
     } else if (state == 1 && s < off) {
       state = 0;
+
+      //skip 90° ahead
+      k += skip;
+      data_ptr += skip*4;
+    } else {
+      //no rising or falling edge. keep looking
+      k++;
+      data_ptr += 4;
     }
   }
 
@@ -1956,6 +1972,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     return;
   }
   uint8_t got_esc = 0;
+  uint64_t t = gettime64();
 
   while (!have_esc() && !got_esc) {
     memset(&cb, 0, sizeof(cb));
@@ -1995,6 +2012,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     //what to add before clamping division by 12 in accumulate_square_interval()
     //moves around in the interval [0,12) in order to unbias Q1..4 binning
     uint8_t rounding[3] = {0};
+    uint32_t tot_tachs[3] = {0};
 
     //start_section("INFO");
     //printf_P(PSTR("Capturing block @ t = %f\r\n"), cb.t / (float)F_CPU);
@@ -2008,6 +2026,9 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
         uint8_t temp = cb.nentries / (cb.vgnd_rounds * num_fms);
         uint8_t vgnd_pm = temp % 2;
         uint8_t vgnd_id = fm_map[temp / 2];
+        // we should only zero vgnds which aren't vgnd_id
+        // also a delay after changing vgnd is probably a good idea
+        // maybe fewer vgnd rounds
         set_vgnds(cb.vgnd_zero);
         set_vgnd(vgnd_id, vgnd_pm ? cb.vgnd_plus : cb.vgnd_minus);
         //printf_P(PSTR("cb.nentries = %hhu / %hhu bias %hhu %c\r\n"), cb.nentries, nentries_max, vgnd_id, vgnd_pm ? '+' : '-');
@@ -2045,6 +2066,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       cb.stats[id].NQ[2] += NQ[2];
       cb.stats[id].NQ[3] += NQ[3];
       cb.entries[cb.nentries].N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
+      tot_tachs[id] += cb.entries[cb.nentries].num_tachs;
 
       if (have_esc()) {
         got_esc = 1;
@@ -2082,8 +2104,24 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       }
     }
 
+    uint64_t t2 = gettime64();
     uint16_t sz = sizeof(cb) - (255 - cb.nentries)*sizeof(capture_entry_s);
-    //printf_P(PSTR("TX %hu bytes\r\n"), sz);
+
+    start_section("INFO");
+    printf_P(PSTR("dt = %.2f, sz = %u\r\n"), (t2-t)/(float)F_CPU, sz);
+    for (uint8_t id = 0; id < 3; id++) {
+      if (tot_tachs[id]) {
+        uint32_t N = cb.stats[id].NQ[0] +
+          cb.stats[id].NQ[1] +
+          cb.stats[id].NQ[2] +
+          cb.stats[id].NQ[3];
+        float f = tot_tachs[id] / (float)N * F_CPU / cycles_per_sample; //  eller nåt;
+        printf_P(PSTR("id = %hhu, N=%lu, tachs=%lu, %f RPM\r\n"), id, N, tot_tachs[id], 60*f);
+      }
+      printf_P(PSTR("id = %hhu, min/mean/max tach: %i/%i/%i\r\n"), id, cb.stats[id].minmax[3][0], cb.stats[id].mean[3], cb.stats[id].minmax[3][1]);
+    }
+    t = t2;
+
     start_section("BLOCK");
     sendbuf(&cb, sz);
     READY();
@@ -2810,9 +2848,10 @@ int main(void)
   }
   OCR1A = TIMER1_TOP/2;
   OCR1B = TIMER1_TOP/2;
+  OCR1C = TIMER1_TOP/2;
 
 #if FEATURE_BLOCK
-  square_demod_analog(6, 0);
+  square_demod_analog(7, 0);
 #endif
 
   for (;;) {
