@@ -1708,6 +1708,18 @@ static int read_adc(uint8_t x) {
 }
 
 #if FEATURE_BLOCK
+//computes mean of tachometer values in an entire sample capture block.
+//not as stable as computing the mean between rising edges of tach signal,
+//but useful for bootstrapping
+int16_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr) {
+  accu_t sum = 0;
+  for (uint16_t k = 0; k < num_frames; k++, data_ptr += 4) {
+    sum += data_ptr[3];
+  }
+  return sum / num_frames;
+}
+
+
 //captures and demodulates data coming out of a single FM
 //capturing one at a time is better phase-jitter-wise
 //returns non-zero on error
@@ -1717,9 +1729,10 @@ uint8_t capture_and_demod(
         uint8_t *stat1_out,
         int16_t minmax[4][2],
         uint16_t NQ[4],
-        int16_t IQ[3][2],
+        capture_entry_s *entry,
         int16_t mean[4],
-        uint8_t *num_tachs_out,
+        int16_t *tach_mean,
+        uint16_t *tach_skip,
         uint16_t *discard,
         uint16_t mean_abs[3],
         uint8_t *rounding_inout,
@@ -1749,24 +1762,24 @@ uint8_t capture_and_demod(
   capture(id, stat1_out, max_frames);
   PORTD &= ~1;  //debug
 
-  //synthesize TACH from fourth channel in each FM data stream
-
-  //we could use a fixed threshold for tach,
-  //but want these statistics anyway,
-  //so we get automagic tach threshold for free
-  sample_t *data_ptr = (sample_t*)sample_data;
-
   if (biased_round) {
-    compute_min_max(max_frames, data_ptr, minmax, first_round);
+    compute_min_max(max_frames, (sample_t*)sample_data, minmax, first_round);
   }
 
-  //hysteresis: >75% -> on, <25% -> off
-  int16_t mid = minmax[3][0]/2 + minmax[3][1]/2;
-  int16_t on  = minmax[3][1]/2 + mid/2;
-  int16_t off = minmax[3][0]/2 + mid/2;
+  //synthesize TACH from fourth channel in each FM data stream
+  //if we don't have a decent tach trigger value yet then bootstrap one from the mean of the captured samples
+  if (*tach_mean == 0) {
+    *tach_mean = bootstrap_tach_mean(max_frames, (sample_t*)sample_data);
+  }
 
-  //rewind
-  data_ptr = (sample_t*)sample_data;
+  //have a bit of hysteresis
+  //I don't want to have to deal with overflow if tach_mean is close to INT16_MAX,
+  //so just let on = mid
+  int16_t mid = *tach_mean;
+  int16_t on  = mid;          //100% of mean
+  int16_t off = mid - mid/4;  //75% of mean
+
+  sample_t *data_ptr = (sample_t*)sample_data;
   uint8_t state = data_ptr[3]/(1 << (WORDSZ-16)) > mid;
   uint16_t p0 = 0; //index of last tach, or zero
 
@@ -1778,10 +1791,12 @@ uint8_t capture_and_demod(
 
   //sum_abs[3] is just the sum, should save some cycles
   uint32_t sum_abs[4] = {0,0,0,0};
+  uint16_t tach_min = UINT16_MAX;
+  uint16_t tach_max = 0;
 
   uint8_t num_tachs = 0;
   uint8_t rounding = *rounding_inout;
-  int skip = 96; //90° at 6000 RPM at 38400 Hz (sample_rate / 400)
+  uint16_t skip = *tach_skip;
   for (uint16_t k = 0;
         k < max_frames && num_tachs < 255;) {
     int16_t s = data_ptr[3] / (1 << (WORDSZ-16));
@@ -1791,6 +1806,15 @@ uint8_t capture_and_demod(
       uint16_t p12 = k;
       if (p0 > 0) {
         num_tachs++;
+
+        // gather tach duration statistics
+        uint16_t cur_tach = p12 - p0;
+        if (cur_tach > tach_max) {
+          tach_max = cur_tach;
+        }
+        if (cur_tach < tach_min) {
+          tach_min = cur_tach;
+        }
 
         if (last_round) {
           compute_sum_abs(p0, p12, sum_abs);
@@ -1806,9 +1830,8 @@ uint8_t capture_and_demod(
         //four numbers are relative prime 12: 1, 5, 7, 11
         rounding = (rounding + 5) % 12;
 
-        //we could continually update the skip,
-        //so that we always skip 90°
-        //skip = (p12 - p0) / 4;
+        //continually update the skip, so that we always skip 90°
+        skip = (p12 - p0) / 4;
       } else {
         //first sample - record discard
         *discard = p12;
@@ -1831,6 +1854,18 @@ uint8_t capture_and_demod(
     }
   }
 
+  if (tach_min == 0) {
+    //this shouldn't happen, but guard against it either way
+    entry->tach_ratio = 255;
+  } else {
+    uint32_t ratio = (uint32_t)tach_max * 100 / tach_min;
+    if (ratio < 254) {
+      entry->tach_ratio = ratio;
+    } else {
+      entry->tach_ratio = 254;
+    }
+  }
+
   uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
   if (N > 0) {
     if (last_round) {
@@ -1841,11 +1876,13 @@ uint8_t capture_and_demod(
       mean[3]     = sum_abs[3] / N;
     }
 
-    binary_iq(Q1, Q2, Q3, Q4, N, IQ, mean, last_round);
+    binary_iq(Q1, Q2, Q3, Q4, N, entry->IQ, mean, last_round);
   }
 
-  *num_tachs_out = num_tachs;
+  entry->num_tachs = num_tachs;
   *rounding_inout = rounding;
+  *tach_mean = mean[3];
+  *tach_skip = skip;
   return 0;
 }
 
@@ -1974,9 +2011,16 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
   uint8_t got_esc = 0;
   uint64_t t = gettime64();
 
+  //keep track of mean tachometer value
+  //a value of zero is understood as "not intialized"
+  int16_t tach_mean[3] = {0,0,0};
+  //default distance to skip after each flank in tachometer trigger logic
+  uint16_t default_skip = F_CPU/400/cycles_per_sample;  //90° at 6000 RPM
+  uint16_t tach_skip[3] = {default_skip,default_skip,default_skip};
+
   while (!have_esc() && !got_esc) {
     memset(&cb, 0, sizeof(cb));
-    cb.version        = 0;
+    cb.version        = 1;
     cb.f_cpu          = F_CPU;
     cb.t              = gettime64();
     cb.fm_mask        = fm_mask;
@@ -2047,9 +2091,10 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
         &stat1[id],
         cb.stats[id].minmax,
         NQ,
-        cb.entries[cb.nentries].IQ,
+        &cb.entries[cb.nentries],
         cb.stats[id].mean,
-        &cb.entries[cb.nentries].num_tachs,
+        &tach_mean[id],
+        &tach_skip[id],
         &discard,
         cb.stats[id].mean_abs,
         &rounding[id],

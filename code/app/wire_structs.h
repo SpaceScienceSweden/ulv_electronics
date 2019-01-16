@@ -233,6 +233,13 @@ typedef struct {
   uint8_t num_tachs;// number of tachometer impulses
   uint16_t N;       // number of frames in tach interval
   int16_t IQ[3][2]; // IQ data (IQIQIQ)
+
+  // Ratio between longest and shortest tach period, in percent.
+  // Anything above 110% = suspicious.
+  // 0..99 shouldn't happen, but indicates faulty logic
+  // 254 = maximum value
+  // 255 = tach_min was zero somehow
+  uint8_t tach_ratio;
 } capture_entry_s;
 
 
@@ -263,7 +270,7 @@ typedef struct {
 } fm_stat_s;
 
 typedef struct {
-  uint8_t version;  // version (0)
+  uint8_t version;  // version (1)
   uint32_t f_cpu;   // CPU clock in Hz
   uint64_t t;       // full timestamp at start of block
   uint8_t fm_mask;  // bits 0..2 = corresponding FM enabled
