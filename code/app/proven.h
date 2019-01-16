@@ -65,5 +65,14 @@ void compute_sum_abs(
 #endif
 );
 
+//computes mean of tachometer values in an entire sample capture block.
+//not as stable as computing the mean between rising edges of tach signal,
+//but useful for bootstrapping
+/*@ requires 1 <= num_frames <= UINT16_MAX;
+    requires \valid_read(data_ptr_in + (0..4*num_frames-1));
+    assigns \result \from data_ptr_in[0..4*num_frames-1];
+ */
+sample_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr_in);
+
 #endif //_PROVEN_H
 

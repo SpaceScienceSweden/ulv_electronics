@@ -1708,18 +1708,6 @@ static int read_adc(uint8_t x) {
 }
 
 #if FEATURE_BLOCK
-//computes mean of tachometer values in an entire sample capture block.
-//not as stable as computing the mean between rising edges of tach signal,
-//but useful for bootstrapping
-int16_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr) {
-  accu_t sum = 0;
-  for (uint16_t k = 0; k < num_frames; k++, data_ptr += 4) {
-    sum += data_ptr[3];
-  }
-  return sum / num_frames;
-}
-
-
 //captures and demodulates data coming out of a single FM
 //capturing one at a time is better phase-jitter-wise
 //returns non-zero on error
