@@ -374,6 +374,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
   //default distance to skip after each flank in tachometer trigger logic
   uint16_t default_skip = F_CPU/400/cycles_per_sample;  //90° at 6000 RPM
   uint16_t tach_skip[3] = {default_skip,default_skip,default_skip};
+  uint8_t max_max_tach_ratio = 0; //max_tach_ratio over the entire run so far
 
   while (!have_esc() && !got_esc) {
     memset(&cb, 0, sizeof(cb));
@@ -389,6 +390,9 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     cb.vgnd_zero      = 512;
     cb.vgnd_minus     = cb.vgnd_zero - 100;
     cb.vgnd_plus      = cb.vgnd_zero + 100;
+
+    //zero vgnds if they weren't already
+    set_vgnds(cb.vgnd_zero);
 
     for (uint8_t id = 0; id < 3; id++) {
       if (fm_mask & (1<<id)) {
@@ -414,6 +418,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     //moves around in the interval [0,12) in order to unbias Q1..4 binning
     uint8_t rounding[3] = {0};
     uint32_t tot_tachs[3] = {0};
+    uint8_t max_tach_ratio = 0;
 
     //start_section("INFO");
     //printf_P(PSTR("Capturing block @ t = %f\r\n"), cb.t / (float)F_CPU);
@@ -422,21 +427,31 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     for (; cb.nentries < nentries_max && !got_esc; cb.nentries++) {
       uint16_t NQ[4] = {0};
       uint8_t id = fm_map[cb.nentries % num_fms];
+      //ramp VGND up/down. this avoids saturating the op-amps and ADCs
+      uint16_t target_vgnds[3] = {cb.vgnd_zero, cb.vgnd_zero, cb.vgnd_zero};
 
       if (cb.nentries < nentries_vgnd) {
         uint8_t temp = cb.nentries / (cb.vgnd_rounds * num_fms);
         uint8_t vgnd_pm = temp % 2;
         uint8_t vgnd_id = fm_map[temp / 2];
-        // we should only zero vgnds which aren't vgnd_id
-        // also a delay after changing vgnd is probably a good idea
-        // maybe fewer vgnd rounds
-        set_vgnds(cb.vgnd_zero);
-        set_vgnd(vgnd_id, vgnd_pm ? cb.vgnd_plus : cb.vgnd_minus);
+        target_vgnds[vgnd_id] = vgnd_pm ? cb.vgnd_plus : cb.vgnd_minus;
         //printf_P(PSTR("cb.nentries = %hhu / %hhu bias %hhu %c\r\n"), cb.nentries, nentries_max, vgnd_id, vgnd_pm ? '+' : '-');
-      } else {
-        set_vgnds(cb.vgnd_zero);
-        //printf_P(PSTR("cb.nentries = %hhu / %hhu\r\n"), cb.nentries, nentries_max);
       }
+
+      //since is +-100 of zero, this takes up to 21 ms each time vgnd changes during calibration
+      while (vgnds[0] != target_vgnds[0] &&
+             vgnds[1] != target_vgnds[1] &&
+             vgnds[2] != target_vgnds[2]) {
+        for (uint8_t id = 0; id < 3; id++) {
+          if (vgnds[id] < target_vgnds[id]) {
+            set_vgnd(id, vgnds[id] + 1);
+          } else if (vgnds[id] > target_vgnds[id]) {
+            set_vgnd(id, vgnds[id] - 1);
+          }
+        }
+        _delay_us(100);
+      }
+      _delay_us(1000);
 
       //a few µs before the actual first sample, probably fine
       cb.entries[cb.nentries].t = gettime24();
@@ -469,6 +484,10 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       cb.stats[id].NQ[3] += NQ[3];
       cb.entries[cb.nentries].N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
       tot_tachs[id] += cb.entries[cb.nentries].num_tachs;
+
+      if (cb.entries[cb.nentries].tach_ratio > max_tach_ratio) {
+        max_tach_ratio = cb.entries[cb.nentries].tach_ratio;
+      }
 
       if (have_esc()) {
         got_esc = 1;
@@ -509,8 +528,13 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     uint64_t t2 = gettime64();
     uint16_t sz = sizeof(cb) - (255 - cb.nentries)*sizeof(capture_entry_s);
 
+    if (max_tach_ratio > max_max_tach_ratio) {
+      max_max_tach_ratio = max_tach_ratio;
+    }
+
     start_section("INFO");
     printf_P(PSTR("dt = %.2f, sz = %u\r\n"), (t2-t)/(float)F_CPU, sz);
+    printf_P(PSTR("max_tach_ratio = %hhu, max_max_tach_ratio = %hhu\r\n"), max_tach_ratio, max_max_tach_ratio);
     for (uint8_t id = 0; id < 3; id++) {
       if (tot_tachs[id]) {
         uint32_t N = cb.stats[id].NQ[0] +

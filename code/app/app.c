@@ -1818,6 +1818,11 @@ int main(void)
   OCR1C = TIMER1_TOP/2;
 
 #if FEATURE_BLOCK
+  //wait a few seconds for the motors to speed up
+  for (uint8_t t = 0; t < 100; t++) {
+    _delay_ms(30);
+    wdt_reset();
+  }
   square_demod_analog(7, 0);
 #endif
 
