@@ -439,8 +439,8 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       }
 
       //since is +-100 of zero, this takes up to 21 ms each time vgnd changes during calibration
-      while (vgnds[0] != target_vgnds[0] &&
-             vgnds[1] != target_vgnds[1] &&
+      while (vgnds[0] != target_vgnds[0] ||
+             vgnds[1] != target_vgnds[1] ||
              vgnds[2] != target_vgnds[2]) {
         for (uint8_t id = 0; id < 3; id++) {
           if (vgnds[id] < target_vgnds[id]) {

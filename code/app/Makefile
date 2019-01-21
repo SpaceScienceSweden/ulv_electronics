@@ -28,6 +28,10 @@ DEPS           = \
 	config.h\
 	proven.h\
 	frama-c-stub.h\
+	feature_block.c\
+	feature_bsend.c\
+	feature_programs.c\
+	feature_samples.c\
 
 OPTIMIZE       = -O3 -frename-registers -funroll-loops
 
