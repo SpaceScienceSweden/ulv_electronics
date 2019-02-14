@@ -375,6 +375,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
   uint16_t default_skip = F_CPU/400/cycles_per_sample;  //90° at 6000 RPM
   uint16_t tach_skip[3] = {default_skip,default_skip,default_skip};
   uint8_t max_max_tach_ratio = 0; //max_tach_ratio over the entire run so far
+  uint8_t block_idx = 0;
 
   while (!have_esc() && !got_esc) {
     memset(&cb, 0, sizeof(cb));
@@ -532,10 +533,12 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       max_max_tach_ratio = max_tach_ratio;
     }
 
-    start_section("INFO");
-    printf_P(PSTR("dt = %.2f, sz = %u\r\n"), (t2-t)/(float)F_CPU, sz);
-    printf_P(PSTR("max_tach_ratio = %hhu, max_max_tach_ratio = %hhu\r\n"), max_tach_ratio, max_max_tach_ratio);
-    for (uint8_t id = 0; id < 3; id++) {
+    //don't need to print every time
+    if (block_idx == 0) {
+     start_section("INFO");
+     printf_P(PSTR("dt = %.2f, sz = %u\r\n"), (t2-t)/(float)F_CPU, sz);
+     printf_P(PSTR("max_tach_ratio = %hhu, max_max_tach_ratio = %hhu\r\n"), max_tach_ratio, max_max_tach_ratio);
+     for (uint8_t id = 0; id < 3; id++) {
       if (tot_tachs[id]) {
         uint32_t N = cb.stats[id].NQ[0] +
           cb.stats[id].NQ[1] +
@@ -545,7 +548,9 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
         printf_P(PSTR("id = %hhu, N=%lu, tachs=%lu, %f RPM\r\n"), id, N, tot_tachs[id], 60*f);
       }
       printf_P(PSTR("id = %hhu, min/mean/max tach: %i/%i/%i\r\n"), id, cb.stats[id].minmax[3][0], cb.stats[id].mean[3], cb.stats[id].minmax[3][1]);
+     }
     }
+    block_idx = (block_idx + 1) & 0xF;
     t = t2;
 
     start_section("BLOCK");

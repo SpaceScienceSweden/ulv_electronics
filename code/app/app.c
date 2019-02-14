@@ -1712,6 +1712,16 @@ static void handle_input(void) {
       }
 }
 
+//wait some number of millisecond, resetting WDT during
+static void wait_ms(uint16_t x) {
+  while (x > 0) {
+    _delay_ms(1);
+    wdt_reset();
+    x--;
+  }
+}
+
+
 int main(void)
 {
   wdt_enable(WDTO_DEFAULT);
@@ -1814,15 +1824,15 @@ int main(void)
     }
   }
   OCR1A = TIMER1_TOP/2;
+  OCR1B = 0;
+  OCR1C = 0;
+  wait_ms(3000);
   OCR1B = TIMER1_TOP/2;
+  wait_ms(3000);
   OCR1C = TIMER1_TOP/2;
 
 #if FEATURE_BLOCK
-  //wait a few seconds for the motors to speed up
-  for (uint8_t t = 0; t < 100; t++) {
-    _delay_ms(30);
-    wdt_reset();
-  }
+  wait_ms(3000);
   square_demod_analog(7, 0);
 #endif
 
