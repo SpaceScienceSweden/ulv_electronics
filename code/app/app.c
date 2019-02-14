@@ -1816,7 +1816,8 @@ int main(void)
       //default samplerates and gains
       wreg(id, A_SYS_CFG, 0x23); //tightest analog margin
       wreg(id, CLK1, 0x02);
-      wreg(id, CLK2, 0x2E); //38.4 kHz
+      //wreg(id, CLK2, 0x2E); //38.4 kHz
+      wreg(id, CLK2, 0x2C); //19.2 kHz
       wreg(id, ADC1, 0x04); //gain = 16x
       wreg(id, ADC2, 0x04); //gain = 16x
       wreg(id, ADC3, 0x04); //gain = 16x
