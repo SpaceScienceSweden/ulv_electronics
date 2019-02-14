@@ -1823,13 +1823,13 @@ int main(void)
       wreg(id, ADC4, 0x00); //gain = 1x
     }
   }
-  OCR1A = TIMER1_TOP/2;
+  OCR1A = TIMER1_TOP/4;
   OCR1B = 0;
   OCR1C = 0;
   wait_ms(3000);
-  OCR1B = TIMER1_TOP/2;
+  OCR1B = TIMER1_TOP/4;
   wait_ms(3000);
-  OCR1C = TIMER1_TOP/2;
+  OCR1C = TIMER1_TOP/4;
 
 #if FEATURE_BLOCK
   wait_ms(3000);
