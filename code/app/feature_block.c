@@ -90,6 +90,7 @@ uint8_t capture_and_demod(
         int16_t mean[4],
         int16_t *tach_mean,
         uint16_t *tach_skip,
+        uint8_t *tach_ratio,
         uint16_t *discard,
         uint16_t mean_abs[3],
         uint8_t *rounding_inout,
@@ -213,13 +214,13 @@ uint8_t capture_and_demod(
 
   if (tach_min == 0) {
     //this shouldn't happen, but guard against it either way
-    entry->tach_ratio = 255;
+    *tach_ratio = 255;
   } else {
     uint32_t ratio = (uint32_t)tach_max * 100 / tach_min;
     if (ratio < 254) {
-      entry->tach_ratio = ratio;
+      *tach_ratio = ratio;
     } else {
-      entry->tach_ratio = 254;
+      *tach_ratio = 254;
     }
   }
 
@@ -350,8 +351,6 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     max_frames = 16383;
   }
 
-  uint8_t temp_conversion_in_progress = 0;
-
   //longer WDT than normal to not have to do WDR inside loops
   wdt_enable(WDTO_2S);
 
@@ -376,10 +375,11 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
   uint16_t tach_skip[3] = {default_skip,default_skip,default_skip};
   uint8_t max_max_tach_ratio = 0; //max_tach_ratio over the entire run so far
   uint8_t block_idx = 0;
+  uint8_t temp_conversion_in_progress = 0;
 
   while (!have_esc() && !got_esc) {
     memset(&cb, 0, sizeof(cb));
-    cb.version        = 1;
+    cb.version        = 2;
     cb.f_cpu          = F_CPU;
     cb.t              = gettime64();
     cb.fm_mask        = fm_mask;
@@ -391,9 +391,18 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     cb.vgnd_zero      = 512;
     cb.vgnd_minus     = cb.vgnd_zero - 100;
     cb.vgnd_plus      = cb.vgnd_zero + 100;
+    memcpy(cb.stat_marker, "STAT", 4);
+    memcpy(cb.temp_marker, "TEMP", 4);
+    memcpy(cb.volt_marker, "VOLT", 4);
+    memcpy(cb.entr_marker, "ENTR", 4);
 
     //zero vgnds if they weren't already
     set_vgnds(cb.vgnd_zero);
+
+    //start temperature conversion
+    if (!temp_conversion_in_progress) {
+      ds18b20convert( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, NULL );
+    }
 
     for (uint8_t id = 0; id < 3; id++) {
       if (fm_mask & (1<<id)) {
@@ -419,7 +428,6 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     //moves around in the interval [0,12) in order to unbias Q1..4 binning
     uint8_t rounding[3] = {0};
     uint32_t tot_tachs[3] = {0};
-    uint8_t max_tach_ratio = 0;
 
     //start_section("INFO");
     //printf_P(PSTR("Capturing block @ t = %f\r\n"), cb.t / (float)F_CPU);
@@ -458,6 +466,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       cb.entries[cb.nentries].t = gettime24();
 
       uint16_t discard; //don't think we need this
+      uint8_t tach_ratio;
       if (capture_and_demod(
         id,
         max_frames,
@@ -468,6 +477,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
         cb.stats[id].mean,
         &tach_mean[id],
         &tach_skip[id],
+        &tach_ratio,
         &discard,
         cb.stats[id].mean_abs,
         &rounding[id],
@@ -486,8 +496,8 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       cb.entries[cb.nentries].N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
       tot_tachs[id] += cb.entries[cb.nentries].num_tachs;
 
-      if (cb.entries[cb.nentries].tach_ratio > max_tach_ratio) {
-        max_tach_ratio = cb.entries[cb.nentries].tach_ratio;
+      if (tach_ratio > cb.stats[id].max_tach_ratio) {
+        cb.stats[id].max_tach_ratio = tach_ratio;
       }
 
       if (have_esc()) {
@@ -496,6 +506,24 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
 
       wdt_reset();
     }
+
+    //check if temp conversion finished (it should have)
+    if (temp_conversion_in_progress &&
+        onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK )) {
+      temp_conversion_in_progress = 0;
+      cb.num_temps = romcnt;
+      read_temps(cb.temps);
+    }
+
+    //grab analog voltages
+    cb.volt_mask = 31;
+    enable_adc();
+    for (uint8_t x = 0; x < 8; x++) {
+      if (cb.volt_mask & (1<<x)) {
+        cb.volts[x] = read_adc(x);
+      }
+    }
+    disable_adc();
 
     if (stat1[0] || stat1[1] || stat1[2]) {
       start_section("ERROR");
@@ -529,15 +557,17 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     uint64_t t2 = gettime64();
     uint16_t sz = sizeof(cb) - (255 - cb.nentries)*sizeof(capture_entry_s);
 
-    if (max_tach_ratio > max_max_tach_ratio) {
-      max_max_tach_ratio = max_tach_ratio;
+    for (uint8_t id = 0; id < 3; id++) {
+      if (cb.stats[id].max_tach_ratio > max_max_tach_ratio) {
+        max_max_tach_ratio = cb.stats[id].max_tach_ratio;
+      }
     }
 
     //don't need to print every time
     if (block_idx == 0) {
      start_section("INFO");
      printf_P(PSTR("dt = %.2f, sz = %u\r\n"), (t2-t)/(float)F_CPU, sz);
-     printf_P(PSTR("max_tach_ratio = %hhu, max_max_tach_ratio = %hhu\r\n"), max_tach_ratio, max_max_tach_ratio);
+     printf_P(PSTR("max_max_tach_ratio = %hhu\r\n"), max_max_tach_ratio);
      for (uint8_t id = 0; id < 3; id++) {
       if (tot_tachs[id]) {
         uint32_t N = cb.stats[id].NQ[0] +
@@ -557,58 +587,6 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     sendbuf(&cb, sz);
     READY();
   }
-  
-  /*for (uint8_t vv = 1;; vv = !vv) {
-    //start temperature conversion if the 1-Wire bus is free
-    //use the same kind of flag as in main() to keep track of it,
-    //in case we get into a situation where conversions will always finish between
-    //transmitting the header and getting back here
-    if (onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK ) &&
-        !temp_conversion_in_progress) {
-      ds18b20convert( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, NULL );
-      temp_conversion_in_progress = 1;
-    }
-
-      //check for finished temperature conversion
-      if (hdr.num_temps == 0 && temp_conversion_in_progress &&
-          onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK )) {
-        //hooray!
-        hdr.num_temps = romcnt;
-        read_temps();
-        temp_conversion_in_progress = 0;
-      } else {
-        //hdr.num_temps = 0;
-      }
-
-      //read ADC0..4
-      hdr.volt_mask = 31;
-
-      //transmit header, and depending on if we should, temperatures and ADC values
-      sendbuf(&hdr, sizeof(hdr));
-      sendbuf("TEMP", 4);
-      if (hdr.num_temps) {
-        sendbuf(temps, sizeof(temps[0])*hdr.num_temps);
-      }
-      sendbuf("VOLT", 4);
-      if (hdr.volt_mask) {
-        uint16_t adcs[8];
-        uint8_t ofs = 0;
-
-        enable_adc();
-        for (uint8_t x = 0; x < 8; x++) {
-          if (hdr.volt_mask & (1<<x)) {
-            adcs[ofs++] = read_adc(x);
-          }
-        }
-        disable_adc();
-        sendbuf(adcs, sizeof(adcs[0])*ofs);
-      }
-      sendbuf("FMIQ", 4);
-        sendbuf(&fm, sizeof(fm));
-    READY();
-
-    wdt_reset();
-  }*/
 
 square_demod_analog_done:
   stop_measurement();

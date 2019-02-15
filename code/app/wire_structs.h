@@ -233,13 +233,6 @@ typedef struct {
   uint8_t num_tachs;// number of tachometer impulses
   uint16_t N;       // number of frames in tach interval
   int16_t IQ[3][2]; // IQ data (IQIQIQ)
-
-  // Ratio between longest and shortest tach period, in percent.
-  // Anything above 110% = suspicious.
-  // 0..99 shouldn't happen, but indicates faulty logic
-  // 254 = maximum value
-  // 255 = tach_min was zero somehow
-  uint8_t tach_ratio;
 } capture_entry_s;
 
 
@@ -267,10 +260,19 @@ typedef struct {
 
   // Motor OCR1A/B/C (PWM) settings
   uint16_t OCR1n;
+
+  // Maximum of ratio between longest and shortest tach period
+  // in each capture block, in percent.
+  // Anything above 110% = suspicious, probably missed tach transition
+  // or rapid acceleration.
+  // 0..99 shouldn't happen, indicates faulty logic
+  // 254 = maximum value
+  // 255 = tach_min was zero somehow
+  uint8_t max_tach_ratio;
 } fm_stat_s;
 
 typedef struct {
-  uint8_t version;  // version (1)
+  uint8_t version;  // version (2)
   uint32_t f_cpu;   // CPU clock in Hz
   uint64_t t;       // full timestamp at start of block
   uint8_t fm_mask;  // bits 0..2 = corresponding FM enabled
@@ -278,11 +280,6 @@ typedef struct {
   // Number of frames collected for each entry
   // entris[x].N <= num_frames
   uint16_t num_frames;
-
-  //TODO: temperatures and voltages
-
-  // Statistics for each FM. Zeroed for all disabled FMs.
-  fm_stat_s stats[3];
 
   // How many FM capture rounds there are for each VGND setting
   // Unbiased data starts at round 2*vgnd_rounds*popcount(fm_mask)
@@ -304,10 +301,25 @@ typedef struct {
   uint16_t vgnd_minus;  // - level
   uint16_t vgnd_plus;   // + level
 
+  // Statistics for each FM. Zeroed for all disabled FMs.
+  char stat_marker[4];  //"STAT"
+  fm_stat_s stats[3];
+
+  // Temperature values
+  char temp_marker[4];  //"TEMP"
+  uint8_t num_temps;
+  temperature_s temps[6];
+
+  // Voltage values
+  char volt_marker[4];  //"VOLT"
+  uint8_t volt_mask;    //usually 31 (ADC0..4)
+  uint16_t volts[8];
+
   // If instrument is not interrupted, the following should hold:
   //   nentries > 2*vgnd_rounds*popcount(fm_mask)^2
   //   nentries = 0 (mod popcount(fm_mask))
-  uint8_t nentries;
+  char entr_marker[4];  //"ENTR"
+  uint16_t nentries;
 
   // Entries for each FM in each round are stored in round-robin order
   // For example, if fm_mask = 7:

@@ -1113,7 +1113,7 @@ static int8_t exactly_one_adc(void) {
   }
 }
 
-static void read_temps(void) {
+static void read_temps(temperature_s *temps) {
   for (uint8_t x = 0; x < romcnt; x++) {
     temps[x].rom12[0] = roms[x*8+1];
     temps[x].rom12[1] = roms[x*8+2];
@@ -1910,7 +1910,7 @@ retry:
           if (onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK )) {
             //hooray!
             header.num_temps = romcnt;
-            read_temps();
+            read_temps(temps);
             temp_conversion_in_progress = 0;
           }
         }
