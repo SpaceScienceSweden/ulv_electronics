@@ -313,7 +313,7 @@ typedef struct {
   // Voltage values
   char volt_marker[4];  //"VOLT"
   uint8_t volt_mask;    //usually 31 (ADC0..4)
-  uint16_t volts[8];
+  uint16_t volts[8];    //raw ADC values
 
   // If instrument is not interrupted, the following should hold:
   //   nentries > 2*vgnd_rounds*popcount(fm_mask)^2

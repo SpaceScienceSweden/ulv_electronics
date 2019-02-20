@@ -1131,15 +1131,46 @@ static void disable_adc(void) {
   ADCSRA = 0;
 }
 
-static int read_adc(uint8_t x) {
+static uint16_t read_adc(uint8_t x) {
   //2.56V reference
   ADMUX = x | (3<<REFS0);
   ADCSRA |= 1<<ADSC;
   while (ADCSRA & (1<<ADSC));
 
-  int adc = ADCL;
+  uint16_t adc = ADCL;
   adc += ADCH*256;  //0..1023 (right-adjusted)
   return adc;
+}
+
+static void print_temps(temperature_s *temps) {
+  start_section("TEMPS");
+  for (uint8_t x = 0; x < romcnt; x++) {
+    for (uint8_t y = 0; y < 8; y++) {
+      printf_P(PSTR("%02x"), roms[x*8+y]);
+    }
+    int16_t temp = temps[x].temp, templo;
+
+    //poor man's binary to decimal conversion
+    if (temp >= 0) {
+      templo = temp & 15;
+    } else {
+      templo = (-temp) & 15;
+    }
+    temp /= 16;
+    printf_P(PSTR(" %i.%02i\r\n"), temp, (625*templo)/100);
+  }
+}
+
+//assumes volt_mask == 31
+static void print_volts(uint16_t *adc_codes) {
+  float volts[5];
+  adc2volts(adc_codes, volts);
+
+  start_section("VOLTS");
+  for (uint8_t x = 0; x < 5; x++) {
+    const char *strs[5] = {"+3.3V", "+24V", "VIN", "+5V", "-5V"};
+    printf_P(PSTR("%s:\t%+.2f V (%i)\r\n"), strs[x], volts[x], adc_codes[x]);
+  }
 }
 
 #if FEATURE_PROGRAMS == 1
@@ -1235,34 +1266,14 @@ static void handle_input(void) {
 #error You need to compute some new value for the ADC prescaler
 #endif
         enable_adc();
-
+        uint16_t volts[5];
         //ADC0..4
-        start_section("INFO");
-        float v33 = 0;
         for (uint8_t x = 0; x < 5; x++) {
-          int adc = read_adc(x);
-
-          //values taken from schematic
-          static const float scale[4] = {
-             (18.0+18.0)/18.0 * 2.56 / 1024,
-            (150.0+10.0)/10.0 * 2.56 / 1024,
-            (150.0+10.0)/10.0 * 2.56 / 1024,
-             (18.0+10.0)/10.0 * 2.56 / 1024,
-          };
-          float v;
-          if (x < 4) {
-            v = adc * scale[x];
-            //remember where the 3.3V bus is at
-            if (x == 0) v33 = v;
-          } else {
-            //this calculation is a bit more convoluted
-            float temp = adc * 2.56/1024;
-            v = temp * (10.0+22.0)/10.0 - /*3.3*/ v33 * 22.0/10.0;
-          }
-          const char *strs[5] = {"+3.3V", "+24V", "VIN", "+5V", "-5V"};
-          printf_P(PSTR("%s:\t%+.2f V (%i)\r\n"), strs[x], v, adc);
+          volts[x] = read_adc(x);
         }
         disable_adc();
+
+        print_volts(volts);
       } else if (c == 'V') {
         PORTB |= (1<<0);
         start_section("INFO");
@@ -1298,23 +1309,9 @@ static void handle_input(void) {
           wdt_reset();
         }
 
-        start_section("TEMPS");
-        for (uint8_t x = 0; x < romcnt; x++) {
-          for (uint8_t y = 0; y < 8; y++) {
-            printf_P(PSTR("%02x"), roms[x*8+y]);
-          }
-          int16_t temp, templo;
-          ds18b20read( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, &roms[x*8], &temp );
+        read_temps(temps);
+        print_temps(temps);
 
-          //poor man's binary to decimal conversion
-          if (temp >= 0) {
-            templo = temp & 15;
-          } else {
-            templo = (-temp) & 15;
-          }
-          temp /= 16;
-          printf_P(PSTR(" %i.%02i\r\n"), temp, (625*templo)/100);
-        }
 #if FEATURE_TIMER_TEST == 1
       } else if (c == ':') {
         //test timer1

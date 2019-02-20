@@ -402,6 +402,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     //start temperature conversion
     if (!temp_conversion_in_progress) {
       ds18b20convert( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, NULL );
+      temp_conversion_in_progress = 1;
     }
 
     for (uint8_t id = 0; id < 3; id++) {
@@ -579,6 +580,8 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       }
       printf_P(PSTR("id = %hhu, min/mean/max tach: %i/%i/%i\r\n"), id, cb.stats[id].minmax[3][0], cb.stats[id].mean[3], cb.stats[id].minmax[3][1]);
      }
+     print_temps(cb.temps);
+     print_volts(cb.volts);
     }
     block_idx = (block_idx + 1) & 0xF;
     t = t2;
