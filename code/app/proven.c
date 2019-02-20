@@ -263,3 +263,28 @@ sample_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr_in) {
   return sum / num_frames;
 }
 
+void adc2volts(const uint16_t *adc_codes, float *volts) {
+  float v33 = 0;
+  /*@ loop assigns x, v33, volts[0..4];
+   */
+  for (uint8_t x = 0; x < 5; x++) {
+    //values taken from schematic
+    static const float scale[4] = {
+       (18.0+18.0)/18.0 * 2.56 / 1024,
+      (150.0+10.0)/10.0 * 2.56 / 1024,
+      (150.0+10.0)/10.0 * 2.56 / 1024,
+       (18.0+10.0)/10.0 * 2.56 / 1024,
+    };
+    float v;
+    if (x < 4) {
+      v = adc_codes[x] * scale[x];
+      //remember where the 3.3V bus is at
+      if (x == 0) v33 = v;
+    } else {
+      //this calculation is a bit more convoluted
+      float temp = adc_codes[x] * 2.56/1024;
+      v = temp * (10.0+22.0)/10.0 - /*3.3*/ v33 * 22.0/10.0;
+    }
+    volts[x] = v;
+  }
+}

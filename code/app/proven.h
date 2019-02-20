@@ -74,5 +74,12 @@ void compute_sum_abs(
  */
 sample_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr_in);
 
+//converts ADC codes into voltages
+/*@ requires \valid_read(adc_codes + (0..4));
+    requires \valid(volts + (0..4));
+    assigns volts[0..4];
+ */
+void adc2volts(const uint16_t *adc_codes, float *volts);
+
 #endif //_PROVEN_H
 
