@@ -288,3 +288,24 @@ void adc2volts(const uint16_t *adc_codes, float *volts) {
     volts[x] = v;
   }
 }
+
+uint8_t ocr2osr(uint16_t ocr) {
+  //table entries assigned such that ocr=TIMER1_TOP/2 -> 14 (osrtab[0x0E] == 48)
+  static const uint16_t ocr2osrtab[14] = {
+    TIMER1_TOP*24L/4096, TIMER1_TOP*24L/2048, TIMER1_TOP*24L/1024, TIMER1_TOP*24L/800,
+    TIMER1_TOP*24L/768,  TIMER1_TOP*24L/512,  TIMER1_TOP*24L/400,  TIMER1_TOP*24L/384,
+    TIMER1_TOP*24L/256,  TIMER1_TOP*24L/200,  TIMER1_TOP*24L/192,  TIMER1_TOP*24L/128,
+    TIMER1_TOP*24L/96,   TIMER1_TOP*24L/64,   //TIMER1_TOP*24L/48, TIMER1_TOP*24L/32
+  };
+  /*@ // ocr is greater than all entries in ocr2osrtab[] so far:
+      loop invariant \forall integer y; 0 <= y < x ==> ocr > ocr2osrtab[y];
+      loop assigns x;
+   */
+  for (uint8_t x = 0; x < 14; x++) {
+    if (ocr <= ocr2osrtab[x]) {
+      return x;
+    }
+  }
+
+  return 14;
+}
