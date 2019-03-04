@@ -1,3 +1,5 @@
+include ../settings.mk
+
 PRG            = app
 FEATURE_MMC    = 0
 FEATURE_ASM    = 1
