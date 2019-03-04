@@ -245,7 +245,8 @@ uint8_t capture_and_demod(
 }
 
 // Uses the analog signal in channel 4 in each FM for synchronization
-void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
+// ocr_lo, ocr_hi: if non-zero, OCR1* low/high setting, alternated between capture blocks
+void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_lo, uint16_t ocr_hi) {
   fm_mask &= 7;
   uint8_t num_fms = popcount(fm_mask);
 
@@ -378,7 +379,27 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
   uint8_t temp_conversion_in_progress = 0;
 
   while (!have_esc() && !got_esc) {
+    //alternate OCR1*
+    //set ADC sample rates while we're at it
+    uint16_t ocr = (block_idx & 1) ? ocr_hi : ocr_lo;
+    if (ocr) {
+      uint8_t clk2 = 0x20 | ocr2osr(ocr);
+      if (fm_mask & 1) {
+        OCR1A = ocr;
+        wreg(0, CLK2, clk2);
+      }
+      if (fm_mask & 2) {
+        OCR1B = ocr;
+        wreg(1, CLK2, clk2);
+      }
+      if (fm_mask & 4) {
+        OCR1C = ocr;
+        wreg(2, CLK2, clk2);
+      }
+    }
+
     memset(&cb, 0, sizeof(cb));
+    memset(&cbc,0, sizeof(cbc));
     cb.version        = 2;
     cb.f_cpu          = F_CPU;
     cb.t              = gettime64();
@@ -395,6 +416,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     memcpy(cb.temp_marker, "TEMP", 4);
     memcpy(cb.volt_marker, "VOLT", 4);
     memcpy(cb.entr_marker, "ENTR", 4);
+    memcpy(cbc.samp_marker,"SAMP", 4);
 
     //zero vgnds if they weren't already
     set_vgnds(cb.vgnd_zero);
@@ -418,12 +440,14 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       }
     }
 
-    uint8_t nentries_vgnd = 2 * cb.vgnd_rounds * num_fms * num_fms;
-    uint8_t nentries_max = (255 / num_fms) * num_fms;
+    uint16_t nentries_vgnd = 2 * cb.vgnd_rounds * num_fms * num_fms;
+    static const uint16_t entries_capacity = sizeof(cb.entries)/sizeof(cb.entries[0]);
+    uint16_t nentries_max = (entries_capacity / num_fms) * num_fms;
     if (nentries_max > 2*nentries_vgnd) {
       nentries_max = 2*nentries_vgnd;
     }
-    uint8_t nentries_last = nentries_max - num_fms; //where the last round starts
+    uint16_t bias_start = nentries_max - nentries_vgnd;
+    uint16_t nentries_last = nentries_max - num_fms; //where the last round starts
     uint8_t stat1[3] = {0};
     //what to add before clamping division by 12 in accumulate_square_interval()
     //moves around in the interval [0,12) in order to unbias Q1..4 binning
@@ -440,8 +464,9 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
       //ramp VGND up/down. this avoids saturating the op-amps and ADCs
       uint16_t target_vgnds[3] = {cb.vgnd_zero, cb.vgnd_zero, cb.vgnd_zero};
 
-      if (cb.nentries < nentries_vgnd) {
-        uint8_t temp = cb.nentries / (cb.vgnd_rounds * num_fms);
+      //biasing/calibration is done at the end of the block
+      if (cb.nentries >= bias_start) {
+        uint16_t temp = (cb.nentries - bias_start) / (cb.vgnd_rounds * num_fms);
         uint8_t vgnd_pm = temp % 2;
         uint8_t vgnd_id = fm_map[temp / 2];
         target_vgnds[vgnd_id] = vgnd_pm ? cb.vgnd_plus : cb.vgnd_minus;
@@ -482,8 +507,8 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
         &discard,
         cb.stats[id].mean_abs,
         &rounding[id],
-        cb.nentries >= num_fms,
-        cb.nentries >= nentries_vgnd,
+        cb.nentries <  num_fms,
+        cb.nentries >= bias_start,
         cb.nentries >= nentries_last
       )) {
         //pretend we got an ESC
@@ -556,7 +581,8 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     }
 
     uint64_t t2 = gettime64();
-    uint16_t sz = sizeof(cb) - (255 - cb.nentries)*sizeof(capture_entry_s);
+    uint16_t cbsz = sizeof(cb) - (entries_capacity - cb.nentries)*sizeof(capture_entry_s);
+    uint16_t sz = cbsz + sizeof(cbc);
 
     for (uint8_t id = 0; id < 3; id++) {
       if (cb.stats[id].max_tach_ratio > max_max_tach_ratio) {
@@ -565,7 +591,8 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     }
 
     //don't need to print every time
-    if (block_idx == 0) {
+    //print both 0 and 1 tho, since we're alternating speeds
+    if (block_idx < 2) {
      start_section("INFO");
      printf_P(PSTR("dt = %.2f, sz = %u\r\n"), (t2-t)/(float)F_CPU, sz);
      printf_P(PSTR("max_max_tach_ratio = %hhu\r\n"), max_max_tach_ratio);
@@ -587,7 +614,8 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max) {
     t = t2;
 
     start_section("BLOCK");
-    sendbuf(&cb, sz);
+    sendbuf(&cb, cbsz);
+    sendbuf(&cbc, sizeof(cbc));
     READY();
   }
 

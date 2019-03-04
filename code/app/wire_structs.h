@@ -272,7 +272,7 @@ typedef struct {
 } fm_stat_s;
 
 typedef struct {
-  uint8_t version;  // version (2)
+  uint8_t version;  // version (3)
   uint32_t f_cpu;   // CPU clock in Hz
   uint64_t t;       // full timestamp at start of block
   uint8_t fm_mask;  // bits 0..2 = corresponding FM enabled
@@ -282,7 +282,7 @@ typedef struct {
   uint16_t num_frames;
 
   // How many FM capture rounds there are for each VGND setting
-  // Unbiased data starts at round 2*vgnd_rounds*popcount(fm_mask)
+  // Biased data starts near the end, on round nentries - 2*vgnd_rounds*popcount(fm_mask)
   uint8_t vgnd_rounds;
 
   // MAX504 settings (0..1023)
@@ -327,4 +327,14 @@ typedef struct {
   // Truncated to nentries*sizeof(capture_entry_s) bytes
   capture_entry_s entries[255];
 } capture_block_s;
+
+// this is transmitted after capture_block_s, just after where entries[] is truncated
+typedef struct {
+  // For outputing one block of raw sample data
+  // If present, sample data is captured after the last bias round,
+  // with biasing disabled.
+  char samp_marker[4];  //"SAMP"
+  uint16_t samplesz;    //size of sample_data in bytes. zero if not present
+  //unbiased sample_data follows
+} capture_block_continued_s;
 

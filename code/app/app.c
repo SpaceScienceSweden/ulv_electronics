@@ -95,6 +95,7 @@ uint8_t romcnt = 0;
 //put sample data and capture block in .xmem
 int16_t __attribute__((section(".xmem"))) sample_data[4*MAX_FRAMES];
 capture_block_s __attribute__((section(".xmem"))) cb;
+capture_block_continued_s __attribute__((section(".xmem"))) cbc;
 
 #endif
 
@@ -1660,9 +1661,9 @@ static void handle_input(void) {
         int n = sscanf(line, "%hhu %u", &fm_mask, &max_frames_max);
 #if FEATURE_BLOCK
         if (n == 1) {
-          square_demod_analog(fm_mask, 0);
+          square_demod_analog(fm_mask, 0, 0, 0);
         } else if (n == 2) {
-          square_demod_analog(fm_mask, max_frames_max);
+          square_demod_analog(fm_mask, max_frames_max, 0, 0);
         } else {
           start_section("ERROR");
           printf_P(PSTR("'H' requires one or two arguments\r\n"));
@@ -1801,7 +1802,7 @@ int main(void)
 
 #if FEATURE_BLOCK
   wait_ms(3000);
-  square_demod_analog(7, 0);
+  square_demod_analog(7, 0, TIMER1_TOP/4, 5L*TIMER1_TOP/16);
 #endif
 
   for (;;) {
