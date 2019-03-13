@@ -1692,6 +1692,10 @@ static void wait_ms(uint16_t x) {
 
 int main(void)
 {
+  //put pins in known state
+  //same include is used in bootloader
+#include "../set_pins_to_known_state.h"
+
   wdt_enable(WDTO_DEFAULT);
 
   setup_uart1();

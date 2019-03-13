@@ -36,6 +36,8 @@
 
 # user defined values
 
+include ../settings.mk
+
 # MCU name
 ## MCU = atmega8
 ## MCU = atmega16
