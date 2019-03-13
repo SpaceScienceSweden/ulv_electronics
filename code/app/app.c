@@ -527,8 +527,8 @@ static void set_vgnd(uint8_t x, uint16_t codein) {
     PORTE |= (1<<2) | (1<<3) | (1<<4);
 
   //enable ADG601s
-  DDRE |= (1<<5);
-  PORTE |= (1<<5);
+  //DDRE |= (1<<5);
+  //PORTE |= (1<<5);
   //DDRF |= (1<<5) | (1<<6);
   //PORTF |= (1<<5) | (1<<6);
 
@@ -542,12 +542,12 @@ static void set_vgnds(uint16_t codein) {
   }
 }
 
-static void disable_vgnd(void) {
+/*static void disable_vgnd(void) {
   DDRE |= (1<<5);
   PORTE &= ~(1<<5);
   //DDRF |= (1<<5) | (1<<6);
   //PORTF &= ~((1<<5) | (1<<6));
-}
+}*/
 
 static inline uint8_t have_esc(void) {
   //check for escape

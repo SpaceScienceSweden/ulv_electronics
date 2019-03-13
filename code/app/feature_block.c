@@ -116,9 +116,7 @@ uint8_t capture_and_demod(
   rreg(id, STAT_S);
 
   set_74153(id);
-  DDRD |= 1;    //debug
   capture(id, stat1_out, max_frames);
-  PORTD &= ~1;  //debug
 
   if (biased_round) {
     compute_min_max(max_frames, (sample_t*)sample_data, minmax, first_round);
