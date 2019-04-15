@@ -313,3 +313,146 @@ uint8_t ocr2osr(uint16_t ocr) {
 
   return 14;
 }
+
+/*@ requires p0 < MAX_FRAMES;
+    requires p12 < MAX_FRAMES;
+    requires 12 <= p12 - p0 <= MAX_FRAMES;
+    requires \valid_read((sample_t*)sample_data + (4*p0..4*p12-1));
+    requires \valid((accu_t*)Q1 + (0..3));
+    requires \valid((accu_t*)Q2 + (0..3));
+    requires \valid((accu_t*)Q3 + (0..3));
+    requires \valid((accu_t*)Q4 + (0..3));
+    requires \valid((uint16_t*)NQ + (0..3));
+
+    //requires INT32_MIN + (p12 - p0) / 12 < Q1[0] < INT32_MAX - (p12 - p0) / 12;
+    //requires INT32_MIN + (p12 - p0) / 12 < Q1[1] < INT32_MAX - (p12 - p0) / 12;
+    //requires INT32_MIN + (p12 - p0) / 12 < Q1[2] < INT32_MAX - (p12 - p0) / 12;
+
+    requires 0 <= rounding < 12;
+    assigns Q1[0..3], Q2[0..3], Q3[0..3], Q4[0..3], NQ[0..3];
+ */
+void accumulate_square_interval(
+  uint16_t p0,
+  uint16_t p12,
+  accu_t Q1[3],
+  accu_t Q2[3],
+  accu_t Q3[3],
+  accu_t Q4[3],
+  uint16_t NQ[4],
+  uint8_t rounding
+) {
+  //we chop the interval [p0,p12) into twelve pieces
+  //each piece gets accumulated into Q1..4 in round-robin order
+  //Q1 += p0, Q2 += p1, ..., Q1 += p4, ..., Q4 += p11
+  __uint24 psize = p12 - p0;
+  __uint24 paccu = psize + rounding;
+  //@ assert paccu: 12 <= paccu <= MAX_FRAMES + 11;
+  //@ assert valid_uint24(psize) && valid_uint24(paccu);
+  sample_t *data_ptr0 = p0*4 + (sample_t*)sample_data;
+  sample_t *data_ptr = data_ptr0;
+  //@assert data_ptr_valid: \valid_read(data_ptr + (0..4*psize));
+
+  //i = offset in interval [p0,p12)
+  uint16_t i = 0;
+
+  /*@ loop invariant paccu == rounding + (1 + j*4)*psize;
+      loop invariant 0 <= i <= psize;
+      loop invariant i == (paccu - psize) / 12;
+      loop invariant outer_data_ptr: data_ptr == data_ptr0 + i*4;
+      loop invariant valid_uint24(paccu);
+      loop assigns i, j, paccu, NQ[0], Q1[0..2], data_ptr;
+   */
+  for (uint8_t j = 0; j < 3; j++) {
+    uint16_t p1 = paccu / 12;
+    //@ assert p1eq: p1 == (rounding + (1 + j*4)*psize) / 12;
+    //@ assert p1: 1 <= p1 < psize;
+    //@ assert ip1: i < p1;
+
+    {
+      NQ[0] += p1-i;
+      accu_t q0 = Q1[0], q1 = Q1[1], q2 = Q1[2];
+
+      /*@ loop invariant i < p1 || i == p1;
+          loop invariant inner_data_ptr: data_ptr == data_ptr0 + i*4;
+          loop invariant \valid_read(data_ptr + (0..2)) || i == p1;
+          loop assigns q0, q1, q2, i, data_ptr;
+          loop variant p1 - i;
+       */
+      for (; i < p1; i++, data_ptr += 4) {
+        //q0 += data_ptr[0];
+        //q1 += data_ptr[1];
+        //q2 += data_ptr[2];
+      }
+
+      Q1[0] = q0; Q1[1] = q1; Q1[2] = q2;
+    }
+
+    //@ assert ip1eq: i == p1;
+    //@ assert data_ptr1: data_ptr == data_ptr0 + i*4;
+    paccu += psize;
+    //@ assert paccu == rounding + (2 + j*4)*psize;
+    uint16_t p2 = paccu / 12;
+    //@ assert p2: p1 < p2 < psize;
+    i = p2;
+    data_ptr += 4*(p2-p1);
+    //@ assert data_ptr2: data_ptr == data_ptr0 + i*4;
+    paccu += psize;
+    //@ assert paccu == rounding + (3 + j*4)*psize;
+    uint16_t p3 = paccu / 12;
+    //@ assert p3: p2 < p3 < psize;
+    i = p3;
+    data_ptr += 4*(p3-p2);
+    //@ assert data_ptr3: data_ptr == data_ptr0 + i*4;
+    paccu += psize;
+    //@ assert paccu == rounding + (4 + j*4)*psize;
+    uint16_t p4 = paccu / 12;
+    //@ assert p4: p3 < p4 <= psize;
+    i = p4;
+    data_ptr += 4*(p4-p3);
+    //@ assert data_ptr4: data_ptr == data_ptr0 + i*4;
+    paccu += psize;
+
+#if 0
+    paccu += psize;
+    {
+      uint16_t p = (paccu*1398101LL) >> 24 /*paccu / 12, 98 ms -> 96 ms*/;
+      NQ[1] += p-i;
+      accu_t q0 = Q2[0], q1 = Q2[1], q2 = Q2[2];
+      /*@ loop assigns q0,q1,q2,i,data_ptr; */
+      for (; i < p; i++, data_ptr += 4) {
+        q0 += data_ptr[0];
+        q1 += data_ptr[1];
+        q2 += data_ptr[2];
+      }
+      Q2[0] = q0; Q2[1] = q1; Q2[2] = q2;
+    }
+    paccu += psize;
+    {
+      uint16_t p = (paccu*1398101LL) >> 24 /*paccu / 12, 98 ms -> 96 ms*/;
+      NQ[2] += p-i;
+      accu_t q0 = Q3[0], q1 = Q3[1], q2 = Q3[2];
+      /*@ loop assigns q0,q1,q2,i,data_ptr; */
+      for (; i < p; i++, data_ptr += 4) {
+        q0 += data_ptr[0];
+        q1 += data_ptr[1];
+        q2 += data_ptr[2];
+      }
+      Q3[0] = q0; Q3[1] = q1; Q3[2] = q2;
+    }
+    paccu += psize;
+    {
+      uint16_t p = (paccu*1398101LL) >> 24 /*paccu / 12, 98 ms -> 96 ms*/;
+      NQ[3] += p-i;
+      accu_t q0 = Q4[0], q1 = Q4[1], q2 = Q4[2];
+      /*@ loop assigns q0,q1,q2,i,data_ptr; */
+      for (; i < p; i++, data_ptr += 4) {
+        q0 += data_ptr[0];
+        q1 += data_ptr[1];
+        q2 += data_ptr[2];
+      }
+      Q4[0] = q0; Q4[1] = q1; Q4[2] = q2;
+    }
+    paccu += psize;
+#endif
+  }
+}
