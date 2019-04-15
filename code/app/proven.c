@@ -247,6 +247,7 @@ void compute_sum_abs(
 sample_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr_in) {
   accu_t sum = 0;
   const sample_t *data_ptr = data_ptr_in;
+  uint16_t k;
   /*@ loop invariant data_ptr == data_ptr_in + k*4;
       loop invariant INT16_MIN*k <= sum <= INT16_MAX*k;
 
@@ -256,11 +257,14 @@ sample_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr_in) {
 
       loop assigns sum, k, data_ptr;
    */
-  for (uint16_t k = 0; k < num_frames; k++, data_ptr += 4) {
+  for (k = 0; k < num_frames; k++, data_ptr += 4) {
     sum += data_ptr[3];
   }
-  //@ assert mean_ok: INT16_MIN <= sum / num_frames <= INT16_MAX;
-  return sum / num_frames;
+
+  //@ assert k: k == num_frames;
+  accu_t ret = sum / num_frames;
+  //@ assert mean_ok: INT16_MIN <= ret <= INT16_MAX;
+  return ret;
 }
 
 void adc2volts(const uint16_t *adc_codes, float *volts) {
