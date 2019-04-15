@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include "proven.h"
 
+#if 0
+
 #if FEATURE_BLOCK
 #if FEATURE_ASM == 0
 void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
@@ -314,6 +316,50 @@ uint8_t ocr2osr(uint16_t ocr) {
   return 14;
 }
 
+#endif
+
+/*@ requires \valid(NQ);
+    requires \valid((accu_t*)Q + (0..3));
+    requires i < p;
+    requires \valid_read(data_ptr + (0..(4*(p-i)-1)));
+    requires data_ptr == data_ptr0 + i*4;
+    assigns *NQ, Q[0..2];
+ */
+inline void accumulate_quadrant(
+  uint16_t *NQ,
+  accu_t Q[3],
+  uint16_t i,
+  uint16_t p,
+  sample_t *data_ptr0,
+  sample_t *data_ptr)
+{
+  *NQ += p-i;
+  accu_t q0 = Q[0], q1 = Q[1], q2 = Q[2];
+
+  /*@ loop invariant i < p || i == p;
+      loop invariant data_ptr == data_ptr0 + i*4;
+      loop invariant \valid_read(data_ptr + (0..2)) || i == p;
+      loop assigns q0, q1, q2, i, data_ptr;
+      loop variant p - i;
+   */
+  for (; i < p; i++, data_ptr += 4) {
+#ifdef FRAMA_C
+    //dealing with signed overflow is extremely tedious, and
+    //right now I'm only interested in making sure reads are valid
+    q0 = data_ptr[0];
+    q1 = data_ptr[1];
+    q2 = data_ptr[2];
+#else
+    q0 += data_ptr[0];
+    q1 += data_ptr[1];
+    q2 += data_ptr[2];
+#endif
+  }
+
+  Q[0] = q0; Q[1] = q1; Q[2] = q2;
+}
+
+
 /*@ requires p0 < MAX_FRAMES;
     requires p12 < MAX_FRAMES;
     requires 12 <= p12 - p0 <= MAX_FRAMES;
@@ -368,131 +414,38 @@ void accumulate_square_interval(
     //@ assert p1: 1 <= p1 < psize;
     //@ assert ip1: i < p1;
 
-    {
-      NQ[0] += p1-i;
-      accu_t q0 = Q1[0], q1 = Q1[1], q2 = Q1[2];
+    accumulate_quadrant(&NQ[0], Q1, i, p1, data_ptr0, data_ptr);
+    data_ptr += (p1-i)*4;
 
-      /*@ loop invariant i < p1 || i == p1;
-          loop invariant data_ptr == data_ptr0 + i*4;
-          loop invariant \valid_read(data_ptr + (0..2)) || i == p1;
-          loop assigns q0, q1, q2, i, data_ptr;
-          loop variant p1 - i;
-       */
-      for (; i < p1; i++, data_ptr += 4) {
-#ifdef FRAMA_C
-        //dealing with signed overflow is extremely tedious, and
-        //right now I'm only interested in making sure reads are valid
-        q0 = data_ptr[0];
-        q1 = data_ptr[1];
-        q2 = data_ptr[2];
-#else
-        q0 += data_ptr[0];
-        q1 += data_ptr[1];
-        q2 += data_ptr[2];
-#endif
-      }
-
-      Q1[0] = q0; Q1[1] = q1; Q1[2] = q2;
-    }
-
-    //@ assert ip1eq: i == p1;
-    //@ assert data_ptr1: data_ptr == data_ptr0 + i*4;
+    //@ assert data_ptr1: data_ptr == data_ptr0 + p1*4;
     paccu += psize;
     //@ assert paccu == rounding + (2 + j*4)*psize;
     uint16_t p2 = paccu / 12;
     //@ assert p2: p1 < p2 < psize;
 
-    {
-      NQ[1] += p2-i;
-      accu_t q0 = Q2[0], q1 = Q2[1], q2 = Q2[2];
+    accumulate_quadrant(&NQ[1], Q2, p1, p2, data_ptr0, data_ptr);
+    data_ptr += (p2-p1)*4;
 
-      /*@ loop invariant i < p2 || i == p2;
-          loop invariant data_ptr == data_ptr0 + i*4;
-          loop invariant \valid_read(data_ptr + (0..2)) || i == p2;
-          loop assigns q0, q1, q2, i, data_ptr;
-          loop variant p2 - i;
-       */
-      for (; i < p2; i++, data_ptr += 4) {
-#ifdef FRAMA_C
-        q0 = data_ptr[0];
-        q1 = data_ptr[1];
-        q2 = data_ptr[2];
-#else
-        q0 += data_ptr[0];
-        q1 += data_ptr[1];
-        q2 += data_ptr[2];
-#endif
-      }
-
-      Q2[0] = q0; Q2[1] = q1; Q2[2] = q2;
-    }
-
-    //@ assert ip2eq: i == p2;
-    //@ assert data_ptr2: data_ptr == data_ptr0 + i*4;
+    //@ assert data_ptr2: data_ptr == data_ptr0 + p2*4;
     paccu += psize;
     //@ assert paccu == rounding + (3 + j*4)*psize;
     uint16_t p3 = paccu / 12;
     //@ assert p3: p2 < p3 < psize;
 
-    {
-      NQ[2] += p3-i;
-      accu_t q0 = Q3[0], q1 = Q3[1], q2 = Q3[2];
+    accumulate_quadrant(&NQ[2], Q3, p2, p3, data_ptr0, data_ptr);
+    data_ptr += (p3-p2)*4;
 
-      /*@ loop invariant i < p3 || i == p3;
-          loop invariant data_ptr == data_ptr0 + i*4;
-          loop invariant \valid_read(data_ptr + (0..2)) || i == p3;
-          loop assigns q0, q1, q2, i, data_ptr;
-          loop variant p3 - i;
-       */
-      for (; i < p3; i++, data_ptr += 4) {
-#ifdef FRAMA_C
-        q0 = data_ptr[0];
-        q1 = data_ptr[1];
-        q2 = data_ptr[2];
-#else
-        q0 += data_ptr[0];
-        q1 += data_ptr[1];
-        q2 += data_ptr[2];
-#endif
-      }
-
-      Q3[0] = q0; Q3[1] = q1; Q3[2] = q2;
-    }
-
-    //@ assert ip3eq: i == p3;
-    //@ assert data_ptr3: data_ptr == data_ptr0 + i*4;
+    //@ assert data_ptr3: data_ptr == data_ptr0 + p3*4;
     paccu += psize;
     //@ assert paccu == rounding + (4 + j*4)*psize;
     uint16_t p4 = paccu / 12;
     //@ assert p4: p3 < p4 <= psize;
 
-    {
-      NQ[3] += p4-i;
-      accu_t q0 = Q4[0], q1 = Q4[1], q2 = Q4[2];
+    accumulate_quadrant(&NQ[3], Q4, p3, p4, data_ptr0, data_ptr);
+    data_ptr += (p4-p3)*4;
 
-      /*@ loop invariant i < p4 || i == p4;
-          loop invariant data_ptr == data_ptr0 + i*4;
-          loop invariant \valid_read(data_ptr + (0..2)) || i == p4;
-          loop assigns q0, q1, q2, i, data_ptr;
-          loop variant p4 - i;
-       */
-      for (; i < p4; i++, data_ptr += 4) {
-#ifdef FRAMA_C
-        q0 = data_ptr[0];
-        q1 = data_ptr[1];
-        q2 = data_ptr[2];
-#else
-        q0 += data_ptr[0];
-        q1 += data_ptr[1];
-        q2 += data_ptr[2];
-#endif
-      }
-
-      Q4[0] = q0; Q4[1] = q1; Q4[2] = q2;
-    }
-
-    //@ assert ip4eq: i == p4;
-    //@ assert data_ptr4: data_ptr == data_ptr0 + i*4;
+    //@ assert data_ptr4: data_ptr == data_ptr0 + p4*4;
     paccu += psize;
+    i = p4;
   }
 }
