@@ -360,7 +360,7 @@ void accumulate_square_interval(
       loop invariant i == (paccu - psize) / 12;
       loop invariant outer_data_ptr: data_ptr == data_ptr0 + i*4;
       loop invariant valid_uint24(paccu);
-      loop assigns i, j, paccu, NQ[0], Q1[0..2], data_ptr;
+      loop assigns i, j, paccu, NQ[0..3], Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], data_ptr;
    */
   for (uint8_t j = 0; j < 3; j++) {
     uint16_t p1 = paccu / 12;
@@ -373,15 +373,23 @@ void accumulate_square_interval(
       accu_t q0 = Q1[0], q1 = Q1[1], q2 = Q1[2];
 
       /*@ loop invariant i < p1 || i == p1;
-          loop invariant inner_data_ptr: data_ptr == data_ptr0 + i*4;
+          loop invariant data_ptr == data_ptr0 + i*4;
           loop invariant \valid_read(data_ptr + (0..2)) || i == p1;
           loop assigns q0, q1, q2, i, data_ptr;
           loop variant p1 - i;
        */
       for (; i < p1; i++, data_ptr += 4) {
-        //q0 += data_ptr[0];
-        //q1 += data_ptr[1];
-        //q2 += data_ptr[2];
+#ifdef FRAMA_C
+        //dealing with signed overflow is extremely tedious, and
+        //right now I'm only interested in making sure reads are valid
+        q0 = data_ptr[0];
+        q1 = data_ptr[1];
+        q2 = data_ptr[2];
+#else
+        q0 += data_ptr[0];
+        q1 += data_ptr[1];
+        q2 += data_ptr[2];
+#endif
       }
 
       Q1[0] = q0; Q1[1] = q1; Q1[2] = q2;
@@ -393,66 +401,98 @@ void accumulate_square_interval(
     //@ assert paccu == rounding + (2 + j*4)*psize;
     uint16_t p2 = paccu / 12;
     //@ assert p2: p1 < p2 < psize;
-    i = p2;
-    data_ptr += 4*(p2-p1);
+
+    {
+      NQ[1] += p2-i;
+      accu_t q0 = Q2[0], q1 = Q2[1], q2 = Q2[2];
+
+      /*@ loop invariant i < p2 || i == p2;
+          loop invariant data_ptr == data_ptr0 + i*4;
+          loop invariant \valid_read(data_ptr + (0..2)) || i == p2;
+          loop assigns q0, q1, q2, i, data_ptr;
+          loop variant p2 - i;
+       */
+      for (; i < p2; i++, data_ptr += 4) {
+#ifdef FRAMA_C
+        q0 = data_ptr[0];
+        q1 = data_ptr[1];
+        q2 = data_ptr[2];
+#else
+        q0 += data_ptr[0];
+        q1 += data_ptr[1];
+        q2 += data_ptr[2];
+#endif
+      }
+
+      Q2[0] = q0; Q2[1] = q1; Q2[2] = q2;
+    }
+
+    //@ assert ip2eq: i == p2;
     //@ assert data_ptr2: data_ptr == data_ptr0 + i*4;
     paccu += psize;
     //@ assert paccu == rounding + (3 + j*4)*psize;
     uint16_t p3 = paccu / 12;
     //@ assert p3: p2 < p3 < psize;
-    i = p3;
-    data_ptr += 4*(p3-p2);
+
+    {
+      NQ[2] += p3-i;
+      accu_t q0 = Q3[0], q1 = Q3[1], q2 = Q3[2];
+
+      /*@ loop invariant i < p3 || i == p3;
+          loop invariant data_ptr == data_ptr0 + i*4;
+          loop invariant \valid_read(data_ptr + (0..2)) || i == p3;
+          loop assigns q0, q1, q2, i, data_ptr;
+          loop variant p3 - i;
+       */
+      for (; i < p3; i++, data_ptr += 4) {
+#ifdef FRAMA_C
+        q0 = data_ptr[0];
+        q1 = data_ptr[1];
+        q2 = data_ptr[2];
+#else
+        q0 += data_ptr[0];
+        q1 += data_ptr[1];
+        q2 += data_ptr[2];
+#endif
+      }
+
+      Q3[0] = q0; Q3[1] = q1; Q3[2] = q2;
+    }
+
+    //@ assert ip3eq: i == p3;
     //@ assert data_ptr3: data_ptr == data_ptr0 + i*4;
     paccu += psize;
     //@ assert paccu == rounding + (4 + j*4)*psize;
     uint16_t p4 = paccu / 12;
     //@ assert p4: p3 < p4 <= psize;
-    i = p4;
-    data_ptr += 4*(p4-p3);
-    //@ assert data_ptr4: data_ptr == data_ptr0 + i*4;
-    paccu += psize;
 
-#if 0
-    paccu += psize;
     {
-      uint16_t p = (paccu*1398101LL) >> 24 /*paccu / 12, 98 ms -> 96 ms*/;
-      NQ[1] += p-i;
-      accu_t q0 = Q2[0], q1 = Q2[1], q2 = Q2[2];
-      /*@ loop assigns q0,q1,q2,i,data_ptr; */
-      for (; i < p; i++, data_ptr += 4) {
-        q0 += data_ptr[0];
-        q1 += data_ptr[1];
-        q2 += data_ptr[2];
-      }
-      Q2[0] = q0; Q2[1] = q1; Q2[2] = q2;
-    }
-    paccu += psize;
-    {
-      uint16_t p = (paccu*1398101LL) >> 24 /*paccu / 12, 98 ms -> 96 ms*/;
-      NQ[2] += p-i;
-      accu_t q0 = Q3[0], q1 = Q3[1], q2 = Q3[2];
-      /*@ loop assigns q0,q1,q2,i,data_ptr; */
-      for (; i < p; i++, data_ptr += 4) {
-        q0 += data_ptr[0];
-        q1 += data_ptr[1];
-        q2 += data_ptr[2];
-      }
-      Q3[0] = q0; Q3[1] = q1; Q3[2] = q2;
-    }
-    paccu += psize;
-    {
-      uint16_t p = (paccu*1398101LL) >> 24 /*paccu / 12, 98 ms -> 96 ms*/;
-      NQ[3] += p-i;
+      NQ[3] += p4-i;
       accu_t q0 = Q4[0], q1 = Q4[1], q2 = Q4[2];
-      /*@ loop assigns q0,q1,q2,i,data_ptr; */
-      for (; i < p; i++, data_ptr += 4) {
+
+      /*@ loop invariant i < p4 || i == p4;
+          loop invariant data_ptr == data_ptr0 + i*4;
+          loop invariant \valid_read(data_ptr + (0..2)) || i == p4;
+          loop assigns q0, q1, q2, i, data_ptr;
+          loop variant p4 - i;
+       */
+      for (; i < p4; i++, data_ptr += 4) {
+#ifdef FRAMA_C
+        q0 = data_ptr[0];
+        q1 = data_ptr[1];
+        q2 = data_ptr[2];
+#else
         q0 += data_ptr[0];
         q1 += data_ptr[1];
         q2 += data_ptr[2];
+#endif
       }
+
       Q4[0] = q0; Q4[1] = q1; Q4[2] = q2;
     }
+
+    //@ assert ip4eq: i == p4;
+    //@ assert data_ptr4: data_ptr == data_ptr0 + i*4;
     paccu += psize;
-#endif
   }
 }
