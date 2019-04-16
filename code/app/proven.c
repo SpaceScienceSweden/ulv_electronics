@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include "proven.h"
 
-#if 0
-
 #if FEATURE_BLOCK
 #if FEATURE_ASM == 0
 void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
@@ -316,52 +314,32 @@ uint8_t ocr2osr(uint16_t ocr) {
   return 14;
 }
 
-#endif
-
-/*@ requires \valid(NQ);
-    requires \valid((accu_t*)Q + (0..3));
-    requires i < p;
-    requires \valid_read(data_ptr + (0..(4*(p-i)-1)));
-    requires data_ptr == data_ptr0 + i*4;
-    assigns *NQ, Q[0..2];
+/*@ requires \valid((accu_t*)Q + (0..3));
+    requires 0 < n <= MAX_FRAMES;
+    requires \valid_read(data_ptr + (0..(4*n-1)));
+    assigns Q[0..2];
  */
 inline void accumulate_quadrant(
-  uint16_t *NQ,
   accu_t Q[3],
-  uint16_t i,
-  uint16_t p,
-  sample_t *data_ptr0,
-  sample_t *data_ptr)
+  uint16_t n,
+  const sample_t *data_ptr)
 {
-  *NQ += p-i;
   accu_t q0 = Q[0], q1 = Q[1], q2 = Q[2];
 
-  /*@ loop invariant i < p || i == p;
-      loop invariant data_ptr == data_ptr0 + i*4;
-      loop invariant \valid_read(data_ptr + (0..2)) || i == p;
+  /*@ loop invariant data_ptr == \at(data_ptr,LoopEntry) + i*4;
+      loop invariant \valid_read(data_ptr + (0..2)) || i == n;
       loop assigns q0, q1, q2, i, data_ptr;
-      loop variant p - i;
    */
-  for (; i < p; i++, data_ptr += 4) {
-#ifdef FRAMA_C
-    //dealing with signed overflow is extremely tedious, and
-    //right now I'm only interested in making sure reads are valid
-    q0 = data_ptr[0];
-    q1 = data_ptr[1];
-    q2 = data_ptr[2];
-#else
+  for (uint16_t i = 0; i < n; i++, data_ptr += 4) {
     q0 += data_ptr[0];
     q1 += data_ptr[1];
     q2 += data_ptr[2];
-#endif
   }
 
   Q[0] = q0; Q[1] = q1; Q[2] = q2;
 }
 
-
-/*@ requires p0 < MAX_FRAMES;
-    requires p12 < MAX_FRAMES;
+/*@ requires 0 <= p0 < p12 <= MAX_FRAMES;
     requires 12 <= p12 - p0 <= MAX_FRAMES;
     requires \valid_read((sample_t*)sample_data + (4*p0..4*p12-1));
     requires \valid((accu_t*)Q1 + (0..3));
@@ -369,11 +347,6 @@ inline void accumulate_quadrant(
     requires \valid((accu_t*)Q3 + (0..3));
     requires \valid((accu_t*)Q4 + (0..3));
     requires \valid((uint16_t*)NQ + (0..3));
-
-    //requires INT32_MIN + (p12 - p0) / 12 < Q1[0] < INT32_MAX - (p12 - p0) / 12;
-    //requires INT32_MIN + (p12 - p0) / 12 < Q1[1] < INT32_MAX - (p12 - p0) / 12;
-    //requires INT32_MIN + (p12 - p0) / 12 < Q1[2] < INT32_MAX - (p12 - p0) / 12;
-
     requires 0 <= rounding < 12;
     assigns Q1[0..3], Q2[0..3], Q3[0..3], Q4[0..3], NQ[0..3];
  */
@@ -390,62 +363,52 @@ void accumulate_square_interval(
   //we chop the interval [p0,p12) into twelve pieces
   //each piece gets accumulated into Q1..4 in round-robin order
   //Q1 += p0, Q2 += p1, ..., Q1 += p4, ..., Q4 += p11
-  __uint24 psize = p12 - p0;
+  const __uint24 psize = p12 - p0;
   __uint24 paccu = psize + rounding;
-  //@ assert paccu: 12 <= paccu <= MAX_FRAMES + 11;
   //@ assert valid_uint24(psize) && valid_uint24(paccu);
-  sample_t *data_ptr0 = p0*4 + (sample_t*)sample_data;
-  sample_t *data_ptr = data_ptr0;
-  //@assert data_ptr_valid: \valid_read(data_ptr + (0..4*psize));
 
-  //i = offset in interval [p0,p12)
-  uint16_t i = 0;
+  const sample_t * const data_ptr = p0*4 + (sample_t*)sample_data;
+  //@assert data_ptr_valid: \valid_read(data_ptr + (0..4*psize-1));
 
-  /*@ loop invariant paccu == rounding + (1 + j*4)*psize;
-      loop invariant 0 <= i <= psize;
-      loop invariant i == (paccu - psize) / 12;
-      loop invariant outer_data_ptr: data_ptr == data_ptr0 + i*4;
+  //i0 = offset in interval [p0,p12)
+  uint16_t i0 = 0;
+
+  /*@ loop invariant 0 <= j <= 3;
+      loop invariant paccu == rounding + (1 + j*4)*psize;
       loop invariant valid_uint24(paccu);
-      loop assigns i, j, paccu, NQ[0..3], Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], data_ptr;
+      loop invariant i0 == (paccu - psize) / 12;
+      loop assigns i0, j, paccu, NQ[0..3], Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2];
    */
   for (uint8_t j = 0; j < 3; j++) {
-    uint16_t p1 = paccu / 12;
-    //@ assert p1eq: p1 == (rounding + (1 + j*4)*psize) / 12;
-    //@ assert p1: 1 <= p1 < psize;
-    //@ assert ip1: i < p1;
+    uint16_t i1 = paccu / 12;
+    //@ assert i1eq: i1 == (rounding + (1 + j*4)*psize) / 12;
+    //@ assert i1: 1 <= i1 < psize;
 
-    accumulate_quadrant(&NQ[0], Q1, i, p1, data_ptr0, data_ptr);
-    data_ptr += (p1-i)*4;
+    NQ[0] += i1 - i0;
+    accumulate_quadrant(Q1, i1 - i0, data_ptr + i0*4);
 
-    //@ assert data_ptr1: data_ptr == data_ptr0 + p1*4;
     paccu += psize;
-    //@ assert paccu == rounding + (2 + j*4)*psize;
-    uint16_t p2 = paccu / 12;
-    //@ assert p2: p1 < p2 < psize;
+    uint16_t i2 = paccu / 12;
+    //@ assert i2: i1 < i2 < psize;
 
-    accumulate_quadrant(&NQ[1], Q2, p1, p2, data_ptr0, data_ptr);
-    data_ptr += (p2-p1)*4;
+    NQ[1] += i2 - i1;
+    accumulate_quadrant(Q2, i2 - i1, data_ptr + i1*4);
 
-    //@ assert data_ptr2: data_ptr == data_ptr0 + p2*4;
     paccu += psize;
-    //@ assert paccu == rounding + (3 + j*4)*psize;
-    uint16_t p3 = paccu / 12;
-    //@ assert p3: p2 < p3 < psize;
+    uint16_t i3 = paccu / 12;
+    //@ assert i3: i2 < i3 < psize;
 
-    accumulate_quadrant(&NQ[2], Q3, p2, p3, data_ptr0, data_ptr);
-    data_ptr += (p3-p2)*4;
+    NQ[2] += i3 - i2;
+    accumulate_quadrant(Q3, i3 - i2, data_ptr + i2*4);
 
-    //@ assert data_ptr3: data_ptr == data_ptr0 + p3*4;
     paccu += psize;
-    //@ assert paccu == rounding + (4 + j*4)*psize;
-    uint16_t p4 = paccu / 12;
-    //@ assert p4: p3 < p4 <= psize;
+    uint16_t i4 = paccu / 12;
+    //@ assert p4: i3 < i4 <= psize;
 
-    accumulate_quadrant(&NQ[3], Q4, p3, p4, data_ptr0, data_ptr);
-    data_ptr += (p4-p3)*4;
+    NQ[3] += i4 - i3;
+    accumulate_quadrant(Q4, i4 - i3, data_ptr + i3*4);
 
-    //@ assert data_ptr4: data_ptr == data_ptr0 + p4*4;
     paccu += psize;
-    i = p4;
+    i0 = i4;
   }
 }
