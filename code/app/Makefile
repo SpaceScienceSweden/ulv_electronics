@@ -5,7 +5,8 @@ FEATURE_MMC    = 0
 FEATURE_ASM    = 1
 OBJ            = \
 	app.o\
-	proven.o\
+	verified.o\
+	verified_except_overflow.o\
 	avr-ds18b20/src/ds18b20.o\
 	avr-ds18b20/src/onewire.o\
 	avr-ds18b20/src/romsearch.o\
@@ -28,7 +29,7 @@ DEPS           = \
 	fatfs-avr/ff.h\
 	fatfs-avr/mmc_avr.h\
 	config.h\
-	proven.h\
+	verified.h\
 	frama-c-stub.h\
 	feature_block.c\
 	feature_bsend.c\
@@ -64,12 +65,12 @@ all: $(PRG).elf lst text eeprom printstackusage
 	avr-size $(PRG).elf
 
 PROVERS=z3,cvc4,alt-ergo,qed
-prove: proven.c proven_except_overflow.c
-	frama-c -wp -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) proven.c
-	# Some functions are too tedious to prove they don't have signed overflow
-	# Such functions go in proven_except_overflow.c for now
-	frama-c -wp -wp-rte -warn-unsigned-overflow -no-warn-signed-overflow -wp-prover $(PROVERS) proven_except_overflow.c
-	touch prove
+verify: verified.c verified_except_overflow.c
+	frama-c -wp -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
+	# Some functions are too tedious to verify they don't have signed overflow
+	# Such functions go in verified_except_overflow.c for now
+	frama-c -wp -wp-rte -warn-unsigned-overflow -no-warn-signed-overflow -wp-prover $(PROVERS) verified_except_overflow.c
+	touch verify
 
 .PHONY: printstackusage
 printstackusage:
@@ -90,7 +91,7 @@ $(PRG).elf: $(OBJ) init3.o
 clean:
 	rm -rf $(OBJ) *.o avr-ds18b20/src/*.su fatfs-avr/*.su *.su $(PRG).elf *.eps *.png $(PRG).pdf *.bak
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
-	rm -f prove
+	rm -f verify
 
 loadusb: $(PRG).hex
 	avrdude -c $(AVRDUDE_PROGRAMMER) -e -p $(MCU)

@@ -1,9 +1,9 @@
-/* Everything that is commited in here has been proven correct by Frama-C,
+/* Everything that is commited in here has been verified by Frama-C,
    minus signed overflow which is explicitly not checked for in this file.
  */
 
 #include <stdint.h>
-#include "proven.h"
+#include "verified.h"
 
 /*@ requires \valid((accu_t*)Q + (0..3));
     requires 0 < n <= MAX_FRAMES;

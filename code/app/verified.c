@@ -1,7 +1,7 @@
-/* Everything that is commited in here has been proven correct by Frama-C */
+/* Everything that is commited in here has been verified by Frama-C */
 
 #include <stdint.h>
-#include "proven.h"
+#include "verified.h"
 
 #if FEATURE_BLOCK
 #if FEATURE_ASM == 0
