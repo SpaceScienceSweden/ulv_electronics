@@ -118,5 +118,27 @@ void adc2volts(const uint16_t *adc_codes, float *volts);
  */
 uint8_t ocr2osr(uint16_t ocr);
 
+/*@ requires 0 <= p0 < p12 <= MAX_FRAMES;
+    requires 12 <= p12 - p0 <= MAX_FRAMES;
+    requires \valid_read((sample_t*)sample_data + (4*p0..4*p12-1));
+    requires \valid((accu_t*)Q1 + (0..3));
+    requires \valid((accu_t*)Q2 + (0..3));
+    requires \valid((accu_t*)Q3 + (0..3));
+    requires \valid((accu_t*)Q4 + (0..3));
+    requires \valid((uint16_t*)NQ + (0..3));
+    requires 0 <= rounding < 12;
+    assigns Q1[0..3], Q2[0..3], Q3[0..3], Q4[0..3], NQ[0..3];
+ */
+void accumulate_square_interval_2(
+  uint16_t p0,
+  uint16_t p12,
+  accu_t Q1[3],
+  accu_t Q2[3],
+  accu_t Q3[3],
+  accu_t Q4[3],
+  uint16_t NQ[4],
+  uint8_t rounding
+);
+
 #endif //_PROVEN_H
 

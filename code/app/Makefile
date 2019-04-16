@@ -63,10 +63,12 @@ all: $(PRG).elf lst text eeprom printstackusage
 	avr-nm --size-sort --radix=d $(PRG).elf | sed -e 's/^0*//' | tail -n15
 	avr-size $(PRG).elf
 
-prove: proven.c
-	# Proving accumulate_square_interval() with -warn-signed-overflow
-	# ended up too tedious. Disable it for now
-	frama-c -wp -wp-rte -warn-unsigned-overflow -no-warn-signed-overflow -wp-prover z3,cvc4,alt-ergo,qed $<
+PROVERS=z3,cvc4,alt-ergo,qed
+prove: proven.c proven_except_overflow.c
+	frama-c -wp -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) proven.c
+	# Some functions are too tedious to prove they don't have signed overflow
+	# Such functions go in proven_except_overflow.c for now
+	frama-c -wp -wp-rte -warn-unsigned-overflow -no-warn-signed-overflow -wp-prover $(PROVERS) proven_except_overflow.c
 	touch prove
 
 .PHONY: printstackusage
