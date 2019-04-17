@@ -1,53 +1,3 @@
-//not being static inline is faster? 136 ms vs 98 ms
-/*static inline*/ void accumulate_square_interval(
-  uint16_t p0,
-  uint16_t p12,
-  accu_t Q1[3],
-  accu_t Q2[3],
-  accu_t Q3[3],
-  accu_t Q4[3],
-  uint16_t NQ[4],
-  uint8_t rounding
-) {
-  //we chop the interval [p0,p12) into twelve pieces
-  //each piece gets accumulated into Q1..4 in round-robin order
-  //Q1 += p0, Q2 += p1, ..., Q1 += p4, ..., Q4 += p11
-  __uint24 psize = p12 - p0;
-  __uint24 paccu = psize + rounding;
-  sample_t *data_ptr = p0*4 + (sample_t*)sample_data;
-
-  //i = offset in interval [p0,p12)
-  uint16_t i = 0;
-#define DO_QUADRANT(Q, k)\
-  do {\
-    uint16_t p = (paccu*1398101LL) >> 24 /*paccu / 12, 98 ms -> 96 ms*/;\
-    NQ[k] += p-i;\
-    accu_t q0 = Q[0], q1 = Q[1], q2 = Q[2];\
-    for (; i < p; i++, data_ptr += 4) {\
-      q0 += data_ptr[0];\
-      q1 += data_ptr[1];\
-      q2 += data_ptr[2];\
-    }\
-    Q[0] = q0; Q[1] = q1; Q[2] = q2;\
-  } while (0)
-
-  //ROM: 51326 -> 57456, but 106 ms -> 98 ms
-  for (uint8_t j = 0; j < 3; j++) {
-  DO_QUADRANT(Q1, 0); paccu += psize;
-  DO_QUADRANT(Q2, 1); paccu += psize;
-  DO_QUADRANT(Q3, 2); paccu += psize;
-  DO_QUADRANT(Q4, 3); paccu += psize;
-  }/*
-  DO_QUADRANT(Q1, 0); paccu += psize;
-  DO_QUADRANT(Q2, 1); paccu += psize;
-  DO_QUADRANT(Q3, 2); paccu += psize;
-  DO_QUADRANT(Q4, 3); paccu += psize;
-  DO_QUADRANT(Q1, 0); paccu += psize;
-  DO_QUADRANT(Q2, 1); paccu += psize;
-  DO_QUADRANT(Q3, 2); paccu += psize;
-  DO_QUADRANT(Q4, 3); //no need to paccu here*/
-}
-
 //only works with 16-bit samples
 static inline void binary_iq(
   accu_t *Q1,
@@ -153,6 +103,15 @@ uint8_t capture_and_demod(
   uint8_t num_tachs = 0;
   uint8_t rounding = *rounding_inout;
   uint16_t skip = *tach_skip;
+
+  //most recent performance test (2018-04-17), 19.2 kHz 1700 RPM:
+  //
+  // 213 ms in capture() (further up)
+  //  77 ms spent in this loop
+  //        of which 36 ms in accumulate_square_interval_2()
+  //  11 ms other
+  //---------------------------------
+  // 301 ms total
   for (uint16_t k = 0;
         k < max_frames && num_tachs < 255;) {
     int16_t s = data_ptr[3] / (1 << (WORDSZ-16));
@@ -176,8 +135,7 @@ uint8_t capture_and_demod(
           compute_sum_abs(p0, p12, sum_abs);
         }
 
-        //~85% of time between captures is spent here
-        accumulate_square_interval(
+        accumulate_square_interval_2(
           p0, p12,
           Q1, Q2, Q3, Q4, NQ,
           rounding
