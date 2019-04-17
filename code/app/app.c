@@ -1675,7 +1675,7 @@ static void handle_input(void) {
       } else if (c == '?') {
         //print help
         start_section("INFO");
-        printf_P(PSTR("Read manual.pdf í¼ í¹œr\n"));
+        printf_P(PSTR("Read manual.pdf\r\n"));
         return;
       }
 }
@@ -1729,7 +1729,7 @@ int main(void)
   set_vgnd(2, vgnds[2]);
 
   start_section("INFO");
-  printf_P(PSTR("Hello, Earth! í¼‡í½œr\n"));
+  printf_P(PSTR("Hello, Earth!r\n"));
 
 #if FEATURE_MMC == 1
   //must be after sei() because timers
