@@ -67,9 +67,6 @@ all: $(PRG).elf lst text eeprom printstackusage
 PROVERS=z3,cvc4,alt-ergo,qed
 verify: verified.c verified_except_overflow.c
 	frama-c -wp -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
-	# Some functions are too tedious to verify they don't have signed overflow
-	# Such functions go in verified_except_overflow.c for now
-	frama-c -wp -wp-rte -warn-unsigned-overflow -no-warn-signed-overflow -wp-prover $(PROVERS) verified_except_overflow.c
 	touch verify
 
 .PHONY: printstackusage

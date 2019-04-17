@@ -121,13 +121,37 @@ uint8_t ocr2osr(uint16_t ocr);
 /*@ requires 0 <= p0 < p12 <= MAX_FRAMES;
     requires 12 <= p12 - p0 <= MAX_FRAMES;
     requires \valid_read((sample_t*)sample_data + (4*p0..4*p12-1));
-    requires \valid((accu_t*)Q1 + (0..3));
-    requires \valid((accu_t*)Q2 + (0..3));
-    requires \valid((accu_t*)Q3 + (0..3));
-    requires \valid((accu_t*)Q4 + (0..3));
+    requires \valid((accu_t*)Q1 + (0..2));
+    requires \valid((accu_t*)Q2 + (0..2));
+    requires \valid((accu_t*)Q3 + (0..2));
+    requires \valid((accu_t*)Q4 + (0..2));
     requires \valid((uint16_t*)NQ + (0..3));
     requires 0 <= rounding < 12;
-    assigns Q1[0..3], Q2[0..3], Q3[0..3], Q4[0..3], NQ[0..3];
+
+    requires \separated(
+      (sample_t*)sample_data + (4*p0..4*p12-1),
+      (accu_t*)Q1 + (0..2),
+      (accu_t*)Q2 + (0..2),
+      (accu_t*)Q3 + (0..2),
+      (accu_t*)Q4 + (0..2),
+      (uint16_t*)NQ + (0..3)
+    );
+
+    requires \let NHI = 3*((p12 - p0) / 12 + 1); \forall integer x;
+      0 <= x <= 2 ==>
+        INT32_MIN - NHI*INT16_MIN <= Q1[x] <= INT32_MAX - NHI*INT16_MAX &&
+        INT32_MIN - NHI*INT16_MIN <= Q2[x] <= INT32_MAX - NHI*INT16_MAX &&
+        INT32_MIN - NHI*INT16_MIN <= Q3[x] <= INT32_MAX - NHI*INT16_MAX &&
+        INT32_MIN - NHI*INT16_MIN <= Q4[x] <= INT32_MAX - NHI*INT16_MAX;
+
+    ensures \let NHI = 3*((p12 - p0) / 12 + 1); \forall integer x;
+      0 <= x <= 2 ==>
+        \old(Q1[x]) + NHI*INT16_MIN <= Q1[x] <= \old(Q1[x]) + NHI*INT16_MAX &&
+        \old(Q2[x]) + NHI*INT16_MIN <= Q2[x] <= \old(Q2[x]) + NHI*INT16_MAX &&
+        \old(Q3[x]) + NHI*INT16_MIN <= Q3[x] <= \old(Q3[x]) + NHI*INT16_MAX &&
+        \old(Q4[x]) + NHI*INT16_MIN <= Q4[x] <= \old(Q4[x]) + NHI*INT16_MAX;
+
+    assigns Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], NQ[0..3];
  */
 void accumulate_square_interval_2(
   uint16_t p0,
