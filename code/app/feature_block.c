@@ -1,32 +1,3 @@
-//only works with 16-bit samples
-static inline void binary_iq(
-  accu_t *Q1,
-  accu_t *Q2,
-  accu_t *Q3,
-  accu_t *Q4,
-  uint16_t N, //N > 0
-  int16_t IQ[3][2],
-  int16_t mean[4],
-  uint8_t compute_mean
-) {
-  for (uint8_t j = 0; j < 3; j++) {
-    //avr-gcc probably won't know that Q1..Q4 don't alias,
-    //so load q1..4 to avoid accessesing memory more than necessary
-    accu_t q1 = Q1[j];
-    accu_t q2 = Q2[j];
-    accu_t q3 = Q3[j];
-    accu_t q4 = Q4[j];
-
-    // I = q1-q2-q3+q4
-    // Q = q1+q2-q3-q4
-    IQ[j][0]= (q1 - q2 - q3 + q4) / N;
-    IQ[j][1]= (q1 + q2 - q3 - q4) / N;
-    if (compute_mean) {
-      mean[j] = (q1 + q2 + q3 + q4) / N;
-    }
-  }
-}
-
 //captures and demodulates data coming out of a single FM
 //capturing one at a time is better phase-jitter-wise
 //returns non-zero on error

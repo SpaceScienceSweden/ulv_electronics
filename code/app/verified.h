@@ -140,5 +140,47 @@ void accumulate_square_interval_2(
   uint8_t rounding
 );
 
+//only works with 16-bit samples
+/*@ requires \valid_read((accu_t*)Q1 + (0..2));
+    requires \valid_read((accu_t*)Q2 + (0..2));
+    requires \valid_read((accu_t*)Q3 + (0..2));
+    requires \valid_read((accu_t*)Q4 + (0..2));
+    requires \valid((int16_t*)IQ + (0..5));
+    requires \valid((int16_t*)mean + (0..2));
+
+    requires \separated(
+      (accu_t*)Q1 + (0..2),
+      (accu_t*)Q2 + (0..2),
+      (accu_t*)Q3 + (0..2),
+      (accu_t*)Q4 + (0..2),
+      (int16_t*)IQ + (0..5),
+      (int16_t*)mean + (0..2)
+    );
+
+    requires 0 < N <= MAX_FRAMES;
+
+    requires \forall integer x; 0 <= x <= 2 ==>
+      -N*INT16_MAX/4 <= Q1[x] <= N*INT16_MAX/4 &&
+      -N*INT16_MAX/4 <= Q2[x] <= N*INT16_MAX/4 &&
+      -N*INT16_MAX/4 <= Q3[x] <= N*INT16_MAX/4 &&
+      -N*INT16_MAX/4 <= Q4[x] <= N*INT16_MAX/4;
+
+    assigns ((int16_t*)IQ)[0..5], mean[0..2];
+
+    ensures \forall integer x;
+      0 <= x <= 2 && compute_mean == 0 ==>
+        mean[x] == \old(mean[x]);
+ */
+void binary_iq(
+  const accu_t *Q1,
+  const accu_t *Q2,
+  const accu_t *Q3,
+  const accu_t *Q4,
+  uint16_t N,
+  int16_t IQ[3][2],
+  int16_t mean[4],
+  uint8_t compute_mean
+);
+
 #endif //_PROVEN_H
 

@@ -313,3 +313,36 @@ uint8_t ocr2osr(uint16_t ocr) {
 
   return 14;
 }
+
+void binary_iq(
+  const accu_t *Q1,
+  const accu_t *Q2,
+  const accu_t *Q3,
+  const accu_t *Q4,
+  uint16_t N,
+  int16_t IQ[3][2],
+  int16_t mean[4],
+  uint8_t compute_mean
+) {
+  /*@ loop invariant \forall integer x;
+        0 <= x <= 2 && compute_mean == 0 ==>
+          mean[x] == \at(mean[x], LoopEntry);
+      loop assigns j, ((int16_t*)IQ)[0..5], mean[0..2];
+   */
+  for (uint8_t j = 0; j < 3; j++) {
+    //avr-gcc probably won't know that Q1..Q4 don't alias,
+    //so load q1..4 to avoid accessesing memory more than necessary
+    accu_t q1 = Q1[j];
+    accu_t q2 = Q2[j];
+    accu_t q3 = Q3[j];
+    accu_t q4 = Q4[j];
+
+    // I = q1-q2-q3+q4
+    // Q = q1+q2-q3-q4
+    IQ[j][0]  = (q1 - q2 - q3 + q4) / N;
+    IQ[j][1]  = (q1 + q2 - q3 - q4) / N;
+    if (compute_mean) {
+      mean[j] = (q1 + q2 + q3 + q4) / N;
+    }
+  }
+}
