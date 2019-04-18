@@ -64,7 +64,7 @@ void compute_min_max(
     uint8_t compute_tach_minmax
 );
 
-/*@ requires 0 <= p0 < p12;
+/*@ requires 0 <= p0 < p12 <= MAX_FRAMES;
     requires \valid_read(sample_data + (4*p0..4*p12-1));
     requires \valid(&sum_abs[0] + (0..3));
 
@@ -125,7 +125,10 @@ uint8_t ocr2osr(uint16_t ocr);
     requires \valid((accu_t*)Q2 + (0..2));
     requires \valid((accu_t*)Q3 + (0..2));
     requires \valid((accu_t*)Q4 + (0..2));
-    requires \valid((uint16_t*)NQ + (0..3));
+    requires \valid(nsum1);
+    requires \valid(nsum2);
+    requires \valid(nsum3);
+    requires \valid(nsum4);
     requires 0 <= rounding < 12;
 
     requires \separated(
@@ -134,7 +137,10 @@ uint8_t ocr2osr(uint16_t ocr);
       (accu_t*)Q2 + (0..2),
       (accu_t*)Q3 + (0..2),
       (accu_t*)Q4 + (0..2),
-      (uint16_t*)NQ + (0..3)
+      nsum1,
+      nsum2,
+      nsum3,
+      nsum4
     );
 
     requires \let NHI = 3*((p12 - p0) / 12 + 1); \forall integer x;
@@ -146,12 +152,19 @@ uint8_t ocr2osr(uint16_t ocr);
 
     ensures \let NHI = 3*((p12 - p0) / 12 + 1); \forall integer x;
       0 <= x <= 2 ==>
-        \old(Q1[x]) + NHI*INT16_MIN <= Q1[x] <= \old(Q1[x]) + NHI*INT16_MAX &&
-        \old(Q2[x]) + NHI*INT16_MIN <= Q2[x] <= \old(Q2[x]) + NHI*INT16_MAX &&
-        \old(Q3[x]) + NHI*INT16_MIN <= Q3[x] <= \old(Q3[x]) + NHI*INT16_MAX &&
-        \old(Q4[x]) + NHI*INT16_MIN <= Q4[x] <= \old(Q4[x]) + NHI*INT16_MAX;
+        \old(Q1[x]) + (*nsum1)*INT16_MIN <= Q1[x] <= \old(Q1[x]) + (*nsum1)*INT16_MAX &&
+        \old(Q2[x]) + (*nsum2)*INT16_MIN <= Q2[x] <= \old(Q2[x]) + (*nsum2)*INT16_MAX &&
+        \old(Q3[x]) + (*nsum3)*INT16_MIN <= Q3[x] <= \old(Q3[x]) + (*nsum3)*INT16_MAX &&
+        \old(Q4[x]) + (*nsum4)*INT16_MIN <= Q4[x] <= \old(Q4[x]) + (*nsum4)*INT16_MAX;
 
-    assigns Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], NQ[0..3];
+    ensures \let NLO = 3*((p12 - p0) / 12);
+            \let NHI = 3*((p12 - p0) / 12 + 1);
+        NLO <= *nsum1 <= NHI &&
+        NLO <= *nsum2 <= NHI &&
+        NLO <= *nsum3 <= NHI &&
+        NLO <= *nsum4 <= NHI;
+
+    assigns Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], *nsum1, *nsum2, *nsum3, *nsum4;
  */
 void accumulate_square_interval_2(
   uint16_t p0,
@@ -160,7 +173,10 @@ void accumulate_square_interval_2(
   accu_t Q2[3],
   accu_t Q3[3],
   accu_t Q4[3],
-  uint16_t NQ[4],
+  uint16_t *nsum1,
+  uint16_t *nsum2,
+  uint16_t *nsum3,
+  uint16_t *nsum4,
   uint8_t rounding
 );
 

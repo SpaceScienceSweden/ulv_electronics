@@ -456,7 +456,10 @@ void accumulate_square_interval_2(
   accu_t Q2[3],
   accu_t Q3[3],
   accu_t Q4[3],
-  uint16_t NQ[4],
+  uint16_t *nsum1,
+  uint16_t *nsum2,
+  uint16_t *nsum3,
+  uint16_t *nsum4,
   uint8_t rounding
 ) {
   //we chop the interval [p0,p12) into twelve pieces
@@ -483,18 +486,18 @@ void accumulate_square_interval_2(
   uint16_t i11= (paccu +10*psize) / 12;
   uint16_t i12= (paccu +11*psize) / 12;
 
-  //@ ghost uint16_t n0  = i1  - i0;
-  //@ ghost uint16_t n1  = i2  - i1;
-  //@ ghost uint16_t n2  = i3  - i2;
-  //@ ghost uint16_t n3  = i4  - i3;
-  //@ ghost uint16_t n4  = i5  - i4;
-  //@ ghost uint16_t n5  = i6  - i5;
-  //@ ghost uint16_t n6  = i7  - i6;
-  //@ ghost uint16_t n7  = i8  - i7;
-  //@ ghost uint16_t n8  = i9  - i8;
-  //@ ghost uint16_t n9  = i10 - i9;
-  //@ ghost uint16_t n10 = i11 - i10;
-  //@ ghost uint16_t n11 = i12 - i11;
+  uint16_t n0  = i1  - i0;
+  uint16_t n1  = i2  - i1;
+  uint16_t n2  = i3  - i2;
+  uint16_t n3  = i4  - i3;
+  uint16_t n4  = i5  - i4;
+  uint16_t n5  = i6  - i5;
+  uint16_t n6  = i7  - i6;
+  uint16_t n7  = i8  - i7;
+  uint16_t n8  = i9  - i8;
+  uint16_t n9  = i10 - i9;
+  uint16_t n10 = i11 - i10;
+  uint16_t n11 = i12 - i11;
 
   //@ ghost uint16_t nlo = psize / 12;
   //@ ghost uint16_t nhi = psize / 12 + 1;
@@ -515,27 +518,32 @@ before:
   accumulate_quadrants(i0,i1,i2, i3, i4, data_ptr,Q1,Q2,Q3,Q4);
   /*@ assert round1: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
       0 <= x <= 2 ==>
-        \at(Q1[x],before) + nhi*INT16_MIN <= Q1[x] <= \at(Q1[x],before) + nhi*INT16_MAX &&
-        \at(Q2[x],before) + nhi*INT16_MIN <= Q2[x] <= \at(Q2[x],before) + nhi*INT16_MAX &&
-        \at(Q3[x],before) + nhi*INT16_MIN <= Q3[x] <= \at(Q3[x],before) + nhi*INT16_MAX &&
-        \at(Q4[x],before) + nhi*INT16_MIN <= Q4[x] <= \at(Q4[x],before) + nhi*INT16_MAX;
+        \at(Q1[x],before) + n0*INT16_MIN <= Q1[x] <= \at(Q1[x],before) + n0*INT16_MAX &&
+        \at(Q2[x],before) + n1*INT16_MIN <= Q2[x] <= \at(Q2[x],before) + n1*INT16_MAX &&
+        \at(Q3[x],before) + n2*INT16_MIN <= Q3[x] <= \at(Q3[x],before) + n2*INT16_MAX &&
+        \at(Q4[x],before) + n3*INT16_MIN <= Q4[x] <= \at(Q4[x],before) + n3*INT16_MAX;
   */
 before2:
   accumulate_quadrants(i4,i5,i6, i7, i8, data_ptr,Q1,Q2,Q3,Q4);
   /*@ assert round2: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
       0 <= x <= 2 ==>
-        \at(Q1[x],before2) + nhi*INT16_MIN <= Q1[x] <= \at(Q1[x],before2) + nhi*INT16_MAX &&
-        \at(Q2[x],before2) + nhi*INT16_MIN <= Q2[x] <= \at(Q2[x],before2) + nhi*INT16_MAX &&
-        \at(Q3[x],before2) + nhi*INT16_MIN <= Q3[x] <= \at(Q3[x],before2) + nhi*INT16_MAX &&
-        \at(Q4[x],before2) + nhi*INT16_MIN <= Q4[x] <= \at(Q4[x],before2) + nhi*INT16_MAX;
+        \at(Q1[x],before2) + n4*INT16_MIN <= Q1[x] <= \at(Q1[x],before2) + n4*INT16_MAX &&
+        \at(Q2[x],before2) + n5*INT16_MIN <= Q2[x] <= \at(Q2[x],before2) + n5*INT16_MAX &&
+        \at(Q3[x],before2) + n6*INT16_MIN <= Q3[x] <= \at(Q3[x],before2) + n6*INT16_MAX &&
+        \at(Q4[x],before2) + n7*INT16_MIN <= Q4[x] <= \at(Q4[x],before2) + n7*INT16_MAX;
   */
 before3:
   accumulate_quadrants(i8,i9,i10,i11,i12,data_ptr,Q1,Q2,Q3,Q4);
   /*@ assert round3: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
       0 <= x <= 2 ==>
-        \at(Q1[x],before3) + nhi*INT16_MIN <= Q1[x] <= \at(Q1[x],before3) + nhi*INT16_MAX &&
-        \at(Q2[x],before3) + nhi*INT16_MIN <= Q2[x] <= \at(Q2[x],before3) + nhi*INT16_MAX &&
-        \at(Q3[x],before3) + nhi*INT16_MIN <= Q3[x] <= \at(Q3[x],before3) + nhi*INT16_MAX &&
-        \at(Q4[x],before3) + nhi*INT16_MIN <= Q4[x] <= \at(Q4[x],before3) + nhi*INT16_MAX;
+        \at(Q1[x],before3) + n8*INT16_MIN <= Q1[x] <= \at(Q1[x],before3) + n8*INT16_MAX &&
+        \at(Q2[x],before3) + n9*INT16_MIN <= Q2[x] <= \at(Q2[x],before3) + n9*INT16_MAX &&
+        \at(Q3[x],before3) + n10*INT16_MIN <= Q3[x] <= \at(Q3[x],before3) + n10*INT16_MAX &&
+        \at(Q4[x],before3) + n11*INT16_MIN <= Q4[x] <= \at(Q4[x],before3) + n11*INT16_MAX;
   */
+
+  *nsum1 = n0 + n4 + n8;
+  *nsum2 = n1 + n5 + n9;
+  *nsum3 = n2 + n6 + n10;
+  *nsum4 = n3 + n7 + n11;
 }
