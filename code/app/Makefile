@@ -6,7 +6,6 @@ FEATURE_ASM    = 1
 OBJ            = \
 	app.o\
 	verified.o\
-	verified_except_overflow.o\
 	avr-ds18b20/src/ds18b20.o\
 	avr-ds18b20/src/onewire.o\
 	avr-ds18b20/src/romsearch.o\
@@ -65,7 +64,7 @@ all: $(PRG).elf lst text eeprom printstackusage
 	avr-size $(PRG).elf
 
 PROVERS=z3,cvc4,alt-ergo,qed
-verify: verified.c verified_except_overflow.c
+verify: verified.c
 	frama-c -wp -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
 	touch verify
 
