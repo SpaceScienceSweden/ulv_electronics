@@ -273,5 +273,30 @@ void demod_tachs(uint8_t num_tachs,
                  accu_t Q4out[3],
                  uint16_t NQout[4]);
 
+/*@ requires 12 <= max_frames <= MAX_FRAMES;
+    requires \valid(tach_skip);
+    requires \valid(tach_ratio);
+    requires \valid(edge_pos + (0..255));
+    requires \valid_read((sample_t*)sample_data + (0..(4*max_frames-1)));
+    requires \separated(tach_skip,
+                        tach_ratio,
+                        edge_pos + (0..255),
+                        (sample_t*)sample_data + (0..(4*max_frames-1)));
+    requires 3 <= *tach_skip <= max_frames / 4;
+
+    ensures 3 <= *tach_skip <= max_frames / 4;
+    ensures 0 <= \result <= 255;
+    ensures \forall integer x;
+      0 <= x < \result ==>
+        0 <= edge_pos[x] < edge_pos[x+1] < max_frames;
+
+    assigns *tach_ratio, *tach_skip, edge_pos[0..255];
+ */
+uint8_t find_tachs(uint16_t max_frames,
+                   uint16_t *tach_skip,
+                   uint8_t *tach_ratio,
+                   int16_t tach_mean,
+                   uint16_t *edge_pos);
+
 #endif //_PROVEN_H
 

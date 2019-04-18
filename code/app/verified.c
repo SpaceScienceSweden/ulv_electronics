@@ -647,3 +647,153 @@ void demod_tachs(uint8_t num_tachs,
   Q4out[0] = Q4[0]; Q4out[1] = Q4[1]; Q4out[2] = Q4[2];
   NQout[0] = NQ[0]; NQout[1] = NQ[1]; NQout[2] = NQ[2]; NQout[3] = NQ[3];
 }
+
+uint8_t find_tachs(uint16_t max_frames,
+                   uint16_t *tach_skip,
+                   uint8_t *tach_ratio,
+                   int16_t tach_mean,
+                   uint16_t *edge_pos)
+{
+  int16_t mid = tach_mean;
+  int16_t on  = mid;          //100% of mean
+  int16_t off = mid - mid/4;  //75% of mean
+
+  sample_t *data_ptr0 = (sample_t*)sample_data;
+  sample_t *data_ptr = data_ptr0;
+  uint8_t state = data_ptr[3]/(1 << (WORDSZ-16)) > mid;
+
+  uint8_t num_tachs = 0;
+  uint16_t skip = *tach_skip;
+  uint16_t k = 0;
+
+  //look for the first rising edge
+  /*@ loop invariant 0 <= k < max_frames || k == max_frames;
+      loop invariant data_ptr == data_ptr0 + 4*k;
+      loop invariant \valid_read(&data_ptr[3]) || k == max_frames;
+
+      loop assigns state, data_ptr, k;
+      loop variant max_frames - k;
+   */
+  for (; k < max_frames;) {
+    int16_t s = data_ptr[3] / (1 << (WORDSZ-16));
+    //look for rising edge
+    if (state == 0 && s > on) {
+      state = 1;
+      break;
+    } else if (state == 1 && s < off) {
+      state = 0;
+
+      //skip 90° ahead
+      if (k > max_frames - skip) {
+        k = max_frames;
+        data_ptr = data_ptr0 + max_frames*4;
+      } else {
+        k += skip;
+        data_ptr += skip*4;
+      }
+    } else {
+      //no rising or falling edge. keep looking
+      k++;
+      data_ptr += 4;
+    }
+  }
+
+  if (k == max_frames) {
+    //didn't find anything
+    return 0;
+  }
+
+  uint16_t k_last = edge_pos[0] = k; //index of last tach
+  uint16_t tach_min = UINT16_MAX;
+  uint16_t tach_max = 0;
+
+  k++;
+  data_ptr += 4;
+
+  //look for more rising edges,
+  //add new tach to array whenever we find one
+  /*@ loop invariant k: k_last < k;
+      loop invariant k2: 0 <= k < max_frames || k == max_frames;
+      loop invariant skip: 3 <= skip <= max_frames / 4;
+      loop invariant num: 0 <= num_tachs <= 255;
+      loop invariant ptr: data_ptr == data_ptr0 + 4*k;
+      loop invariant valid: \valid_read(&data_ptr[3]) || k == max_frames;
+
+      loop invariant pos_last: edge_pos[num_tachs] == k_last;
+      loop invariant forall: \forall integer x;
+        0 <= x < num_tachs ==>
+          0 <= edge_pos[x] < edge_pos[x+1] < max_frames;
+
+      loop invariant minmax: num_tachs == 0 || tach_min <= tach_max;
+
+      loop assigns state, k_last, edge_pos[1..255], data_ptr, skip, num_tachs, tach_min, tach_max, k;
+      loop variant max_frames - k;
+   */
+  for (; k < max_frames && num_tachs < 255;) {
+    int16_t s = data_ptr[3] / (1 << (WORDSZ-16));
+    //look for rising edge
+    if (state == 0 && s > on) {
+      state = 1;
+
+      num_tachs++;
+      edge_pos[num_tachs] = k;
+
+      // gather tach duration statistics
+      uint16_t cur_tach = k - k_last;
+      if (cur_tach > tach_max) {
+        tach_max = cur_tach;
+      }
+      if (cur_tach < tach_min) {
+        tach_min = cur_tach;
+      }
+
+      //continually update the skip, so that we always skip 90°
+      //sanity check it though
+      if (12 <= cur_tach && cur_tach <= max_frames) {
+        skip = cur_tach / 4;
+      }
+
+      k_last = k;
+
+      //skip 90° ahead
+      if (k > max_frames - skip || num_tachs == 255) {
+        k = max_frames;
+        data_ptr = data_ptr0 + max_frames*4;
+      } else {
+        k += skip;
+        data_ptr += skip*4;
+      }
+    } else if (state == 1 && s < off) {
+      state = 0;
+
+      //skip 90° ahead
+      if (k > max_frames - skip) {
+        k = max_frames;
+        data_ptr = data_ptr0 + max_frames*4;
+      } else {
+        k += skip;
+        data_ptr += skip*4;
+      }
+    } else {
+      //no rising or falling edge. keep looking
+      k++;
+      data_ptr += 4;
+    }
+  }
+
+  if (tach_min == 0) {
+    //this shouldn't happen, but guard against it either way
+    *tach_ratio = 255;
+  } else {
+    uint32_t ratio = (uint32_t)tach_max * 100 / tach_min;
+    if (ratio < 254) {
+      *tach_ratio = ratio;
+    } else {
+      *tach_ratio = 254;
+    }
+  }
+
+  *tach_skip = skip;
+
+  return num_tachs;
+}
