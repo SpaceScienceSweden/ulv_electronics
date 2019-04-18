@@ -547,3 +547,103 @@ before3:
   *nsum3 = n2 + n6 + n10;
   *nsum4 = n3 + n7 + n11;
 }
+
+void demod_tachs(uint8_t num_tachs,
+                 const uint16_t *edge_pos,
+                 uint8_t *rounding_inout,
+                 accu_t Q1out[3],
+                 accu_t Q2out[3],
+                 accu_t Q3out[3],
+                 accu_t Q4out[3],
+                 uint16_t NQout[4])
+{
+  //demodulation stuff
+  accu_t Q1[3] = {0,0,0};
+  accu_t Q2[3] = {0,0,0};
+  accu_t Q3[3] = {0,0,0};
+  accu_t Q4[3] = {0,0,0};
+  uint16_t NQ[4] = {0,0,0,0};
+
+  uint8_t rounding = *rounding_inout;
+
+  //@ assert range: 0 <= edge_pos[0] && edge_pos[num_tachs] <= MAX_FRAMES;
+
+  //@ ghost uint32_t nlotot = 0;
+  //@ ghost uint32_t nhitot = 0;
+
+  /*@ loop invariant 0 <= k < num_tachs || k == num_tachs;
+      loop invariant 0 <= rounding < 12;
+      loop invariant k == num_tachs || edge_pos[k+1] - edge_pos[0] > edge_pos[k] - edge_pos[0];
+
+      loop invariant 3*((edge_pos[k] - edge_pos[0]) / 12 - k) <= nlotot <= nhitot;
+      loop invariant nhitot <= 3*(edge_pos[k] / 12 + k) <= 3*(MAX_FRAMES / 12 + num_tachs);
+
+      loop invariant \forall integer x;
+        0 <= x <= 2 ==>
+          \at(Q1[x],LoopEntry) + NQ[0]*INT16_MIN <= Q1[x]
+          <= \at(Q1[x],LoopEntry) + NQ[0]*INT16_MAX;
+      loop invariant \forall integer x;
+        0 <= x <= 2 ==>
+          \at(Q2[x],LoopEntry) + NQ[1]*INT16_MIN <= Q2[x]
+          <= \at(Q2[x],LoopEntry) + NQ[1]*INT16_MAX;
+      loop invariant \forall integer x;
+        0 <= x <= 2 ==>
+          \at(Q3[x],LoopEntry) + NQ[2]*INT16_MIN <= Q3[x]
+          <= \at(Q3[x],LoopEntry) + NQ[2]*INT16_MAX;
+      loop invariant \forall integer x;
+        0 <= x <= 2 ==>
+          \at(Q4[x],LoopEntry) + NQ[3]*INT16_MIN <= Q4[x]
+          <= \at(Q4[x],LoopEntry) + NQ[3]*INT16_MAX;
+
+      loop invariant \forall integer x;
+        0 <= x <= 3 ==>
+          \at(NQ[x],LoopEntry) + nlotot <= NQ[x] <= \at(NQ[x],LoopEntry) + nhitot;
+
+      loop assigns rounding, k, Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], NQ[0..3], nlotot, nhitot;
+   */
+  for (uint16_t k = 0; k < num_tachs; k++) {
+    //current interval: [edge_pos[k], edge_pos[k+1])
+
+    //@ ghost uint16_t n = edge_pos[k+1] - edge_pos[k];
+    //@ ghost uint16_t nlo = (n / 12);
+    //@ ghost uint16_t nhi = (n / 12) + 1;
+    //@ assert order: edge_pos[k] < edge_pos[k+1];
+    //@ assert n: 1 <= n <= MAX_FRAMES;
+    //@ assert nlo: nlo >= 1;
+    //@ assert nhi: nhi >= 2;
+    //@ assert nrange: edge_pos[k] - edge_pos[0] + n == edge_pos[k+1] - edge_pos[0];
+
+    uint16_t nsum1;
+    uint16_t nsum2;
+    uint16_t nsum3;
+    uint16_t nsum4;
+
+    accumulate_square_interval_2(
+      edge_pos[k], edge_pos[k+1],
+      Q1, Q2, Q3, Q4,
+      &nsum1, &nsum2, &nsum3, &nsum4,
+      rounding
+    );
+
+    NQ[0] += nsum1;
+    NQ[1] += nsum2;
+    NQ[2] += nsum3;
+    NQ[3] += nsum4;
+
+    //four numbers are relative prime 12: 1, 5, 7, 11
+    rounding = (rounding + 5) % 12;
+
+    //@ ghost nlotot += 3 * nlo;
+    //@ ghost nhitot += 3 * nhi;
+  }
+
+  *rounding_inout = rounding;
+
+  // Extremely tedious, but helps WP actually finish its proofs
+  // Most likely optimized away by gcc
+  Q1out[0] = Q1[0]; Q1out[1] = Q1[1]; Q1out[2] = Q1[2];
+  Q2out[0] = Q2[0]; Q2out[1] = Q2[1]; Q2out[2] = Q2[2];
+  Q3out[0] = Q3[0]; Q3out[1] = Q3[1]; Q3out[2] = Q3[2];
+  Q4out[0] = Q4[0]; Q4out[1] = Q4[1]; Q4out[2] = Q4[2];
+  NQout[0] = NQ[0]; NQout[1] = NQ[1]; NQout[2] = NQ[2]; NQout[3] = NQ[3];
+}

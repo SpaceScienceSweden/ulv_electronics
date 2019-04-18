@@ -65,7 +65,7 @@ all: $(PRG).elf lst text eeprom printstackusage
 
 PROVERS=z3,cvc4,alt-ergo,qed
 verify: verified.c
-	frama-c -wp -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
+	frama-c -wp -wp-timeout 30 -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
 	touch verify
 
 .PHONY: printstackusage

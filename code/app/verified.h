@@ -222,5 +222,56 @@ void binary_iq(
   uint8_t compute_mean
 );
 
+/*@ requires 1 <= num_tachs <= 255;
+
+    //edge_pos[] contains num_tachs+1 entries
+    requires \valid_read(edge_pos + (0..num_tachs));
+    requires \valid(rounding_inout);
+    requires \valid((accu_t*)Q1out + (0..2));
+    requires \valid((accu_t*)Q2out + (0..2));
+    requires \valid((accu_t*)Q3out + (0..2));
+    requires \valid((accu_t*)Q4out + (0..2));
+    requires \valid((uint16_t*)NQout + (0..3));
+
+    requires \separated(edge_pos + (0..num_tachs),
+                        rounding_inout,
+                        (accu_t*)Q1out + (0..2),
+                        (accu_t*)Q2out + (0..2),
+                        (accu_t*)Q3out + (0..2),
+                        (accu_t*)Q4out + (0..2),
+                        (uint16_t*)NQout + (0..3));
+
+    requires \forall integer k;
+      1 <= k <= num_tachs ==>
+        0 <= edge_pos[k-1] < edge_pos[k] <= MAX_FRAMES &&
+        edge_pos[k] - edge_pos[k-1] >= 12;
+
+    requires 0 <= *rounding_inout <= 11;
+    ensures 0 <= *rounding_inout <= 11;
+
+    ensures \forall integer x;
+      0 <= x <= 2 ==>
+        NQout[0]*INT16_MIN <= Q1out[x] <= NQout[0]*INT16_MAX &&
+        NQout[1]*INT16_MIN <= Q2out[x] <= NQout[1]*INT16_MAX &&
+        NQout[2]*INT16_MIN <= Q3out[x] <= NQout[2]*INT16_MAX &&
+        NQout[3]*INT16_MIN <= Q4out[x] <= NQout[3]*INT16_MAX;
+
+    ensures \forall integer x;
+      0 <= x <= 3 ==>
+        3*((edge_pos[num_tachs] - edge_pos[0]) / 12 - num_tachs)
+          <= NQout[x]
+          <= 3*(edge_pos[num_tachs] / 12 + num_tachs);
+
+    assigns *rounding_inout, Q1out[0..2], Q2out[0..2], Q3out[0..2], Q4out[0..2], NQout[0..3];
+ */
+void demod_tachs(uint8_t num_tachs,
+                 const uint16_t *edge_pos,
+                 uint8_t *rounding_inout,
+                 accu_t Q1out[3],
+                 accu_t Q2out[3],
+                 accu_t Q3out[3],
+                 accu_t Q4out[3],
+                 uint16_t NQout[4]);
+
 #endif //_PROVEN_H
 
