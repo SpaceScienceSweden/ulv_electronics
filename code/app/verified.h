@@ -46,7 +46,7 @@ extern int16_t sample_data[4*MAX_FRAMES];
     requires \valid(stat1_out);
     requires \valid(&sample_data[0] + (0..4*num_frames-1));
     requires 1 <= num_frames <= MAX_FRAMES;
-    assigns *stat1_out, timer1_base, SPDR, TIFR, sample_data[0..8*num_frames-1];
+    assigns *stat1_out, timer1_base, SPDR, TIFR, sample_data[0..4*num_frames-1];
  */
 void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames);
 
@@ -241,10 +241,10 @@ void binary_iq(
                         (accu_t*)Q4out + (0..2),
                         (uint16_t*)NQout + (0..3));
 
-    requires \forall integer k;
-      1 <= k <= num_tachs ==>
-        0 <= edge_pos[k-1] < edge_pos[k] <= MAX_FRAMES &&
-        edge_pos[k] - edge_pos[k-1] >= 12;
+    requires edge_pos_ordered: \forall integer k;
+      0 <= k < num_tachs ==>
+        0 <= edge_pos[k] < edge_pos[k+1] <= MAX_FRAMES &&
+        edge_pos[k+1] - edge_pos[k] >= 12;
 
     requires 0 <= *rounding_inout <= 11;
     ensures 0 <= *rounding_inout <= 11;
@@ -288,7 +288,8 @@ void demod_tachs(uint8_t num_tachs,
     ensures 0 <= \result <= 255;
     ensures \forall integer x;
       0 <= x < \result ==>
-        0 <= edge_pos[x] < edge_pos[x+1] < max_frames;
+        0 <= edge_pos[x] < edge_pos[x+1] < max_frames &&
+        edge_pos[x+1] - edge_pos[x] >= 12;
 
     assigns *tach_ratio, *tach_skip, edge_pos[0..255];
  */

@@ -685,8 +685,8 @@ uint8_t find_tachs(uint16_t max_frames,
 
       //skip 90° ahead
       if (k > max_frames - skip) {
-        k = max_frames;
-        data_ptr = data_ptr0 + max_frames*4;
+        //we've hit the end - no point in trying further
+        return 0;
       } else {
         k += skip;
         data_ptr += skip*4;
@@ -722,7 +722,8 @@ uint8_t find_tachs(uint16_t max_frames,
       loop invariant pos_last: edge_pos[num_tachs] == k_last;
       loop invariant forall: \forall integer x;
         0 <= x < num_tachs ==>
-          0 <= edge_pos[x] < edge_pos[x+1] < max_frames;
+          0 <= edge_pos[x] < edge_pos[x+1] < max_frames &&
+          edge_pos[x+1] - edge_pos[x] >= 12;
 
       loop invariant minmax: num_tachs == 0 || tach_min <= tach_max;
 
@@ -733,35 +734,43 @@ uint8_t find_tachs(uint16_t max_frames,
     int16_t s = data_ptr[3] / (1 << (WORDSZ-16));
     //look for rising edge
     if (state == 0 && s > on) {
-      state = 1;
-
-      num_tachs++;
-      edge_pos[num_tachs] = k;
-
-      // gather tach duration statistics
       uint16_t cur_tach = k - k_last;
-      if (cur_tach > tach_max) {
-        tach_max = cur_tach;
-      }
-      if (cur_tach < tach_min) {
-        tach_min = cur_tach;
-      }
 
-      //continually update the skip, so that we always skip 90°
-      //sanity check it though
-      if (12 <= cur_tach && cur_tach <= max_frames) {
-        skip = cur_tach / 4;
-      }
+      // do not accept spurious tachs
+      if (cur_tach >= 12) {
+        state = 1;
 
-      k_last = k;
+        num_tachs++;
+        edge_pos[num_tachs] = k;
 
-      //skip 90° ahead
-      if (k > max_frames - skip || num_tachs == 255) {
-        k = max_frames;
-        data_ptr = data_ptr0 + max_frames*4;
+        // gather tach duration statistics
+        if (cur_tach > tach_max) {
+          tach_max = cur_tach;
+        }
+        if (cur_tach < tach_min) {
+          tach_min = cur_tach;
+        }
+
+        //continually update the skip, so that we always skip 90°
+        //sanity check it though
+        if (cur_tach <= max_frames) {
+          skip = cur_tach / 4;
+        }
+
+        k_last = k;
+
+        //skip 90° ahead
+        if (k > max_frames - skip || num_tachs == 255) {
+          k = max_frames;
+          data_ptr = data_ptr0 + max_frames*4;
+        } else {
+          k += skip;
+          data_ptr += skip*4;
+        }
       } else {
-        k += skip;
-        data_ptr += skip*4;
+        //keep moving, don't change state
+        k++;
+        data_ptr += 4;
       }
     } else if (state == 1 && s < off) {
       state = 0;
