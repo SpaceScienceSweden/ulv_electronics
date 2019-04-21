@@ -67,7 +67,6 @@ PROVERS=z3,cvc4,alt-ergo,qed
 verify: verified.c
 	# avr-gcc behaves like a 16-bit machine, so pick x86_16 -> 16-bit int
 	frama-c -wp -wp-timeout 30 -machdep x86_16 -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
-	touch verify
 
 .PHONY: printstackusage
 printstackusage:
@@ -88,7 +87,6 @@ $(PRG).elf: $(OBJ) init3.o
 clean:
 	rm -rf $(OBJ) *.o avr-ds18b20/src/*.su fatfs-avr/*.su *.su $(PRG).elf *.eps *.png $(PRG).pdf *.bak
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
-	rm -f verify
 
 loadusb: $(PRG).hex
 	avrdude -c $(AVRDUDE_PROGRAMMER) -e -p $(MCU)
