@@ -4,11 +4,11 @@
 #include <avr/pgmspace.h>
 #include <avr/wdt.h>
 #include <util/delay.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include "app.h"
 #include "../eeprom.h"
 #include <ds18b20/ds18b20.h>
 #include <ds18b20/romsearch.h>
@@ -710,24 +710,6 @@ static adc_word_t adc_comm(uint8_t id, adc_word_t cmd) {
 #define WREG(a,d)   ((0x4000L | (a<<8) | d)     << (WORDSZ-16))
 #define WREGS(a,n)  ((0x6000L | (a<<8) | (n-1)) << (WORDSZ-16))
 
-//registers
-#define ID_MSB    0x00
-#define ID_LSB    0x01
-#define STAT_1    0x02
-#define STAT_P    0x03
-#define STAT_N    0x04
-#define STAT_S    0x05
-#define STAT_M2   0x07
-#define A_SYS_CFG 0x0B
-#define D_SYS_CFG 0x0C
-#define CLK1      0x0D
-#define CLK2      0x0E
-#define ADC_ENA   0x0F
-#define ADC1      0x11
-#define ADC2      0x12
-#define ADC3      0x13
-#define ADC4      0x14
-
 static uint8_t popcount(uint16_t a) {
   uint8_t ret = 0;
   while (a) {
@@ -773,7 +755,7 @@ static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
   return 0;
 }
 
-static uint8_t rreg(uint8_t id, uint8_t a) {
+uint8_t rreg(uint8_t id, uint8_t a) {
   adc_comm(id, RREG(a));
   uint8_t d = (adc_comm(id, 0) >> (WORDSZ-16)) & 0xFF;
   if (a == ADC_ENA) {
@@ -921,7 +903,7 @@ uint8_t num_active_adcs(void) {
   return ret;
 }
 
-static void set_74153(uint8_t ch) {
+void set_74153(uint8_t ch) {
   DDRD |= (1<<PD6) | (1<<PD7);
   PORTD = (PORTD & ~((1<<PD6) | (1<<PD7))) | (ch << PD6);
 }

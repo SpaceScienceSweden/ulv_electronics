@@ -2,7 +2,33 @@
 
 #include <stdint.h>
 #include "verified.h"
-#include "wire_structs.h"
+
+#ifdef FRAMA_C
+
+/*@ assigns PORTF;
+ */
+void adc_select(uint8_t id) {
+}
+
+/*@ assigns PORTF;
+ */
+void adc_deselect(void) {
+}
+
+
+// fake rreg() that returns void, so we don't try to verify things that
+// depend on values in registers
+uint8_t rreg(uint8_t id, uint8_t a) {
+  adc_select(id);
+  SPDR = 1;
+  adc_deselect();
+  return 0;
+}
+
+// similar fake stub
+void set_74153(uint8_t ch) {
+}
+#endif
 
 #if FEATURE_BLOCK
 #if FEATURE_ASM == 0

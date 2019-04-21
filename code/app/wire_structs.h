@@ -1,3 +1,6 @@
+#ifndef _WIRE_STRUCTS_H
+#define _WIRE_STRUCTS_H
+
 // Overview of the IQ demodulated packet format:
 //
 // +---------------------------------------+
@@ -338,3 +341,4 @@ typedef struct {
   //unbiased sample_data follows
 } capture_block_continued_s;
 
+#endif //_WIRE_STRUCTS_H

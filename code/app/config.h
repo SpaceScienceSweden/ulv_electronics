@@ -1,6 +1,8 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
+#include <stdint.h>
+
 #define WORDSZ    16    //ADC word size
 
 #if WORDSZ > 16

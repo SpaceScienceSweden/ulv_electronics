@@ -1,8 +1,8 @@
 #ifndef _PROVEN_H
 #define _PROVEN_H
 
-#include "config.h"
-#include "frama-c-stub.h"
+#include "app.h"
+#include "wire_structs.h"
 
 //used when computing max_frames
 //typically timer1_ovfs will reach TIMER1_OVFS_MAX+1
