@@ -46,7 +46,7 @@ extern int16_t sample_data[4*MAX_FRAMES];
     requires \valid(stat1_out);
     requires \valid(&sample_data[0] + (0..4*num_frames-1));
     requires 1 <= num_frames <= MAX_FRAMES;
-    assigns *stat1_out, timer1_base, SPDR, TIFR, sample_data[0..4*num_frames-1];
+    assigns *stat1_out, timer1_base, SPDR, TIFR, PORTF, sample_data[0..4*num_frames-1];
  */
 void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames);
 
@@ -164,6 +164,8 @@ uint8_t ocr2osr(uint16_t ocr);
         NLO <= *nsum3 <= NHI &&
         NLO <= *nsum4 <= NHI;
 
+    ensures sumtot: *nsum1 + *nsum2 + *nsum3 + *nsum4 == p12 - p0;
+
     assigns Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], *nsum1, *nsum2, *nsum3, *nsum4;
  */
 void accumulate_square_interval_2(
@@ -185,6 +187,7 @@ void accumulate_square_interval_2(
     requires \valid_read((accu_t*)Q2 + (0..2));
     requires \valid_read((accu_t*)Q3 + (0..2));
     requires \valid_read((accu_t*)Q4 + (0..2));
+    requires \valid_read((uint16_t*)NQ + (0..3));
     requires \valid((int16_t*)IQ + (0..5));
     requires \valid((int16_t*)mean + (0..2));
 
@@ -193,17 +196,39 @@ void accumulate_square_interval_2(
       (accu_t*)Q2 + (0..2),
       (accu_t*)Q3 + (0..2),
       (accu_t*)Q4 + (0..2),
+      (uint16_t*)NQ + (0..3),
       (int16_t*)IQ + (0..5),
       (int16_t*)mean + (0..2)
     );
 
-    requires 0 < N <= MAX_FRAMES;
+    requires NQrange: 0 < NQ[0] + NQ[1] + NQ[2] + NQ[3] <= MAX_FRAMES;
 
-    requires \forall integer x; 0 <= x <= 2 ==>
-      -N*INT16_MAX/4 <= Q1[x] <= N*INT16_MAX/4 &&
-      -N*INT16_MAX/4 <= Q2[x] <= N*INT16_MAX/4 &&
-      -N*INT16_MAX/4 <= Q3[x] <= N*INT16_MAX/4 &&
-      -N*INT16_MAX/4 <= Q4[x] <= N*INT16_MAX/4;
+    //requires Qrange: \forall integer x; 0 <= x <= 2 ==>
+    //  -N*INT16_MAX/4 <= Q1[x] <= N*INT16_MAX/4 &&
+    //  -N*INT16_MAX/4 <= Q2[x] <= N*INT16_MAX/4 &&
+    //  -N*INT16_MAX/4 <= Q3[x] <= N*INT16_MAX/4 &&
+    //  -N*INT16_MAX/4 <= Q4[x] <= N*INT16_MAX/4;
+
+
+    //requires Qrange1: \forall integer x; 0 <= x <= 2 ==>
+    //  -N*INT16_MAX <= Q1[x] - Q2[x] - Q3[x] + Q4[x] <= N*INT16_MAX;
+    //requires Qrange2: \forall integer x; 0 <= x <= 2 ==>
+    //  -N*INT16_MAX <= Q1[x] + Q2[x] - Q3[x] - Q4[x] <= N*INT16_MAX;
+    //requires Qrange3: \forall integer x; 0 <= x <= 2 ==>
+    //  -N*INT16_MAX <= Q1[x] + Q2[x] + Q3[x] + Q4[x] <= N*INT16_MAX;
+
+    requires Q1range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[0]*INT16_MIN <= Q1[x] <= NQ[0]*INT16_MAX;
+    requires Q2range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[1]*INT16_MIN <= Q2[x] <= NQ[1]*INT16_MAX;
+    requires Q3range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[2]*INT16_MIN <= Q3[x] <= NQ[2]*INT16_MAX;
+    requires Q4range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[3]*INT16_MIN <= Q4[x] <= NQ[3]*INT16_MAX;
 
     assigns ((int16_t*)IQ)[0..5], mean[0..2];
 
@@ -216,7 +241,7 @@ void binary_iq(
   const accu_t *Q2,
   const accu_t *Q3,
   const accu_t *Q4,
-  uint16_t N,
+  uint16_t NQ[4],
   int16_t IQ[3][2],
   int16_t mean[4],
   uint8_t compute_mean
@@ -241,26 +266,49 @@ void binary_iq(
                         (accu_t*)Q4out + (0..2),
                         (uint16_t*)NQout + (0..3));
 
-    requires edge_pos_ordered: \forall integer k;
+    //requires edge_pos_ordered1: \forall integer k;
+    //  0 <= k <= num_tachs ==>
+    //    0 <= edge_pos[k];
+
+    //requires edge_pos_ordered2: \forall integer k;
+    //  0 <= k < num_tachs ==>
+    //    edge_pos[k] < edge_pos[k+1];
+
+    //requires edge_pos_ordered3: \forall integer k;
+    //  0 <= k <= num_tachs ==>
+    //    edge_pos[k] <= MAX_FRAMES;
+
+    requires \forall integer x;
+      0 <= x < num_tachs ==>
+        0 <= edge_pos[x] < edge_pos[x+1] < MAX_FRAMES;
+
+    requires edge_pos_gap: \forall integer k;
       0 <= k < num_tachs ==>
-        0 <= edge_pos[k] < edge_pos[k+1] <= MAX_FRAMES &&
         edge_pos[k+1] - edge_pos[k] >= 12;
 
     requires 0 <= *rounding_inout <= 11;
     ensures 0 <= *rounding_inout <= 11;
 
-    ensures \forall integer x;
+    ensures Q1range: \forall integer x;
       0 <= x <= 2 ==>
-        NQout[0]*INT16_MIN <= Q1out[x] <= NQout[0]*INT16_MAX &&
-        NQout[1]*INT16_MIN <= Q2out[x] <= NQout[1]*INT16_MAX &&
-        NQout[2]*INT16_MIN <= Q3out[x] <= NQout[2]*INT16_MAX &&
+        NQout[0]*INT16_MIN <= Q1out[x] <= NQout[0]*INT16_MAX;
+    ensures Q2range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQout[1]*INT16_MIN <= Q2out[x] <= NQout[1]*INT16_MAX;
+    ensures Q3range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQout[2]*INT16_MIN <= Q3out[x] <= NQout[2]*INT16_MAX;
+    ensures Q4range: \forall integer x;
+      0 <= x <= 2 ==>
         NQout[3]*INT16_MIN <= Q4out[x] <= NQout[3]*INT16_MAX;
 
-    ensures \forall integer x;
-      0 <= x <= 3 ==>
-        3*((edge_pos[num_tachs] - edge_pos[0]) / 12 - num_tachs)
-          <= NQout[x]
-          <= 3*(edge_pos[num_tachs] / 12 + num_tachs);
+    //ensures NQrange: \forall integer x;
+    //  0 <= x <= 3 ==>
+    //    3*((edge_pos[num_tachs] - edge_pos[0]) / 12 - num_tachs)
+    //      <= NQout[x]
+    //      <= 3*(edge_pos[num_tachs] / 12 + num_tachs);
+
+    ensures NQsum: 12*num_tachs <= NQout[0] + NQout[1] + NQout[2] + NQout[3] == edge_pos[num_tachs] - edge_pos[0];
 
     assigns *rounding_inout, Q1out[0..2], Q2out[0..2], Q3out[0..2], Q4out[0..2], NQout[0..3];
  */
@@ -286,10 +334,32 @@ void demod_tachs(uint8_t num_tachs,
 
     ensures 3 <= *tach_skip <= max_frames / 4;
     ensures 0 <= \result <= 255;
+    //ensures \forall integer x;
+    //  0 <= x < \result ==>
+    //    0 <= edge_pos[x] < edge_pos[x+1] < max_frames &&
+    //    edge_pos[x+1] - edge_pos[x] >= 12;
+
     ensures \forall integer x;
       0 <= x < \result ==>
-        0 <= edge_pos[x] < edge_pos[x+1] < max_frames &&
-        edge_pos[x+1] - edge_pos[x] >= 12;
+        0 <= edge_pos[x] < edge_pos[x+1] < max_frames;
+
+    //ensures edge_pos_ordered1: \forall integer k;
+    //  0 <= k <= \result ==>
+    //    0 <= edge_pos[k];
+
+    //ensures edge_pos_ordered2: \forall integer k;
+    //  0 <= k < \result ==>
+    //    edge_pos[k] < edge_pos[k+1];
+
+    ensures edge_pos_ordered3:
+      \result == 0 || \forall integer k;
+        0 <= k <= \result ==>
+          edge_pos[k] <= MAX_FRAMES;
+
+    ensures edge_pos_gap: \forall integer k;
+      0 <= k < \result ==>
+        edge_pos[k+1] - edge_pos[k] >= 12;
+
 
     assigns *tach_ratio, *tach_skip, edge_pos[0..255];
  */
@@ -298,6 +368,80 @@ uint8_t find_tachs(uint16_t max_frames,
                    uint8_t *tach_ratio,
                    int16_t tach_mean,
                    uint16_t *edge_pos);
+
+//captures and demodulates data coming out of a single FM
+//capturing one at a time is better phase-jitter-wise
+//returns non-zero on error
+/*@ requires 0 <= id <= 2;
+    requires 12 <= max_frames <= MAX_FRAMES;
+    requires \valid(&sample_data[0] + (0..4*max_frames-1));
+    requires \valid(stat1_out);
+    requires \valid((int16_t*)minmax + (0..7));
+    requires \valid((uint16_t*)NQ + (0..3));
+    requires \valid(entry);
+    requires \valid((int16_t*)mean + (0..3));
+    requires \valid(tach_mean);
+    requires \valid(tach_skip);
+    requires \valid(tach_ratio);
+    requires \valid(discard);
+    requires \valid((uint16_t*)mean_abs + (0..2));
+    requires \valid(rounding_inout);
+
+    requires \separated(&sample_data[0] + (0..4*max_frames-1),
+                        stat1_out,
+                        (int16_t*)minmax + (0..7),
+                        (uint16_t*)NQ + (0..3),
+                        entry,
+                        (int16_t*)mean + (0..3),
+                        tach_mean,
+                        tach_skip,
+                        tach_ratio,
+                        discard,
+                        (uint16_t*)mean_abs + (0..2),
+                        rounding_inout);
+
+    requires 3 <= *tach_skip <= max_frames / 4;
+    requires 0 <= *rounding_inout <= 11;
+
+    ensures 3 <= *tach_skip <= max_frames / 4;
+    ensures 0 <= *rounding_inout <= 11;
+
+    ensures \forall integer x; 0 <= x < 4 ==>
+      minmax[x][0] <= \old(minmax[x][0]) &&
+      minmax[x][1] >= \old(minmax[x][1]);
+
+    assigns sample_data[0..4*max_frames-1],
+            timer1_base, SPDR, TIFR, PORTF,
+            *stat1_out,
+            ((int16_t*)minmax)[0..7],
+            NQ[0..3],
+            *entry,
+            mean[0..3],
+            *tach_mean,
+            *tach_skip,
+            *tach_ratio,
+            *discard,
+            mean_abs[0..2],
+            *rounding_inout;
+ */
+uint8_t capture_and_demod(
+        uint8_t id,
+        uint16_t max_frames,
+        uint8_t *stat1_out,
+        int16_t minmax[4][2],
+        uint16_t NQ[4],
+        capture_entry_s *entry,
+        int16_t mean[4],
+        int16_t *tach_mean,
+        uint16_t *tach_skip,
+        uint8_t *tach_ratio,
+        uint16_t *discard,
+        uint16_t mean_abs[3],
+        uint8_t *rounding_inout,
+        uint8_t first_round,    //minmax for tach only computed during the first round
+        uint8_t biased_round,   //minmax computed only during biased rounds
+        uint8_t last_round      //only certain stats during the last round
+        );
 
 #endif //_PROVEN_H
 

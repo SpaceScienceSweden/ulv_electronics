@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include "verified.h"
+#include "wire_structs.h"
 
 #if FEATURE_BLOCK
 #if FEATURE_ASM == 0
@@ -319,11 +320,13 @@ void binary_iq(
   const accu_t *Q2,
   const accu_t *Q3,
   const accu_t *Q4,
-  uint16_t N,
+  uint16_t NQ[4],
   int16_t IQ[3][2],
   int16_t mean[4],
   uint8_t compute_mean
 ) {
+  uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
+
   /*@ loop invariant \forall integer x;
         0 <= x <= 2 && compute_mean == 0 ==>
           mean[x] == \at(mean[x], LoopEntry);
@@ -339,10 +342,36 @@ void binary_iq(
 
     // I = q1-q2-q3+q4
     // Q = q1+q2-q3-q4
-    IQ[j][0]  = (q1 - q2 - q3 + q4) / N;
-    IQ[j][1]  = (q1 + q2 - q3 - q4) / N;
+    accu_t I = q1 - q2 - q3 + q4;
+    accu_t Q = q1 + q2 - q3 - q4;
+
+    //clamp
+    if (I < N*INT16_MIN) {
+      IQ[j][0] = INT16_MIN;
+    } else if (I > N*INT16_MAX) {
+      IQ[j][0] = INT16_MAX;
+    } else {
+      IQ[j][0] = I / N;
+    }
+
+    if (Q < N*INT16_MIN) {
+      IQ[j][1] = INT16_MIN;
+    } else if (Q > N*INT16_MAX) {
+      IQ[j][1] = INT16_MAX;
+    } else {
+      IQ[j][1] = Q / N;
+    }
+
     if (compute_mean) {
-      mean[j] = (q1 + q2 + q3 + q4) / N;
+      accu_t M = q1 + q2 + q3 + q4;
+
+      if (M < N*INT16_MIN) {
+        mean[j] = INT16_MIN;
+      } else if (M > N*INT16_MAX) {
+        mean[j] = INT16_MAX;
+      } else {
+        mean[j] = M / N;
+      }
     }
   }
 }
@@ -565,18 +594,20 @@ void demod_tachs(uint8_t num_tachs,
   uint16_t NQ[4] = {0,0,0,0};
 
   uint8_t rounding = *rounding_inout;
+  uint16_t k = 0;
 
-  //@ assert range: 0 <= edge_pos[0] && edge_pos[num_tachs] <= MAX_FRAMES;
+  // assert range1: 0 <= edge_pos[0];
+  // assert range2: edge_pos[num_tachs] <= MAX_FRAMES;
 
-  //@ ghost uint32_t nlotot = 0;
-  //@ ghost uint32_t nhitot = 0;
+  // ghost uint32_t nlotot = 0;
+  // ghost uint32_t nhitot = 0;
 
   /*@ loop invariant 0 <= k < num_tachs || k == num_tachs;
       loop invariant 0 <= rounding < 12;
       loop invariant k == num_tachs || edge_pos[k+1] - edge_pos[0] > edge_pos[k] - edge_pos[0];
 
-      loop invariant 3*((edge_pos[k] - edge_pos[0]) / 12 - k) <= nlotot <= nhitot;
-      loop invariant nhitot <= 3*(edge_pos[k] / 12 + k) <= 3*(MAX_FRAMES / 12 + num_tachs);
+      //loop invariant 3*((edge_pos[k] - edge_pos[0]) / 12 - k) <= nlotot <= nhitot;
+      //loop invariant nhitot <= 3*(edge_pos[k] / 12 + k) <= 3*(MAX_FRAMES / 12 + num_tachs);
 
       loop invariant \forall integer x;
         0 <= x <= 2 ==>
@@ -595,20 +626,26 @@ void demod_tachs(uint8_t num_tachs,
           \at(Q4[x],LoopEntry) + NQ[3]*INT16_MIN <= Q4[x]
           <= \at(Q4[x],LoopEntry) + NQ[3]*INT16_MAX;
 
-      loop invariant \forall integer x;
-        0 <= x <= 3 ==>
-          \at(NQ[x],LoopEntry) + nlotot <= NQ[x] <= \at(NQ[x],LoopEntry) + nhitot;
+      //loop invariant \forall integer x;
+      //  0 <= x <= 3 ==>
+      //    \at(NQ[x],LoopEntry) + nlotot <= NQ[x] <= \at(NQ[x],LoopEntry) + nhitot;
 
-      loop assigns rounding, k, Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], NQ[0..3], nlotot, nhitot;
+      loop invariant NQsum: NQ[0] + NQ[1] + NQ[2] + NQ[3] == edge_pos[k] - edge_pos[0];
+
+      loop invariant NQsumlow: edge_pos[k] - edge_pos[0] >= k*12;
+
+      loop assigns rounding, k, Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], NQ[0..3]; //, nlotot, nhitot;
+
+      loop variant num_tachs - k;
    */
-  for (uint16_t k = 0; k < num_tachs; k++) {
+  for (; k < num_tachs; k++) {
     //current interval: [edge_pos[k], edge_pos[k+1])
 
     //@ ghost uint16_t n = edge_pos[k+1] - edge_pos[k];
     //@ ghost uint16_t nlo = (n / 12);
     //@ ghost uint16_t nhi = (n / 12) + 1;
     //@ assert order: edge_pos[k] < edge_pos[k+1];
-    //@ assert n: 1 <= n <= MAX_FRAMES;
+    //@ assert n: 12 <= n <= MAX_FRAMES;
     //@ assert nlo: nlo >= 1;
     //@ assert nhi: nhi >= 2;
     //@ assert nrange: edge_pos[k] - edge_pos[0] + n == edge_pos[k+1] - edge_pos[0];
@@ -625,6 +662,9 @@ void demod_tachs(uint8_t num_tachs,
       rounding
     );
 
+    //@ ghost uint16_t nsum = nsum1 + nsum2 + nsum3 + nsum4;
+    //@ assert nsum: nsum == n;
+
     NQ[0] += nsum1;
     NQ[1] += nsum2;
     NQ[2] += nsum3;
@@ -633,9 +673,11 @@ void demod_tachs(uint8_t num_tachs,
     //four numbers are relative prime 12: 1, 5, 7, 11
     rounding = (rounding + 5) % 12;
 
-    //@ ghost nlotot += 3 * nlo;
-    //@ ghost nhitot += 3 * nhi;
+    // ghost nlotot += 3 * nlo;
+    // ghost nhitot += 3 * nhi;
   }
+  //@ assert k == num_tachs;
+  //@ assert edge_pos[num_tachs] - edge_pos[0] >= 12*num_tachs;
 
   *rounding_inout = rounding;
 
@@ -714,16 +756,37 @@ uint8_t find_tachs(uint16_t max_frames,
   //add new tach to array whenever we find one
   /*@ loop invariant k: k_last < k;
       loop invariant k2: 0 <= k < max_frames || k == max_frames;
+      //loop invariant k3: k <= MAX_FRAMES;
       loop invariant skip: 3 <= skip <= max_frames / 4;
       loop invariant num: 0 <= num_tachs <= 255;
       loop invariant ptr: data_ptr == data_ptr0 + 4*k;
       loop invariant valid: \valid_read(&data_ptr[3]) || k == max_frames;
 
       loop invariant pos_last: edge_pos[num_tachs] == k_last;
+      //loop invariant forall: \forall integer x;
+      //  0 <= x < num_tachs ==>
+      //    0 <= edge_pos[x] < edge_pos[x+1] < max_frames &&
+      //    edge_pos[x+1] - edge_pos[x] >= 12;
       loop invariant forall: \forall integer x;
         0 <= x < num_tachs ==>
-          0 <= edge_pos[x] < edge_pos[x+1] < max_frames &&
-          edge_pos[x+1] - edge_pos[x] >= 12;
+          0 <= edge_pos[x] < edge_pos[x+1] < max_frames;
+
+      //loop invariant edge_pos_ordered1: \forall integer k;
+      //  0 <= k <= num_tachs ==>
+      //    0 <= edge_pos[k];
+
+      //loop invariant edge_pos_ordered2: \forall integer k;
+      //  0 <= k < num_tachs ==>
+      //    edge_pos[k] < edge_pos[k+1];
+
+      loop invariant edge_pos_ordered3:
+        num_tachs == 0 || \forall integer k;
+          0 <= k <= num_tachs ==>
+            edge_pos[k] <= MAX_FRAMES;
+
+      loop invariant edge_pos_gap: \forall integer k;
+        0 <= k < num_tachs ==>
+          edge_pos[k+1] - edge_pos[k] >= 12;
 
       loop invariant minmax: num_tachs == 0 || tach_min <= tach_max;
 
@@ -742,6 +805,9 @@ uint8_t find_tachs(uint16_t max_frames,
 
         num_tachs++;
         edge_pos[num_tachs] = k;
+        // assert prev: edge_pos[num_tachs-1] == k_last;
+        // assert cur:  edge_pos[num_tachs]   == k;
+        // assert edge_gap: edge_pos[num_tachs] - edge_pos[num_tachs-1] >= 12;
 
         // gather tach duration statistics
         if (cur_tach > tach_max) {
@@ -805,4 +871,117 @@ uint8_t find_tachs(uint16_t max_frames,
   *tach_skip = skip;
 
   return num_tachs;
+}
+
+uint8_t capture_and_demod(
+        uint8_t id,
+        uint16_t max_frames,
+        uint8_t *stat1_out,
+        int16_t minmax[4][2],
+        uint16_t NQ[4],
+        capture_entry_s *entry,
+        int16_t mean[4],
+        int16_t *tach_mean,
+        uint16_t *tach_skip,
+        uint8_t *tach_ratio,
+        uint16_t *discard,
+        uint16_t mean_abs[3],
+        uint8_t *rounding_inout,
+        uint8_t first_round,    //minmax for tach only computed during the first round
+        uint8_t biased_round,   //minmax computed only during biased rounds
+        uint8_t last_round      //only certain stats during the last round
+        ) {
+  // There might be some stray error codes if num_fms > 1
+  // In one case STAT_P=7 and STAT_N=7 would always get set,
+  // but reading them here before capture() clears them.
+  // My hypothesis is that this has to do with dV/dt's during
+  // VGND change inducing out-of-range signals in channels 1-3.
+  rreg(id, STAT_1);
+  rreg(id, STAT_P);
+  rreg(id, STAT_N);
+  rreg(id, STAT_S);
+
+  set_74153(id);
+  capture(id, stat1_out, max_frames);
+
+  if (biased_round) {
+    compute_min_max(max_frames, (sample_t*)sample_data, minmax, first_round);
+  }
+
+  //synthesize TACH from fourth channel in each FM data stream
+  //if we don't have a decent tach trigger value yet then bootstrap one from the mean of the captured samples
+  if (*tach_mean == 0) {
+    *tach_mean = bootstrap_tach_mean(max_frames, (sample_t*)sample_data);
+  }
+
+  //FIXME: somewhat out of date values
+  //most recent performance test (2018-04-17), 19.2 kHz 1700 RPM:
+  //
+  // 213 ms in capture() (further up)
+  //  77 ms spent in this loop
+  //        of which 36 ms in accumulate_square_interval_2()
+  //  11 ms other
+  //---------------------------------
+  // 301 ms total
+
+  uint16_t edge_pos[256];
+  entry->num_tachs = find_tachs(max_frames,
+                                tach_skip,
+                                tach_ratio,
+                                *tach_mean,
+                                edge_pos);
+
+  if (entry->num_tachs >= 1) {
+    /*@ assert max_frames: \forall integer x;
+          0 <= x <= entry->num_tachs ==>
+            edge_pos[x] <= MAX_FRAMES;
+     */
+    accu_t Q1[3], Q2[3], Q3[3], Q4[3];
+
+    *discard = edge_pos[0];
+
+    //assigns Q1..4 and NQ
+    demod_tachs(entry->num_tachs,
+                edge_pos,
+                rounding_inout,
+                Q1, Q2, Q3, Q4, NQ);
+
+    if (entry->num_tachs > 0) {
+      uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
+      //@ assert N0: 0 < N;
+      //@ assert N1: N == edge_pos[entry->num_tachs] - edge_pos[0];
+      //@ assert N2: N <= MAX_FRAMES;
+
+      //@ assert NQrange: 0 < NQ[0] + NQ[1] + NQ[2] + NQ[3] <= MAX_FRAMES;
+
+      if (last_round) {
+        //sum_abs[3] is just the sum, should save some cycles
+#ifndef FRAMA_C
+        uint32_t sum_abs[4] = {0,0,0,0};
+#else
+        //WP doesn't seem able to deal with unsigned overflow
+        int32_t sum_abs[4] = {0,0,0,0};
+#endif
+
+        compute_sum_abs(edge_pos[0], edge_pos[entry->num_tachs], sum_abs);
+
+        mean_abs[0] = sum_abs[0] / N;
+        mean_abs[1] = sum_abs[1] / N;
+        mean_abs[2] = sum_abs[2] / N;
+        //mean[0..2] are computed in binary_iq
+        mean[3]     = sum_abs[3] / N;
+      }
+
+      binary_iq(Q1, Q2, Q3, Q4, NQ, entry->IQ, mean, last_round);
+    }
+  } else {
+    //no tachs at all
+    *discard = max_frames;
+  }
+
+  //this *looks* like a bug, but I'm fairly sure this just ends up
+  //reusing mean[3] from previous runs
+  *tach_mean = mean[3];
+
+  return 0;
 }
