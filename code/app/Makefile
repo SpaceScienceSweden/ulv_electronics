@@ -65,7 +65,8 @@ all: $(PRG).elf lst text eeprom printstackusage
 
 PROVERS=z3,cvc4,alt-ergo,qed
 verify: verified.c
-	frama-c -wp -wp-timeout 30 -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
+	# avr-gcc behaves like a 16-bit machine, so pick x86_16 -> 16-bit int
+	frama-c -wp -wp-timeout 30 -machdep x86_16 -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
 	touch verify
 
 .PHONY: printstackusage

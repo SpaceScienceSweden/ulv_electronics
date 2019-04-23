@@ -326,6 +326,11 @@ void binary_iq(
   uint8_t compute_mean
 ) {
   uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
+  accu_t lo = N*(accu_t)INT16_MIN;
+  accu_t hi = N*(accu_t)INT16_MAX;
+  // Verify that the above multiplications are correct:
+  //@ assert lo == N*INT16_MIN;
+  //@ assert hi == N*INT16_MAX;
 
   /*@ loop invariant \forall integer x;
         0 <= x <= 2 && compute_mean == 0 ==>
@@ -346,17 +351,21 @@ void binary_iq(
     accu_t Q = q1 + q2 - q3 - q4;
 
     //clamp
-    if (I < N*INT16_MIN) {
+    if (I < lo) {
+      //@ assert I_underflow: I < N*INT16_MIN;
       IQ[j][0] = INT16_MIN;
-    } else if (I > N*INT16_MAX) {
+    } else if (I > hi) {
+      //@ assert I_overflow: I > N*INT16_MAX;
       IQ[j][0] = INT16_MAX;
     } else {
       IQ[j][0] = I / N;
     }
 
-    if (Q < N*INT16_MIN) {
+    if (Q < lo) {
+      //@ assert Q_underflow: Q < N*INT16_MIN-1;
       IQ[j][1] = INT16_MIN;
-    } else if (Q > N*INT16_MAX) {
+    } else if (Q > hi) {
+      //@ assert Q_overflow: Q > N*INT16_MAX;
       IQ[j][1] = INT16_MAX;
     } else {
       IQ[j][1] = Q / N;
@@ -365,9 +374,11 @@ void binary_iq(
     if (compute_mean) {
       accu_t M = q1 + q2 + q3 + q4;
 
-      if (M < N*INT16_MIN) {
+      if (M < lo) {
+        //@ assert M_underflow: M < N*INT16_MIN;
         mean[j] = INT16_MIN;
-      } else if (M > N*INT16_MAX) {
+      } else if (M > hi) {
+        //@ assert M_overflow: M > N*INT16_MAX;
         mean[j] = INT16_MAX;
       } else {
         mean[j] = M / N;
