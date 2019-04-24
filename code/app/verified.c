@@ -1049,7 +1049,7 @@ uint8_t capture_and_demod(
 
       //@ assert NQrange: 0 < NQ[0] + NQ[1] + NQ[2] + NQ[3] <= MAX_FRAMES;
 
-      if (last_round) {
+      if (last_round || mean[3] == 0) {
         //sum_abs[3] is just the sum, should save some cycles
 #ifndef FRAMA_C
         uint32_t sum_abs[4] = {0,0,0,0};
