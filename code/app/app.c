@@ -350,7 +350,11 @@ retry24:
   return ret;
 }
 
+#ifdef TEST_SPEED
+uint32_t gettime32() {
+#else
 static uint32_t gettime32() {
+#endif
   uint16_t t3, t3_2;
   uint32_t ret;
 

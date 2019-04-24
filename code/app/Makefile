@@ -52,6 +52,7 @@ CC             = avr-gcc
 #LDFLAGS enable float functionality in printf()
 CFLAGS  = $(CFLAGS_ROOT) -Werror -Wno-unused -Wno-return-local-addr -Wno-stringop-overflow \
   -Wall $(OPTIMIZE) -mmcu=$(MCU) $(DEFS) -std=gnu99 -DFEATURE_MMC=$(FEATURE_MMC) -DFEATURE_ASM=$(FEATURE_ASM)
+#CFLAGS += -DTEST_SPEED
 LDFLAGS = -Wl,-Map,$(PRG).map -Wl,-u,vfprintf -lprintf_flt -lm \
 	-Wl,--defsym=__heap_end=0x80ffff,--print-memory-usage,--script=app.xn
 # ^ Put .data and stack in SRAM, .bss and heap in XRAM

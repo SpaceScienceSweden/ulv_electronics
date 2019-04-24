@@ -218,6 +218,11 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
     //printf_P(PSTR("Capturing block @ t = %f\r\n"), cb.t / (float)F_CPU);
     //READY();
 
+#ifdef TEST_SPEED
+    //for printing timings
+    start_section("INFO");
+#endif
+
     for (; cb.nentries < nentries_max && !got_esc; cb.nentries++) {
       uint16_t NQ[4] = {0};
       uint8_t id = fm_map[cb.nentries % num_fms];

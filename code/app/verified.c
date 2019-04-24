@@ -1,5 +1,10 @@
 /* Everything that is commited in here has been verified by Frama-C */
 
+// See -DTEST_SPEED in Makefile
+#ifdef TEST_SPEED
+#include <avr/pgmspace.h>
+#include <stdio.h>
+#endif
 #include <stdint.h>
 #include "verified.h"
 
@@ -971,6 +976,21 @@ uint8_t find_tachs(uint16_t max_frames,
   return num_tachs;
 }
 
+//most recent performance test (2018-04-24), 19.2 kHz 1700 RPM:
+//
+// 213 ms in capture()
+//   6 ms find_tachs()
+//  36 ms demod_tachs()
+//   0 ms binary_iq()
+//---------------------------------
+// 257 ms typical (2 ms due to rounding)
+//
+// depending on what statistics we want:
+//  30 ms compute_min_max() if biased_round
+//  10 ms bootstrap_tach_mean()
+//  69 ms compute_sum_abs() if last_round
+//---------------------------------
+// 366 ms total worst case
 uint8_t capture_and_demod(
         uint8_t id,
         uint16_t max_frames,
@@ -989,6 +1009,10 @@ uint8_t capture_and_demod(
         uint8_t biased_round,   //minmax computed only during biased rounds
         uint8_t last_round      //only certain stats during the last round
         ) {
+#ifdef TEST_SPEED
+  uint32_t t0 = gettime32();
+#endif
+
   // There might be some stray error codes if num_fms > 1
   // In one case STAT_P=7 and STAT_N=7 would always get set,
   // but reading them here before capture() clears them.
@@ -1002,9 +1026,17 @@ uint8_t capture_and_demod(
   set_74153(id);
   capture(id, stat1_out, max_frames);
 
+#ifdef TEST_SPEED
+  uint32_t t1 = gettime32();
+#endif
+
   if (biased_round) {
     compute_min_max(max_frames, (sample_t*)sample_data, minmax, first_round);
   }
+
+#ifdef TEST_SPEED
+  uint32_t t2 = gettime32();
+#endif
 
   //synthesize TACH from fourth channel in each FM data stream
   //if we don't have a decent tach trigger value yet then bootstrap one from the mean of the captured samples
@@ -1012,20 +1044,19 @@ uint8_t capture_and_demod(
     *tach_mean = bootstrap_tach_mean(max_frames, (sample_t*)sample_data);
   }
 
-  //FIXME: somewhat out of date values
-  //most recent performance test (2018-04-17), 19.2 kHz 1700 RPM:
-  //
-  // 213 ms in capture() (further up)
-  //  77 ms spent in this loop
-  //        of which 36 ms in accumulate_square_interval_2()
-  //  11 ms other
-  //---------------------------------
-  // 301 ms total
+#ifdef TEST_SPEED
+  uint32_t t3 = gettime32();
+#endif
 
   entry->num_tachs = find_tachs(max_frames,
                                 tach_skip,
                                 tach_ratio,
                                 *tach_mean);
+
+#ifdef TEST_SPEED
+  uint32_t t4 = gettime32();
+  uint32_t t5 = t4;
+#endif
 
   if (entry->num_tachs >= 1) {
     /*@ assert max_frames: \forall integer x;
@@ -1037,9 +1068,19 @@ uint8_t capture_and_demod(
     *discard = edge_pos[0];
 
     //assigns Q1..4 and NQ
+#ifdef TEST_SPEED
+    //these lines regularize the time spent in the functions below
+    //but obviously result in garbage output
+    edge_pos[0] = 0;
+    edge_pos[entry->num_tachs] = max_frames;
+#endif
     demod_tachs(entry->num_tachs,
                 rounding_inout,
                 Q1, Q2, Q3, Q4, NQ);
+
+#ifdef TEST_SPEED
+    t5 = gettime32();
+#endif
 
     if (entry->num_tachs > 0) {
       uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
@@ -1073,6 +1114,15 @@ uint8_t capture_and_demod(
     //no tachs at all
     *discard = max_frames;
   }
+
+#ifdef TEST_SPEED
+  uint32_t t6 = gettime32();
+  printf_P(
+    PSTR("%5" PRId32 " %5" PRId32 " %5" PRId32 " %5" PRId32 " %5" PRId32
+         " %5" PRId32 " tot %5" PRId32 " tach %5" PRId16 " vs %5" PRId16 "\r\n"),
+    (t1-t0)/7373, (t2-t1)/7373, (t3-t2)/7373, (t4-t3)/7373,
+    (t5-t4)/7373, (t6-t5)/7373, (t6-t0)/7373, *tach_mean, mean[3]);
+#endif
 
   //this *looks* like a bug, but I'm fairly sure this just ends up
   //reusing mean[3] from previous runs
