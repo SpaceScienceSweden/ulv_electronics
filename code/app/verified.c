@@ -195,28 +195,86 @@ void compute_min_max(
     uint8_t compute_tach_minmax
 ) {
   sample_t *data_ptr = data_ptr_in;
-  uint8_t max_chan = compute_tach_minmax ? 4 : 3;
 
-  /*@ loop invariant \forall integer x; 0 <= x < max_chan ==>
-        minmax[x][0] <= \at(minmax[x][0], LoopEntry);
-      loop invariant \forall integer x; 0 <= x < max_chan ==>
-        minmax[x][1] >= \at(minmax[x][1], LoopEntry);
-      loop invariant data_ptr == data_ptr_in + k*4;
-      loop assigns k, data_ptr, ((int16_t*)minmax)[0..2*max_chan-1];
-   */
-  for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4) {
-    /*@ loop invariant \forall integer x; 0 <= x < max_chan ==>
-          minmax[x][0] <= \at(minmax[x][0], LoopEntry);
-        loop invariant \forall integer x; 0 <= x < max_chan ==>
-          minmax[x][1] >= \at(minmax[x][1], LoopEntry);
-        loop assigns l, ((int16_t*)minmax)[0..2*max_chan-1];
+  if (compute_tach_minmax) {
+    //4 channels
+    int16_t mins[4], maxs[4];
+    mins[0] = minmax[0][0];
+    maxs[0] = minmax[0][1];
+    mins[1] = minmax[1][0];
+    maxs[1] = minmax[1][1];
+    mins[2] = minmax[2][0];
+    maxs[2] = minmax[2][1];
+    mins[3] = minmax[3][0];
+    maxs[3] = minmax[3][1];
+
+    /*@ loop invariant \forall integer x; 0 <= x < 4 ==>
+          mins[x] <= \at(mins[x], LoopEntry);
+        loop invariant \forall integer x; 0 <= x < 4 ==>
+          maxs[x] >= \at(maxs[x], LoopEntry);
+        loop invariant data_ptr == data_ptr_in + k*4;
+        loop assigns k, data_ptr, mins[0..3], maxs[0..3];
      */
-    for (uint8_t l = 0; l < max_chan; l++) {
-      //deal with >=24-bit
-      int16_t s = data_ptr[l] / (1 << (WORDSZ-16));
-      if (s < minmax[l][0]) minmax[l][0] = s;
-      if (s > minmax[l][1]) minmax[l][1] = s;
+    for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4) {
+      int16_t s0 = data_ptr[0] / (1 << (WORDSZ-16));
+      int16_t s1 = data_ptr[1] / (1 << (WORDSZ-16));
+      int16_t s2 = data_ptr[2] / (1 << (WORDSZ-16));
+      int16_t s3 = data_ptr[3] / (1 << (WORDSZ-16));
+
+      if (s0 < mins[0]) mins[0] = s0;
+      if (s0 > maxs[0]) maxs[0] = s0;
+      if (s1 < mins[1]) mins[1] = s1;
+      if (s1 > maxs[1]) maxs[1] = s1;
+      if (s2 < mins[2]) mins[2] = s2;
+      if (s2 > maxs[2]) maxs[2] = s2;
+      if (s3 < mins[3]) mins[3] = s3;
+      if (s3 > maxs[3]) maxs[3] = s3;
     }
+
+    minmax[0][0] = mins[0];
+    minmax[0][1] = maxs[0];
+    minmax[1][0] = mins[1];
+    minmax[1][1] = maxs[1];
+    minmax[2][0] = mins[2];
+    minmax[2][1] = maxs[2];
+    minmax[3][0] = mins[3];
+    minmax[3][1] = maxs[3];
+  } else {
+    //3 channels
+    int16_t mins[3], maxs[3];
+    mins[0] = minmax[0][0];
+    maxs[0] = minmax[0][1];
+    mins[1] = minmax[1][0];
+    maxs[1] = minmax[1][1];
+    mins[2] = minmax[2][0];
+    maxs[2] = minmax[2][1];
+
+    /*@ loop invariant \forall integer x; 0 <= x < 3 ==>
+          mins[x] <= \at(mins[x], LoopEntry);
+        loop invariant \forall integer x; 0 <= x < 3 ==>
+          maxs[x] >= \at(maxs[x], LoopEntry);
+        loop invariant data_ptr == data_ptr_in + k*4;
+        loop assigns k, data_ptr, mins[0..2], maxs[0..2];
+     */
+    for (uint16_t k = 0; k < max_frames; k++, data_ptr += 4) {
+      int16_t s0 = data_ptr[0] / (1 << (WORDSZ-16));
+      int16_t s1 = data_ptr[1] / (1 << (WORDSZ-16));
+      int16_t s2 = data_ptr[2] / (1 << (WORDSZ-16));
+
+      if (s0 < mins[0]) mins[0] = s0;
+      if (s0 > maxs[0]) maxs[0] = s0;
+      if (s1 < mins[1]) mins[1] = s1;
+      if (s1 > maxs[1]) maxs[1] = s1;
+      if (s2 < mins[2]) mins[2] = s2;
+      if (s2 > maxs[2]) maxs[2] = s2;
+    }
+
+    minmax[0][0] = mins[0];
+    minmax[0][1] = maxs[0];
+    minmax[1][0] = mins[1];
+    minmax[1][1] = maxs[1];
+    minmax[2][0] = mins[2];
+    minmax[2][1] = maxs[2];
   }
 }
 
