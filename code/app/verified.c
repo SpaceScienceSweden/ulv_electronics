@@ -496,10 +496,12 @@ inline void accumulate_quadrant(
   const sample_t *data_ptr)
 {
   accu_t q0 = Q[0], q1 = Q[1], q2 = Q[2];
+  const sample_t *end = data_ptr + n*4;
+  //@ ghost uint16_t i = 0;
 
-  /*@ loop invariant i < n || i == n;
+  /*@ loop invariant data_ptr < end || data_ptr == end;
       loop invariant data_ptr == \at(data_ptr,LoopEntry) + i*4;
-      loop invariant \valid_read(data_ptr + (0..2)) || i == n;
+      loop invariant \valid_read(data_ptr + (0..2)) || data_ptr == end;
 
       loop invariant
         \at(q0,LoopEntry) + i*INT16_MIN <= q0 <= \at(q0,LoopEntry) + i*INT16_MAX &&
@@ -507,11 +509,14 @@ inline void accumulate_quadrant(
         \at(q2,LoopEntry) + i*INT16_MIN <= q2 <= \at(q2,LoopEntry) + i*INT16_MAX;
 
       loop assigns q0, q1, q2, i, data_ptr;
+
+      loop variant end - data_ptr;
    */
-  for (uint16_t i = 0; i < n; i++, data_ptr += 4) {
+  for (; data_ptr != end; data_ptr += 4) {
     q0 += data_ptr[0];
     q1 += data_ptr[1];
     q2 += data_ptr[2];
+    //@ ghost i++;
   }
 
   Q[0] = q0; Q[1] = q1; Q[2] = q2;
