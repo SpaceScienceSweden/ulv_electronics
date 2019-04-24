@@ -41,6 +41,7 @@
 #endif
 
 extern int16_t sample_data[4*MAX_FRAMES];
+extern uint16_t edge_pos[256];
 
 /*@ requires 0 <= id <= 2;
     requires \valid(stat1_out);
@@ -313,7 +314,6 @@ void binary_iq(
     assigns *rounding_inout, Q1out[0..2], Q2out[0..2], Q3out[0..2], Q4out[0..2], NQout[0..3];
  */
 void demod_tachs(uint8_t num_tachs,
-                 const uint16_t *edge_pos,
                  uint8_t *rounding_inout,
                  accu_t Q1out[3],
                  accu_t Q2out[3],
@@ -366,8 +366,7 @@ void demod_tachs(uint8_t num_tachs,
 uint8_t find_tachs(uint16_t max_frames,
                    uint16_t *tach_skip,
                    uint8_t *tach_ratio,
-                   int16_t tach_mean,
-                   uint16_t *edge_pos);
+                   int16_t tach_mean);
 
 //captures and demodulates data coming out of a single FM
 //capturing one at a time is better phase-jitter-wise
@@ -411,6 +410,7 @@ uint8_t find_tachs(uint16_t max_frames,
       minmax[x][1] >= \old(minmax[x][1]);
 
     assigns sample_data[0..4*max_frames-1],
+            edge_pos[0..255],
             timer1_base, SPDR, TIFR, PORTF,
             *stat1_out,
             ((int16_t*)minmax)[0..7],

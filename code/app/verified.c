@@ -673,7 +673,6 @@ before3:
 }
 
 void demod_tachs(uint8_t num_tachs,
-                 const uint16_t *edge_pos,
                  uint8_t *rounding_inout,
                  accu_t Q1out[3],
                  accu_t Q2out[3],
@@ -788,8 +787,7 @@ void demod_tachs(uint8_t num_tachs,
 uint8_t find_tachs(uint16_t max_frames,
                    uint16_t *tach_skip,
                    uint8_t *tach_ratio,
-                   int16_t tach_mean,
-                   uint16_t *edge_pos)
+                   int16_t tach_mean)
 {
   int16_t mid = tach_mean;
   int16_t on  = mid;          //100% of mean
@@ -1019,12 +1017,10 @@ uint8_t capture_and_demod(
   //---------------------------------
   // 301 ms total
 
-  uint16_t edge_pos[256];
   entry->num_tachs = find_tachs(max_frames,
                                 tach_skip,
                                 tach_ratio,
-                                *tach_mean,
-                                edge_pos);
+                                *tach_mean);
 
   if (entry->num_tachs >= 1) {
     /*@ assert max_frames: \forall integer x;
@@ -1037,7 +1033,6 @@ uint8_t capture_and_demod(
 
     //assigns Q1..4 and NQ
     demod_tachs(entry->num_tachs,
-                edge_pos,
                 rounding_inout,
                 Q1, Q2, Q3, Q4, NQ);
 

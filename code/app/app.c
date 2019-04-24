@@ -97,6 +97,9 @@ int16_t __attribute__((section(".xmem"))) sample_data[4*MAX_FRAMES];
 capture_block_s __attribute__((section(".xmem"))) cb;
 capture_block_continued_s __attribute__((section(".xmem"))) cbc;
 
+//keep in internal SRAM to speed things up slightly
+uint16_t edge_pos[256];
+
 #endif
 
 #endif  //FEATURE_SAMPLES
