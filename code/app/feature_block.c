@@ -382,14 +382,14 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
     block_idx = (block_idx + 1) & 0xF;
     t = t2;
 
-    // this takes ~1 second
+    // this takes ~4 second
     start_section("BLOCK");
     sendbuf(&cb, cbsz);
-    sendbuf(&cbc, sizeof(cbc));
-    READY();
 
-    // extra delay, but not as much as at the start
-    wait_ms(2000);
+    cbc.samplesz = max_frames * 4 * 2;
+    sendbuf(&cbc, sizeof(cbc));
+    sendbuf(sample_data, cbc.samplesz);
+    READY();
   }
 
 square_demod_analog_done:
