@@ -106,7 +106,7 @@ loadusb: $(PRG).hex
 lst:  $(PRG).lst
 
 %.lst: %.elf
-	$(OBJDUMP) -h -S $< > $@
+	$(OBJDUMP) -h -S -j .data -j .text $< > $@
 
 # Rules for building the .text rom images
 
