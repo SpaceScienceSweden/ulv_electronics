@@ -19,6 +19,45 @@ static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint16_t o
   }
 }
 
+static uint16_t compute_max_frames(uint16_t max_frames_max,
+                                   uint32_t cycles_per_sample,
+                                   uint32_t frames_per_second)
+{
+  //note that this makes use of the entire sample_data array
+  //we're not doing any double buffering here,
+  //and we're not indexing into the array
+  //this makes it possible to make use of all 32k of it
+  uint16_t max_frames = sizeof(sample_data)/(WORDSZ/8*4);
+
+  //measure no longer than then number of Timer1 overflows
+  //we can keep track of in one byte, comfortably
+  //                                 1024000    / 256 = 4000;
+  uint32_t max_ovf_frames = ((uint32_t)TIMER1_OVF_INC * TIMER1_OVFS_MAX) / cycles_per_sample;
+
+  //measure no longer than one second
+  if (frames_per_second < max_frames) {
+    max_frames = frames_per_second;
+  }
+  if (max_frames > max_ovf_frames) {
+    max_frames = max_ovf_frames;
+  }
+  if (max_frames_max > 0 && max_frames > max_frames_max) {
+    max_frames = max_frames_max;
+  }
+
+  //sanity check, to prevent q1..3 from having to deal with overflow
+  //we can probably bump this to 65535 (see computation of fm->mean[j]):
+  //  (+)2147483647 / (-)32768 = 65535
+  //   ^               ^         ^ maximum no. frames
+  //   ^               ^ maximum sample amplitude
+  //   ^ minimum accu_t range
+  if (max_frames > 16383) {
+    max_frames = 16383;
+  }
+
+  return max_frames;
+}
+
 // Uses the analog signal in channel 4 in each FM for synchronization
 // ocr_lo, ocr_hi: if non-zero, OCR1* low/high setting, alternated between capture blocks
 void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_lo, uint16_t ocr_hi) {
@@ -97,64 +136,15 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
 #error WORDSZ > 24 not supported currently
 #endif
 
-  uint32_t cycles_per_sample = adc_cycles_per_sample();
-
-  //note that this makes use of the entire sample_data array
-  //we're not doing any double buffering here,
-  //and we're not indexing into the array
-  //this makes it possible to make use of all 32k of it
-  uint16_t max_frames = sizeof(sample_data)/(WORDSZ/8*4);
-
-  //measure no longer than one second
-  uint32_t frames_per_second = F_CPU / cycles_per_sample;
-
-  //measure no longer than then number of Timer1 overflows
-  //we can keep track of in one byte, comfortably
-  //                                 1024000    / 256 = 4000;
-  uint32_t max_ovf_frames = ((uint32_t)TIMER1_OVF_INC * TIMER1_OVFS_MAX) / cycles_per_sample;
-
-  if (frames_per_second < max_frames) {
-    max_frames = frames_per_second;
-  }
-  if (max_frames > max_ovf_frames) {
-    max_frames = max_ovf_frames;
-  }
-  if (max_frames_max > 0 && max_frames > max_frames_max) {
-    max_frames = max_frames_max;
-  }
-
-  //sanity check, to prevent q1..3 from having to deal with overflow
-  //we can probably bump this to 65535 (see computation of fm->mean[j]):
-  //  (+)2147483647 / (-)32768 = 65535
-  //   ^               ^         ^ maximum no. frames
-  //   ^               ^ maximum sample amplitude
-  //   ^ minimum accu_t range
-  if (max_frames > 16383) {
-    max_frames = 16383;
-  }
-
   //longer WDT than normal to not have to do WDR inside loops
   wdt_enable(WDTO_2S);
 
-  if (max_frames > 0) {
-    start_section("INFO");
-  } else {
-    start_section("ERROR");
-  }
-  printf_P(PSTR("rate: %lu Hz, %u frames, max_ovf_frames = %lu\n"), frames_per_second, max_frames, max_ovf_frames);
-  READY();
-  if (max_frames == 0) {
-    return;
-  }
   uint8_t got_esc = 0;
   uint64_t t = gettime64();
 
   //keep track of mean tachometer value
   //a value of zero is understood as "not intialized"
   int16_t tach_mean[3] = {0,0,0};
-  //default distance to skip after each flank in tachometer trigger logic
-  uint16_t default_skip = F_CPU/400/cycles_per_sample;  //90° at 6000 RPM
-  uint16_t tach_skip[3] = {default_skip,default_skip,default_skip};
   uint8_t max_max_tach_ratio = 0; //max_tach_ratio over the entire run so far
   uint8_t block_idx = 0;
   uint8_t temp_conversion_in_progress = 0;
@@ -163,6 +153,26 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
   wait_ms(3000);
 
   while (!have_esc() && !got_esc) {
+    uint32_t cycles_per_sample = adc_cycles_per_sample();
+    uint32_t frames_per_second = F_CPU / cycles_per_sample;
+    uint16_t max_frames = compute_max_frames(max_frames_max,
+                                             cycles_per_sample,
+                                             frames_per_second);
+    //default distance to skip after each flank in tachometer trigger logic
+    uint16_t default_skip = F_CPU/400/cycles_per_sample;  //90° at 6000 RPM
+    uint16_t tach_skip[3] = {default_skip,default_skip,default_skip};
+
+    if (max_frames > 0) {
+      start_section("INFO");
+    } else {
+      start_section("ERROR");
+    }
+    printf_P(PSTR("rate: %lu Hz, %u frames\n"), frames_per_second, max_frames);
+    READY();
+    if (max_frames == 0) {
+      return;
+    }
+
     memset(&cb, 0, sizeof(cb));
     memset(&cbc,0, sizeof(cbc));
     cb.version        = 3;
@@ -371,7 +381,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
           cb.stats[id].NQ[1] +
           cb.stats[id].NQ[2] +
           cb.stats[id].NQ[3];
-        float f = tot_tachs[id] / (float)N * F_CPU / cycles_per_sample; //  eller nåt;
+        float f = tot_tachs[id] / (float)N * frames_per_second; //  eller nåt;
         printf_P(PSTR("id = %hhu, N=%lu, tachs=%lu, %f RPM\r\n"), id, N, tot_tachs[id], 60*f);
       }
       printf_P(PSTR("id = %hhu, min/mean/max tach: %i/%i/%i\r\n"), id, cb.stats[id].minmax[3][0], cb.stats[id].mean[3], cb.stats[id].minmax[3][1]);
