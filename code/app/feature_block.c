@@ -158,6 +158,9 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
       }
     }
 
+    //wait for motors to spin up/down
+    wait_ms(3000);
+
     memset(&cb, 0, sizeof(cb));
     memset(&cbc,0, sizeof(cbc));
     cb.version        = 3;

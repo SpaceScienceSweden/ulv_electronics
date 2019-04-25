@@ -122,6 +122,15 @@ static uint16_t vgnds[3] = {512, 512, 512};
 uint16_t sintab[1024];
 #endif
 
+//wait some number of millisecond, resetting WDT during
+static void wait_ms(uint16_t x) {
+  while (x > 0) {
+    _delay_ms(1);
+    wdt_reset();
+    x--;
+  }
+}
+
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
   RS485_DE_PORT |= RS485_DE_BIT;
@@ -1668,16 +1677,6 @@ static void handle_input(void) {
         return;
       }
 }
-
-//wait some number of millisecond, resetting WDT during
-static void wait_ms(uint16_t x) {
-  while (x > 0) {
-    _delay_ms(1);
-    wdt_reset();
-    x--;
-  }
-}
-
 
 int main(void)
 {
