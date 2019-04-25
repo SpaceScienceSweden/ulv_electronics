@@ -99,6 +99,11 @@ capture_block_continued_s __attribute__((section(".xmem"))) cbc;
 
 //keep in internal SRAM to speed things up slightly
 uint16_t edge_pos[256];
+accu_t Q1[3];
+accu_t Q2[3];
+accu_t Q3[3];
+accu_t Q4[3];
+uint16_t NQ[4];
 
 #endif
 

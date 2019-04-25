@@ -405,11 +405,6 @@ uint8_t ocr2osr(uint16_t ocr) {
 }
 
 void binary_iq(
-  const accu_t *Q1,
-  const accu_t *Q2,
-  const accu_t *Q3,
-  const accu_t *Q4,
-  uint16_t NQ[4],
   int16_t IQ[3][2],
   int16_t mean[4],
   uint8_t compute_mean
@@ -567,11 +562,7 @@ void accumulate_quadrants(
   uint16_t i2,
   uint16_t i3,
   uint16_t i4,
-  const sample_t *data_ptr,
-  accu_t Q1[3],
-  accu_t Q2[3],
-  accu_t Q3[3],
-  accu_t Q4[3]
+  const sample_t *data_ptr
 ) {
   uint16_t n0 = i1 - i0;
   uint16_t n1 = i2 - i1;
@@ -586,10 +577,6 @@ void accumulate_quadrants(
 void accumulate_square_interval_2(
   uint16_t p0,
   uint16_t p12,
-  accu_t Q1[3],
-  accu_t Q2[3],
-  accu_t Q3[3],
-  accu_t Q4[3],
   uint16_t *nsum1,
   uint16_t *nsum2,
   uint16_t *nsum3,
@@ -649,7 +636,7 @@ void accumulate_square_interval_2(
   //@ assert nlo <= n11 <= nhi;
 
 before:
-  accumulate_quadrants(i0,i1,i2, i3, i4, data_ptr,Q1,Q2,Q3,Q4);
+  accumulate_quadrants(i0,i1,i2, i3, i4, data_ptr);
   /*@ assert round1: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
       0 <= x <= 2 ==>
         \at(Q1[x],before) + n0*INT16_MIN <= Q1[x] <= \at(Q1[x],before) + n0*INT16_MAX &&
@@ -658,7 +645,7 @@ before:
         \at(Q4[x],before) + n3*INT16_MIN <= Q4[x] <= \at(Q4[x],before) + n3*INT16_MAX;
   */
 before2:
-  accumulate_quadrants(i4,i5,i6, i7, i8, data_ptr,Q1,Q2,Q3,Q4);
+  accumulate_quadrants(i4,i5,i6, i7, i8, data_ptr);
   /*@ assert round2: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
       0 <= x <= 2 ==>
         \at(Q1[x],before2) + n4*INT16_MIN <= Q1[x] <= \at(Q1[x],before2) + n4*INT16_MAX &&
@@ -667,7 +654,7 @@ before2:
         \at(Q4[x],before2) + n7*INT16_MIN <= Q4[x] <= \at(Q4[x],before2) + n7*INT16_MAX;
   */
 before3:
-  accumulate_quadrants(i8,i9,i10,i11,i12,data_ptr,Q1,Q2,Q3,Q4);
+  accumulate_quadrants(i8,i9,i10,i11,i12,data_ptr);
   /*@ assert round3: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
       0 <= x <= 2 ==>
         \at(Q1[x],before3) + n8*INT16_MIN <= Q1[x] <= \at(Q1[x],before3) + n8*INT16_MAX &&
@@ -683,22 +670,19 @@ before3:
 }
 
 void demod_tachs(uint8_t num_tachs,
-                 uint8_t *rounding_inout,
-                 accu_t Q1out[3],
-                 accu_t Q2out[3],
-                 accu_t Q3out[3],
-                 accu_t Q4out[3],
-                 uint16_t NQout[4])
+                 uint8_t *rounding_inout)
 {
   //demodulation stuff
-  accu_t Q1[3] = {0,0,0};
-  accu_t Q2[3] = {0,0,0};
-  accu_t Q3[3] = {0,0,0};
-  accu_t Q4[3] = {0,0,0};
-  uint16_t NQ[4] = {0,0,0,0};
-
   uint8_t rounding = *rounding_inout;
   uint16_t k = 0;
+
+  // I'd use memset(), but this is easier for WP to deal with
+  // It also runs faster, at the expense of ROM
+  Q1[0] = 0; Q1[1] = 0; Q1[2] = 0;
+  Q2[0] = 0; Q2[1] = 0; Q2[2] = 0;
+  Q3[0] = 0; Q3[1] = 0; Q3[2] = 0;
+  Q4[0] = 0; Q4[1] = 0; Q4[2] = 0;
+  NQ[0] = 0; NQ[1] = 0; NQ[2] = 0; NQ[3] = 0;
 
   // assert range1: 0 <= edge_pos[0];
   // assert range2: edge_pos[num_tachs] <= MAX_FRAMES;
@@ -761,7 +745,6 @@ void demod_tachs(uint8_t num_tachs,
 
     accumulate_square_interval_2(
       edge_pos[k], edge_pos[k+1],
-      Q1, Q2, Q3, Q4,
       &nsum1, &nsum2, &nsum3, &nsum4,
       rounding
     );
@@ -784,14 +767,6 @@ void demod_tachs(uint8_t num_tachs,
   //@ assert edge_pos[num_tachs] - edge_pos[0] >= 12*num_tachs;
 
   *rounding_inout = rounding;
-
-  // Extremely tedious, but helps WP actually finish its proofs
-  // Most likely optimized away by gcc
-  Q1out[0] = Q1[0]; Q1out[1] = Q1[1]; Q1out[2] = Q1[2];
-  Q2out[0] = Q2[0]; Q2out[1] = Q2[1]; Q2out[2] = Q2[2];
-  Q3out[0] = Q3[0]; Q3out[1] = Q3[1]; Q3out[2] = Q3[2];
-  Q4out[0] = Q4[0]; Q4out[1] = Q4[1]; Q4out[2] = Q4[2];
-  NQout[0] = NQ[0]; NQout[1] = NQ[1]; NQout[2] = NQ[2]; NQout[3] = NQ[3];
 }
 
 uint8_t find_tachs(uint16_t max_frames,
@@ -996,7 +971,6 @@ uint8_t capture_and_demod(
         uint16_t max_frames,
         uint8_t *stat1_out,
         int16_t minmax[4][2],
-        uint16_t NQ[4],
         capture_entry_s *entry,
         int16_t mean[4],
         int16_t *tach_mean,
@@ -1063,8 +1037,6 @@ uint8_t capture_and_demod(
           0 <= x <= entry->num_tachs ==>
             edge_pos[x] <= MAX_FRAMES;
      */
-    accu_t Q1[3], Q2[3], Q3[3], Q4[3];
-
     *discard = edge_pos[0];
 
     //assigns Q1..4 and NQ
@@ -1075,8 +1047,7 @@ uint8_t capture_and_demod(
     edge_pos[entry->num_tachs] = max_frames;
 #endif
     demod_tachs(entry->num_tachs,
-                rounding_inout,
-                Q1, Q2, Q3, Q4, NQ);
+                rounding_inout);
 
 #ifdef TEST_SPEED
     t5 = gettime32();
@@ -1108,7 +1079,7 @@ uint8_t capture_and_demod(
         mean[3]     = sum_abs[3] / N;
       }
 
-      binary_iq(Q1, Q2, Q3, Q4, NQ, entry->IQ, mean, last_round);
+      binary_iq(entry->IQ, mean, last_round);
     }
   } else {
     //no tachs at all

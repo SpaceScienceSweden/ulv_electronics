@@ -227,7 +227,6 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
 #endif
 
     for (; cb.nentries < nentries_max && !got_esc; cb.nentries++) {
-      uint16_t NQ[4] = {0};
       uint8_t id = fm_map[cb.nentries % num_fms];
       //ramp VGND up/down. this avoids saturating the op-amps and ADCs
       uint16_t target_vgnds[3] = {cb.vgnd_zero, cb.vgnd_zero, cb.vgnd_zero};
@@ -266,7 +265,6 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
         max_frames,
         &stat1[id],
         cb.stats[id].minmax,
-        NQ,
         &cb.entries[cb.nentries],
         cb.stats[id].mean,
         &tach_mean[id],

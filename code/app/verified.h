@@ -42,6 +42,11 @@
 
 extern int16_t sample_data[4*MAX_FRAMES];
 extern uint16_t edge_pos[256];
+extern accu_t Q1[3];
+extern accu_t Q2[3];
+extern accu_t Q3[3];
+extern accu_t Q4[3];
+extern uint16_t NQ[4];
 
 /*@ requires 0 <= id <= 2;
     requires \valid(stat1_out);
@@ -172,10 +177,6 @@ uint8_t ocr2osr(uint16_t ocr);
 void accumulate_square_interval_2(
   uint16_t p0,
   uint16_t p12,
-  accu_t Q1[3],
-  accu_t Q2[3],
-  accu_t Q3[3],
-  accu_t Q4[3],
   uint16_t *nsum1,
   uint16_t *nsum2,
   uint16_t *nsum3,
@@ -238,11 +239,6 @@ void accumulate_square_interval_2(
         mean[x] == \old(mean[x]);
  */
 void binary_iq(
-  const accu_t *Q1,
-  const accu_t *Q2,
-  const accu_t *Q3,
-  const accu_t *Q4,
-  uint16_t NQ[4],
   int16_t IQ[3][2],
   int16_t mean[4],
   uint8_t compute_mean
@@ -253,19 +249,19 @@ void binary_iq(
     //edge_pos[] contains num_tachs+1 entries
     requires \valid_read(edge_pos + (0..num_tachs));
     requires \valid(rounding_inout);
-    requires \valid((accu_t*)Q1out + (0..2));
-    requires \valid((accu_t*)Q2out + (0..2));
-    requires \valid((accu_t*)Q3out + (0..2));
-    requires \valid((accu_t*)Q4out + (0..2));
-    requires \valid((uint16_t*)NQout + (0..3));
+    requires \valid((accu_t*)Q1 + (0..2));
+    requires \valid((accu_t*)Q2 + (0..2));
+    requires \valid((accu_t*)Q3 + (0..2));
+    requires \valid((accu_t*)Q4 + (0..2));
+    requires \valid((uint16_t*)NQ + (0..3));
 
     requires \separated(edge_pos + (0..num_tachs),
                         rounding_inout,
-                        (accu_t*)Q1out + (0..2),
-                        (accu_t*)Q2out + (0..2),
-                        (accu_t*)Q3out + (0..2),
-                        (accu_t*)Q4out + (0..2),
-                        (uint16_t*)NQout + (0..3));
+                        (accu_t*)Q1 + (0..2),
+                        (accu_t*)Q2 + (0..2),
+                        (accu_t*)Q3 + (0..2),
+                        (accu_t*)Q4 + (0..2),
+                        (uint16_t*)NQ + (0..3));
 
     //requires edge_pos_ordered1: \forall integer k;
     //  0 <= k <= num_tachs ==>
@@ -292,34 +288,29 @@ void binary_iq(
 
     ensures Q1range: \forall integer x;
       0 <= x <= 2 ==>
-        NQout[0]*INT16_MIN <= Q1out[x] <= NQout[0]*INT16_MAX;
+        NQ[0]*INT16_MIN <= Q1[x] <= NQ[0]*INT16_MAX;
     ensures Q2range: \forall integer x;
       0 <= x <= 2 ==>
-        NQout[1]*INT16_MIN <= Q2out[x] <= NQout[1]*INT16_MAX;
+        NQ[1]*INT16_MIN <= Q2[x] <= NQ[1]*INT16_MAX;
     ensures Q3range: \forall integer x;
       0 <= x <= 2 ==>
-        NQout[2]*INT16_MIN <= Q3out[x] <= NQout[2]*INT16_MAX;
+        NQ[2]*INT16_MIN <= Q3[x] <= NQ[2]*INT16_MAX;
     ensures Q4range: \forall integer x;
       0 <= x <= 2 ==>
-        NQout[3]*INT16_MIN <= Q4out[x] <= NQout[3]*INT16_MAX;
+        NQ[3]*INT16_MIN <= Q4[x] <= NQ[3]*INT16_MAX;
 
     //ensures NQrange: \forall integer x;
     //  0 <= x <= 3 ==>
     //    3*((edge_pos[num_tachs] - edge_pos[0]) / 12 - num_tachs)
-    //      <= NQout[x]
+    //      <= NQ[x]
     //      <= 3*(edge_pos[num_tachs] / 12 + num_tachs);
 
-    ensures NQsum: 12*num_tachs <= NQout[0] + NQout[1] + NQout[2] + NQout[3] == edge_pos[num_tachs] - edge_pos[0];
+    ensures NQsum: 12*num_tachs <= NQ[0] + NQ[1] + NQ[2] + NQ[3] == edge_pos[num_tachs] - edge_pos[0];
 
-    assigns *rounding_inout, Q1out[0..2], Q2out[0..2], Q3out[0..2], Q4out[0..2], NQout[0..3];
+    assigns *rounding_inout, Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], NQ[0..3];
  */
 void demod_tachs(uint8_t num_tachs,
-                 uint8_t *rounding_inout,
-                 accu_t Q1out[3],
-                 accu_t Q2out[3],
-                 accu_t Q3out[3],
-                 accu_t Q4out[3],
-                 uint16_t NQout[4]);
+                 uint8_t *rounding_inout);
 
 /*@ requires 12 <= max_frames <= MAX_FRAMES;
     requires \valid(tach_skip);
@@ -376,6 +367,10 @@ uint8_t find_tachs(uint16_t max_frames,
     requires \valid(&sample_data[0] + (0..4*max_frames-1));
     requires \valid(stat1_out);
     requires \valid((int16_t*)minmax + (0..7));
+    requires \valid((accu_t*)Q1 + (0..2));
+    requires \valid((accu_t*)Q2 + (0..2));
+    requires \valid((accu_t*)Q3 + (0..2));
+    requires \valid((accu_t*)Q4 + (0..2));
     requires \valid((uint16_t*)NQ + (0..3));
     requires \valid(entry);
     requires \valid((int16_t*)mean + (0..3));
@@ -389,6 +384,10 @@ uint8_t find_tachs(uint16_t max_frames,
     requires \separated(&sample_data[0] + (0..4*max_frames-1),
                         stat1_out,
                         (int16_t*)minmax + (0..7),
+                        (accu_t*)Q1 + (0..2),
+                        (accu_t*)Q2 + (0..2),
+                        (accu_t*)Q3 + (0..2),
+                        (accu_t*)Q4 + (0..2),
                         (uint16_t*)NQ + (0..3),
                         entry,
                         (int16_t*)mean + (0..3),
@@ -414,6 +413,10 @@ uint8_t find_tachs(uint16_t max_frames,
             timer1_base, SPDR, TIFR, PORTF,
             *stat1_out,
             ((int16_t*)minmax)[0..7],
+            Q1[0..2],
+            Q2[0..2],
+            Q3[0..2],
+            Q4[0..2],
             NQ[0..3],
             *entry,
             mean[0..3],
@@ -429,7 +432,6 @@ uint8_t capture_and_demod(
         uint16_t max_frames,
         uint8_t *stat1_out,
         int16_t minmax[4][2],
-        uint16_t NQ[4],
         capture_entry_s *entry,
         int16_t mean[4],
         int16_t *tach_mean,
