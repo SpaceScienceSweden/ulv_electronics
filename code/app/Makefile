@@ -1,5 +1,7 @@
 include ../settings.mk
 
+STACK_MAX = 512
+
 PRG            = app
 FEATURE_MMC    = 0
 FEATURE_ASM    = 1
@@ -60,7 +62,7 @@ LDFLAGS = -Wl,-Map,$(PRG).map -Wl,-u,vfprintf -lprintf_flt -lm \
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
-all: $(PRG).elf lst text eeprom printstackusage
+all: $(PRG).elf lst text eeprom printstackusage checkstackusage
 	avr-nm --size-sort --radix=d $(PRG).elf | sed -e 's/^0*//' | tail -n15
 	avr-size $(PRG).elf
 
@@ -72,6 +74,14 @@ verify: verified.c
 .PHONY: printstackusage
 printstackusage:
 	./avstack.pl $(OBJ)
+
+.PHONY: checkstackusage
+checkstackusage:
+	# If this fails then __DATA_REGION_LENGTH__ needs to be decreased in app.xn,
+	# and STACK_MAX increased accordingly
+	[ $$(./avstack.pl $(OBJ) | head -n3 | tail -n1 | tr -s ' ' | cut -d' ' -f3) \
+	  -le $(STACK_MAX) ] || ( \
+	  echo Only $(STACK_MAX) B reserved for stack, check app.xn && exit 1)
 
 init3.o: init3.c
 	$(CC) -c -o $@ $< $(CFLAGS)

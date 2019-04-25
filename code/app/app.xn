@@ -6,6 +6,9 @@
 OUTPUT_FORMAT("elf32-avr","elf32-avr","elf32-avr")
 OUTPUT_ARCH(avr:51)
 __TEXT_REGION_LENGTH__ = DEFINED(__TEXT_REGION_LENGTH__) ? __TEXT_REGION_LENGTH__ : 128K;
+
+/* The stack always starts at 0x10FF (see __ctors_end), meaning the space
+   available for the stack is 0x1100 - __DATA_REGION_LENGTH__  */
 __DATA_REGION_LENGTH__ = 0xf00; /*DEFINED(__DATA_REGION_LENGTH__) ? __DATA_REGION_LENGTH__ : 0xff00;*/
 __EEPROM_REGION_LENGTH__ = DEFINED(__EEPROM_REGION_LENGTH__) ? __EEPROM_REGION_LENGTH__ : 64K;
 __FUSE_REGION_LENGTH__ = DEFINED(__FUSE_REGION_LENGTH__) ? __FUSE_REGION_LENGTH__ : 1K;
