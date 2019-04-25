@@ -328,7 +328,9 @@ typedef struct {
   // For example, if fm_mask = 7:
   //   0, 1, 2, 0, 1, 2, etc.
   // Truncated to nentries*sizeof(capture_entry_s) bytes
-  capture_entry_s entries[255];
+  // One entry takes ~250 ms to capture @ 1600 RPM,
+  // so a simple guesstimate for the block time is NELEM(entries)/4
+  capture_entry_s entries[720]; // 3 minutes
 } capture_block_s;
 
 // this is transmitted after capture_block_s, just after where entries[] is truncated

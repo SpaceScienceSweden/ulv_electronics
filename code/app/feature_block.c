@@ -1,3 +1,24 @@
+static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint16_t ocr_lo, uint16_t ocr_hi) {
+  //alternate OCR1*
+  //set ADC sample rates while we're at it
+  uint16_t ocr = (block_idx & 1) ? ocr_hi : ocr_lo;
+  if (ocr) {
+    uint8_t clk2 = 0x20 | ocr2osr(ocr);
+    if (fm_mask & 1) {
+      OCR1A = ocr;
+      wreg(0, CLK2, clk2);
+    }
+    if (fm_mask & 2) {
+      OCR1B = ocr;
+      wreg(1, CLK2, clk2);
+    }
+    if (fm_mask & 4) {
+      OCR1C = ocr;
+      wreg(2, CLK2, clk2);
+    }
+  }
+}
+
 // Uses the analog signal in channel 4 in each FM for synchronization
 // ocr_lo, ocr_hi: if non-zero, OCR1* low/high setting, alternated between capture blocks
 void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_lo, uint16_t ocr_hi) {
@@ -138,29 +159,10 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
   uint8_t block_idx = 0;
   uint8_t temp_conversion_in_progress = 0;
 
+  set_block_motor_speed(block_idx, fm_mask, ocr_lo, ocr_hi);
+  wait_ms(3000);
+
   while (!have_esc() && !got_esc) {
-    //alternate OCR1*
-    //set ADC sample rates while we're at it
-    uint16_t ocr = (block_idx & 1) ? ocr_hi : ocr_lo;
-    if (ocr) {
-      uint8_t clk2 = 0x20 | ocr2osr(ocr);
-      if (fm_mask & 1) {
-        OCR1A = ocr;
-        wreg(0, CLK2, clk2);
-      }
-      if (fm_mask & 2) {
-        OCR1B = ocr;
-        wreg(1, CLK2, clk2);
-      }
-      if (fm_mask & 4) {
-        OCR1C = ocr;
-        wreg(2, CLK2, clk2);
-      }
-    }
-
-    //wait for motors to spin up/down
-    wait_ms(3000);
-
     memset(&cb, 0, sizeof(cb));
     memset(&cbc,0, sizeof(cbc));
     cb.version        = 3;
@@ -171,7 +173,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
     cb.stats[0].OCR1n = OCR1A;
     cb.stats[1].OCR1n = OCR1B;
     cb.stats[2].OCR1n = OCR1C;
-    cb.vgnd_rounds    = 5;    //should be <= 7, else >50% time is spent biasing
+    cb.vgnd_rounds    = 3;    //should be <= 7, else >50% time is spent biasing
     cb.vgnd_zero      = 512;
     cb.vgnd_minus     = cb.vgnd_zero - 100;
     cb.vgnd_plus      = cb.vgnd_zero + 100;
@@ -206,9 +208,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
     uint16_t nentries_vgnd = 2 * cb.vgnd_rounds * num_fms * num_fms;
     static const uint16_t entries_capacity = sizeof(cb.entries)/sizeof(cb.entries[0]);
     uint16_t nentries_max = (entries_capacity / num_fms) * num_fms;
-    if (nentries_max > 2*nentries_vgnd) {
-      nentries_max = 2*nentries_vgnd;
-    }
+
     uint16_t bias_start = nentries_max - nentries_vgnd;
     uint16_t nentries_last = nentries_max - num_fms; //where the last round starts
     uint8_t stat1[3] = {0};
@@ -299,6 +299,9 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
       wdt_reset();
     }
 
+    // start changing motor speed while we're doing the stuff below
+    set_block_motor_speed(block_idx, fm_mask, ocr_lo, ocr_hi);
+
     //check if temp conversion finished (it should have)
     if (temp_conversion_in_progress &&
         onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK )) {
@@ -379,10 +382,14 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
     block_idx = (block_idx + 1) & 0xF;
     t = t2;
 
+    // this takes ~1 second
     start_section("BLOCK");
     sendbuf(&cb, cbsz);
     sendbuf(&cbc, sizeof(cbc));
     READY();
+
+    // extra delay, but not as much as at the start
+    wait_ms(2000);
   }
 
 square_demod_analog_done:
