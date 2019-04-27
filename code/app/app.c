@@ -324,7 +324,6 @@ DWORD get_fattime (void) {
 
 ISR(TIMER1_OVF_vect) {
   //CPU_USAGE_ON();
-#define TIMER1_OVF_INC (TIMER1_PRESCALER*(TIMER1_TOP + 1 /* TOP + 1 = 1024 */))
   uint64_t timer1_new = timer1_base + TIMER1_OVF_INC;
   timer1_base = timer1_new;
 

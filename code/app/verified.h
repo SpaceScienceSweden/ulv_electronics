@@ -28,6 +28,8 @@
 #error Unsupported TIMER1_WGM
 #endif
 
+#define TIMER1_OVF_INC (TIMER1_PRESCALER*(TIMER1_TOP + 1 /* TOP + 1 = 1024 */))
+
 #define TIMER3_PRESCALER TIMER1_PRESCALER
 #define TIMER3_TOP        0xFFFF
 
@@ -444,6 +446,19 @@ uint8_t capture_and_demod(
         uint8_t biased_round,   //minmax computed only during biased rounds
         uint8_t last_round      //only certain stats during the last round
         );
+
+/*@ requires 12 <= max_frames_max <= MAX_FRAMES || max_frames_max == 0;
+    requires 2*2*32 <= cycles_per_sample <= 14*14*4096;
+    requires frames_per_second == F_CPU / cycles_per_sample;
+    ensures (\result <= max_frames_max || max_frames_max == 0) &&
+            \result <= frames_per_second &&
+            \result <= ((uint32_t)TIMER1_OVF_INC * TIMER1_OVFS_MAX) / cycles_per_sample &&
+            \result <= 16383;
+    assigns \nothing;
+ */
+uint16_t compute_max_frames(uint16_t max_frames_max,
+                            uint32_t cycles_per_sample,
+                            uint32_t frames_per_second);
 
 #endif //_PROVEN_H
 

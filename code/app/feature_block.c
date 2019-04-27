@@ -19,45 +19,6 @@ static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint16_t o
   }
 }
 
-static uint16_t compute_max_frames(uint16_t max_frames_max,
-                                   uint32_t cycles_per_sample,
-                                   uint32_t frames_per_second)
-{
-  //note that this makes use of the entire sample_data array
-  //we're not doing any double buffering here,
-  //and we're not indexing into the array
-  //this makes it possible to make use of all 32k of it
-  uint16_t max_frames = sizeof(sample_data)/(WORDSZ/8*4);
-
-  //measure no longer than then number of Timer1 overflows
-  //we can keep track of in one byte, comfortably
-  //                                 1024000    / 256 = 4000;
-  uint32_t max_ovf_frames = ((uint32_t)TIMER1_OVF_INC * TIMER1_OVFS_MAX) / cycles_per_sample;
-
-  //measure no longer than one second
-  if (frames_per_second < max_frames) {
-    max_frames = frames_per_second;
-  }
-  if (max_frames > max_ovf_frames) {
-    max_frames = max_ovf_frames;
-  }
-  if (max_frames_max > 0 && max_frames > max_frames_max) {
-    max_frames = max_frames_max;
-  }
-
-  //sanity check, to prevent q1..3 from having to deal with overflow
-  //we can probably bump this to 65535 (see computation of fm->mean[j]):
-  //  (+)2147483647 / (-)32768 = 65535
-  //   ^               ^         ^ maximum no. frames
-  //   ^               ^ maximum sample amplitude
-  //   ^ minimum accu_t range
-  if (max_frames > 16383) {
-    max_frames = 16383;
-  }
-
-  return max_frames;
-}
-
 // Uses the analog signal in channel 4 in each FM for synchronization
 // ocr_lo, ocr_hi: if non-zero, OCR1* low/high setting, alternated between capture blocks
 void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_lo, uint16_t ocr_hi) {

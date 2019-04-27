@@ -1,9 +1,7 @@
 #ifndef _FRAMA_C_STUB
 #define _FRAMA_C_STUB
 
-//detect Frama-C, fake some things
-#ifndef F_CPU
-#define FRAMA_C
+#ifdef FRAMA_C
 
 typedef uint32_t __uint24;
 /*@ // Type invariants are not supported in Silicon,
@@ -29,10 +27,6 @@ volatile uint64_t timer1_base;
 #define TOV1 2
 #define SPIF 7
 
-#define TIMER1_TOP 0x1FFF
-#define TIMER1_PRESCALER 1
-#define TIMER1_OVF_INC (TIMER1_PRESCALER*(TIMER1_TOP + 1))
-
 #define cli()
 #define sei()
 
@@ -40,7 +34,7 @@ volatile uint64_t timer1_base;
 #define FEATURE_BLOCK 1
 #define FEATURE_ASM   0 //so capture gets implemented
 
-#endif //F_CPU aka Frama-C detect
+#endif //FRAMA_C
 
 #endif //_FRAMA_C_STUB
 
