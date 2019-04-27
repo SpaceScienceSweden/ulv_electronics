@@ -20,6 +20,10 @@ void adc_select(uint8_t id) {
 void adc_deselect(void) {
 }
 
+/*@ assigns \nothing;
+ */
+void sendchar(uint8_t data) {
+}
 
 // fake rreg() that returns void, so we don't try to verify things that
 // depend on values in registers
@@ -1139,4 +1143,72 @@ uint16_t compute_max_frames(uint16_t max_frames_max,
   }
 
   return max_frames;
+}
+
+uint64_t parse64(const char *line) {
+  uint64_t ret = 0;
+  uint8_t started = 0;
+
+  /*@ loop invariant valid_read_string(line);
+      loop assigns line, ret, started;
+   */
+  for (; *line; line++) {
+    if (*line >= '0' && *line <= '9') {
+      started = 1;
+      //stop if ret would overflow
+      if (ret > 1844674407370955161) {
+        break;
+      }
+      ret *= 10;
+      uint8_t val = *line - '0';
+      //stop if ret would overflow
+      if (ret > UINT64_MAX - val) {
+        break;
+      } else {
+        ret += val;
+      }
+    } else {
+      if (started) {
+        break;
+      }
+    }
+  }
+
+  return ret;
+}
+
+//@ logic integer pow10(integer n) = n > 0 ? pow10(n-1) * 10 : 1;
+
+void print64(uint64_t i) {
+  uint64_t digit = 10000000000000000000ULL;
+  //@ assert digit19: digit == pow10(19);
+  uint8_t printing = 0;
+  //@ ghost int j = 19;
+
+  /*@ loop invariant 0 <= j <= 19;
+      loop invariant digit == pow10(j) || digit == 0;
+      loop invariant 0 <= i < digit*10;
+      loop assigns digit, i, j, printing;
+      loop variant digit;
+   */
+  for (;;) {
+    uint8_t d = i / digit;
+    //@ assert 0 <= d <= 9;
+    i %= digit;
+
+    if (d > 0) {
+      printing = 1;
+    }
+
+    if (printing) {
+      sendchar('0' + d);
+    }
+
+    digit /= 10;
+    if (digit == 0) {
+      break;
+    }
+
+    //@ ghost j--;
+  }
 }

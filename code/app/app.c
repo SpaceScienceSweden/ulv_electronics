@@ -175,7 +175,7 @@ static void start_section(const char *section_name) {
   is_busy = 1;
 }
 
-static void sendchar(uint8_t data)
+void sendchar(uint8_t data)
 {
   //don't enable_tx() here, that is dangerous
   while (!(UART_STATUS & (1<<UART_TXREADY)));
@@ -579,43 +579,6 @@ static inline uint8_t have_esc(void) {
     }
   }
   return 0;
-}
-
-//avr-libc doesn't support %llu, implement our own crappy versions
-//both have been tested with 18446744073709551615, seem to work fine
-static uint64_t parse64(const char *line) {
-  uint64_t ret = 0;
-  uint8_t started = 0;
-
-  for (; *line; line++) {
-    if (*line >= '0' && *line <= '9') {
-      started = 1;
-      ret *= 10;
-      ret += *line - '0';
-    } else {
-      if (started) {
-        break;
-      }
-    }
-  }
-
-  return ret;
-}
-
-static void print64(uint64_t i) {
-  uint64_t digit = 10000000000000000000ULL;
-  uint8_t printing = 0;
-  for (; digit > 0; digit /= 10) {
-    char c = '0';
-    while (i >= digit) {
-      printing = 1;
-      i -= digit;
-      c++;
-    }
-    if (printing) {
-      sendchar(c);
-    }
-  }
 }
 
 #define FADC      F_CPU

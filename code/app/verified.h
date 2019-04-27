@@ -1,6 +1,7 @@
 #ifndef _PROVEN_H
 #define _PROVEN_H
 
+#include <string.h>
 #include "app.h"
 #include "wire_structs.h"
 
@@ -459,6 +460,17 @@ uint8_t capture_and_demod(
 uint16_t compute_max_frames(uint16_t max_frames_max,
                             uint32_t cycles_per_sample,
                             uint32_t frames_per_second);
+
+//avr-libc doesn't support %llu, implement our own crappy versions
+//both have been tested with 18446744073709551615, seem to work fine
+/*@ requires valid_read_string(line);
+    assigns \nothing;
+ */
+uint64_t parse64(const char *line);
+
+/*@ assigns \nothing;
+ */
+void print64(uint64_t i);
 
 #endif //_PROVEN_H
 

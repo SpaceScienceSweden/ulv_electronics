@@ -30,6 +30,8 @@ uint8_t rreg(uint8_t id, uint8_t a);
  */
 void set_74153(uint8_t ch);
 
+void sendchar(uint8_t data);
+
 #ifdef TEST_SPEED
 uint32_t gettime32();
 #endif
