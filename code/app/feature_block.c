@@ -270,9 +270,6 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
       wdt_reset();
     }
 
-    // start changing motor speed while we're doing the stuff below
-    set_block_motor_speed(block_idx, fm_mask, ocr_lo, ocr_hi);
-
     //check if temp conversion finished (it should have)
     if (temp_conversion_in_progress &&
         onewireReadBit( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK )) {
@@ -352,6 +349,9 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
     }
     block_idx = (block_idx + 1) & 0xF;
     t = t2;
+
+    // start changing motor speed while we're doing the stuff below
+    set_block_motor_speed(block_idx, fm_mask, ocr_lo, ocr_hi);
 
     // this takes ~4 second
     start_section("BLOCK");
