@@ -12,7 +12,6 @@ _autosave-*
 *.hex
 *.map
 *.srec
-*.workspace
 .codelite
 datasheets/
 documents/
