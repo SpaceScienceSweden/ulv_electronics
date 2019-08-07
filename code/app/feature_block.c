@@ -1,20 +1,37 @@
-static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint16_t ocr_lo, uint16_t ocr_hi) {
+static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t stop_mask, uint16_t ocr_lo, uint16_t ocr_hi) {
   //alternate OCR1*
   //set ADC sample rates while we're at it
   uint16_t ocr = (block_idx & 1) ? ocr_hi : ocr_lo;
   if (ocr) {
     uint8_t clk2 = 0x20 | ocr2osr(ocr);
     if (fm_mask & 1) {
-      OCR1A = ocr;
+      if (stop_mask & 1) {
+        OCR1A = ocr;
+      }
       wreg(0, CLK2, clk2);
     }
+    if (!(stop_mask & 1)) {
+      OCR1A = 0;
+    }
+
     if (fm_mask & 2) {
-      OCR1B = ocr;
+      if (stop_mask & 2) {
+        OCR1B = ocr;
+      }
       wreg(1, CLK2, clk2);
     }
+    if (!(stop_mask & 2)) {
+      OCR1B = 0;
+    }
+
     if (fm_mask & 4) {
-      OCR1C = ocr;
+      if (stop_mask & 4) {
+        OCR1C = ocr;
+      }
       wreg(2, CLK2, clk2);
+    }
+    if (!(stop_mask & 4)) {
+      OCR1C = 0;
     }
   }
 }
@@ -110,8 +127,17 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
   uint8_t block_idx = 0;
   uint8_t temp_conversion_in_progress = 0;
 
-  set_block_motor_speed(block_idx, fm_mask, ocr_lo, ocr_hi);
+  set_block_motor_speed(block_idx, fm_mask, fm_mask, ocr_lo, ocr_hi);
   wait_ms(3000);
+
+  //zero for any motor which has been explicitly stop due to jamming
+  uint8_t motor_stop_mask = 7;
+  //in terms of inner capture loop
+#define JAMMED_COUNT 2
+  uint8_t motor_jam_counters[3] = {0};
+  //in terms of outer loop
+#define UNJAM_COUNT 1
+  uint8_t motor_unjam_counters[3] = {0};
 
   while (!have_esc() && !got_esc) {
     uint32_t cycles_per_sample = adc_cycles_per_sample();
@@ -259,6 +285,32 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
       cb.entries[cb.nentries].N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
       tot_tachs[id] += cb.entries[cb.nentries].num_tachs;
 
+      if (cb.entries[cb.nentries].num_tachs == 0) {
+        //jammed?
+        if (motor_jam_counters[id] < JAMMED_COUNT) {
+          //not yet
+          motor_jam_counters[id]++;
+        } else {
+          //yep!
+          motor_stop_mask &= ~(1<<id);
+          //stop it immediately
+          if (id == 0) {
+            OCR1A = 0;
+          } else if (id == 1) {
+            OCR1B = 0;
+          } else {
+            OCR1C = 0;
+          }
+        }
+      } else {
+        //doesn't look like it
+        //just reset the flag and counter, let the set_block_motor_speed()
+        //call further down take care of things
+        motor_jam_counters[id] = 0;
+        motor_unjam_counters[id] = 0;
+        motor_stop_mask |= (1<<id);
+      }
+
       if (tach_ratio > cb.stats[id].max_tach_ratio) {
         cb.stats[id].max_tach_ratio = tach_ratio;
       }
@@ -347,11 +399,28 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
      print_temps(cb.temps);
      print_volts(cb.volts);
     }
+
+    //try unjamming motors if we should
+    for (uint8_t id = 0; id < 3; id++) {
+      if ((fm_mask & (1<<id)) && !(motor_stop_mask & (1<<id))) {
+        //FM is enabled but motor stopped
+        if (motor_unjam_counters[id] < UNJAM_COUNT) {
+          //it hasn't been long enough yet
+          motor_unjam_counters[id]++;
+        } else {
+          //time to try to unjam it
+          motor_stop_mask |= (1<<id);
+          motor_unjam_counters[id] = 0;
+          motor_jam_counters[id] = 0;
+        }
+      }
+    }
+
     block_idx = (block_idx + 1) & 0xF;
     t = t2;
 
     // start changing motor speed while we're doing the stuff below
-    set_block_motor_speed(block_idx, fm_mask, ocr_lo, ocr_hi);
+    set_block_motor_speed(block_idx, fm_mask, motor_stop_mask, ocr_lo, ocr_hi);
 
     // this takes ~4 second
     start_section("BLOCK");
