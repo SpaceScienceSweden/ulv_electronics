@@ -390,6 +390,7 @@ uint8_t find_tachs(uint16_t max_frames,
     requires \valid(rounding_inout);
 
     requires \separated(&sample_data[0] + (0..4*max_frames-1),
+                        &sample_data_fake[0] + (0..8*max_frames-1),
                         stat1_out,
                         (int16_t*)minmax + (0..7),
                         (accu_t*)Q1 + (0..2),
@@ -417,6 +418,7 @@ uint8_t find_tachs(uint16_t max_frames,
       minmax[x][1] >= \old(minmax[x][1]);
 
     assigns sample_data[0..4*max_frames-1],
+            sample_data_fake[0..8*max_frames-1],
             edge_pos[0..255],
             timer1_base, SPDR, TIFR, PORTF, DDRD, PORTD,
             *stat1_out,

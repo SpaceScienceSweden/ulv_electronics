@@ -13,7 +13,7 @@ typedef uint32_t __uint24;
     type invariant uint24_max(__uint24 a) = a <= 16777215;
 
     // Poor man's type invariant
-    logic boolean valid_uint24(__uint24 a) = 0 <= a <= 16777215;
+    predicate valid_uint24(integer a) = 0 <= a <= 16777215;
 */
 
 volatile uint8_t PINE;
