@@ -51,7 +51,11 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
   //experiments show that five samples are about the right amount to discard
   uint8_t discard_samples = 5;
 
+#ifdef FRAMA_C
+  uint8_t *ptr = sample_data_fake;
+#else
   uint8_t *ptr = (uint8_t*)sample_data;
+#endif
   uint8_t stat1 = 0;
 
   // Max sample rates @ 7.3728 MHz, 16-bit:
@@ -66,7 +70,8 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
   //just count overflow, adjust timer1_base at the end
   uint8_t timer1_ovfs = 0;
 
-  /*@ loop assigns SPDR, timer1_ovfs, TIFR;
+  /*@ loop invariant 0 < discard_samples <= 5;
+      loop assigns SPDR, timer1_ovfs, TIFR, discard_samples, PORTF;
       loop variant discard_samples;
    */
   do {
@@ -87,6 +92,10 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
     adc_select(id);
     SPDR = 0; 
     if (TIFR & (1<<TOV1)) {
+#ifdef FRAMA_C
+      // it's hard to model the fact that this never overflows on real hardware
+      if (timer1_ovfs < 255)
+#endif
       timer1_ovfs++;
       TIFR = (1<<TOV1);
     }
@@ -125,8 +134,11 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
     while (!(PINE & (1<<PE7)));
   } while(discard_samples > 0);
 
-
-  /*@ loop assigns SPDR, timer1_ovfs, TIFR, ptr[0..8*num_frames-1];
+  /*@ loop invariant 0 < num_frames <= \at(num_frames,LoopEntry);
+      loop invariant ptr == \at(ptr,LoopEntry) + 4*(WORDSZ/8)*(\at(num_frames,LoopEntry)-num_frames);
+      loop invariant \at(ptr,LoopEntry) <= ptr < \at(ptr,LoopEntry) + 4*(WORDSZ/8)*\at(num_frames,LoopEntry);
+      loop invariant \valid(ptr + (0..7));
+      loop assigns SPDR, timer1_ovfs, TIFR, \at(ptr,LoopEntry)[0..8*\at(num_frames,LoopEntry)-1], PORTF, stat1, ptr, num_frames;
       loop variant num_frames;
    */ 
   do {
@@ -136,6 +148,9 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
     adc_select(id);
     SPDR = 0;
     if (TIFR & (1<<TOV1)) {
+#ifdef FRAMA_C
+      if (timer1_ovfs < 255)
+#endif
       timer1_ovfs++;
       TIFR = (1<<TOV1);
     }
@@ -190,7 +205,20 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
   } while (num_frames > 0);
 
   //using 64-bit shift and add is smaller than 32-bit followed by upcasting to 64-bit
-  timer1_base += (uint64_t)timer1_ovfs * TIMER1_OVF_INC;
+  uint64_t inc = (uint64_t)timer1_ovfs * TIMER1_OVF_INC;
+  //@ assert 0 <= inc <= 255*TIMER1_OVF_INC < UINT32_MAX;
+#ifdef FRAMA_C
+before:
+  if (timer1_base <= UINT64_MAX - inc) {
+    timer1_base += inc;
+  } else {
+    uint64_t diff = UINT64_MAX - timer1_base;
+    timer1_base = inc - diff - 1;
+  }
+#else
+  timer1_base += inc;
+#endif
+  //@ assert timer1_base == (\at(timer1_base,before) + inc) % (1<<64);
   sei();
 
   *stat1_out = stat1;

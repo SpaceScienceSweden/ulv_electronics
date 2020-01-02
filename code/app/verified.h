@@ -51,11 +51,16 @@ extern accu_t Q3[3];
 extern accu_t Q4[3];
 extern uint16_t NQ[4];
 
+#ifdef FRAMA_C
+// Necessary because strict aliasing
+extern uint8_t sample_data_fake[sizeof(sample_data)];
+#endif
+
 /*@ requires 0 <= id <= 2;
     requires \valid(stat1_out);
-    requires \valid(&sample_data[0] + (0..4*num_frames-1));
+    requires \valid(&sample_data_fake[0] + (0..8*num_frames-1));
     requires 1 <= num_frames <= MAX_FRAMES;
-    assigns *stat1_out, timer1_base, SPDR, TIFR, PORTF, sample_data[0..4*num_frames-1];
+    assigns *stat1_out, timer1_base, SPDR, TIFR, PORTF, sample_data_fake[0..8*num_frames-1];
  */
 void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames);
 
@@ -413,7 +418,7 @@ uint8_t find_tachs(uint16_t max_frames,
 
     assigns sample_data[0..4*max_frames-1],
             edge_pos[0..255],
-            timer1_base, SPDR, TIFR, PORTF,
+            timer1_base, SPDR, TIFR, PORTF, DDRD, PORTD,
             *stat1_out,
             ((int16_t*)minmax)[0..7],
             Q1[0..2],

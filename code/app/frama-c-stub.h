@@ -21,7 +21,9 @@ volatile uint8_t SPDR;
 volatile uint8_t TIFR;
 volatile uint8_t SPSR;
 volatile uint8_t PORTF;
-volatile uint64_t timer1_base;
+uint64_t timer1_base = 0;
+volatile uint8_t DDRD;
+volatile uint8_t PORTD;
 
 #define PE7 7
 #define TOV1 2

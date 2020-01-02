@@ -26,7 +26,7 @@
  */
 uint8_t rreg(uint8_t id, uint8_t a);
 
-/*@ assigns \nothing;
+/*@ assigns DDRD, PORTD;
  */
 void set_74153(uint8_t ch);
 

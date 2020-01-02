@@ -1,3 +1,4 @@
+
 include ../settings.mk
 
 STACK_MAX = 512
@@ -66,10 +67,10 @@ all: $(PRG).elf lst text eeprom printstackusage checkstackusage
 	avr-nm --size-sort --radix=d $(PRG).elf | sed -e 's/^0*//' | tail -n15
 	avr-size $(PRG).elf
 
-PROVERS=z3,cvc4,alt-ergo,qed
+PROVERS=coq,z3-ce,alt-ergo,altergo,cvc4,cvc4-ce,script
 verify: verified.c
 	# avr-gcc behaves like a 16-bit machine, so pick x86_16 -> 16-bit int
-	frama-c -cpp-extra-args="-DF_CPU=$(F_CPU) -DFRAMA_C" -wp -wp-timeout 30 -machdep x86_16 -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
+	frama-c -cpp-extra-args="-DF_CPU=$(F_CPU) -DFRAMA_C" -wp -wp-timeout 3 -machdep x86_16 -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
 
 .PHONY: printstackusage
 printstackusage:
