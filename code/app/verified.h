@@ -479,5 +479,36 @@ uint64_t parse64(const char *line);
  */
 void print64(uint64_t i);
 
+/*@ ensures 0 <= \result <= 16;
+    assigns \nothing;
+ */
+static uint8_t popcount(uint16_t a) {
+  uint8_t ret = 0;
+  //@ ghost uint32_t i = 16;
+  //@ ghost uint32_t e = 65536;
+
+  /*@ loop invariant 0 <= i <= 16;
+      loop invariant 1 <= e <= 65536;
+      loop invariant e == (1<<i);
+      loop invariant a == 0 || 1 <= a <= 65535;
+      loop invariant 0 <= a < e;
+      loop invariant 0 <= ret <= (16-i);
+      loop assigns ret, a, i, e;
+      loop variant a;
+   */
+  while (a) {
+    ret += a&1;
+  before:
+    //a >>= 1;
+    a /= 2;
+    //@ assert exp1: 0 <= a < \at(a,before) && e == (1<<i)     && 0 <= a < (1<<(i-1)) && 1 <= i <= 16 && e/2 == (1<<i)/2 == (1<<(i-1));
+    //@ ghost i--;
+    //@ assert exp2: 0 <= a < \at(a,before) && e == (1<<(i+1)) && 0 <= a < (1<<i)     && 0 <= i <= 15 && e/2 == (1<<(i+1))/2 == (1<<i);
+    //@ ghost e /= 2;
+  }
+  return ret;
+}
+
+
 #endif //_PROVEN_H
 

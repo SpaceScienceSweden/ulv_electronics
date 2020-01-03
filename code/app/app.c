@@ -693,15 +693,6 @@ static adc_word_t adc_comm(uint8_t id, adc_word_t cmd) {
 #define WREG(a,d)   ((0x4000L | (a<<8) | d)     << (WORDSZ-16))
 #define WREGS(a,n)  ((0x6000L | (a<<8) | (n-1)) << (WORDSZ-16))
 
-static uint8_t popcount(uint16_t a) {
-  uint8_t ret = 0;
-  while (a) {
-    ret += a&1;
-    a >>= 1;
-  }
-  return ret;
-}
-
 static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
   adc_word_t word;
 
