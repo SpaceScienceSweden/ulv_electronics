@@ -509,6 +509,69 @@ static uint8_t popcount(uint16_t a) {
   return ret;
 }
 
+/*@ requires 0 <= x <= 2;
+    requires 0 <= codein <= 1023;
+    assigns vgnds[x], DDRE, PORTE;
+ */
+static void set_vgnd(uint8_t x, uint16_t codein) {
+  vgnds[x] = codein;
+
+  //set all DACs to -1.024 V, enable ADG601's
+  DDRE |= (1<<2) | (1<<3) | (1<<4);
+  PORTE |= (1<<2) | (1<<3) | (1<<4); //de-assert /CS
+
+  dac_spi_fast();
+
+    PORTE &= ~(1<<(x+2));
+
+    //   0 = -2.048 V
+    // 256 = -1.024 V
+    // 512 =  0.000 V
+    // 768 =  1.024 V
+    //1023 =  2.046 V
+    uint16_t code = codein;
+
+    //from the MAX504 datasheet:
+    //16 bits of serial data are
+    //clocked into the DAC in the following order: 4 fill (dummy)
+    //bits, 10 data bits, and 2 sub-LSB 0s.
+    code <<= 2; //dddd CCCC CCCC CC00
+
+    //from the ATmega128 datasheet:
+    //When the DORD bit is written to zero, the MSB of the data word is transmitted first.
+    //SPCR &= ~(1<<DORD); //just to be sure
+    //SPCR |= (1<<DORD);
+
+    spi_comm_byte(code >> 8);
+    spi_comm_byte(code);
+
+    //de-assert all /CS
+    PORTE |= (1<<2) | (1<<3) | (1<<4);
+
+  //enable ADG601s
+  //DDRE |= (1<<5);
+  //PORTE |= (1<<5);
+  //DDRF |= (1<<5) | (1<<6);
+  //PORTF |= (1<<5) | (1<<6);
+
+  //restore SPI to ADC settings
+  adc_spi_fast();
+}
+
+/*@ requires 0 <= codein <= 1023;
+    assigns vgnds[0..2], DDRE, PORTE;
+ */
+static void set_vgnds(uint16_t codein) {
+  /*@ loop invariant 0 <= id <= 3;
+      loop assigns id, vgnds[0..2], DDRE, PORTE;
+      loop variant 3 - id;
+   */
+  for (uint8_t id = 0; id < 3; id++) {
+    set_vgnd(id, codein);
+  }
+}
+
+
 /*@ axiomatic popcount_axiomatic {
         logic integer popcount(integer x);
         axiom pop0: popcount(0) == 0;
