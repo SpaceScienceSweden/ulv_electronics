@@ -69,15 +69,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
 
   //maps FM order to FM id
   uint8_t fm_map[3] = {0};
-  switch (fm_mask) {
-  case 1: fm_map[0] = 0;                               break;
-  case 2: fm_map[0] = 1;                               break;
-  case 3: fm_map[0] = 0; fm_map[1] = 1;                break;
-  case 4: fm_map[0] = 2;                               break;
-  case 5: fm_map[0] = 0; fm_map[1] = 2;                break;
-  case 6: fm_map[0] = 1; fm_map[1] = 2;                break;
-  case 7: fm_map[0] = 0; fm_map[1] = 1; fm_map[2] = 2; break;
-  }
+  fm_mask2map(fm_mask, fm_map);
 
   if (!adc_connected[fm_map[0]]) {
     start_section("ERROR");

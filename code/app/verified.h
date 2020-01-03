@@ -509,6 +509,20 @@ static uint8_t popcount(uint16_t a) {
   return ret;
 }
 
+/*@ axiomatic popcount_axiomatic {
+        logic integer popcount(integer x);
+        axiom pop0: popcount(0) == 0;
+        axiom popn: \forall integer x; x > 0 ==> popcount(x) == (x%2) + popcount(x/2);
+    }
+ */
+
+/*@ requires 1 <= fm_mask <= 7;
+    requires \valid(&fm_map[0] + (0..2));
+    ensures \forall integer x; 0 <= x < popcount(fm_mask) ==> 0 <= fm_map[x] <= 2;
+    ensures \forall integer x; 1 <= x < popcount(fm_mask) ==> 0 <= fm_map[x-1] < fm_map[x] <= 2;
+    assigns fm_map[0..2];
+ */
+void fm_mask2map(uint8_t fm_mask, uint8_t fm_map[3]);
 
 #endif //_PROVEN_H
 

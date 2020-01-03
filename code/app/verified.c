@@ -1240,3 +1240,15 @@ void print64(uint64_t i) {
     //@ ghost j--;
   }
 }
+
+void fm_mask2map(uint8_t fm_mask, uint8_t fm_map[3]) {
+  switch (fm_mask) {
+  case 1: fm_map[0] = 0;                               break;
+  case 2: fm_map[0] = 1;                               break;
+  case 3: fm_map[0] = 0; fm_map[1] = 1;                break;
+  case 4: fm_map[0] = 2;                               break;
+  case 5: fm_map[0] = 0; fm_map[1] = 2;                break;
+  case 6: fm_map[0] = 1; fm_map[1] = 2;                break;
+  case 7: fm_map[0] = 0; fm_map[1] = 1; fm_map[2] = 2; break;
+  }
+}
