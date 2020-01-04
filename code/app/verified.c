@@ -1221,3 +1221,70 @@ void fm_mask2map(uint8_t fm_mask, uint8_t fm_map[3]) {
   case 7: fm_map[0] = 0; fm_map[1] = 1; fm_map[2] = 2; break;
   }
 }
+
+static const char STAT[4] = "STAT";
+static const char TEMP[4] = "TEMP";
+static const char VOLT[4] = "VOLT";
+static const char ENTR[4] = "ENTR";
+static const char SAMP[4] = "SAMP";
+
+// Having this separate speeds up proving init_cb_cbc() from 4m8s to 13s
+/*@ assigns cb, cbc;
+ */
+static void zero_cb_cbc(void) {
+#ifdef FRAMA_C
+    cb = (capture_block_s){0};
+    cbc = (capture_block_continued_s){0};
+#else
+    memset(&cb, 0, sizeof(cb));
+    memset(&cbc,0, sizeof(cbc));
+#endif
+}
+
+void init_cb_cbc(uint8_t fm_mask, uint16_t max_frames) {
+    zero_cb_cbc();
+
+    cb.version        = 3;
+    cb.f_cpu          = F_CPU;
+    cb.t              = gettime64();
+    cb.fm_mask        = fm_mask;
+    cb.num_frames     = max_frames;
+    cb.stats[0].OCR1n = OCR1A;
+    cb.stats[1].OCR1n = OCR1B;
+    cb.stats[2].OCR1n = OCR1C;
+    cb.vgnd_rounds    = 3;    //should be <= 7, else >50% time is spent biasing
+    cb.vgnd_zero      = 512;
+    cb.vgnd_minus     = cb.vgnd_zero - 100;
+    cb.vgnd_plus      = cb.vgnd_zero + 100;
+
+#define SET_MARKER(marker, str)\
+    do {\
+        marker[0] = str[0];\
+        marker[1] = str[1];\
+        marker[2] = str[2];\
+        marker[3] = str[3];\
+    } while(0)
+
+    SET_MARKER(cb.stat_marker, STAT);
+    SET_MARKER(cb.temp_marker, TEMP);
+    SET_MARKER(cb.volt_marker, VOLT);
+    SET_MARKER(cb.entr_marker, ENTR);
+    SET_MARKER(cbc.samp_marker, SAMP);
+
+    /*@ loop invariant 0 <= id <= 3;
+        loop assigns id, cb.stats[0..2];
+        loop variant 3 - id;
+     */
+    for (uint8_t id = 0; id < 3; id++) {
+      if (fm_mask & (1<<id)) {
+        cb.stats[id].minmax[0][0] = INT16_MAX;
+        cb.stats[id].minmax[1][0] = INT16_MAX;
+        cb.stats[id].minmax[2][0] = INT16_MAX;
+        cb.stats[id].minmax[3][0] = INT16_MAX;
+        cb.stats[id].minmax[0][1] = INT16_MIN;
+        cb.stats[id].minmax[1][1] = INT16_MIN;
+        cb.stats[id].minmax[2][1] = INT16_MIN;
+        cb.stats[id].minmax[3][1] = INT16_MIN;
+      }
+    }
+}

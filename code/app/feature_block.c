@@ -152,25 +152,7 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
       return;
     }
 
-    memset(&cb, 0, sizeof(cb));
-    memset(&cbc,0, sizeof(cbc));
-    cb.version        = 3;
-    cb.f_cpu          = F_CPU;
-    cb.t              = gettime64();
-    cb.fm_mask        = fm_mask;
-    cb.num_frames     = max_frames;
-    cb.stats[0].OCR1n = OCR1A;
-    cb.stats[1].OCR1n = OCR1B;
-    cb.stats[2].OCR1n = OCR1C;
-    cb.vgnd_rounds    = 3;    //should be <= 7, else >50% time is spent biasing
-    cb.vgnd_zero      = 512;
-    cb.vgnd_minus     = cb.vgnd_zero - 100;
-    cb.vgnd_plus      = cb.vgnd_zero + 100;
-    memcpy(cb.stat_marker, "STAT", 4);
-    memcpy(cb.temp_marker, "TEMP", 4);
-    memcpy(cb.volt_marker, "VOLT", 4);
-    memcpy(cb.entr_marker, "ENTR", 4);
-    memcpy(cbc.samp_marker,"SAMP", 4);
+    init_cb_cbc(fm_mask, max_frames);
 
     //zero vgnds if they weren't already
     set_vgnds(cb.vgnd_zero);
@@ -179,19 +161,6 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
     if (!temp_conversion_in_progress) {
       ds18b20convert( &ONEWIRE_PORT, &ONEWIRE_DDR, &ONEWIRE_PIN, ONEWIRE_MASK, NULL );
       temp_conversion_in_progress = 1;
-    }
-
-    for (uint8_t id = 0; id < 3; id++) {
-      if (fm_mask & (1<<id)) {
-        cb.stats[id].minmax[0][0] = INT16_MAX;
-        cb.stats[id].minmax[1][0] = INT16_MAX;
-        cb.stats[id].minmax[2][0] = INT16_MAX;
-        cb.stats[id].minmax[3][0] = INT16_MAX;
-        cb.stats[id].minmax[0][1] = INT16_MIN;
-        cb.stats[id].minmax[1][1] = INT16_MIN;
-        cb.stats[id].minmax[2][1] = INT16_MIN;
-        cb.stats[id].minmax[3][1] = INT16_MIN;
-      }
     }
 
     uint16_t nentries_vgnd = 2 * cb.vgnd_rounds * num_fms * num_fms;

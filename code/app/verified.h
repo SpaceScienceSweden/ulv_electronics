@@ -587,5 +587,12 @@ static void set_vgnds(uint16_t codein) {
  */
 void fm_mask2map(uint8_t fm_mask, uint8_t fm_map[3]);
 
+/*@ requires 1 <= fm_mask <= 7;
+    requires 12 <= max_frames <= MAX_FRAMES;
+    requires \separated(&cb, &cbc);
+    assigns cb, cbc;
+ */
+void init_cb_cbc(uint8_t fm_mask, uint16_t max_frames);
+
 #endif //_PROVEN_H
 
