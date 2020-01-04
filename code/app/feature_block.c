@@ -131,6 +131,10 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
 #define UNJAM_COUNT 1
   uint8_t motor_unjam_counters[3] = {0};
 
+//done: disable motor if jammed
+//todo: longer time between accel
+//todo: slower accel
+
   while (!have_esc() && !got_esc) {
     uint32_t cycles_per_sample = adc_cycles_per_sample();
     uint32_t frames_per_second = F_CPU / cycles_per_sample;
