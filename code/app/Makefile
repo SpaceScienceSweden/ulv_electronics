@@ -8,7 +8,6 @@ FEATURE_MMC    = 0
 FEATURE_ASM    = 1
 OBJ            = \
 	app.o\
-	verified.o\
 	avr-ds18b20/src/ds18b20.o\
 	avr-ds18b20/src/onewire.o\
 	avr-ds18b20/src/romsearch.o\
@@ -31,6 +30,7 @@ DEPS           = \
 	fatfs-avr/ff.h\
 	fatfs-avr/mmc_avr.h\
 	config.h\
+	verified.c\
 	verified.h\
 	frama-c-stub.h\
 	feature_block.c\

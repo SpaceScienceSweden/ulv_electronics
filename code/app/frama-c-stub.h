@@ -39,6 +39,20 @@ extern capture_block_continued_s cbc;
 
 extern uint16_t vgnds[3];
 
+extern int16_t sample_data[4*MAX_FRAMES];
+extern uint16_t edge_pos[256];
+extern accu_t Q1[3];
+extern accu_t Q2[3];
+extern accu_t Q3[3];
+extern accu_t Q4[3];
+extern uint16_t NQ[4];
+extern uint16_t vgnds[3];
+
+#ifdef FRAMA_C
+// Necessary because strict aliasing
+extern uint8_t sample_data_fake[sizeof(sample_data)];
+#endif
+
 #define PE7 7
 #define TOV1 2
 #define SPIF 7

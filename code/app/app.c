@@ -13,7 +13,6 @@
 #include <ds18b20/ds18b20.h>
 #include <ds18b20/romsearch.h>
 #include "wire_structs.h"
-#include "verified.h"
 
 #define WDTO_DEFAULT WDTO_250MS
 
@@ -110,10 +109,6 @@ uint16_t NQ[4];
 #endif  //FEATURE_SAMPLES
 
 temperature_s temps[6];
-
-const char *TEMP = "TEMP";
-const char *TACH = "TACH";
-const char *SAMP = "SAMP";
 
 static uint8_t adc_popcount[3] = {0,0,0};
 static uint8_t adc_ena[3] = {0,0,0};
@@ -510,6 +505,9 @@ static inline uint8_t spi_comm_byte(uint8_t in) {
   while(!(SPSR & (1<<SPIF)));
   return SPDR;
 }
+
+#include "verified.h"
+#include "verified.c"
 
 /*static void disable_vgnd(void) {
   DDRE |= (1<<5);
