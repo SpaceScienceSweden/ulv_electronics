@@ -70,7 +70,7 @@ all: $(PRG).elf lst text eeprom printstackusage checkstackusage
 PROVERS=coq,z3-ce,alt-ergo,altergo,cvc4,cvc4-ce,script
 verify: verified.c
 	# avr-gcc behaves like a 16-bit machine, so pick x86_16 -> 16-bit int
-	frama-c -cpp-extra-args="-DF_CPU=$(F_CPU) -DFRAMA_C" -wp -wp-timeout 3 -machdep x86_16 -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
+	time frama-c -cpp-extra-args="-DF_CPU=$(F_CPU) -DFRAMA_C" -wp -wp-timeout 3 -machdep x86_16 -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c
 
 verify-gui: verified.c
 	frama-c-gui -cpp-extra-args="-DF_CPU=$(F_CPU) -DFRAMA_C" -wp -wp-timeout 3 -machdep x86_16 -wp-rte -warn-unsigned-overflow -wp-prover $(PROVERS) verified.c

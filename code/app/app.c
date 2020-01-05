@@ -498,17 +498,6 @@ static void setup_spi(void) {
   adc_spi_fast();
 }
 
-static inline uint8_t spi_comm_byte(uint8_t in) {
-  //we could write this in asm
-  //16 cy delay between setting and reading SPDR should be enough
-  SPDR = in;
-  while(!(SPSR & (1<<SPIF)));
-  return SPDR;
-}
-
-#include "verified.h"
-#include "verified.c"
-
 /*static void disable_vgnd(void) {
   DDRE |= (1<<5);
   PORTE &= ~(1<<5);
@@ -565,28 +554,6 @@ static inline void adc_select(uint8_t id) {
   //hence no need to delay further after asserting /CS
 }
 
-#if 0
-static inline uint8_t spi_comm_byte(uint8_t in) {
-  //we could write this in asm
-  //16 cy delay between setting and reading SPDR should be enough
-  SPDR = in;
-  while(!(SPSR & (1<<SPIF)));
-  return SPDR;
-}
-#endif
-
-static adc_word_t spi_comm_word(adc_word_t in) {
-  adc_word_t out = 0;
-  uint8_t x;
-
-  for (x = 0; x < WORDSZ; x += 8) {
-    out |= ((uint32_t)spi_comm_byte(in >> (WORDSZ-8-x)) << (WORDSZ-8-x));
-  }
-
-  return out;
-}
-
-
 static void setup_adc_pins() {
   //PF5..7 = /CS_ADC0..2
   DDRF |= (1<<5) | (1<<6) | (1<<7);
@@ -598,95 +565,8 @@ static void setup_adc_pins() {
   //EICRB |= (2<<ISC60) | (2<<ISC70);
 }
 
-
-static adc_word_t adc_comm_inner(uint8_t pc, adc_word_t cmd) {
-  uint8_t x;
-  adc_word_t out;
-
-  out = spi_comm_word(cmd);
-
-  for (x = 0; x < pc; x++) {
-    //ignore data
-    spi_comm_word(0);
-  }
-  //printf_P(PSTR("%08lX -> %08lX\r\n"), cmd, out);
-
-  return out;
-}
-
-/**
- * Communicate with ADC. Ignores measurement data
- * id: ADC ID
- * cmd: device command
- * return: device word out
- */
-static adc_word_t adc_comm(uint8_t id, adc_word_t cmd) {
-  adc_select(id);
-  adc_word_t out = adc_comm_inner(adc_popcount[id], cmd);
-  adc_deselect();
-  return out;
-}
-
-#define RESET   (0x0011L << (WORDSZ-16))
-#define STANDBY (0x0022L << (WORDSZ-16))
-#define WAKEUP  (0x0033L << (WORDSZ-16))
-#define LOCK    (0x0555L << (WORDSZ-16))
-#define UNLOCK  (0x0655L << (WORDSZ-16))
-
-//RREG looks like it's the same as RREGS?
-#define RREGS(a,n)  ((0x2000L | (a<<8) | (n-1)) << (WORDSZ-16))
-#define RREG(a) RREGS(a,1)
-//write d to register a
-#define WREG(a,d)   ((0x4000L | (a<<8) | d)     << (WORDSZ-16))
-#define WREGS(a,n)  ((0x6000L | (a<<8) | (n-1)) << (WORDSZ-16))
-
-static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
-  adc_word_t word;
-
-  //deal with reserved bits, in case the users is careless
-  if (a == A_SYS_CFG) {
-    d |= 0x20;
-  } else if (a == CLK1) {
-    d &= 0x8E;
-  } else if (a == CLK2) {
-    d &= 0xEF;
-  } else if (a == ADC_ENA) {
-    d &= 0x0F;
-  } else if (a == 0x10) {
-    d  = 0x00;
-  } else if (a >= ADC1 && a <= ADC4) {
-    d &= 0x03;
-  }
-
-  adc_comm(id, WREG(a,d));
-
-  //if we change ADC_ENA then we need to update popcount since we use dynamic framing
-  if (a == ADC_ENA) {
-    adc_ena[id]      = d < 0x10 ? d : 0;
-    adc_popcount[id] = d < 0x10 ? popcount(d) : 0;
-    adc_connected[id]= d < 0x10;
-  }
-
-  word = adc_comm(id, 0);
-  if (((word >> (WORDSZ-16)) & 0x1FFF) != ((a<<8) | d)) {
-    start_section("ERROR");
-    printf_P(PSTR("wreg having problems (id=%hhu, a=%02x, d=%02x vs %08lX)\r\n"), id, a, d, word);
-    return 1;
-  }
-  return 0;
-}
-
-uint8_t rreg(uint8_t id, uint8_t a) {
-  adc_comm(id, RREG(a));
-  uint8_t d = (adc_comm(id, 0) >> (WORDSZ-16)) & 0xFF;
-  if (a == ADC_ENA) {
-    //0xFF is a bad value, consider such to mean no ADC present
-    adc_ena[id]      = d < 0x10 ? d : 0;
-    adc_popcount[id] = d < 0x10 ? popcount(d) : 0;
-    adc_connected[id]= d < 0x10;
-  }
-  return d;
-}
+#include "verified.h"
+#include "verified.c"
 
 void adc_regs(void) {
   start_section("ADC_REGS");

@@ -428,39 +428,245 @@ uint64_t parse64(const char *line);
  */
 void print64(uint64_t i);
 
+
+/*@ requires 0 <= a <= 15;
+    ensures 0 <= \result <= 4;
+    ensures
+        (a == 0 ==> \result == 0) &&
+        (a == 1 ==> \result == 1) &&
+        (a == 2 ==> \result == 1) &&
+        (a == 3 ==> \result == 2) &&
+        (a == 4 ==> \result == 1) &&
+        (a == 5 ==> \result == 2) &&
+        (a == 6 ==> \result == 2) &&
+        (a == 7 ==> \result == 3) &&
+        (a == 8 ==> \result == 1) &&
+        (a == 9 ==> \result == 2) &&
+        (a == 10 ==> \result == 2) &&
+        (a == 11 ==> \result == 3) &&
+        (a == 12 ==> \result == 2) &&
+        (a == 13 ==> \result == 3) &&
+        (a == 14 ==> \result == 3) &&
+        (a == 15 ==> \result == 4);
+    assigns \nothing;
+ */
+inline uint8_t popcount4(uint8_t a) {
+    static const uint8_t popcount_lut[16] = {
+        //0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15
+          0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4
+    };
+    return popcount_lut[a];
+}
+
+/*@ ensures 0 <= \result <= 8;
+    assigns \nothing;
+ */
+inline uint8_t popcount8(uint8_t a) {
+    uint8_t i1 = a & 15;
+    //frama-c doesn't like when this uses >>4 instead of /16
+    //gcc should optimize them to the same thing
+    uint8_t i2 = a / 16;
+    return popcount4(i1) + popcount4(i2);
+}
+
 /*@ ensures 0 <= \result <= 16;
     assigns \nothing;
  */
 static uint8_t popcount(uint16_t a) {
-  uint8_t ret = 0;
-  //@ ghost uint32_t i = 16;
-  //@ ghost uint32_t e = 65536;
+    uint8_t i1 = a & 255;
+    uint8_t i2 = a >> 8;
+    return popcount8(i1) + popcount8(i2);
+}
 
-  /*@ loop invariant 0 <= i <= 16;
-      loop invariant 1 <= e <= 65536;
-      loop invariant e == (1<<i);
-      loop invariant a == 0 || 1 <= a <= 65535;
-      loop invariant 0 <= a < e;
-      loop invariant 0 <= ret <= (16-i);
-      loop assigns ret, a, i, e;
-      loop variant a;
+/*@ assigns SPDR;
+ */
+static inline uint8_t spi_comm_byte(uint8_t in) {
+  //we could write this in asm
+  //16 cy delay between setting and reading SPDR should be enough
+  SPDR = in;
+  /*@ loop assigns \nothing;
    */
-  while (a) {
-    ret += a&1;
-  before:
-    //a >>= 1;
-    a /= 2;
-    //@ assert exp1: 0 <= a < \at(a,before) && e == (1<<i)     && 0 <= a < (1<<(i-1)) && 1 <= i <= 16 && e/2 == (1<<i)/2 == (1<<(i-1));
-    //@ ghost i--;
-    //@ assert exp2: 0 <= a < \at(a,before) && e == (1<<(i+1)) && 0 <= a < (1<<i)     && 0 <= i <= 15 && e/2 == (1<<(i+1))/2 == (1<<i);
-    //@ ghost e /= 2;
+  while(!(SPSR & (1<<SPIF)));
+  return SPDR;
+}
+
+/*@ assigns SPDR;
+ */
+static adc_word_t spi_comm_word(adc_word_t in) {
+  adc_word_t out = 0;
+  uint8_t x;
+  //@ ghost uint8_t i = 0;
+
+  /*@ loop invariant 0 <= i <= WORDSZ/8;
+      loop invariant x == i*8;
+      loop assigns x, out, SPDR, i;
+      loop variant WORDSZ - x;
+   */
+  for (x = 0; x < WORDSZ; x += 8) {
+    out |= ((uint32_t)spi_comm_byte(in >> (WORDSZ-8-x)) << (WORDSZ-8-x));
+    //@ ghost i++;
   }
-  return ret;
+
+  return out;
+}
+
+/*@ requires 0 <= pc <= 4;
+    assigns SPDR;
+ */
+static adc_word_t adc_comm_inner(uint8_t pc, adc_word_t cmd) {
+  uint8_t x;
+  adc_word_t out;
+
+  out = spi_comm_word(cmd);
+
+  /*@ loop invariant 0 <= x <= pc;
+      loop assigns x, SPDR;
+      loop variant pc - x;
+   */
+  for (x = 0; x < pc; x++) {
+    //ignore data
+    spi_comm_word(0);
+  }
+  //printf_P(PSTR("%08lX -> %08lX\r\n"), cmd, out);
+
+  return out;
+}
+
+/**
+ * Communicate with ADC. Ignores measurement data
+ * id: ADC ID
+ * cmd: device command
+ * return: device word out
+ */
+/*@ requires 0 <= id <= 2;
+    requires valid_adc_globals;
+    ensures valid_adc_globals;
+    assigns SPDR, PORTF;
+ */
+static adc_word_t adc_comm(uint8_t id, adc_word_t cmd) {
+  adc_select(id);
+  adc_word_t out = adc_comm_inner(adc_popcount[id], cmd);
+  adc_deselect();
+  return out;
+}
+
+/*@ requires 0 <= a <= ADC_REG_MAX;
+    requires n >= 1;
+    assigns \nothing;
+ */
+inline uint16_t RREGS(uint8_t a, uint8_t n) {
+    uint16_t ret = 0x2000L;
+    ret |= (a<<8);
+    ret |= (n-1);
+    return ret << (WORDSZ-16);
+}
+
+/*@ requires 0 <= a <= ADC_REG_MAX;
+    assigns \nothing;
+ */
+inline uint16_t RREG(uint8_t a) {
+    return RREGS(a, 1);
+}
+
+/*@ requires 0 <= a <= ADC_REG_MAX;
+    assigns \nothing;
+ */
+inline uint16_t WREG(uint8_t a, uint8_t d) {
+    uint16_t ret = 0x4000L;
+    ret |= (a<<8);
+    ret |= d;
+    return ret << (WORDSZ-16);
+}
+
+/*@ requires 0 <= a <= ADC_REG_MAX;
+    requires n >= 1;
+    assigns \nothing;
+ */
+inline uint16_t WREGS(uint8_t a, uint8_t n) {
+    uint16_t ret = 0x6000L;
+    ret |= (a<<8);
+    ret |= (n-1);
+    return ret << (WORDSZ-16);
+}
+
+/*@ requires 0 <= id <= 2;
+    requires 0 <= a <= ADC_REG_MAX;
+    requires valid_adc_globals;
+    ensures valid_adc_globals;
+    assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2];
+ */
+static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
+  adc_word_t word;
+
+  //deal with reserved bits, in case the users is careless
+  if (a == A_SYS_CFG) {
+    d |= 0x20;
+  } else if (a == CLK1) {
+    d &= 0x8E;
+  } else if (a == CLK2) {
+    d &= 0xEF;
+  } else if (a == ADC_ENA) {
+    d &= 0x0F;
+  } else if (a == 0x10) {
+    d  = 0x00;
+  } else if (a >= ADC1 && a <= ADC4) {
+    d &= 0x03;
+  }
+
+  adc_comm(id, WREG(a,d));
+
+  //if we change ADC_ENA then we need to update popcount since we use dynamic framing
+  if (a == ADC_ENA) {
+    //@ assert d_range: 0 <= d < 0x10;
+    uint8_t pc = popcount4(d);
+    //@ assert pc_range: 0 <= pc <= 4 && pc == popcount(d);
+
+    adc_ena[id]      = d;
+    adc_popcount[id] = pc;
+    //TODO: maybe check the byte returned by adc_comm() as rreg() does
+    adc_connected[id] = 1; //d < 0x10;
+    //@ assert globals1: 0 <= d < 0x10 && valid_adc_globals;
+  }
+
+  word = adc_comm(id, 0);
+  if (((word >> (WORDSZ-16)) & 0x1FFF) != ((a<<8) | d)) {
+    start_section("ERROR");
+    printf_P(PSTR("wreg having problems (id=%hhu, a=%02x, d=%02x vs %08lX)\r\n"), id, a, d, word);
+    return 1;
+  }
+  return 0;
+}
+
+/*@ requires 0 <= id <= 2;
+    requires 0 <= a <= ADC_REG_MAX;
+    requires valid_adc_globals;
+    ensures valid_adc_globals;
+    assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2];
+ */
+uint8_t rreg(uint8_t id, uint8_t a) {
+    adc_comm(id, RREG(a));
+    uint8_t d = (adc_comm(id, 0) >> (WORDSZ-16)) & 0xFF;
+    if (a == ADC_ENA) {
+        if (d < 0x10) {
+            //@ assert d_range: 0 <= d < 0x10;
+            uint8_t pc = popcount4(d);
+            //@ assert pc_range: 0 <= pc <= 4 && pc == popcount(d);
+
+            adc_ena[id]      = d;
+            adc_popcount[id] = pc;
+            adc_connected[id]= 1;
+        } else {
+            adc_ena[id]      = 0;
+            adc_popcount[id] = 0;
+            adc_connected[id]= 0;
+        }
+    }
+    return d;
 }
 
 /*@ requires 0 <= x <= 2;
     requires 0 <= codein <= 1023;
-    assigns vgnds[x], DDRE, PORTE;
+    assigns vgnds[x], DDRE, PORTE, SPDR;
  */
 static void set_vgnd(uint8_t x, uint16_t codein) {
   vgnds[x] = codein;
@@ -508,25 +714,17 @@ static void set_vgnd(uint8_t x, uint16_t codein) {
 }
 
 /*@ requires 0 <= codein <= 1023;
-    assigns vgnds[0..2], DDRE, PORTE;
+    assigns vgnds[0..2], DDRE, PORTE, SPDR;
  */
 static void set_vgnds(uint16_t codein) {
   /*@ loop invariant 0 <= id <= 3;
-      loop assigns id, vgnds[0..2], DDRE, PORTE;
+      loop assigns id, vgnds[0..2], DDRE, PORTE, SPDR;
       loop variant 3 - id;
    */
   for (uint8_t id = 0; id < 3; id++) {
     set_vgnd(id, codein);
   }
 }
-
-
-/*@ axiomatic popcount_axiomatic {
-        logic integer popcount(integer x);
-        axiom pop0: popcount(0) == 0;
-        axiom popn: \forall integer x; x > 0 ==> popcount(x) == (x%2) + popcount(x/2);
-    }
- */
 
 /*@ requires 1 <= fm_mask <= 7;
     requires \valid(&fm_map[0] + (0..2));

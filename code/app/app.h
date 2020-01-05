@@ -21,10 +21,7 @@
 #define ADC2      0x12
 #define ADC3      0x13
 #define ADC4      0x14
-
-/*@ assigns SPDR, PORTF;   // the real rreg() assigns SPDR and others
- */
-uint8_t rreg(uint8_t id, uint8_t a);
+#define ADC_REG_MAX ADC4
 
 /*@ assigns DDRD, PORTD;
  */

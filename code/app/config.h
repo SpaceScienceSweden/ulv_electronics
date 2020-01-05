@@ -61,5 +61,11 @@ typedef int64_t accu_t;
 #define TIMER3_OFS    1
 #endif
 
+#define RESET   (0x0011L << (WORDSZ-16))
+#define STANDBY (0x0022L << (WORDSZ-16))
+#define WAKEUP  (0x0033L << (WORDSZ-16))
+#define LOCK    (0x0555L << (WORDSZ-16))
+#define UNLOCK  (0x0655L << (WORDSZ-16))
+
 #endif //_CONFIG_H
 

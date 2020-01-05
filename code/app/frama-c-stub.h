@@ -47,6 +47,40 @@ extern accu_t Q3[3];
 extern accu_t Q4[3];
 extern uint16_t NQ[4];
 extern uint16_t vgnds[3];
+extern uint8_t adc_popcount[3];
+extern uint8_t adc_ena[3];
+extern uint8_t adc_connected[3];
+
+/*@ axiomatic popcount_axiomatic {
+        logic integer popcount(integer x);
+        axiom pop0: popcount(0) == 0;
+        axiom popn: \forall integer x; x > 0 ==> popcount(x) == (x%2) + popcount(x/2);
+
+        lemma pc0: popcount(0) == 0;
+        lemma pc1: popcount(1) == 1;
+        lemma pc2: popcount(2) == 1;
+        lemma pc3: popcount(3) == 2;
+        lemma pc4: popcount(4) == 1;
+        lemma pc5: popcount(5) == 2;
+        lemma pc6: popcount(6) == 2;
+        lemma pc7: popcount(7) == 3;
+        lemma pc8: popcount(8) == 1;
+        lemma pc9: popcount(9) == 2;
+        lemma pc10: popcount(10) == 2;
+        lemma pc11: popcount(11) == 3;
+        lemma pc12: popcount(12) == 2;
+        lemma pc13: popcount(13) == 3;
+        lemma pc14: popcount(14) == 3;
+        lemma pc15: popcount(15) == 4;
+    }
+ */
+
+/*@ predicate valid_adc_globals =
+        \forall integer id; 0 <= id <= 2 ==>
+            0 <= adc_connected[id] <= 1 &&
+            (adc_connected[id] == 0 ==> adc_ena[id] == adc_popcount[id] == 0) &&
+            (adc_connected[id] == 1 ==> 0 <= adc_ena[id] <= 15 && 0 <= adc_popcount[id] <= 4 && adc_popcount[id] == popcount(adc_ena[id]));
+ */
 
 #ifdef FRAMA_C
 // Necessary because strict aliasing
@@ -64,7 +98,8 @@ extern uint8_t sample_data_fake[sizeof(sample_data)];
 #define FEATURE_BLOCK 1
 #define FEATURE_ASM   0 //so capture gets implemented
 
-/*@ assigns PORTF;
+/*@ requires 0 <= id <= 2;
+    assigns PORTF;
  */
 static void adc_select(uint8_t id) {
 }
@@ -77,15 +112,6 @@ static void adc_deselect(void) {
 /*@ assigns \nothing;
  */
 static void sendchar(uint8_t data) {
-}
-
-// fake rreg() that returns void, so we don't try to verify things that
-// depend on values in registers
-static uint8_t rreg(uint8_t id, uint8_t a) {
-  adc_select(id);
-  SPDR = 1;
-  adc_deselect();
-  return 0;
 }
 
 // similar fake stub
@@ -108,11 +134,9 @@ static void adc_spi_fast(void) {
 static void dac_spi_fast(void) {
 }
 
-/*@ assigns \nothing;
- */
-inline uint8_t spi_comm_byte(uint8_t in) {
-    return 0;
-}
+#define printf_P(...)
+#define PSTR(s)
+#define start_section(s)
 
 #endif //FRAMA_C
 
