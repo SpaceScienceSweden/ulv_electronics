@@ -1288,3 +1288,49 @@ void init_cb_cbc(uint8_t fm_mask, uint16_t max_frames) {
       }
     }
 }
+
+/*@ requires 0 <= ocr_lo <= TIMER1_TOP;
+    requires 0 <= ocr_hi <= TIMER1_TOP;
+    requires 0 <= fm_mask <= 7;
+    requires 0 <= stop_mask <= 7;
+    requires valid_adc_globals;
+    ensures valid_adc_globals;
+    assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2], OCR1A, OCR1B, OCR1C;
+ */
+static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t stop_mask, uint16_t ocr_lo, uint16_t ocr_hi) {
+  //alternate OCR1*
+  //set ADC sample rates while we're at it
+  uint16_t ocr = (block_idx & 1) ? ocr_hi : ocr_lo;
+  if (ocr) {
+    uint8_t clk2 = 0x20 | ocr2osr(ocr);
+    if (fm_mask & 1) {
+      if (stop_mask & 1) {
+        OCR1A = ocr;
+      }
+      wreg(0, CLK2, clk2);
+    }
+    if (!(stop_mask & 1)) {
+      OCR1A = 0;
+    }
+
+    if (fm_mask & 2) {
+      if (stop_mask & 2) {
+        OCR1B = ocr;
+      }
+      wreg(1, CLK2, clk2);
+    }
+    if (!(stop_mask & 2)) {
+      OCR1B = 0;
+    }
+
+    if (fm_mask & 4) {
+      if (stop_mask & 4) {
+        OCR1C = ocr;
+      }
+      wreg(2, CLK2, clk2);
+    }
+    if (!(stop_mask & 4)) {
+      OCR1C = 0;
+    }
+  }
+}
