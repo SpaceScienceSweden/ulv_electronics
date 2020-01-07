@@ -290,51 +290,87 @@ void compute_min_max(
 void compute_sum_abs(
   uint16_t p0,
   uint16_t p12,
-#ifndef FRAMA_C
   uint32_t sum_abs[4]
-#else
-  //WP doesn't seem able to deal with unsigned overflow
-  int32_t sum_abs[4]
-#endif
 ) {
-#ifndef FRAMA_C
-  //This is a bit hacky, Frama-C can't seem to figure out
-  //that data_ptr == sample_data + i*4..
   sample_t *data_ptr = (sample_t*)sample_data + p0*4;
-#endif
 
-  /*@ loop invariant \forall integer x; 0 <= x < 3 ==>
+  /*@ loop invariant channels: \forall integer x; 0 <= x <= 3 ==>
         \at(sum_abs[x], LoopEntry) <= sum_abs[x]
         <= \at(sum_abs[x], LoopEntry) + (i-p0)*(INT16_MAX+1);
-      loop invariant
-        \at(sum_abs[3], LoopEntry) <= sum_abs[3]
-        <= \at(sum_abs[3], LoopEntry) + (i-p0)*INT16_MAX;
+      loop invariant data_ptr: data_ptr == (sample_t*)sample_data + i*4;
 
-      loop invariant p0 <= i <= p12;
-      loop assigns i, sum_abs[0..3];
+      loop invariant i_range: p0 <= i <= p12;
+      loop assigns i, sum_abs[0..3], data_ptr;
       loop variant p12 - i;
    */
-  for (uint16_t i = p0; i < p12; i++
-#ifndef FRAMA_C
-      , data_ptr += 4
-#endif
-  ) {
-#ifdef FRAMA_C
-    //doing things this way is easier to prove,
-    //but probably will compile to slower code
-    sample_t *data_ptr = (sample_t*)sample_data + i*4;
-#endif
+  for (uint16_t i = p0; i < p12; i++, data_ptr += 4) {
     //@ assert data_ok: \valid_read(data_ptr + (0..3));
     sample_t s;
-    s = data_ptr[0]; if(s >= 0){sum_abs[0] += s;}else{sum_abs[0] -= s;}
-    s = data_ptr[1]; if(s >= 0){sum_abs[1] += s;}else{sum_abs[1] -= s;}
-    s = data_ptr[2]; if(s >= 0){sum_abs[2] += s;}else{sum_abs[2] -= s;}
+  label0:
+    s = data_ptr[0];
+    if (s >= 0) {
+        sum_abs[0] += s;
+    } else {
+        // necessary to be able to hold -INT16_MIN = 32768 > 
+        uint16_t sneg = -(int32_t)s;
+        //@ assert sneg0_range: 0 <= sneg <= INT16_MAX + 1;
+        sum_abs[0] += sneg;
+    }
+    /*@ assert before_label1:
+            \at(sum_abs[0],label0) <= sum_abs[0] <= \at(sum_abs[0],label0) + INT16_MAX + 1 &&
+            \forall integer x; 0 < x <= 3 ==>
+                \at(sum_abs[x],label0) == sum_abs[x];
+     */
+
+  label1:
+    s = data_ptr[1];
+    if (s >= 0) {
+        sum_abs[1] += s;
+    } else {
+        // necessary to be able to hold -INT16_MIN = 32768 > 
+        uint16_t sneg = -(int32_t)s;
+        //@ assert sneg1_range: 0 <= sneg <= INT16_MAX + 1;
+        sum_abs[1] += sneg;
+    }
+    /*@ assert before_label2:
+            \at(sum_abs[1],label1) <= sum_abs[1] <= \at(sum_abs[1],label1) + INT16_MAX + 1 &&
+            \forall integer x; 0 <= x <= 3 && x != 1 ==>
+                \at(sum_abs[x],label1) == sum_abs[x];
+     */
+  label2:
+    s = data_ptr[2];
+    if (s >= 0) {
+        sum_abs[2] += s;
+    } else {
+        // necessary to be able to hold -INT16_MIN = 32768 > 
+        uint16_t sneg = -(int32_t)s;
+        //@ assert sneg2_range: 0 <= sneg <= INT16_MAX + 1;
+        sum_abs[2] += sneg;
+    }
+    /*@ assert before_label3:
+            \at(sum_abs[2],label2) <= sum_abs[2] <= \at(sum_abs[2],label2) + INT16_MAX + 1 &&
+            \forall integer x; 0 <= x <= 3 && x != 2 ==>
+                \at(sum_abs[x],label2) == sum_abs[x];
+     */
+  label3:
 
 #ifdef FRAMA_C
-    //the prover doesn't know channel 4 is always positive
-    if (data_ptr[3] >= 0)
+    // make the prover happier. we know that the value is always positive unless the hardware is very broken
+    // if it is somehow negative anyway then we have other problems
+    if (data_ptr[3] < 0) {
+        uint16_t sneg = -(int32_t)data_ptr[3];
+        //@ assert sneg3_range: 0 <= sneg <= INT16_MAX + 1;
+        sum_abs[3] += sneg;
+    }
+    else
 #endif
     sum_abs[3] += data_ptr[3]; /* no need to abs tach, always positive */
+
+    /*@ assert last:
+            \at(sum_abs[3],label3) <= sum_abs[3] <= \at(sum_abs[3],label3) + INT16_MAX + 1 &&
+            \forall integer x; 0 <= x < 3 ==>
+                \at(sum_abs[x],label3) == sum_abs[x];
+     */
   }
 }
 
@@ -1067,12 +1103,7 @@ uint8_t capture_and_demod(
 
       if (last_round || mean[3] == 0) {
         //sum_abs[3] is just the sum, should save some cycles
-#ifndef FRAMA_C
         uint32_t sum_abs[4] = {0,0,0,0};
-#else
-        //WP doesn't seem able to deal with unsigned overflow
-        int32_t sum_abs[4] = {0,0,0,0};
-#endif
 
         compute_sum_abs(edge_pos[0], edge_pos[entry->num_tachs], sum_abs);
 
