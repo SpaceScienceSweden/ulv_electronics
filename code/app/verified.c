@@ -1293,8 +1293,8 @@ void init_cb_cbc(uint8_t fm_mask, uint16_t max_frames) {
     requires 0 <= ocr_hi <= TIMER1_TOP;
     requires 0 <= fm_mask <= 7;
     requires 0 <= stop_mask <= 7;
-    requires valid_adc_globals;
-    ensures valid_adc_globals;
+    requires valid_adc_configuration_part2(fm_mask);
+    ensures valid_adc_configuration_part2(fm_mask);
     assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2], OCR1A, OCR1B, OCR1C;
  */
 static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t stop_mask, uint16_t ocr_lo, uint16_t ocr_hi) {
