@@ -993,10 +993,10 @@ uint8_t capture_and_demod(
   // but reading them here before capture() clears them.
   // My hypothesis is that this has to do with dV/dt's during
   // VGND change inducing out-of-range signals in channels 1-3.
-  rreg(id, STAT_1);
-  rreg(id, STAT_P);
-  rreg(id, STAT_N);
-  rreg(id, STAT_S);
+  rreg_not_ena(id, STAT_1);
+  rreg_not_ena(id, STAT_P);
+  rreg_not_ena(id, STAT_N);
+  rreg_not_ena(id, STAT_S);
 
   set_74153(id);
   capture(id, stat1_out, max_frames);
