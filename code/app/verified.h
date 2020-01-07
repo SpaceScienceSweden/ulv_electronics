@@ -359,6 +359,9 @@ uint8_t find_tachs(uint16_t max_frames,
     requires 3 <= *tach_skip <= max_frames / 4;
     requires 0 <= *rounding_inout <= 11;
 
+    requires adc_connected_and_valid(id);
+    ensures adc_connected_and_valid(id);
+
     ensures 3 <= *tach_skip <= max_frames / 4;
     ensures 0 <= *rounding_inout <= 11;
 
@@ -384,9 +387,10 @@ uint8_t find_tachs(uint16_t max_frames,
             *tach_ratio,
             *discard,
             mean_abs[0..2],
-            *rounding_inout;
+            *rounding_inout,
+            adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2];
  */
-uint8_t capture_and_demod(
+uint8_t capture_and_demod( // typed_capture_and_demod_ensures_4 Failed
         uint8_t id,
         uint16_t max_frames,
         uint8_t *stat1_out,
@@ -539,8 +543,11 @@ static adc_word_t adc_comm_inner(uint8_t pc, adc_word_t cmd) {
  * return: device word out
  */
 /*@ requires 0 <= id <= 2;
-    requires valid_adc_globals;
-    ensures valid_adc_globals;
+    requires 0 <= adc_popcount[id] <= 4;
+    requires \separated(
+        &SPDR,
+        &PORTF
+    );
     assigns SPDR, PORTF;
  */
 static adc_word_t adc_comm(uint8_t id, adc_word_t cmd) {
@@ -591,9 +598,34 @@ inline uint16_t WREGS(uint8_t a, uint8_t n) {
 
 /*@ requires 0 <= id <= 2;
     requires 0 <= a <= ADC_REG_MAX;
-    requires valid_adc_globals;
-    ensures valid_adc_globals;
-    assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2];
+
+    requires \separated(
+        &SPDR,
+        &PORTF,
+        &adc_ena[id],
+        &adc_popcount[id],
+        &adc_connected[id],
+        &adc_fake_regs[id][a]
+    );
+
+    requires adc_connected_and_valid(id);
+    ensures adc_connected_and_valid(id);
+    ensures 0 <= \result <= 1;
+    ensures \result == 0 ==> adc_fake_regs[id][a] == (
+        a == A_SYS_CFG ? (d | 0x20) :
+        a == CLK1 ? (d & 0x8E) :
+        a == CLK2 ? (d & 0xEF) :
+        a == ADC_ENA ? (d & 0x0F) :
+        a == 0x10 ? 0x00 :
+        a >= ADC1 && a <= ADC4 ? (d & 0x03) :
+        d
+    );
+    ensures \result == 0 && a == ADC_ENA ==>
+        adc_ena[id] == (d & 0x0F) &&
+        adc_popcount[id] == popcount(d & 0x0F) &&
+        adc_connected[id] == 1;
+
+    assigns SPDR, PORTF, adc_ena[id], adc_popcount[id], adc_connected[id], adc_fake_regs[id][a];
  */
 static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
   adc_word_t word;
@@ -615,6 +647,10 @@ static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
 
   adc_comm(id, WREG(a,d));
 
+#ifdef FRAMA_C
+  adc_fake_regs[id][a] = d;
+#endif
+
   //if we change ADC_ENA then we need to update popcount since we use dynamic framing
   if (a == ADC_ENA) {
     //@ assert d_range: 0 <= d < 0x10;
@@ -625,7 +661,7 @@ static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
     adc_popcount[id] = pc;
     //TODO: maybe check the byte returned by adc_comm() as rreg() does
     adc_connected[id] = 1; //d < 0x10;
-    //@ assert globals1: 0 <= d < 0x10 && valid_adc_globals;
+    //@ assert globals1: 0 <= d < 0x10 && adc_connected_and_valid(id);
   }
 
   word = adc_comm(id, 0);
@@ -638,31 +674,101 @@ static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
 }
 
 /*@ requires 0 <= id <= 2;
-    requires 0 <= a <= ADC_REG_MAX;
-    requires valid_adc_globals;
-    ensures valid_adc_globals;
-    assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2];
- */
-uint8_t rreg(uint8_t id, uint8_t a) {
-    adc_comm(id, RREG(a));
-    uint8_t d = (adc_comm(id, 0) >> (WORDSZ-16)) & 0xFF;
-    if (a == ADC_ENA) {
-        if (d < 0x10) {
-            //@ assert d_range: 0 <= d < 0x10;
-            uint8_t pc = popcount4(d);
-            //@ assert pc_range: 0 <= pc <= 4 && pc == popcount(d);
+    requires 0 <= a <= ADC_REG_MAX && a != ADC_ENA;
+    requires \separated(
+        &SPDR,
+        &PORTF,
+        &adc_connected[id],
+        &adc_popcount[id],
+        &adc_ena[id],
+        &adc_fake_regs[id][a]
+    );
 
-            adc_ena[id]      = d;
-            adc_popcount[id] = pc;
-            adc_connected[id]= 1;
-        } else {
-            adc_ena[id]      = 0;
-            adc_popcount[id] = 0;
-            adc_connected[id]= 0;
-        }
+    requires adc_connected_and_valid(id);
+    ensures adc_connected_and_valid(id);
+    ensures \result == adc_fake_regs[id][a];
+
+    assigns SPDR, PORTF;
+ */
+uint8_t rreg_not_ena(uint8_t id, uint8_t a) {
+    //@ assert popcount1: 0 <= adc_popcount[id] <= 4;
+    adc_comm(id, RREG(a));
+    //@ assert popcount2: 0 <= adc_popcount[id] <= 4;
+    uint8_t d = (adc_comm(id, 0) >> (WORDSZ-16)) & 0xFF;
+#ifdef FRAMA_C
+    d = adc_fake_regs[id][a];
+#endif
+    return d;
+}
+
+/*@ requires 0 <= id <= 2;
+    requires \separated(
+        &SPDR,
+        &PORTF,
+        &adc_ena[0] + (0..2),
+        &adc_popcount[0] + (0..2),
+        &adc_connected[0] + (0..2),
+        &adc_fake_regs[id][ADC_ENA]
+    );
+    requires adc_disconnected_xor_valid(id);
+    ensures adc_disconnected_xor_valid(id);
+    ensures \result == adc_fake_regs[id][ADC_ENA];
+
+    assigns SPDR, PORTF, adc_ena[id], adc_popcount[id], adc_connected[id], adc_fake_regs[id][ADC_ENA];
+ */
+uint8_t rreg_ena(uint8_t id, uint8_t a) {
+    /* By adc_disconnected_xor_valid(),
+       if adc_connected[id] == 0 then we will attempt
+       communication with adc_popcount[id] == 0;
+     */
+    adc_comm(id, RREG(ADC_ENA));
+    uint8_t d = (adc_comm(id, 0) >> (WORDSZ-16)) & 0xFF;
+#ifdef FRAMA_C
+    d = adc_fake_regs[id][ADC_ENA];
+#endif
+    if (d < 0x10) {
+        //@ assert d_range: 0 <= d < 0x10;
+        uint8_t pc = popcount4(d);
+        //@ assert pc_range: 0 <= pc <= 4 && pc == popcount(d);
+
+        adc_ena[id]      = d;
+        adc_popcount[id] = pc;
+        adc_connected[id]= 1;
+    } else {
+        d = 0;
+        adc_ena[id]      = 0;
+        adc_fake_regs[id][ADC_ENA] = 0;
+        adc_popcount[id] = 0;
+        adc_connected[id]= 0;
     }
     return d;
 }
+
+/*@ requires 1 <= fm_mask <= 7;
+    requires \separated(
+        &SPDR,
+        &PORTF,
+        &adc_popcount[0] + (0..2),
+        &adc_ena[0] + (0..2),
+        &adc_connected[0] + (0..2),
+        &adc_fake_regs[0][ADC_ENA],
+        &adc_fake_regs[1][ADC_ENA],
+        &adc_fake_regs[2][ADC_ENA]
+    );
+
+    requires adc_connected_and_valid_by_mask(fm_mask);
+    ensures adc_connected_and_valid_by_mask(fm_mask);
+
+    ensures 0 <= \result <= 1;
+    ensures \result == 0 ==> valid_adc_configuration_part1(fm_mask);
+
+    assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2],
+        adc_fake_regs[0][ADC_ENA],
+        adc_fake_regs[1][ADC_ENA],
+        adc_fake_regs[2][ADC_ENA];
+ */
+uint8_t setup_inner(uint8_t fm_mask);
+
 
 /*@ requires 0 <= x <= 2;
     requires 0 <= codein <= 1023;
@@ -716,7 +822,7 @@ static void set_vgnd(uint8_t x, uint16_t codein) {
 /*@ requires 0 <= codein <= 1023;
     assigns vgnds[0..2], DDRE, PORTE, SPDR;
  */
-static void set_vgnds(uint16_t codein) {
+static void set_vgnds(const uint16_t codein) {
   /*@ loop invariant 0 <= id <= 3;
       loop assigns id, vgnds[0..2], DDRE, PORTE, SPDR;
       loop variant 3 - id;
@@ -728,8 +834,7 @@ static void set_vgnds(uint16_t codein) {
 
 /*@ requires 1 <= fm_mask <= 7;
     requires \valid(&fm_map[0] + (0..2));
-    ensures \forall integer x; 0 <= x < popcount(fm_mask) ==> 0 <= fm_map[x] <= 2;
-    ensures \forall integer x; 1 <= x < popcount(fm_mask) ==> 0 <= fm_map[x-1] < fm_map[x] <= 2;
+    ensures valid_read_fm_map(fm_mask, fm_map);
     assigns fm_map[0..2];
  */
 void fm_mask2map(uint8_t fm_mask, uint8_t fm_map[3]);

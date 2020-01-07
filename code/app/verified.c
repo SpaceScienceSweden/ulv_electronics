@@ -1334,3 +1334,33 @@ static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t st
     }
   }
 }
+
+uint8_t setup_inner(uint8_t fm_mask) {
+    //@ assert pc: 1 <= popcount(fm_mask) <= 3;
+    if ((fm_mask & 1) && wreg(0, ADC_ENA, 0x0F)) {
+        //@ assert valid_return1: adc_connected_and_valid_by_mask(fm_mask);
+        return 1;
+    }
+    //@ assert valid1: valid_adc_configuration_part1(fm_mask & 1);
+    if (fm_mask & 2) {
+        if (wreg(1, ADC_ENA, 0x0F)) {
+            //@ assert valid_return2: adc_connected_and_valid_by_mask(fm_mask);
+            return 1;
+        }
+        //@ assert valid20: valid_adc_configuration_part1(fm_mask & 2);
+    }
+    //@ assert valid21: valid_adc_configuration_part1(fm_mask & 1);
+    //@ assert valid23: valid_adc_configuration_part1(fm_mask & 3);
+    if (fm_mask & 4) {
+        if (wreg(2, ADC_ENA, 0x0F)) {
+            //@ assert valid_return3: adc_connected_and_valid_by_mask(fm_mask);
+            return 1;
+        }
+        //@ assert valid30: valid_adc_configuration_part1(fm_mask & 4);
+    }
+    //@ assert valid31: valid_adc_configuration_part1(fm_mask & 1);
+    //@ assert valid32: valid_adc_configuration_part1(fm_mask & 2);
+    //@ assert valid37: valid_adc_configuration_part1(fm_mask & 7);
+    //@ assert final_valid: adc_connected_and_valid_by_mask(fm_mask);
+    return 0;
+}
