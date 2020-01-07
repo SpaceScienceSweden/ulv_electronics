@@ -1,12 +1,15 @@
 /* Everything that is commited in here has been verified by Frama-C */
+#ifdef FRAMA_C
+#include "__fc_machdep_gcc_avr_16.h"
+#endif
 
 // See -DTEST_SPEED in Makefile
 #ifdef TEST_SPEED
 #include <avr/pgmspace.h>
 #include <stdio.h>
 #endif
-#include <stdint.h>
 #include "verified.h"
+#include <stdint.h>
 
 #if FEATURE_BLOCK
 #if FEATURE_ASM == 0
