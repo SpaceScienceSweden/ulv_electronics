@@ -137,6 +137,57 @@ void accumulate_square_interval_2(
     requires \valid_read((accu_t*)Q4 + (0..2));
     requires \valid_read((uint16_t*)NQ + (0..3));
     requires \valid((int16_t*)IQ + (0..5));
+
+    requires \separated(
+      (accu_t*)Q1 + (0..2),
+      (accu_t*)Q2 + (0..2),
+      (accu_t*)Q3 + (0..2),
+      (accu_t*)Q4 + (0..2),
+      (uint16_t*)NQ + (0..3),
+      (int16_t*)IQ + (0..5)
+    );
+
+    requires NQrange: 0 < NQ[0] + NQ[1] + NQ[2] + NQ[3] <= MAX_FRAMES;
+
+    //requires Qrange: \forall integer x; 0 <= x <= 2 ==>
+    //  -N*INT16_MAX/4 <= Q1[x] <= N*INT16_MAX/4 &&
+    //  -N*INT16_MAX/4 <= Q2[x] <= N*INT16_MAX/4 &&
+    //  -N*INT16_MAX/4 <= Q3[x] <= N*INT16_MAX/4 &&
+    //  -N*INT16_MAX/4 <= Q4[x] <= N*INT16_MAX/4;
+
+
+    //requires Qrange1: \forall integer x; 0 <= x <= 2 ==>
+    //  -N*INT16_MAX <= Q1[x] - Q2[x] - Q3[x] + Q4[x] <= N*INT16_MAX;
+    //requires Qrange2: \forall integer x; 0 <= x <= 2 ==>
+    //  -N*INT16_MAX <= Q1[x] + Q2[x] - Q3[x] - Q4[x] <= N*INT16_MAX;
+    //requires Qrange3: \forall integer x; 0 <= x <= 2 ==>
+    //  -N*INT16_MAX <= Q1[x] + Q2[x] + Q3[x] + Q4[x] <= N*INT16_MAX;
+
+    requires Q1range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[0]*INT16_MIN <= Q1[x] <= NQ[0]*INT16_MAX;
+    requires Q2range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[1]*INT16_MIN <= Q2[x] <= NQ[1]*INT16_MAX;
+    requires Q3range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[2]*INT16_MIN <= Q3[x] <= NQ[2]*INT16_MAX;
+    requires Q4range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[3]*INT16_MIN <= Q4[x] <= NQ[3]*INT16_MAX;
+
+    assigns ((int16_t*)IQ)[0..5];
+ */
+void binary_iq(
+  int16_t IQ[3][2]
+);
+
+/*@ requires \valid_read((accu_t*)Q1 + (0..2));
+    requires \valid_read((accu_t*)Q2 + (0..2));
+    requires \valid_read((accu_t*)Q3 + (0..2));
+    requires \valid_read((accu_t*)Q4 + (0..2));
+    requires \valid_read((uint16_t*)NQ + (0..3));
+    requires \valid((int16_t*)IQ + (0..5));
     requires \valid((int16_t*)mean + (0..2));
 
     requires \separated(
@@ -179,15 +230,10 @@ void accumulate_square_interval_2(
         NQ[3]*INT16_MIN <= Q4[x] <= NQ[3]*INT16_MAX;
 
     assigns ((int16_t*)IQ)[0..5], mean[0..2];
-
-    ensures \forall integer x;
-      0 <= x <= 2 && compute_mean == 0 ==>
-        mean[x] == \old(mean[x]);
  */
-void binary_iq(
+void binary_iq_mean(
   int16_t IQ[3][2],
-  int16_t mean[4],
-  uint8_t compute_mean
+  int16_t mean[4]
 );
 
 /*@ requires 1 <= num_tachs <= 255;

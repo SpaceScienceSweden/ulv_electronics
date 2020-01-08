@@ -445,9 +445,7 @@ uint8_t ocr2osr(uint16_t ocr) {
 }
 
 void binary_iq(
-  int16_t IQ[3][2],
-  int16_t mean[4],
-  uint8_t compute_mean
+  int16_t IQ[3][2]
 ) {
   uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
   accu_t lo = N*(accu_t)INT16_MIN;
@@ -456,10 +454,60 @@ void binary_iq(
   //@ assert lo == N*INT16_MIN;
   //@ assert hi == N*INT16_MAX;
 
-  /*@ loop invariant \forall integer x;
-        0 <= x <= 2 && compute_mean == 0 ==>
-          mean[x] == \at(mean[x], LoopEntry);
+  /*@ loop invariant 0 <= j <= 3;
+      loop assigns j, ((int16_t*)IQ)[0..5];
+      loop variant 3 - j;
+   */
+  for (uint8_t j = 0; j < 3; j++) {
+    //avr-gcc probably won't know that Q1..Q4 don't alias,
+    //so load q1..4 to avoid accessesing memory more than necessary
+    accu_t q1 = Q1[j];
+    accu_t q2 = Q2[j];
+    accu_t q3 = Q3[j];
+    accu_t q4 = Q4[j];
+
+    // I = q1-q2-q3+q4
+    // Q = q1+q2-q3-q4
+    accu_t I = q1 - q2 - q3 + q4;
+    accu_t Q = q1 + q2 - q3 - q4;
+
+    //clamp
+    if (I < lo) {
+      //@ assert I_underflow: I < N*INT16_MIN;
+      IQ[j][0] = INT16_MIN;
+    } else if (I > hi) {
+      //@ assert I_overflow: I > N*INT16_MAX;
+      IQ[j][0] = INT16_MAX;
+    } else {
+      IQ[j][0] = I / N;
+    }
+
+    if (Q < lo) {
+      //@ assert Q_underflow: Q < N*INT16_MIN-1;
+      IQ[j][1] = INT16_MIN;
+    } else if (Q > hi) {
+      //@ assert Q_overflow: Q > N*INT16_MAX;
+      IQ[j][1] = INT16_MAX;
+    } else {
+      IQ[j][1] = Q / N;
+    }
+  }
+}
+
+void binary_iq_mean(
+  int16_t IQ[3][2],
+  int16_t mean[4]
+) {
+  uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
+  accu_t lo = N*(accu_t)INT16_MIN;
+  accu_t hi = N*(accu_t)INT16_MAX;
+  // Verify that the above multiplications are correct:
+  //@ assert lo == N*INT16_MIN;
+  //@ assert hi == N*INT16_MAX;
+
+  /*@ loop invariant 0 <= j <= 3;
       loop assigns j, ((int16_t*)IQ)[0..5], mean[0..2];
+      loop variant 3 - j;
    */
   for (uint8_t j = 0; j < 3; j++) {
     //avr-gcc probably won't know that Q1..Q4 don't alias,
@@ -495,7 +543,6 @@ void binary_iq(
       IQ[j][1] = Q / N;
     }
 
-    if (compute_mean) {
       accu_t M = q1 + q2 + q3 + q4;
 
       if (M < lo) {
@@ -507,7 +554,6 @@ void binary_iq(
       } else {
         mean[j] = M / N;
       }
-    }
   }
 }
 
@@ -1114,7 +1160,11 @@ uint8_t capture_and_demod(
         mean[3]     = sum_abs[3] / N;
       }
 
-      binary_iq(entry->IQ, mean, last_round);
+      if (last_round) {
+        binary_iq_mean(entry->IQ, mean);
+      } else {
+        binary_iq(entry->IQ);
+      }
     }
   } else {
     //no tachs at all
