@@ -9,8 +9,8 @@ typedef uint32_t __uint24;
     // Frama-C ignores regular type invariants however, so leave them in for now.
     // They should be upgraded to strong once a newer version of Frama-C
     // makes it into Debian testing.
-    type invariant uint24_min(__uint24 a) = a >= 0;
-    type invariant uint24_max(__uint24 a) = a <= 16777215;
+    //type invariant uint24_min(__uint24 a) = a >= 0;
+    //type invariant uint24_max(__uint24 a) = a <= 16777215;
 
     // Poor man's type invariant
     predicate valid_uint24(integer a) = 0 <= a <= 16777215;
