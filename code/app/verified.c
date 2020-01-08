@@ -381,11 +381,9 @@ sample_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr_in) {
   /*@ loop invariant data_ptr == data_ptr_in + k*4;
       loop invariant INT16_MIN*k <= sum <= INT16_MAX*k;
 
-      // this lets WP figure out k == num_frames on exit,
-      // which leads to mean_ok being proven
-      loop invariant k <= num_frames;
-
+      loop invariant 0 <= k <= num_frames;
       loop assigns sum, k, data_ptr;
+      loop variant num_frames - k;
    */
   for (k = 0; k < num_frames; k++, data_ptr += 4) {
     sum += data_ptr[3];
