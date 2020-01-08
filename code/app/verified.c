@@ -660,6 +660,107 @@ void accumulate_quadrants(
   accumulate_quadrant(Q4, n3, data_ptr + i3*4);
 }
 
+#if 0
+// Experimental single-cycle accumulator thing
+// Proves much easier than _2(), but only 1/3 of a revolution
+/*@ requires 0 <= p0 < p4 <= MAX_FRAMES;
+    requires 4 <= p4 - p0 <= MAX_FRAMES/3;
+    requires 0 <= rounding < 4;
+    requires \valid_read((sample_t*)sample_data + (4*p0..4*p4-1));
+    requires \valid((accu_t*)Q1 + (0..2));
+    requires \valid((accu_t*)Q2 + (0..2));
+    requires \valid((accu_t*)Q3 + (0..2));
+    requires \valid((accu_t*)Q4 + (0..2));
+    requires \valid(nsum1);
+    requires \valid(nsum2);
+    requires \valid(nsum3);
+    requires \valid(nsum4);
+
+    requires \separated(
+      (sample_t*)sample_data + (4*p0..4*p4-1),
+      (accu_t*)Q1 + (0..2),
+      (accu_t*)Q2 + (0..2),
+      (accu_t*)Q3 + (0..2),
+      (accu_t*)Q4 + (0..2),
+      nsum1,
+      nsum2,
+      nsum3,
+      nsum4
+    );
+
+    requires \let NHI = ((p4 - p0) / 4 + 1); \forall integer x;
+      0 <= x <= 2 ==>
+        INT32_MIN - NHI*INT16_MIN <= Q1[x] <= INT32_MAX - NHI*INT16_MAX &&
+        INT32_MIN - NHI*INT16_MIN <= Q2[x] <= INT32_MAX - NHI*INT16_MAX &&
+        INT32_MIN - NHI*INT16_MIN <= Q3[x] <= INT32_MAX - NHI*INT16_MAX &&
+        INT32_MIN - NHI*INT16_MIN <= Q4[x] <= INT32_MAX - NHI*INT16_MAX;
+
+    ensures \let NHI = ((p4 - p0) / 4 + 1); \forall integer x;
+      0 <= x <= 2 ==>
+        \old(Q1[x]) + (*nsum1)*INT16_MIN <= Q1[x] <= \old(Q1[x]) + (*nsum1)*INT16_MAX &&
+        \old(Q2[x]) + (*nsum2)*INT16_MIN <= Q2[x] <= \old(Q2[x]) + (*nsum2)*INT16_MAX &&
+        \old(Q3[x]) + (*nsum3)*INT16_MIN <= Q3[x] <= \old(Q3[x]) + (*nsum3)*INT16_MAX &&
+        \old(Q4[x]) + (*nsum4)*INT16_MIN <= Q4[x] <= \old(Q4[x]) + (*nsum4)*INT16_MAX;
+
+    ensures \let NLO = ((p4 - p0) / 4);
+            \let NHI = ((p4 - p0) / 4 + 1);
+        NLO <= *nsum1 <= NHI &&
+        NLO <= *nsum2 <= NHI &&
+        NLO <= *nsum3 <= NHI &&
+        NLO <= *nsum4 <= NHI;
+
+    ensures sumtot: *nsum1 + *nsum2 + *nsum3 + *nsum4 == p4 - p0;
+
+    assigns Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], *nsum1, *nsum2, *nsum3, *nsum4;
+ */
+void accumulate_square_interval_1(
+  uint16_t p0,
+  uint16_t p4,
+  uint16_t *nsum1,
+  uint16_t *nsum2,
+  uint16_t *nsum3,
+  uint16_t *nsum4,
+  uint8_t rounding
+) {
+  uint16_t psize = p4 - p0;
+
+  const sample_t * data_ptr = p0*4 + (sample_t*)sample_data;
+  //@assert data_ptr_valid: \valid_read(data_ptr + (0..4*psize-1));
+  uint16_t i0 = 0;
+  uint16_t i1 = (psize+rounding) / 4;
+  uint16_t i2 = (2*psize+rounding) / 4;
+  uint16_t i3 = (3*psize+rounding) / 4;
+  uint16_t i4 = psize;
+
+  uint16_t n0  = i1  - i0;
+  uint16_t n1  = i2  - i1;
+  uint16_t n2  = i3  - i2;
+  uint16_t n3  = i4  - i3;
+
+  //@ ghost uint16_t nlo = psize / 4;
+  //@ ghost uint16_t nhi = psize / 4 + 1;
+  //@ assert nlo <= n0  <= nhi;
+  //@ assert nlo <= n1  <= nhi;
+  //@ assert nlo <= n2  <= nhi;
+  //@ assert nlo <= n3  <= nhi;
+
+before:
+  accumulate_quadrants(i0,i1,i2, i3, i4, data_ptr);
+  /*@ assert round1: \forall integer x;
+      0 <= x <= 2 ==>
+        \at(Q1[x],before) + n0*INT16_MIN <= Q1[x] <= \at(Q1[x],before) + n0*INT16_MAX &&
+        \at(Q2[x],before) + n1*INT16_MIN <= Q2[x] <= \at(Q2[x],before) + n1*INT16_MAX &&
+        \at(Q3[x],before) + n2*INT16_MIN <= Q3[x] <= \at(Q3[x],before) + n2*INT16_MAX &&
+        \at(Q4[x],before) + n3*INT16_MIN <= Q4[x] <= \at(Q4[x],before) + n3*INT16_MAX;
+  */
+
+  *nsum1 = n0;
+  *nsum2 = n1;
+  *nsum3 = n2;
+  *nsum4 = n3;
+}
+#endif
+
 void accumulate_square_interval_2(
   uint16_t p0,
   uint16_t p12,
@@ -672,13 +773,11 @@ void accumulate_square_interval_2(
   //we chop the interval [p0,p12) into twelve pieces
   //each piece gets accumulated into Q1..4 in round-robin order
   //Q1 += p0, Q2 += p1, ..., Q1 += p4, ..., Q4 += p11
-  const __uint24 psize = p12 - p0;
-  __uint24 paccu = psize + rounding;
-  //@ assert valid_uint24(psize) && valid_uint24(paccu);
+  uint16_t psize = p12 - p0;
+  uint16_t paccu = psize + rounding;
 
   const sample_t * data_ptr = p0*4 + (sample_t*)sample_data;
   //@assert data_ptr_valid: \valid_read(data_ptr + (0..4*psize-1));
-
   uint16_t i0 = 0;
   uint16_t i1 = paccu / 12;
   uint16_t i2 = (paccu +   psize) / 12;
@@ -707,23 +806,22 @@ void accumulate_square_interval_2(
   uint16_t n11 = i12 - i11;
 
   //@ ghost uint16_t nlo = psize / 12;
-  //@ ghost uint16_t nhi = psize / 12 + 1;
-  //@ assert nlo <= n0  <= nhi;
-  //@ assert nlo <= n1  <= nhi;
-  //@ assert nlo <= n2  <= nhi;
-  //@ assert nlo <= n3  <= nhi;
-  //@ assert nlo <= n4  <= nhi;
-  //@ assert nlo <= n5  <= nhi;
-  //@ assert nlo <= n6  <= nhi;
-  //@ assert nlo <= n7  <= nhi;
-  //@ assert nlo <= n8  <= nhi;
-  //@ assert nlo <= n9  <= nhi;
-  //@ assert nlo <= n10 <= nhi;
-  //@ assert nlo <= n11 <= nhi;
+  //@ assert nlo <= n0  <= nlo+1;
+  //@ assert nlo <= n1  <= nlo+1;
+  //@ assert nlo <= n2  <= nlo+1;
+  //@ assert nlo <= n3  <= nlo+1;
+  //@ assert nlo <= n4  <= nlo+1;
+  //@ assert nlo <= n5  <= nlo+1;
+  //@ assert nlo <= n6  <= nlo+1;
+  //@ assert nlo <= n7  <= nlo+1;
+  //@ assert nlo <= n8  <= nlo+1;
+  //@ assert nlo <= n9  <= nlo+1;
+  //@ assert nlo <= n10 <= nlo+1;
+  //@ assert nlo <= n11 <= nlo+1;
 
 before:
   accumulate_quadrants(i0,i1,i2, i3, i4, data_ptr);
-  /*@ assert round1: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
+  /*@ assert round1: \forall integer x;
       0 <= x <= 2 ==>
         \at(Q1[x],before) + n0*INT16_MIN <= Q1[x] <= \at(Q1[x],before) + n0*INT16_MAX &&
         \at(Q2[x],before) + n1*INT16_MIN <= Q2[x] <= \at(Q2[x],before) + n1*INT16_MAX &&
@@ -732,7 +830,7 @@ before:
   */
 before2:
   accumulate_quadrants(i4,i5,i6, i7, i8, data_ptr);
-  /*@ assert round2: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
+  /*@ assert round2: \forall integer x;
       0 <= x <= 2 ==>
         \at(Q1[x],before2) + n4*INT16_MIN <= Q1[x] <= \at(Q1[x],before2) + n4*INT16_MAX &&
         \at(Q2[x],before2) + n5*INT16_MIN <= Q2[x] <= \at(Q2[x],before2) + n5*INT16_MAX &&
@@ -741,7 +839,7 @@ before2:
   */
 before3:
   accumulate_quadrants(i8,i9,i10,i11,i12,data_ptr);
-  /*@ assert round3: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
+  /*@ assert round3: \forall integer x;
       0 <= x <= 2 ==>
         \at(Q1[x],before3) + n8*INT16_MIN <= Q1[x] <= \at(Q1[x],before3) + n8*INT16_MAX &&
         \at(Q2[x],before3) + n9*INT16_MIN <= Q2[x] <= \at(Q2[x],before3) + n9*INT16_MAX &&

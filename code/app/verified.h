@@ -109,8 +109,9 @@ uint8_t ocr2osr(uint16_t ocr);
         \old(Q3[x]) + (*nsum3)*INT16_MIN <= Q3[x] <= \old(Q3[x]) + (*nsum3)*INT16_MAX &&
         \old(Q4[x]) + (*nsum4)*INT16_MIN <= Q4[x] <= \old(Q4[x]) + (*nsum4)*INT16_MAX;
 
-    ensures \let NLO = 3*((p12 - p0) / 12);
-            \let NHI = 3*((p12 - p0) / 12 + 1);
+    ensures nsumrange:
+        \let NLO = 3*((p12 - p0) / 12);
+        \let NHI = 3*((p12 - p0) / 12 + 1);
         NLO <= *nsum1 <= NHI &&
         NLO <= *nsum2 <= NHI &&
         NLO <= *nsum3 <= NHI &&
