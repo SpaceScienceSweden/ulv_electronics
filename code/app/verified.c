@@ -851,6 +851,8 @@ before3:
   *nsum4 = n3 + n7 + n11;
 }
 
+// only re-proven up to here
+#ifndef FRAMA_C
 void demod_tachs(uint8_t num_tachs,
                  uint8_t *rounding_inout)
 {
@@ -1544,3 +1546,4 @@ uint8_t setup_inner(uint8_t fm_mask) {
     //@ assert final_valid: adc_connected_and_valid_by_mask(fm_mask);
     return 0;
 }
+#endif
