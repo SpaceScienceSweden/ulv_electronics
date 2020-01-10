@@ -1,0 +1,11 @@
+[ { "prover": "script", "verdict": "valid" },
+  { "header": "Split", "tactic": "Wp.split", "params": {},
+    "select": { "select": "clause-step", "at": 6, "kind": "branch",
+                "target": "(bit_test fm_mask_1 0)",
+                "pattern": "bit_test$fm_mask0" },
+    "children": { "Then": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                              "verdict": "valid", "time": 0.7931,
+                              "steps": 913 } ],
+                  "Else": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                              "verdict": "valid", "time": 0.4966,
+                              "steps": 843 } ] } } ]

@@ -1,43 +1,15 @@
 /* Everything that is commited in here has been verified by Frama-C */
+#ifdef FRAMA_C
+#include "__fc_machdep_gcc_avr_16.h"
+#endif
 
 // See -DTEST_SPEED in Makefile
 #ifdef TEST_SPEED
 #include <avr/pgmspace.h>
 #include <stdio.h>
 #endif
-#include <stdint.h>
 #include "verified.h"
-
-#ifdef FRAMA_C
-
-/*@ assigns PORTF;
- */
-void adc_select(uint8_t id) {
-}
-
-/*@ assigns PORTF;
- */
-void adc_deselect(void) {
-}
-
-/*@ assigns \nothing;
- */
-void sendchar(uint8_t data) {
-}
-
-// fake rreg() that returns void, so we don't try to verify things that
-// depend on values in registers
-uint8_t rreg(uint8_t id, uint8_t a) {
-  adc_select(id);
-  SPDR = 1;
-  adc_deselect();
-  return 0;
-}
-
-// similar fake stub
-void set_74153(uint8_t ch) {
-}
-#endif
+#include <stdint.h>
 
 #if FEATURE_BLOCK
 #if FEATURE_ASM == 0
@@ -51,7 +23,11 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
   //experiments show that five samples are about the right amount to discard
   uint8_t discard_samples = 5;
 
+#ifdef FRAMA_C
+  uint8_t *ptr = sample_data_fake;
+#else
   uint8_t *ptr = (uint8_t*)sample_data;
+#endif
   uint8_t stat1 = 0;
 
   // Max sample rates @ 7.3728 MHz, 16-bit:
@@ -66,7 +42,8 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
   //just count overflow, adjust timer1_base at the end
   uint8_t timer1_ovfs = 0;
 
-  /*@ loop assigns SPDR, timer1_ovfs, TIFR;
+  /*@ loop invariant 0 < discard_samples <= 5;
+      loop assigns SPDR, timer1_ovfs, TIFR, discard_samples, PORTF;
       loop variant discard_samples;
    */
   do {
@@ -87,6 +64,10 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
     adc_select(id);
     SPDR = 0; 
     if (TIFR & (1<<TOV1)) {
+#ifdef FRAMA_C
+      // it's hard to model the fact that this never overflows on real hardware
+      if (timer1_ovfs < 255)
+#endif
       timer1_ovfs++;
       TIFR = (1<<TOV1);
     }
@@ -125,8 +106,11 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
     while (!(PINE & (1<<PE7)));
   } while(discard_samples > 0);
 
-
-  /*@ loop assigns SPDR, timer1_ovfs, TIFR, ptr[0..8*num_frames-1];
+  /*@ loop invariant 0 < num_frames <= \at(num_frames,LoopEntry);
+      loop invariant ptr == \at(ptr,LoopEntry) + 4*(WORDSZ/8)*(\at(num_frames,LoopEntry)-num_frames);
+      loop invariant \at(ptr,LoopEntry) <= ptr < \at(ptr,LoopEntry) + 4*(WORDSZ/8)*\at(num_frames,LoopEntry);
+      loop invariant \valid(ptr + (0..7));
+      loop assigns SPDR, timer1_ovfs, TIFR, \at(ptr,LoopEntry)[0..8*\at(num_frames,LoopEntry)-1], PORTF, stat1, ptr, num_frames;
       loop variant num_frames;
    */ 
   do {
@@ -136,6 +120,9 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
     adc_select(id);
     SPDR = 0;
     if (TIFR & (1<<TOV1)) {
+#ifdef FRAMA_C
+      if (timer1_ovfs < 255)
+#endif
       timer1_ovfs++;
       TIFR = (1<<TOV1);
     }
@@ -190,7 +177,20 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames)
   } while (num_frames > 0);
 
   //using 64-bit shift and add is smaller than 32-bit followed by upcasting to 64-bit
-  timer1_base += (uint64_t)timer1_ovfs * TIMER1_OVF_INC;
+  uint64_t inc = (uint64_t)timer1_ovfs * TIMER1_OVF_INC;
+  //@ assert 0 <= inc <= 255*TIMER1_OVF_INC < UINT32_MAX;
+#ifdef FRAMA_C
+before:
+  if (timer1_base <= UINT64_MAX - inc) {
+    timer1_base += inc;
+  } else {
+    uint64_t diff = UINT64_MAX - timer1_base;
+    timer1_base = inc - diff - 1;
+  }
+#else
+  timer1_base += inc;
+#endif
+  //@ assert timer1_base == (\at(timer1_base,before) + inc) % (1<<64);
   sei();
 
   *stat1_out = stat1;
@@ -290,51 +290,87 @@ void compute_min_max(
 void compute_sum_abs(
   uint16_t p0,
   uint16_t p12,
-#ifndef FRAMA_C
   uint32_t sum_abs[4]
-#else
-  //WP doesn't seem able to deal with unsigned overflow
-  int32_t sum_abs[4]
-#endif
 ) {
-#ifndef FRAMA_C
-  //This is a bit hacky, Frama-C can't seem to figure out
-  //that data_ptr == sample_data + i*4..
   sample_t *data_ptr = (sample_t*)sample_data + p0*4;
-#endif
 
-  /*@ loop invariant \forall integer x; 0 <= x < 3 ==>
+  /*@ loop invariant channels: \forall integer x; 0 <= x <= 3 ==>
         \at(sum_abs[x], LoopEntry) <= sum_abs[x]
         <= \at(sum_abs[x], LoopEntry) + (i-p0)*(INT16_MAX+1);
-      loop invariant
-        \at(sum_abs[3], LoopEntry) <= sum_abs[3]
-        <= \at(sum_abs[3], LoopEntry) + (i-p0)*INT16_MAX;
+      loop invariant data_ptr: data_ptr == (sample_t*)sample_data + i*4;
 
-      loop invariant p0 <= i <= p12;
-      loop assigns i, sum_abs[0..3];
+      loop invariant i_range: p0 <= i <= p12;
+      loop assigns i, sum_abs[0..3], data_ptr;
       loop variant p12 - i;
    */
-  for (uint16_t i = p0; i < p12; i++
-#ifndef FRAMA_C
-      , data_ptr += 4
-#endif
-  ) {
-#ifdef FRAMA_C
-    //doing things this way is easier to prove,
-    //but probably will compile to slower code
-    sample_t *data_ptr = (sample_t*)sample_data + i*4;
-#endif
+  for (uint16_t i = p0; i < p12; i++, data_ptr += 4) {
     //@ assert data_ok: \valid_read(data_ptr + (0..3));
     sample_t s;
-    s = data_ptr[0]; if(s >= 0){sum_abs[0] += s;}else{sum_abs[0] -= s;}
-    s = data_ptr[1]; if(s >= 0){sum_abs[1] += s;}else{sum_abs[1] -= s;}
-    s = data_ptr[2]; if(s >= 0){sum_abs[2] += s;}else{sum_abs[2] -= s;}
+  label0:
+    s = data_ptr[0];
+    if (s >= 0) {
+        sum_abs[0] += s;
+    } else {
+        // necessary to be able to hold -INT16_MIN = 32768 > 
+        uint16_t sneg = -(int32_t)s;
+        //@ assert sneg0_range: 0 <= sneg <= INT16_MAX + 1;
+        sum_abs[0] += sneg;
+    }
+    /*@ assert before_label1:
+            \at(sum_abs[0],label0) <= sum_abs[0] <= \at(sum_abs[0],label0) + INT16_MAX + 1 &&
+            \forall integer x; 0 < x <= 3 ==>
+                \at(sum_abs[x],label0) == sum_abs[x];
+     */
+
+  label1:
+    s = data_ptr[1];
+    if (s >= 0) {
+        sum_abs[1] += s;
+    } else {
+        // necessary to be able to hold -INT16_MIN = 32768 > 
+        uint16_t sneg = -(int32_t)s;
+        //@ assert sneg1_range: 0 <= sneg <= INT16_MAX + 1;
+        sum_abs[1] += sneg;
+    }
+    /*@ assert before_label2:
+            \at(sum_abs[1],label1) <= sum_abs[1] <= \at(sum_abs[1],label1) + INT16_MAX + 1 &&
+            \forall integer x; 0 <= x <= 3 && x != 1 ==>
+                \at(sum_abs[x],label1) == sum_abs[x];
+     */
+  label2:
+    s = data_ptr[2];
+    if (s >= 0) {
+        sum_abs[2] += s;
+    } else {
+        // necessary to be able to hold -INT16_MIN = 32768 > 
+        uint16_t sneg = -(int32_t)s;
+        //@ assert sneg2_range: 0 <= sneg <= INT16_MAX + 1;
+        sum_abs[2] += sneg;
+    }
+    /*@ assert before_label3:
+            \at(sum_abs[2],label2) <= sum_abs[2] <= \at(sum_abs[2],label2) + INT16_MAX + 1 &&
+            \forall integer x; 0 <= x <= 3 && x != 2 ==>
+                \at(sum_abs[x],label2) == sum_abs[x];
+     */
+  label3:
 
 #ifdef FRAMA_C
-    //the prover doesn't know channel 4 is always positive
-    if (data_ptr[3] >= 0)
+    // make the prover happier. we know that the value is always positive unless the hardware is very broken
+    // if it is somehow negative anyway then we have other problems
+    if (data_ptr[3] < 0) {
+        uint16_t sneg = -(int32_t)data_ptr[3];
+        //@ assert sneg3_range: 0 <= sneg <= INT16_MAX + 1;
+        sum_abs[3] += sneg;
+    }
+    else
 #endif
     sum_abs[3] += data_ptr[3]; /* no need to abs tach, always positive */
+
+    /*@ assert last:
+            \at(sum_abs[3],label3) <= sum_abs[3] <= \at(sum_abs[3],label3) + INT16_MAX + 1 &&
+            \forall integer x; 0 <= x < 3 ==>
+                \at(sum_abs[x],label3) == sum_abs[x];
+     */
   }
 }
 
@@ -345,11 +381,9 @@ sample_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr_in) {
   /*@ loop invariant data_ptr == data_ptr_in + k*4;
       loop invariant INT16_MIN*k <= sum <= INT16_MAX*k;
 
-      // this lets WP figure out k == num_frames on exit,
-      // which leads to mean_ok being proven
-      loop invariant k <= num_frames;
-
+      loop invariant 0 <= k <= num_frames;
       loop assigns sum, k, data_ptr;
+      loop variant num_frames - k;
    */
   for (k = 0; k < num_frames; k++, data_ptr += 4) {
     sum += data_ptr[3];
@@ -409,9 +443,7 @@ uint8_t ocr2osr(uint16_t ocr) {
 }
 
 void binary_iq(
-  int16_t IQ[3][2],
-  int16_t mean[4],
-  uint8_t compute_mean
+  int16_t IQ[3][2]
 ) {
   uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
   accu_t lo = N*(accu_t)INT16_MIN;
@@ -420,10 +452,60 @@ void binary_iq(
   //@ assert lo == N*INT16_MIN;
   //@ assert hi == N*INT16_MAX;
 
-  /*@ loop invariant \forall integer x;
-        0 <= x <= 2 && compute_mean == 0 ==>
-          mean[x] == \at(mean[x], LoopEntry);
+  /*@ loop invariant 0 <= j <= 3;
+      loop assigns j, ((int16_t*)IQ)[0..5];
+      loop variant 3 - j;
+   */
+  for (uint8_t j = 0; j < 3; j++) {
+    //avr-gcc probably won't know that Q1..Q4 don't alias,
+    //so load q1..4 to avoid accessesing memory more than necessary
+    accu_t q1 = Q1[j];
+    accu_t q2 = Q2[j];
+    accu_t q3 = Q3[j];
+    accu_t q4 = Q4[j];
+
+    // I = q1-q2-q3+q4
+    // Q = q1+q2-q3-q4
+    accu_t I = q1 - q2 - q3 + q4;
+    accu_t Q = q1 + q2 - q3 - q4;
+
+    //clamp
+    if (I < lo) {
+      //@ assert I_underflow: I < N*INT16_MIN;
+      IQ[j][0] = INT16_MIN;
+    } else if (I > hi) {
+      //@ assert I_overflow: I > N*INT16_MAX;
+      IQ[j][0] = INT16_MAX;
+    } else {
+      IQ[j][0] = I / N;
+    }
+
+    if (Q < lo) {
+      //@ assert Q_underflow: Q < N*INT16_MIN-1;
+      IQ[j][1] = INT16_MIN;
+    } else if (Q > hi) {
+      //@ assert Q_overflow: Q > N*INT16_MAX;
+      IQ[j][1] = INT16_MAX;
+    } else {
+      IQ[j][1] = Q / N;
+    }
+  }
+}
+
+void binary_iq_mean(
+  int16_t IQ[3][2],
+  int16_t mean[4]
+) {
+  uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
+  accu_t lo = N*(accu_t)INT16_MIN;
+  accu_t hi = N*(accu_t)INT16_MAX;
+  // Verify that the above multiplications are correct:
+  //@ assert lo == N*INT16_MIN;
+  //@ assert hi == N*INT16_MAX;
+
+  /*@ loop invariant 0 <= j <= 3;
       loop assigns j, ((int16_t*)IQ)[0..5], mean[0..2];
+      loop variant 3 - j;
    */
   for (uint8_t j = 0; j < 3; j++) {
     //avr-gcc probably won't know that Q1..Q4 don't alias,
@@ -459,7 +541,6 @@ void binary_iq(
       IQ[j][1] = Q / N;
     }
 
-    if (compute_mean) {
       accu_t M = q1 + q2 + q3 + q4;
 
       if (M < lo) {
@@ -471,7 +552,6 @@ void binary_iq(
       } else {
         mean[j] = M / N;
       }
-    }
   }
 }
 
@@ -578,6 +658,107 @@ void accumulate_quadrants(
   accumulate_quadrant(Q4, n3, data_ptr + i3*4);
 }
 
+#if 0
+// Experimental single-cycle accumulator thing
+// Proves much easier than _2(), but only 1/3 of a revolution
+/*@ requires 0 <= p0 < p4 <= MAX_FRAMES;
+    requires 4 <= p4 - p0 <= MAX_FRAMES/3;
+    requires 0 <= rounding < 4;
+    requires \valid_read((sample_t*)sample_data + (4*p0..4*p4-1));
+    requires \valid((accu_t*)Q1 + (0..2));
+    requires \valid((accu_t*)Q2 + (0..2));
+    requires \valid((accu_t*)Q3 + (0..2));
+    requires \valid((accu_t*)Q4 + (0..2));
+    requires \valid(nsum1);
+    requires \valid(nsum2);
+    requires \valid(nsum3);
+    requires \valid(nsum4);
+
+    requires \separated(
+      (sample_t*)sample_data + (4*p0..4*p4-1),
+      (accu_t*)Q1 + (0..2),
+      (accu_t*)Q2 + (0..2),
+      (accu_t*)Q3 + (0..2),
+      (accu_t*)Q4 + (0..2),
+      nsum1,
+      nsum2,
+      nsum3,
+      nsum4
+    );
+
+    requires \let NHI = ((p4 - p0) / 4 + 1); \forall integer x;
+      0 <= x <= 2 ==>
+        INT32_MIN - NHI*INT16_MIN <= Q1[x] <= INT32_MAX - NHI*INT16_MAX &&
+        INT32_MIN - NHI*INT16_MIN <= Q2[x] <= INT32_MAX - NHI*INT16_MAX &&
+        INT32_MIN - NHI*INT16_MIN <= Q3[x] <= INT32_MAX - NHI*INT16_MAX &&
+        INT32_MIN - NHI*INT16_MIN <= Q4[x] <= INT32_MAX - NHI*INT16_MAX;
+
+    ensures \let NHI = ((p4 - p0) / 4 + 1); \forall integer x;
+      0 <= x <= 2 ==>
+        \old(Q1[x]) + (*nsum1)*INT16_MIN <= Q1[x] <= \old(Q1[x]) + (*nsum1)*INT16_MAX &&
+        \old(Q2[x]) + (*nsum2)*INT16_MIN <= Q2[x] <= \old(Q2[x]) + (*nsum2)*INT16_MAX &&
+        \old(Q3[x]) + (*nsum3)*INT16_MIN <= Q3[x] <= \old(Q3[x]) + (*nsum3)*INT16_MAX &&
+        \old(Q4[x]) + (*nsum4)*INT16_MIN <= Q4[x] <= \old(Q4[x]) + (*nsum4)*INT16_MAX;
+
+    ensures \let NLO = ((p4 - p0) / 4);
+            \let NHI = ((p4 - p0) / 4 + 1);
+        NLO <= *nsum1 <= NHI &&
+        NLO <= *nsum2 <= NHI &&
+        NLO <= *nsum3 <= NHI &&
+        NLO <= *nsum4 <= NHI;
+
+    ensures sumtot: *nsum1 + *nsum2 + *nsum3 + *nsum4 == p4 - p0;
+
+    assigns Q1[0..2], Q2[0..2], Q3[0..2], Q4[0..2], *nsum1, *nsum2, *nsum3, *nsum4;
+ */
+void accumulate_square_interval_1(
+  uint16_t p0,
+  uint16_t p4,
+  uint16_t *nsum1,
+  uint16_t *nsum2,
+  uint16_t *nsum3,
+  uint16_t *nsum4,
+  uint8_t rounding
+) {
+  uint16_t psize = p4 - p0;
+
+  const sample_t * data_ptr = p0*4 + (sample_t*)sample_data;
+  //@assert data_ptr_valid: \valid_read(data_ptr + (0..4*psize-1));
+  uint16_t i0 = 0;
+  uint16_t i1 = (psize+rounding) / 4;
+  uint16_t i2 = (2*psize+rounding) / 4;
+  uint16_t i3 = (3*psize+rounding) / 4;
+  uint16_t i4 = psize;
+
+  uint16_t n0  = i1  - i0;
+  uint16_t n1  = i2  - i1;
+  uint16_t n2  = i3  - i2;
+  uint16_t n3  = i4  - i3;
+
+  //@ ghost uint16_t nlo = psize / 4;
+  //@ ghost uint16_t nhi = psize / 4 + 1;
+  //@ assert nlo <= n0  <= nhi;
+  //@ assert nlo <= n1  <= nhi;
+  //@ assert nlo <= n2  <= nhi;
+  //@ assert nlo <= n3  <= nhi;
+
+before:
+  accumulate_quadrants(i0,i1,i2, i3, i4, data_ptr);
+  /*@ assert round1: \forall integer x;
+      0 <= x <= 2 ==>
+        \at(Q1[x],before) + n0*INT16_MIN <= Q1[x] <= \at(Q1[x],before) + n0*INT16_MAX &&
+        \at(Q2[x],before) + n1*INT16_MIN <= Q2[x] <= \at(Q2[x],before) + n1*INT16_MAX &&
+        \at(Q3[x],before) + n2*INT16_MIN <= Q3[x] <= \at(Q3[x],before) + n2*INT16_MAX &&
+        \at(Q4[x],before) + n3*INT16_MIN <= Q4[x] <= \at(Q4[x],before) + n3*INT16_MAX;
+  */
+
+  *nsum1 = n0;
+  *nsum2 = n1;
+  *nsum3 = n2;
+  *nsum4 = n3;
+}
+#endif
+
 void accumulate_square_interval_2(
   uint16_t p0,
   uint16_t p12,
@@ -590,13 +771,11 @@ void accumulate_square_interval_2(
   //we chop the interval [p0,p12) into twelve pieces
   //each piece gets accumulated into Q1..4 in round-robin order
   //Q1 += p0, Q2 += p1, ..., Q1 += p4, ..., Q4 += p11
-  const __uint24 psize = p12 - p0;
-  __uint24 paccu = psize + rounding;
-  //@ assert valid_uint24(psize) && valid_uint24(paccu);
+  uint16_t psize = p12 - p0;
+  uint16_t paccu = psize + rounding;
 
   const sample_t * data_ptr = p0*4 + (sample_t*)sample_data;
   //@assert data_ptr_valid: \valid_read(data_ptr + (0..4*psize-1));
-
   uint16_t i0 = 0;
   uint16_t i1 = paccu / 12;
   uint16_t i2 = (paccu +   psize) / 12;
@@ -625,23 +804,22 @@ void accumulate_square_interval_2(
   uint16_t n11 = i12 - i11;
 
   //@ ghost uint16_t nlo = psize / 12;
-  //@ ghost uint16_t nhi = psize / 12 + 1;
-  //@ assert nlo <= n0  <= nhi;
-  //@ assert nlo <= n1  <= nhi;
-  //@ assert nlo <= n2  <= nhi;
-  //@ assert nlo <= n3  <= nhi;
-  //@ assert nlo <= n4  <= nhi;
-  //@ assert nlo <= n5  <= nhi;
-  //@ assert nlo <= n6  <= nhi;
-  //@ assert nlo <= n7  <= nhi;
-  //@ assert nlo <= n8  <= nhi;
-  //@ assert nlo <= n9  <= nhi;
-  //@ assert nlo <= n10 <= nhi;
-  //@ assert nlo <= n11 <= nhi;
+  //@ assert nlo <= n0  <= nlo+1;
+  //@ assert nlo <= n1  <= nlo+1;
+  //@ assert nlo <= n2  <= nlo+1;
+  //@ assert nlo <= n3  <= nlo+1;
+  //@ assert nlo <= n4  <= nlo+1;
+  //@ assert nlo <= n5  <= nlo+1;
+  //@ assert nlo <= n6  <= nlo+1;
+  //@ assert nlo <= n7  <= nlo+1;
+  //@ assert nlo <= n8  <= nlo+1;
+  //@ assert nlo <= n9  <= nlo+1;
+  //@ assert nlo <= n10 <= nlo+1;
+  //@ assert nlo <= n11 <= nlo+1;
 
 before:
   accumulate_quadrants(i0,i1,i2, i3, i4, data_ptr);
-  /*@ assert round1: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
+  /*@ assert round1: \forall integer x;
       0 <= x <= 2 ==>
         \at(Q1[x],before) + n0*INT16_MIN <= Q1[x] <= \at(Q1[x],before) + n0*INT16_MAX &&
         \at(Q2[x],before) + n1*INT16_MIN <= Q2[x] <= \at(Q2[x],before) + n1*INT16_MAX &&
@@ -650,7 +828,7 @@ before:
   */
 before2:
   accumulate_quadrants(i4,i5,i6, i7, i8, data_ptr);
-  /*@ assert round2: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
+  /*@ assert round2: \forall integer x;
       0 <= x <= 2 ==>
         \at(Q1[x],before2) + n4*INT16_MIN <= Q1[x] <= \at(Q1[x],before2) + n4*INT16_MAX &&
         \at(Q2[x],before2) + n5*INT16_MIN <= Q2[x] <= \at(Q2[x],before2) + n5*INT16_MAX &&
@@ -659,7 +837,7 @@ before2:
   */
 before3:
   accumulate_quadrants(i8,i9,i10,i11,i12,data_ptr);
-  /*@ assert round3: \let nhi = (p12 - p0) / 12 + 1; \forall integer x;
+  /*@ assert round3: \forall integer x;
       0 <= x <= 2 ==>
         \at(Q1[x],before3) + n8*INT16_MIN <= Q1[x] <= \at(Q1[x],before3) + n8*INT16_MAX &&
         \at(Q2[x],before3) + n9*INT16_MIN <= Q2[x] <= \at(Q2[x],before3) + n9*INT16_MAX &&
@@ -673,6 +851,8 @@ before3:
   *nsum4 = n3 + n7 + n11;
 }
 
+// only re-proven up to here
+#ifndef FRAMA_C
 void demod_tachs(uint8_t num_tachs,
                  uint8_t *rounding_inout)
 {
@@ -996,10 +1176,10 @@ uint8_t capture_and_demod(
   // but reading them here before capture() clears them.
   // My hypothesis is that this has to do with dV/dt's during
   // VGND change inducing out-of-range signals in channels 1-3.
-  rreg(id, STAT_1);
-  rreg(id, STAT_P);
-  rreg(id, STAT_N);
-  rreg(id, STAT_S);
+  rreg_not_ena(id, STAT_1);
+  rreg_not_ena(id, STAT_P);
+  rreg_not_ena(id, STAT_N);
+  rreg_not_ena(id, STAT_S);
 
   set_74153(id);
   capture(id, stat1_out, max_frames);
@@ -1067,12 +1247,7 @@ uint8_t capture_and_demod(
 
       if (last_round || mean[3] == 0) {
         //sum_abs[3] is just the sum, should save some cycles
-#ifndef FRAMA_C
         uint32_t sum_abs[4] = {0,0,0,0};
-#else
-        //WP doesn't seem able to deal with unsigned overflow
-        int32_t sum_abs[4] = {0,0,0,0};
-#endif
 
         compute_sum_abs(edge_pos[0], edge_pos[entry->num_tachs], sum_abs);
 
@@ -1083,7 +1258,11 @@ uint8_t capture_and_demod(
         mean[3]     = sum_abs[3] / N;
       }
 
-      binary_iq(entry->IQ, mean, last_round);
+      if (last_round) {
+        binary_iq_mean(entry->IQ, mean);
+      } else {
+        binary_iq(entry->IQ);
+      }
     }
   } else {
     //no tachs at all
@@ -1212,3 +1391,159 @@ void print64(uint64_t i) {
     //@ ghost j--;
   }
 }
+
+void fm_mask2map(uint8_t fm_mask, uint8_t fm_map[3]) {
+  switch (fm_mask) {
+  case 1: fm_map[0] = 0;                               break;
+  case 2: fm_map[0] = 1;                               break;
+  case 3: fm_map[0] = 0; fm_map[1] = 1;                break;
+  case 4: fm_map[0] = 2;                               break;
+  case 5: fm_map[0] = 0; fm_map[1] = 2;                break;
+  case 6: fm_map[0] = 1; fm_map[1] = 2;                break;
+  case 7: fm_map[0] = 0; fm_map[1] = 1; fm_map[2] = 2; break;
+  }
+}
+
+static const char STAT[4] = "STAT";
+static const char TEMP[4] = "TEMP";
+static const char VOLT[4] = "VOLT";
+static const char ENTR[4] = "ENTR";
+static const char SAMP[4] = "SAMP";
+
+// Having this separate speeds up proving init_cb_cbc() from 4m8s to 13s
+/*@ assigns cb, cbc;
+ */
+static void zero_cb_cbc(void) {
+#ifdef FRAMA_C
+    cb = (capture_block_s){0};
+    cbc = (capture_block_continued_s){0};
+#else
+    memset(&cb, 0, sizeof(cb));
+    memset(&cbc,0, sizeof(cbc));
+#endif
+}
+
+void init_cb_cbc(uint8_t fm_mask, uint16_t max_frames) {
+    zero_cb_cbc();
+
+    cb.version        = 3;
+    cb.f_cpu          = F_CPU;
+    cb.t              = gettime64();
+    cb.fm_mask        = fm_mask;
+    cb.num_frames     = max_frames;
+    cb.stats[0].OCR1n = OCR1A;
+    cb.stats[1].OCR1n = OCR1B;
+    cb.stats[2].OCR1n = OCR1C;
+    cb.vgnd_rounds    = 3;    //should be <= 7, else >50% time is spent biasing
+    cb.vgnd_zero      = 512;
+    cb.vgnd_minus     = cb.vgnd_zero - 100;
+    cb.vgnd_plus      = cb.vgnd_zero + 100;
+
+#define SET_MARKER(marker, str)\
+    do {\
+        marker[0] = str[0];\
+        marker[1] = str[1];\
+        marker[2] = str[2];\
+        marker[3] = str[3];\
+    } while(0)
+
+    SET_MARKER(cb.stat_marker, STAT);
+    SET_MARKER(cb.temp_marker, TEMP);
+    SET_MARKER(cb.volt_marker, VOLT);
+    SET_MARKER(cb.entr_marker, ENTR);
+    SET_MARKER(cbc.samp_marker, SAMP);
+
+    /*@ loop invariant 0 <= id <= 3;
+        loop assigns id, cb.stats[0..2];
+        loop variant 3 - id;
+     */
+    for (uint8_t id = 0; id < 3; id++) {
+      if (fm_mask & (1<<id)) {
+        cb.stats[id].minmax[0][0] = INT16_MAX;
+        cb.stats[id].minmax[1][0] = INT16_MAX;
+        cb.stats[id].minmax[2][0] = INT16_MAX;
+        cb.stats[id].minmax[3][0] = INT16_MAX;
+        cb.stats[id].minmax[0][1] = INT16_MIN;
+        cb.stats[id].minmax[1][1] = INT16_MIN;
+        cb.stats[id].minmax[2][1] = INT16_MIN;
+        cb.stats[id].minmax[3][1] = INT16_MIN;
+      }
+    }
+}
+
+/*@ requires 0 <= ocr_lo <= TIMER1_TOP;
+    requires 0 <= ocr_hi <= TIMER1_TOP;
+    requires 0 <= fm_mask <= 7;
+    requires 0 <= stop_mask <= 7;
+    requires valid_adc_configuration_part2(fm_mask);
+    ensures valid_adc_configuration_part2(fm_mask);
+    assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2], OCR1A, OCR1B, OCR1C;
+ */
+static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t stop_mask, uint16_t ocr_lo, uint16_t ocr_hi) {
+  //alternate OCR1*
+  //set ADC sample rates while we're at it
+  uint16_t ocr = (block_idx & 1) ? ocr_hi : ocr_lo;
+  if (ocr) {
+    uint8_t clk2 = 0x20 | ocr2osr(ocr);
+    if (fm_mask & 1) {
+      if (stop_mask & 1) {
+        OCR1A = ocr;
+      }
+      wreg(0, CLK2, clk2);
+    }
+    if (!(stop_mask & 1)) {
+      OCR1A = 0;
+    }
+
+    if (fm_mask & 2) {
+      if (stop_mask & 2) {
+        OCR1B = ocr;
+      }
+      wreg(1, CLK2, clk2);
+    }
+    if (!(stop_mask & 2)) {
+      OCR1B = 0;
+    }
+
+    if (fm_mask & 4) {
+      if (stop_mask & 4) {
+        OCR1C = ocr;
+      }
+      wreg(2, CLK2, clk2);
+    }
+    if (!(stop_mask & 4)) {
+      OCR1C = 0;
+    }
+  }
+}
+
+uint8_t setup_inner(uint8_t fm_mask) {
+    //@ assert pc: 1 <= popcount(fm_mask) <= 3;
+    if ((fm_mask & 1) && wreg(0, ADC_ENA, 0x0F)) {
+        //@ assert valid_return1: adc_connected_and_valid_by_mask(fm_mask);
+        return 1;
+    }
+    //@ assert valid1: valid_adc_configuration_part1(fm_mask & 1);
+    if (fm_mask & 2) {
+        if (wreg(1, ADC_ENA, 0x0F)) {
+            //@ assert valid_return2: adc_connected_and_valid_by_mask(fm_mask);
+            return 1;
+        }
+        //@ assert valid20: valid_adc_configuration_part1(fm_mask & 2);
+    }
+    //@ assert valid21: valid_adc_configuration_part1(fm_mask & 1);
+    //@ assert valid23: valid_adc_configuration_part1(fm_mask & 3);
+    if (fm_mask & 4) {
+        if (wreg(2, ADC_ENA, 0x0F)) {
+            //@ assert valid_return3: adc_connected_and_valid_by_mask(fm_mask);
+            return 1;
+        }
+        //@ assert valid30: valid_adc_configuration_part1(fm_mask & 4);
+    }
+    //@ assert valid31: valid_adc_configuration_part1(fm_mask & 1);
+    //@ assert valid32: valid_adc_configuration_part1(fm_mask & 2);
+    //@ assert valid37: valid_adc_configuration_part1(fm_mask & 7);
+    //@ assert final_valid: adc_connected_and_valid_by_mask(fm_mask);
+    return 0;
+}
+#endif

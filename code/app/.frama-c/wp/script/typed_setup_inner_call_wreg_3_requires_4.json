@@ -1,0 +1,49 @@
+[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
+  { "prover": "script", "verdict": "valid" },
+  { "header": "Definition", "tactic": "Wp.unfold", "params": {},
+    "select": { "select": "clause-goal",
+                "target": "(P_adc_connected_and_valid adc_fake_regs_7 adc_connected_7 adc_ena_7\n  adc_popcount_7 2)",
+                "pattern": "P_adc_connected_and_valid$adc_fake_regs" },
+    "children": { "Unfold 'P_adc_connected_and_valid'": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                            "verdict": "timeout",
+                                                            "time": 3. },
+                                                          { "header": "Filter",
+                                                            "tactic": "Wp.filter",
+                                                            "params": 
+                                                              { "anti": false },
+                                                            "select": null,
+                                                            "children": 
+                                                              { "Filter": 
+                                                                  [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Definition",
+                                                                    "tactic": "Wp.unfold",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 31,
+                                                                    "kind": "have",
+                                                                    "target": "(P_valid_adc_configuration_part1 adc_fake_regs_7 adc_connected_7 adc_ena_7\n  adc_popcount_7 (land 3 fm_mask_0))",
+                                                                    "pattern": "P_valid_adc_configuration_part1$adc_fake_regs" },
+                                                                    "children": 
+                                                                    { "Unfold 'P_valid_adc_configuration_part1'": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Definition",
+                                                                    "tactic": "Wp.unfold",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 1,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "(P_adc_connected_and_valid_by_mask adc_fake_regs_22 adc_connected_28\n  adc_ena_28 adc_popcount_28 fm_mask_0)",
+                                                                    "pattern": "P_adc_connected_and_valid_by_mask" },
+                                                                    "children": 
+                                                                    { "Unfold 'P_adc_connected_and_valid_by_mask'": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.6114,
+                                                                    "steps": 1387 } ] } } ] } } ] } } ] } } ]

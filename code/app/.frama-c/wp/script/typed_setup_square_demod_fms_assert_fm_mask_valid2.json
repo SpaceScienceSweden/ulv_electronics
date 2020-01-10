@@ -1,0 +1,161 @@
+[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
+  { "prover": "script", "verdict": "valid" },
+  { "header": "Definition", "tactic": "Wp.unfold", "params": {},
+    "select": { "select": "clause-step", "at": 21, "kind": "have",
+                "target": "(P_valid_adc_configuration_part2\n  adc_fake_regs_8[2->adc_fake_regs_8[2][15->v_2]][1\n    ->adc_fake_regs_8[1][15->v_1]][0->adc_fake_regs_8[0][15->v_0]]\n  adc_connected_0 adc_ena_0 adc_popcount_0\n  (lsl 1 Mint_0[(shift_uint8 fm_map_0 0)]))",
+                "pattern": "P_valid_adc_configuration_part2[=]" },
+    "children": { "Unfold 'P_valid_adc_configuration_part2'": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                  "verdict": "timeout",
+                                                                  "time": 3. },
+                                                                { "header": "Definition",
+                                                                  "tactic": "Wp.unfold",
+                                                                  "params": {},
+                                                                  "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 3,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "(P_valid_read_fm_map Malloc_0 Mint_0 fm_mask_2 fm_map_0)",
+                                                                    "pattern": "P_valid_read_fm_map$Malloc$Mint$fm_mask" },
+                                                                  "children": 
+                                                                    { "Unfold 'P_valid_read_fm_map'": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Filter",
+                                                                    "tactic": "Wp.filter",
+                                                                    "params": 
+                                                                    { "anti": false },
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 5,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "(P_adc_connected_and_valid_by_mask\n  adc_fake_regs_8[2->adc_fake_regs_8[2][15->v_2]][1\n    ->adc_fake_regs_8[1][15->v_1]][0->adc_fake_regs_8[0][15->v_0]]\n  adc_connected_0 adc_ena_0 adc_popcount_0 fm_mask_2)",
+                                                                    "pattern": "P_adc_connected_and_valid_by_mask" },
+                                                                    "children": 
+                                                                    { "Filter": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Range",
+                                                                    "tactic": "Wp.range",
+                                                                    "params": 
+                                                                    { "inf": 0,
+                                                                    "sup": 2 },
+                                                                    "select": 
+                                                                    { "select": "inside-goal",
+                                                                    "occur": 0,
+                                                                    "target": "Mint_0[(shift_uint8 fm_map_0 1)]",
+                                                                    "pattern": "[]$Mintshift_uint8$fm_map1" },
+                                                                    "children": 
+                                                                    { "Lower 0": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 0": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.0638,
+                                                                    "steps": 88 } ],
+                                                                    "Value 1": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Definition",
+                                                                    "tactic": "Wp.unfold",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 20,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "(P_valid_adc_configuration_part1\n  adc_fake_regs_8[2->adc_fake_regs_8[2][15->v_2]][1\n    ->adc_fake_regs_8[1][15->v_1]][0->adc_fake_regs_8[0][15->v_0]]\n  adc_connected_0 adc_ena_0 adc_popcount_0\n  (lsl 1 Mint_0[(shift_uint8 fm_map_0 0)]))",
+                                                                    "pattern": "P_valid_adc_configuration_part1[=]" },
+                                                                    "children": 
+                                                                    { "Unfold 'P_valid_adc_configuration_part1'": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Range",
+                                                                    "tactic": "Wp.range",
+                                                                    "params": 
+                                                                    { "inf": 1,
+                                                                    "sup": 7 },
+                                                                    "select": 
+                                                                    { "select": "inside-goal",
+                                                                    "occur": 0,
+                                                                    "target": "fm_mask_2",
+                                                                    "pattern": "$fm_mask" },
+                                                                    "children": 
+                                                                    { "Lower 1": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 1": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 2": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 3": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 4": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 5": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 6": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 7": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Upper 7": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ] } } ] } } ],
+                                                                    "Value 2": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Range",
+                                                                    "tactic": "Wp.range",
+                                                                    "params": 
+                                                                    { "inf": 1,
+                                                                    "sup": 7 },
+                                                                    "select": 
+                                                                    { "select": "inside-goal",
+                                                                    "occur": 0,
+                                                                    "target": "fm_mask_2",
+                                                                    "pattern": "$fm_mask" },
+                                                                    "children": 
+                                                                    { "Lower 1": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 1": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 2": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 3": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 4": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 5": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 6": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 7": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Upper 7": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ] } } ],
+                                                                    "Upper 2": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ] } } ] } } ] } } ] } } ]
