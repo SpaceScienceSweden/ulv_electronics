@@ -851,8 +851,6 @@ before3:
   *nsum4 = n3 + n7 + n11;
 }
 
-// only re-proven up to here
-#ifndef FRAMA_C
 void demod_tachs(uint8_t num_tachs,
                  uint8_t *rounding_inout)
 {
@@ -953,6 +951,8 @@ void demod_tachs(uint8_t num_tachs,
   *rounding_inout = rounding;
 }
 
+// only re-proven up to here
+#ifndef FRAMA_C
 uint8_t find_tachs(uint16_t max_frames,
                    uint16_t *tach_skip,
                    uint8_t *tach_ratio,
