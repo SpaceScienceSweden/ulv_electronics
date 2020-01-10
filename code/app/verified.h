@@ -752,7 +752,7 @@ uint8_t rreg_not_ena(uint8_t id, uint8_t a) {
 
     assigns SPDR, PORTF, adc_ena[id], adc_popcount[id], adc_connected[id], adc_fake_regs[id][ADC_ENA];
  */
-uint8_t rreg_ena(uint8_t id, uint8_t a) {
+uint8_t rreg_ena(uint8_t id) {
     /* By adc_disconnected_xor_valid(),
        if adc_connected[id] == 0 then we will attempt
        communication with adc_popcount[id] == 0;
@@ -773,7 +773,9 @@ uint8_t rreg_ena(uint8_t id, uint8_t a) {
     } else {
         d = 0;
         adc_ena[id]      = 0;
+#ifdef FRAMA_C
         adc_fake_regs[id][ADC_ENA] = 0;
+#endif
         adc_popcount[id] = 0;
         adc_connected[id]= 0;
     }

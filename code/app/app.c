@@ -568,6 +568,8 @@ static void setup_adc_pins() {
 #include "verified.h"
 #include "verified.c"
 
+#define rreg(id, a) (a == ADC_ENA ? rreg_ena(id) : rreg_not_ena(id, a))
+
 void adc_regs(void) {
   start_section("ADC_REGS");
   for (uint8_t id = 0; id < 3; id++) {
