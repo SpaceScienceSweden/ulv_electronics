@@ -15,11 +15,11 @@ void capture(uint8_t id, uint8_t *stat1_out, uint16_t num_frames);
 
 /*@ requires 1 <= max_frames <= MAX_FRAMES;
     requires \valid_read(data_ptr_in + (0..4*max_frames-1));
-    requires \valid((int16_t*)minmax + (0..7));
+    requires \valid(&minmax[0][0] + (0..7));
     ensures \forall integer x; 0 <= x < 4 ==>
       minmax[x][0] <= \old(minmax[x][0]) &&
       minmax[x][1] >= \old(minmax[x][1]);
-    assigns ((int16_t*)minmax)[0..7];
+    assigns (&minmax[0][0])[0..7];
  */
 void compute_min_max(
     uint16_t max_frames,
@@ -137,7 +137,7 @@ void accumulate_square_interval_2(
     requires \valid_read((accu_t*)Q3 + (0..2));
     requires \valid_read((accu_t*)Q4 + (0..2));
     requires \valid_read((uint16_t*)NQ + (0..3));
-    requires \valid((int16_t*)IQ + (0..5));
+    requires \valid(&IQ[0][0] + (0..5));
 
     requires \separated(
       (accu_t*)Q1 + (0..2),
@@ -145,7 +145,7 @@ void accumulate_square_interval_2(
       (accu_t*)Q3 + (0..2),
       (accu_t*)Q4 + (0..2),
       (uint16_t*)NQ + (0..3),
-      (int16_t*)IQ + (0..5)
+      &IQ[0][0] + (0..5)
     );
 
     requires NQrange: 0 < NQ[0] + NQ[1] + NQ[2] + NQ[3] <= MAX_FRAMES;
@@ -177,7 +177,7 @@ void accumulate_square_interval_2(
       0 <= x <= 2 ==>
         NQ[3]*INT16_MIN <= Q4[x] <= NQ[3]*INT16_MAX;
 
-    assigns ((int16_t*)IQ)[0..5];
+    assigns (&IQ[0][0])[0..5];
  */
 void binary_iq(
   int16_t IQ[3][2]
@@ -188,7 +188,7 @@ void binary_iq(
     requires \valid_read((accu_t*)Q3 + (0..2));
     requires \valid_read((accu_t*)Q4 + (0..2));
     requires \valid_read((uint16_t*)NQ + (0..3));
-    requires \valid((int16_t*)IQ + (0..5));
+    requires \valid(&IQ[0][0] + (0..5));
     requires \valid((int16_t*)mean + (0..2));
 
     requires \separated(
@@ -197,7 +197,7 @@ void binary_iq(
       (accu_t*)Q3 + (0..2),
       (accu_t*)Q4 + (0..2),
       (uint16_t*)NQ + (0..3),
-      (int16_t*)IQ + (0..5),
+      &IQ[0][0] + (0..5),
       (int16_t*)mean + (0..2)
     );
 
@@ -230,7 +230,7 @@ void binary_iq(
       0 <= x <= 2 ==>
         NQ[3]*INT16_MIN <= Q4[x] <= NQ[3]*INT16_MAX;
 
-    assigns ((int16_t*)IQ)[0..5], mean[0..2];
+    assigns (&IQ[0][0])[0..5], mean[0..2];
  */
 void binary_iq_mean(
   int16_t IQ[3][2],
@@ -359,7 +359,7 @@ uint8_t find_tachs(uint16_t max_frames,
     requires 12 <= max_frames <= MAX_FRAMES;
     requires \valid(&sample_data[0] + (0..4*max_frames-1));
     requires \valid(stat1_out);
-    requires \valid((int16_t*)minmax + (0..7));
+    requires \valid(&minmax[0][0] + (0..7));
     requires \valid((accu_t*)Q1 + (0..2));
     requires \valid((accu_t*)Q2 + (0..2));
     requires \valid((accu_t*)Q3 + (0..2));
@@ -384,7 +384,7 @@ uint8_t find_tachs(uint16_t max_frames,
                         &DDRD,
                         &PORTD,
                         stat1_out,
-                        (int16_t*)minmax + (0..7),
+                        &minmax[0][0] + (0..7),
                         (accu_t*)Q1 + (0..2),
                         (accu_t*)Q2 + (0..2),
                         (accu_t*)Q3 + (0..2),
@@ -416,12 +416,14 @@ uint8_t find_tachs(uint16_t max_frames,
       minmax[x][0] <= \old(minmax[x][0]) &&
       minmax[x][1] >= \old(minmax[x][1]);
 
+
+
     assigns sample_data[0..4*max_frames-1],
             sample_data_fake[0..8*max_frames-1],
             edge_pos[0..255],
             timer1_base, SPDR, TIFR, PORTF, DDRD, PORTD,
             *stat1_out,
-            ((int16_t*)minmax)[0..7],
+            (&minmax[0][0])[0..7],
             Q1[0..2],
             Q2[0..2],
             Q3[0..2],

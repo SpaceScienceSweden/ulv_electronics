@@ -453,7 +453,7 @@ void binary_iq(
   //@ assert hi == N*INT16_MAX;
 
   /*@ loop invariant 0 <= j <= 3;
-      loop assigns j, ((int16_t*)IQ)[0..5];
+      loop assigns j, (&IQ[0][0])[0..5];
       loop variant 3 - j;
    */
   for (uint8_t j = 0; j < 3; j++) {
@@ -504,7 +504,7 @@ void binary_iq_mean(
   //@ assert hi == N*INT16_MAX;
 
   /*@ loop invariant 0 <= j <= 3;
-      loop assigns j, ((int16_t*)IQ)[0..5], mean[0..2];
+      loop assigns j, (&IQ[0][0])[0..5], mean[0..2];
       loop variant 3 - j;
    */
   for (uint8_t j = 0; j < 3; j++) {
