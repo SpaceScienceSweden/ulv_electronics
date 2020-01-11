@@ -1259,6 +1259,100 @@ static void capture_and_demod_part2(
 }
 
 
+/*@ requires 0 <= id <= 2;
+    requires 12 <= max_frames <= MAX_FRAMES;
+    requires \valid(&sample_data[0] + (0..4*max_frames-1));
+    requires \valid(stat1_out);
+    requires \valid(&minmax[0][0] + (0..7));
+    requires \valid((accu_t*)Q1 + (0..2));
+    requires \valid((accu_t*)Q2 + (0..2));
+    requires \valid((accu_t*)Q3 + (0..2));
+    requires \valid((accu_t*)Q4 + (0..2));
+    requires \valid((uint16_t*)NQ + (0..3));
+    requires \valid(tach_mean);
+
+    requires \separated(&sample_data[0] + (0..4*max_frames-1),
+                        &sample_data_fake[0] + (0..8*max_frames-1),
+                        &edge_pos[0] + (0..255),
+                        &timer1_base,
+                        &SPDR,
+                        &TIFR,
+                        &PORTF,
+                        &DDRD,
+                        &PORTD,
+                        stat1_out,
+                        &minmax[0][0] + (0..7),
+                        (accu_t*)Q1 + (0..2),
+                        (accu_t*)Q2 + (0..2),
+                        (accu_t*)Q3 + (0..2),
+                        (accu_t*)Q4 + (0..2),
+                        (uint16_t*)NQ + (0..3),
+                        tach_mean,
+                        &adc_ena[0] + (0..2),
+                        &adc_popcount[0] + (0..2),
+                        &adc_connected[0] + (0..2)
+                        );
+
+    requires adc_connected_and_valid(id);
+    ensures adc_connected_and_valid(id);
+
+    ensures \forall integer x; 0 <= x < 4 ==>
+      minmax[x][0] <= \old(minmax[x][0]) &&
+      minmax[x][1] >= \old(minmax[x][1]);
+
+    assigns sample_data[0..4*max_frames-1],
+            sample_data_fake[0..8*max_frames-1],
+            edge_pos[0..255],
+            timer1_base, SPDR, TIFR, PORTF, DDRD, PORTD,
+            *stat1_out,
+            (&minmax[0][0])[0..7],
+            Q1[0..2],
+            Q2[0..2],
+            Q3[0..2],
+            Q4[0..2],
+            NQ[0..3],
+            *tach_mean,
+            adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2];
+ */
+static void capture_and_demod_part0(
+        uint8_t id,
+        uint16_t max_frames,
+        uint8_t *stat1_out,
+        int16_t minmax[4][2],
+        int16_t *tach_mean,
+        uint8_t first_round,
+        uint8_t biased_round
+        )
+{
+  capture_and_demod_part1(id, max_frames, stat1_out);
+
+#ifdef TEST_SPEED
+  uint32_t t1 = gettime32();
+#endif
+
+before:
+  if (biased_round) {
+    compute_min_max(max_frames, (sample_t*)sample_data, minmax, first_round);
+  }
+after:
+  /*@ assert min_max: \forall integer x; 0 <= x < 4 ==>
+          minmax[x][0] <= \at(minmax[x][0], before) &&
+          minmax[x][1] >= \at(minmax[x][1], before);
+   */
+
+#ifdef TEST_SPEED
+  uint32_t t2 = gettime32();
+#endif
+
+  //synthesize TACH from fourth channel in each FM data stream
+  //if we don't have a decent tach trigger value yet then bootstrap one from the mean of the captured samples
+  if (*tach_mean == 0) {
+    *tach_mean = bootstrap_tach_mean(max_frames, (sample_t*)sample_data);
+  }
+}
+
+// only re-proven up to here
+#ifndef FRAMA_C
 //most recent performance test (2018-04-24), 19.2 kHz 1700 RPM:
 //
 // 213 ms in capture()
@@ -1295,47 +1389,35 @@ uint8_t capture_and_demod(
   uint32_t t0 = gettime32();
 #endif
 
-  capture_and_demod_part1(id, max_frames, stat1_out);
-
-#ifdef TEST_SPEED
-  uint32_t t1 = gettime32();
-#endif
-
-before:
-  if (biased_round) {
-    compute_min_max(max_frames, (sample_t*)sample_data, minmax, first_round);
-  }
-after:
-  /*@ assert min_max: \forall integer x; 0 <= x < 4 ==>
-          minmax[x][0] <= \at(minmax[x][0], before) &&
-          minmax[x][1] >= \at(minmax[x][1], before);
-   */
-
-#ifdef TEST_SPEED
-  uint32_t t2 = gettime32();
-#endif
-
-  //synthesize TACH from fourth channel in each FM data stream
-  //if we don't have a decent tach trigger value yet then bootstrap one from the mean of the captured samples
-  if (*tach_mean == 0) {
-    *tach_mean = bootstrap_tach_mean(max_frames, (sample_t*)sample_data);
-  }
+  capture_and_demod_part0(id, max_frames, stat1_out, minmax, tach_mean, first_round, biased_round);
 after2:
-  /*@ assert min_max2: \forall integer x; 0 <= x < 4 ==>
-          minmax[x][0] == \at(minmax[x][0], after) &&
-          minmax[x][1] == \at(minmax[x][1], after);
-   */
 
 #ifdef TEST_SPEED
   uint32_t t3 = gettime32();
 #endif
 
-  // WP tror att det blir knas här
+  /*@ assert sep: \separated(
+                        &minmax[0][0] + (0..7),
+                        tach_skip,
+                        tach_ratio,
+                        &edge_pos[0] + (0..255),
+                        (sample_t*)sample_data + (0..(4*max_frames-1)));
+   */
   entry->num_tachs = find_tachs(max_frames,
                                 tach_skip,
                                 tach_ratio,
                                 *tach_mean);
 after3:
+  /*@ assert sep2: \separated(
+                        &minmax[0][0] + (0..7),
+                        tach_skip,
+                        tach_ratio,
+                        &edge_pos[0] + (0..255),
+                        (sample_t*)sample_data + (0..(4*max_frames-1)));
+   */
+  // WP believes this does not hold. it seems to have to do with entry->numtachs == 0
+  // This shows up when contraposing the post-conditions of find_tachs()
+  // In other words, if minmax[*][*] are different before and after find_tachs() then some edge_pos must be >= 4096 and num_tachs != 0
   /*@ assert min_max3: \forall integer x; 0 <= x < 4 ==>
           minmax[x][0] == \at(minmax[x][0], after2) &&
           minmax[x][1] == \at(minmax[x][1], after2);
@@ -1398,8 +1480,6 @@ after3:
   return 0;
 }
 
-// only re-proven up to here
-#ifndef FRAMA_C
 uint16_t compute_max_frames(uint16_t max_frames_max,
                             uint32_t cycles_per_sample,
                             uint32_t frames_per_second)
