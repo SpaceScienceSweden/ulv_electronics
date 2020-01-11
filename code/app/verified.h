@@ -308,11 +308,11 @@ void demod_tachs(uint8_t num_tachs,
 /*@ requires 12 <= max_frames <= MAX_FRAMES;
     requires \valid(tach_skip);
     requires \valid(tach_ratio);
-    requires \valid(edge_pos + (0..255));
+    requires \valid(&edge_pos[0] + (0..255));
     requires \valid_read((sample_t*)sample_data + (0..(4*max_frames-1)));
     requires \separated(tach_skip,
                         tach_ratio,
-                        edge_pos + (0..255),
+                        &edge_pos[0] + (0..255),
                         (sample_t*)sample_data + (0..(4*max_frames-1)));
     requires 3 <= *tach_skip <= max_frames / 4;
 
@@ -376,6 +376,13 @@ uint8_t find_tachs(uint16_t max_frames,
 
     requires \separated(&sample_data[0] + (0..4*max_frames-1),
                         &sample_data_fake[0] + (0..8*max_frames-1),
+                        &edge_pos[0] + (0..255),
+                        &timer1_base,
+                        &SPDR,
+                        &TIFR,
+                        &PORTF,
+                        &DDRD,
+                        &PORTD,
                         stat1_out,
                         (int16_t*)minmax + (0..7),
                         (accu_t*)Q1 + (0..2),
@@ -390,7 +397,11 @@ uint8_t find_tachs(uint16_t max_frames,
                         tach_ratio,
                         discard,
                         (uint16_t*)mean_abs + (0..2),
-                        rounding_inout);
+                        rounding_inout,
+                        &adc_ena[0] + (0..2),
+                        &adc_popcount[0] + (0..2),
+                        &adc_connected[0] + (0..2)
+                        );
 
     requires 3 <= *tach_skip <= max_frames / 4;
     requires 0 <= *rounding_inout <= 11;

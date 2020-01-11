@@ -951,8 +951,6 @@ void demod_tachs(uint8_t num_tachs,
   *rounding_inout = rounding;
 }
 
-// only re-proven up to here
-#ifndef FRAMA_C
 uint8_t find_tachs(uint16_t max_frames,
                    uint16_t *tach_skip,
                    uint8_t *tach_ratio,
@@ -1135,6 +1133,132 @@ uint8_t find_tachs(uint16_t max_frames,
   return num_tachs;
 }
 
+/*@ requires 0 <= id <= 2;
+    requires 12 <= max_frames <= MAX_FRAMES;
+    requires \valid(stat1_out);
+
+    requires \separated(
+        &SPDR,
+        &PORTF,
+        &DDRD,
+        &PORTD,
+        &TIFR,
+        &adc_connected[id],
+        &adc_popcount[id],
+        &adc_ena[id],
+        &adc_fake_regs[id][STAT_1],
+        &adc_fake_regs[id][STAT_P],
+        &adc_fake_regs[id][STAT_N],
+        &adc_fake_regs[id][STAT_S],
+        stat1_out,
+        &timer1_base,
+        &sample_data_fake[0] + (0..8*max_frames-1)
+    );
+
+    requires \valid(&sample_data_fake[0] + (0..8*max_frames-1));
+
+    requires adc_connected_and_valid(id);
+    ensures adc_connected_and_valid(id);
+
+    assigns SPDR, PORTF, DDRD, PORTD, TIFR, *stat1_out, timer1_base, sample_data_fake[0..8*max_frames-1];
+ */
+static void capture_and_demod_part1(
+        uint8_t id,
+        uint16_t max_frames,
+        uint8_t *stat1_out
+        ) {
+  // There might be some stray error codes if num_fms > 1
+  // In one case STAT_P=7 and STAT_N=7 would always get set,
+  // but reading them here before capture() clears them.
+  // My hypothesis is that this has to do with dV/dt's during
+  // VGND change inducing out-of-range signals in channels 1-3.
+  rreg_not_ena(id, STAT_1);
+  rreg_not_ena(id, STAT_P);
+  rreg_not_ena(id, STAT_N);
+  rreg_not_ena(id, STAT_S);
+
+  set_74153(id);
+  capture(id, stat1_out, max_frames);
+}
+
+
+/*@ requires \valid(entry);
+    requires 0 <= entry->num_tachs <= 255;
+
+    requires 0 <= edge_pos[0] < edge_pos[entry->num_tachs] <= MAX_FRAMES;
+    requires edge_pos[entry->num_tachs] - edge_pos[0] == NQ[0] + NQ[1] + NQ[2] + NQ[3];
+    requires \valid_read(sample_data + (4*edge_pos[0]..4*edge_pos[entry->num_tachs]-1));
+
+    requires \valid_read((accu_t*)Q1 + (0..2));
+    requires \valid_read((accu_t*)Q2 + (0..2));
+    requires \valid_read((accu_t*)Q3 + (0..2));
+    requires \valid_read((accu_t*)Q4 + (0..2));
+    requires \valid_read((uint16_t*)NQ + (0..3));
+    requires \valid(&mean_abs[0] + (0..2));
+    requires \valid((int16_t*)mean + (0..3));
+
+    requires \separated(
+      entry,
+      (accu_t*)Q1 + (0..2),
+      (accu_t*)Q2 + (0..2),
+      (accu_t*)Q3 + (0..2),
+      (accu_t*)Q4 + (0..2),
+      (uint16_t*)NQ + (0..3),
+      &mean_abs[0] + (0..2),
+      (int16_t*)mean + (0..2)
+    );
+
+    requires NQrange: 0 < NQ[0] + NQ[1] + NQ[2] + NQ[3] <= MAX_FRAMES;
+
+    requires Q1range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[0]*INT16_MIN <= Q1[x] <= NQ[0]*INT16_MAX;
+    requires Q2range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[1]*INT16_MIN <= Q2[x] <= NQ[1]*INT16_MAX;
+    requires Q3range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[2]*INT16_MIN <= Q3[x] <= NQ[2]*INT16_MAX;
+    requires Q4range: \forall integer x;
+      0 <= x <= 2 ==>
+        NQ[3]*INT16_MIN <= Q4[x] <= NQ[3]*INT16_MAX;
+
+    assigns *entry, mean_abs[0..2], mean[0..3];
+ */
+static void capture_and_demod_part2(
+    capture_entry_s *entry,
+    uint16_t mean_abs[3],
+    int16_t mean[4],
+    uint8_t last_round
+) {
+      uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
+      //@ assert N0: 0 < N;
+      //@ assert N1: N == edge_pos[entry->num_tachs] - edge_pos[0];
+      //@ assert N2: N <= MAX_FRAMES;
+
+      //@ assert NQrange: 0 < NQ[0] + NQ[1] + NQ[2] + NQ[3] <= MAX_FRAMES;
+
+      if (last_round || mean[3] == 0) {
+        //sum_abs[3] is just the sum, should save some cycles
+        uint32_t sum_abs[4] = {0,0,0,0};
+
+        compute_sum_abs(edge_pos[0], edge_pos[entry->num_tachs], sum_abs);
+
+        mean_abs[0] = sum_abs[0] / N;
+        mean_abs[1] = sum_abs[1] / N;
+        mean_abs[2] = sum_abs[2] / N;
+        //mean[0..2] are computed in binary_iq
+        mean[3]     = sum_abs[3] / N;
+      }
+
+      if (last_round) {
+        binary_iq_mean(entry->IQ, mean);
+      } else {
+        binary_iq(entry->IQ);
+      }
+}
+
+
 //most recent performance test (2018-04-24), 19.2 kHz 1700 RPM:
 //
 // 213 ms in capture()
@@ -1171,26 +1295,21 @@ uint8_t capture_and_demod(
   uint32_t t0 = gettime32();
 #endif
 
-  // There might be some stray error codes if num_fms > 1
-  // In one case STAT_P=7 and STAT_N=7 would always get set,
-  // but reading them here before capture() clears them.
-  // My hypothesis is that this has to do with dV/dt's during
-  // VGND change inducing out-of-range signals in channels 1-3.
-  rreg_not_ena(id, STAT_1);
-  rreg_not_ena(id, STAT_P);
-  rreg_not_ena(id, STAT_N);
-  rreg_not_ena(id, STAT_S);
-
-  set_74153(id);
-  capture(id, stat1_out, max_frames);
+  capture_and_demod_part1(id, max_frames, stat1_out);
 
 #ifdef TEST_SPEED
   uint32_t t1 = gettime32();
 #endif
 
+before:
   if (biased_round) {
     compute_min_max(max_frames, (sample_t*)sample_data, minmax, first_round);
   }
+after:
+  /*@ assert min_max: \forall integer x; 0 <= x < 4 ==>
+          minmax[x][0] <= \at(minmax[x][0], before) &&
+          minmax[x][1] >= \at(minmax[x][1], before);
+   */
 
 #ifdef TEST_SPEED
   uint32_t t2 = gettime32();
@@ -1201,15 +1320,28 @@ uint8_t capture_and_demod(
   if (*tach_mean == 0) {
     *tach_mean = bootstrap_tach_mean(max_frames, (sample_t*)sample_data);
   }
+after2:
+  /*@ assert min_max2: \forall integer x; 0 <= x < 4 ==>
+          minmax[x][0] == \at(minmax[x][0], after) &&
+          minmax[x][1] == \at(minmax[x][1], after);
+   */
 
 #ifdef TEST_SPEED
   uint32_t t3 = gettime32();
 #endif
 
+  // WP tror att det blir knas här
   entry->num_tachs = find_tachs(max_frames,
                                 tach_skip,
                                 tach_ratio,
                                 *tach_mean);
+after3:
+  /*@ assert min_max3: \forall integer x; 0 <= x < 4 ==>
+          minmax[x][0] == \at(minmax[x][0], after2) &&
+          minmax[x][1] == \at(minmax[x][1], after2);
+   */
+
+  //@ assert tach_skip: 3 <= *tach_skip <= max_frames / 4;
 
 #ifdef TEST_SPEED
   uint32_t t4 = gettime32();
@@ -1233,36 +1365,17 @@ uint8_t capture_and_demod(
     demod_tachs(entry->num_tachs,
                 rounding_inout);
 
+    /*@ assert min_max4: \forall integer x; 0 <= x < 4 ==>
+            minmax[x][0] == \at(minmax[x][0], after3) &&
+            minmax[x][1] == \at(minmax[x][1], after3);
+     */
+
 #ifdef TEST_SPEED
     t5 = gettime32();
 #endif
 
     if (entry->num_tachs > 0) {
-      uint16_t N = NQ[0] + NQ[1] + NQ[2] + NQ[3];
-      //@ assert N0: 0 < N;
-      //@ assert N1: N == edge_pos[entry->num_tachs] - edge_pos[0];
-      //@ assert N2: N <= MAX_FRAMES;
-
-      //@ assert NQrange: 0 < NQ[0] + NQ[1] + NQ[2] + NQ[3] <= MAX_FRAMES;
-
-      if (last_round || mean[3] == 0) {
-        //sum_abs[3] is just the sum, should save some cycles
-        uint32_t sum_abs[4] = {0,0,0,0};
-
-        compute_sum_abs(edge_pos[0], edge_pos[entry->num_tachs], sum_abs);
-
-        mean_abs[0] = sum_abs[0] / N;
-        mean_abs[1] = sum_abs[1] / N;
-        mean_abs[2] = sum_abs[2] / N;
-        //mean[0..2] are computed in binary_iq
-        mean[3]     = sum_abs[3] / N;
-      }
-
-      if (last_round) {
-        binary_iq_mean(entry->IQ, mean);
-      } else {
-        binary_iq(entry->IQ);
-      }
+        capture_and_demod_part2(entry, mean_abs, mean, last_round);
     }
   } else {
     //no tachs at all
@@ -1285,6 +1398,8 @@ uint8_t capture_and_demod(
   return 0;
 }
 
+// only re-proven up to here
+#ifndef FRAMA_C
 uint16_t compute_max_frames(uint16_t max_frames_max,
                             uint32_t cycles_per_sample,
                             uint32_t frames_per_second)
