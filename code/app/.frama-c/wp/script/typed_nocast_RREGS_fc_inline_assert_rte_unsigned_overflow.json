@@ -1,0 +1,7 @@
+[ { "prover": "script", "verdict": "valid" },
+  { "header": "Bit Range", "tactic": "Wp.bitrange",
+    "params": { "positive-land": true, "positive-lor": true },
+    "select": { "select": "clause-goal",
+                "target": "(lor 8192 (to_uint16 (lsl a_0 8)) (to_uint16 (n_0-1)))<=65535",
+                "pattern": "<=lor655358192to_uint16to_uint16" },
+    "children": { "bit-range": [ { "prover": "qed", "verdict": "valid" } ] } } ]

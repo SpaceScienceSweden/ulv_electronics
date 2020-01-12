@@ -1,0 +1,12 @@
+[ { "prover": "script", "verdict": "valid" },
+  { "header": "Instance", "tactic": "Wp.instance",
+    "params": { "P1": { "select": "inside-step", "at": 1, "kind": "have",
+                        "occur": 0, "target": "i_6", "pattern": "$i" },
+                "P2": null, "P3": null, "P4": null, "P5": null, "P6": null,
+                "P7": null, "P8": null, "P9": null, "P10": null },
+    "select": { "select": "inside-step", "at": 4, "kind": "have", "occur": 0,
+                "target": "let x_0 = (psize_0 div 12) in\nlet x_1 = (98304*x_0) in\nlet x_2 = (98301*x_0) in\nforall i_0:int.\nlet x_3 = Q1_17[i_0] in\nlet x_4 = Q2_17[i_0] in\nlet x_5 = Q3_17[i_0] in\nlet x_6 = Q4_13[i_0] in\n(0<=i_0) -> (i_0<=2)\n-> ((x_1<=(2147385344+x_3)) /\\ (x_1<=(2147385344+x_4))\n    /\\ (x_1<=(2147385344+x_5)) /\\ (x_1<=(2147385344+x_6))\n    /\\ ((x_2+x_3)<=2147385346) /\\ ((x_2+x_4)<=2147385346)\n    /\\ ((x_2+x_5)<=2147385346) /\\ ((x_2+x_6)<=2147385346))",
+                "pattern": "\\F><=<=&0#0#02<=<=<=<=<=<=<=<=.98304" },
+    "children": { "Instance": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                  "verdict": "valid", "time": 0.3405,
+                                  "steps": 350 } ] } } ]

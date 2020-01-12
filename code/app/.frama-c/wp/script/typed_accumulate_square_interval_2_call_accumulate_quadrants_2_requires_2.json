@@ -1,3 +1,0 @@
-[ { "prover": "why3:Z3,4.8.7,counterexamples", "verdict": "valid",
-    "time": 0.07 },
-  { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. } ]
