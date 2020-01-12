@@ -1,0 +1,46 @@
+[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
+  { "header": "Contrapose", "tactic": "Wp.contrapose", "params": {},
+    "select": { "select": "clause-step", "at": 12, "kind": "have",
+                "target": "let a_0 =\n    (havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n      (shift_sint16 (shift_A2_sint16 minmax_2 0) 0) 8)[stat1_out_0->v_7] in\nlet a_1 = a_0[tach_skip_0] in\nlet x_0 = (max_frames_0 div 4) in\nlet a_2 = a_0[tach_skip_0->v_3][tach_ratio_0->v_2][tach_skip_0] in\n(0<=v_6) /\\ (a_1<=x_0) /\\ (a_2<=x_0) /\\ (v_6<=255) /\\ (3<=a_1) /\\ (3<=a_2)\n/\\ ((v_6=0)\n    \\/ (forall i_0:int.\n        (0<=i_0) -> (i_0<=v_6) -> (edge_pos_0[i_0]<=4095)))\n/\\ (forall i_0:int.\n    (0<=i_0) -> (i_0<v_6) -> ((12+edge_pos_0[i_0])<=edge_pos_0[1+i_0]))\n/\\ (forall i_0:int.\n    let x_1 = edge_pos_0[i_0] in\n    let x_2 = edge_pos_0[1+i_0] in\n    (0<=i_0) -> (i_0<v_6) -> ((0<=x_1) /\\ (x_1<x_2) /\\ (x_2<max_frames_0)))",
+                "pattern": "&<=<=<=<=<=<=|\\F\\F0$v[]/[]/$v255" },
+    "children": { "Contrapose": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                    "verdict": "timeout", "time": 3. },
+                                  { "header": "Split", "tactic": "Wp.split",
+                                    "params": {},
+                                    "select": { "select": "inside-goal",
+                                                "occur": 0,
+                                                "target": "let x_0 = (max_frames_0 div 4) in\nlet a_0 =\n    (havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n      (shift_sint16 (shift_A2_sint16 minmax_2 0) 0) 8)[stat1_out_0->v_7] in\nlet a_1 = a_0[tach_skip_0] in\nlet a_2 = a_0[tach_skip_0->v_3][tach_ratio_0->v_2][tach_skip_0] in\n(v_6<0) \\/ (x_0<a_1) \\/ (x_0<a_2) \\/ (256<=v_6) \\/ (a_1<=2) \\/ (a_2<=2)\n\\/ ((v_6!=0)\n    /\\ (exists i_0:int.\n        (0<=i_0) /\\ (i_0<=v_6) /\\ (4096<=edge_pos_0[i_0])))\n\\/ (exists i_0:int.\n    (0<=i_0) /\\ (i_0<v_6) /\\ (edge_pos_0[1+i_0]<=(11+edge_pos_0[i_0])))\n\\/ (exists i_0:int.\n    let x_1 = edge_pos_0[i_0] in\n    let x_2 = edge_pos_0[1+i_0] in\n    (0<=i_0) /\\ (i_0<v_6) /\\ ((x_1<0) \\/ (x_2<=x_1) \\/ (max_frames_0<=x_2)))",
+                                                "pattern": "|<<<<=<=<=&\\E\\E$v0/[]/[]256$v[]2" },
+                                    "children": { "True": [ { "prover": "qed",
+                                                              "verdict": "valid" } ],
+                                                  "False": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                               "verdict": "timeout",
+                                                               "time": 3. },
+                                                             { "header": "Split",
+                                                               "tactic": "Wp.split",
+                                                               "params": {},
+                                                               "select": 
+                                                                 { "select": "clause-goal",
+                                                                   "target": "(v_6!=0)\n/\\ (exists i_0:int.\n    (0<=i_0) /\\ (i_0<=v_6) /\\ (4096<=edge_pos_0[i_0]))",
+                                                                   "pattern": "&~\\E$v0&<=<=<=0#0#0$v4096[]$edge_pos" },
+                                                               "children": 
+                                                                 { "Goal 1/2": 
+                                                                    [ { "header": "Filter",
+                                                                    "tactic": "Wp.filter",
+                                                                    "params": 
+                                                                    { "anti": false },
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 9,
+                                                                    "kind": "state",
+                                                                    "target": "true",
+                                                                    "pattern": "T" },
+                                                                    "children": 
+                                                                    { "Filter": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. } ] } } ],
+                                                                   "Goal 2/2": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. } ] } } ] } } ] } } ]

@@ -1,0 +1,8 @@
+[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
+  { "prover": "script", "verdict": "valid" },
+  { "header": "Definition", "tactic": "Wp.unfold", "params": {},
+    "select": { "select": "clause-goal",
+                "target": "let x_0 = (land 15 d_0) in\n(P_adc_connected_and_valid\n  adc_fake_regs_6[id_2->adc_fake_regs_6[id_2][15->x_0]]\n  adc_connected_4[id_2->1] adc_ena_4[id_2->x_0]\n  adc_popcount_4[id_2->(L_popcount x_0)] id_2)",
+                "pattern": "P_adc_connected_and_valid[=][=][=]" },
+    "children": { "Unfold 'P_adc_connected_and_valid'": [ { "prover": "qed",
+                                                            "verdict": "valid" } ] } } ]
