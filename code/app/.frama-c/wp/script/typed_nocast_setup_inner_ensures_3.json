@@ -1,7 +1,13 @@
-[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
-  { "prover": "script", "verdict": "valid" },
+[ { "prover": "script", "verdict": "valid" },
   { "header": "Filter", "tactic": "Wp.filter", "params": { "anti": false },
     "select": null,
-    "children": { "Filter": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                "verdict": "valid", "time": 1.8935,
-                                "steps": 1956 } ] } } ]
+    "children": { "Filter": [ { "header": "Definition",
+                                "tactic": "Wp.unfold", "params": {},
+                                "select": { "select": "clause-goal",
+                                            "target": "(P_valid_adc_configuration_part1 adc_fake_regs_0 adc_connected_0 adc_ena_0\n  adc_popcount_0 fm_mask_0)",
+                                            "pattern": "P_valid_adc_configuration_part1$adc_fake_regs" },
+                                "children": { "Unfold 'P_valid_adc_configuration_part1'": 
+                                                [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                    "verdict": "valid",
+                                                    "time": 0.1152,
+                                                    "steps": 376 } ] } } ] } } ]
