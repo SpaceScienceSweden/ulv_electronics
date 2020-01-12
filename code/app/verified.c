@@ -1351,8 +1351,6 @@ after:
   }
 }
 
-// only re-proven up to here
-#ifndef FRAMA_C
 //most recent performance test (2018-04-24), 19.2 kHz 1700 RPM:
 //
 // 213 ms in capture()
@@ -1396,28 +1394,11 @@ after2:
   uint32_t t3 = gettime32();
 #endif
 
-  /*@ assert sep: \separated(
-                        &minmax[0][0] + (0..7),
-                        tach_skip,
-                        tach_ratio,
-                        &edge_pos[0] + (0..255),
-                        (sample_t*)sample_data + (0..(4*max_frames-1)));
-   */
   entry->num_tachs = find_tachs(max_frames,
                                 tach_skip,
                                 tach_ratio,
                                 *tach_mean);
 after3:
-  /*@ assert sep2: \separated(
-                        &minmax[0][0] + (0..7),
-                        tach_skip,
-                        tach_ratio,
-                        &edge_pos[0] + (0..255),
-                        (sample_t*)sample_data + (0..(4*max_frames-1)));
-   */
-  // WP believes this does not hold. it seems to have to do with entry->numtachs == 0
-  // This shows up when contraposing the post-conditions of find_tachs()
-  // In other words, if minmax[*][*] are different before and after find_tachs() then some edge_pos must be >= 4096 and num_tachs != 0
   /*@ assert min_max3: \forall integer x; 0 <= x < 4 ==>
           minmax[x][0] == \at(minmax[x][0], after2) &&
           minmax[x][1] == \at(minmax[x][1], after2);
@@ -1480,6 +1461,8 @@ after3:
   return 0;
 }
 
+// only re-proven up to here
+#ifndef FRAMA_C
 uint16_t compute_max_frames(uint16_t max_frames_max,
                             uint32_t cycles_per_sample,
                             uint32_t frames_per_second)

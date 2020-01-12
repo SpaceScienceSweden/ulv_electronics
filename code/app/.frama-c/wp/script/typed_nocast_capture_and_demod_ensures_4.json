@@ -1,0 +1,353 @@
+[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
+  { "prover": "script", "verdict": "valid" },
+  { "header": "Instance", "tactic": "Wp.instance",
+    "params": { "P1": { "select": "inside-goal", "occur": 0, "target": "i_0",
+                        "pattern": "$i" }, "P2": null, "P3": null,
+                "P4": null, "P5": null, "P6": null, "P7": null, "P8": null,
+                "P9": null, "P10": null },
+    "select": { "select": "clause-step", "at": 13, "kind": "have",
+                "target": "let a_0 =\n    (havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n      (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7] in\nlet a_1 =\n    a_0[tach_skip_0->v_3][tach_ratio_0->v_2]\n      [(shiftfield_F7_num_tachs entry_0)->v_6] in\nforall i_0:int.\nlet a_2 = (shift_A2_sint16 minmax_1 i_0) in\nlet a_3 = (shift_sint16 a_2 0) in\nlet a_4 = (shift_sint16 a_2 1) in\n(0<=i_0) -> (i_0<=3) -> ((a_1[a_3]=a_0[a_3]) /\\ (a_1[a_4]=a_0[a_4]))",
+                "pattern": "\\F><=<=&0#0#03==[][][][][=]shift_sint16" },
+    "children": { "Instance": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                  "verdict": "timeout", "time": 3. },
+                                { "header": "Instance",
+                                  "tactic": "Wp.instance",
+                                  "params": { "P1": { "select": "inside-goal",
+                                                      "occur": 0,
+                                                      "target": "i_0",
+                                                      "pattern": "$i" },
+                                              "P2": null, "P3": null,
+                                              "P4": null, "P5": null,
+                                              "P6": null, "P7": null,
+                                              "P8": null, "P9": null,
+                                              "P10": null },
+                                  "select": { "select": "clause-step",
+                                              "at": 26, "kind": "have",
+                                              "target": "let a_0 =\n    (havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n      (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7]\n      [tach_skip_0->v_3][tach_ratio_0->v_2][(shiftfield_F7_num_tachs entry_0)\n      ->v_6] in\nlet a_1 = a_0[discard_0->edge_pos_0[0]][rounding_inout_0->v_0] in\nforall i_0:int.\nlet a_2 = (shift_A2_sint16 minmax_1 i_0) in\nlet a_3 = (shift_sint16 a_2 0) in\nlet a_4 = (shift_sint16 a_2 1) in\n(0<=i_0) -> (i_0<=3) -> ((a_1[a_3]=a_0[a_3]) /\\ (a_1[a_4]=a_0[a_4]))",
+                                              "pattern": "\\F><=<=&0#0#03==[][][][][=]shift_sint16" },
+                                  "children": { "Instance": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                "verdict": "timeout",
+                                                                "time": 3. },
+                                                              { "header": "Instance",
+                                                                "tactic": "Wp.instance",
+                                                                "params": 
+                                                                  { "P1": 
+                                                                    { "select": "inside-goal",
+                                                                    "occur": 0,
+                                                                    "target": "i_0",
+                                                                    "pattern": "$i" },
+                                                                    "P2": null,
+                                                                    "P3": null,
+                                                                    "P4": null,
+                                                                    "P5": null,
+                                                                    "P6": null,
+                                                                    "P7": null,
+                                                                    "P8": null,
+                                                                    "P9": null,
+                                                                    "P10": null },
+                                                                "select": 
+                                                                  { "select": "inside-step",
+                                                                    "at": 6,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "let a_0 =\n    (havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n      (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7] in\nforall i_0:int.\nlet a_1 = (shift_A2_sint16 minmax_1 i_0) in\nlet a_2 = (shift_sint16 a_1 0) in\nlet a_3 = (shift_sint16 a_1 1) in\n(0<=i_0) -> (i_0<=3)\n-> ((a_0[a_2]<=Mint_31[a_2]) /\\ (Mint_31[a_3]<=a_0[a_3]))",
+                                                                    "pattern": "\\F><=<=&0#0#03<=<=[][][][][=]shift_sint16" },
+                                                                "children": 
+                                                                  { "Call 'capture_and_demod_part0'": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Array",
+                                                                    "tactic": "Wp.array",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-goal",
+                                                                    "occur": 0,
+                                                                    "target": "Mint_2[tach_mean_0->Mint_2[(shift_sint16 mean_0 3)]]\n  [(shift_sint16 (shift_A2_sint16 minmax_1 i_0) 0)]",
+                                                                    "pattern": "[][=]shift_sint16$Mint$tach_mean" },
+                                                                    "children": 
+                                                                    { "Same Indices": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Diff Indices": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Array",
+                                                                    "tactic": "Wp.array",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-goal",
+                                                                    "occur": 0,
+                                                                    "target": "Mint_2[tach_mean_0->Mint_2[(shift_sint16 mean_0 3)]]\n  [(shift_sint16 (shift_A2_sint16 minmax_1 i_0) 1)]",
+                                                                    "pattern": "[][=]shift_sint16$Mint$tach_mean" },
+                                                                    "children": 
+                                                                    { "Same Indices": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Diff Indices": 
+                                                                    [ { "header": "Array",
+                                                                    "tactic": "Wp.array",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 17,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "(havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n  (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7]\n  [tach_skip_0->v_3][tach_ratio_0->v_2][(shiftfield_F7_num_tachs entry_0)\n  ->v_6][tach_skip_0]",
+                                                                    "pattern": "[][=]$tach_skip[=]shiftfield_F7_num_tachs" },
+                                                                    "children": 
+                                                                    { "Same Indices": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Diff Indices": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Array",
+                                                                    "tactic": "Wp.array",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 6,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "(havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n  (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7]\n  [(shift_sint16 (shift_A2_sint16 minmax_1 i_0) 0)]",
+                                                                    "pattern": "[][=]shift_sint16havoc$stat1_out" },
+                                                                    "children": 
+                                                                    { "Same Indices": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Diff Indices": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Array",
+                                                                    "tactic": "Wp.array",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 7,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "(havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n  (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7]\n  [(shift_sint16 (shift_A2_sint16 minmax_1 i_0) 1)]",
+                                                                    "pattern": "[][=]shift_sint16havoc$stat1_out" },
+                                                                    "children": 
+                                                                    { "Same Indices": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Diff Indices": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Array",
+                                                                    "tactic": "Wp.array",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 14,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "(havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n  (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7]\n  [tach_skip_0]",
+                                                                    "pattern": "[][=]$tach_skiphavoc$stat1_out$v" },
+                                                                    "children": 
+                                                                    { "Same Indices": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Diff Indices": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Array",
+                                                                    "tactic": "Wp.array",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 29,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "(havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n  (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7]\n  [tach_skip_0->v_3][tach_ratio_0->v_2][(shiftfield_F7_num_tachs entry_0)\n  ->v_6][(shift_sint16 (shift_A2_sint16 minmax_1 i_0) 0)]",
+                                                                    "pattern": "[][=]shift_sint16[=]shiftfield_F7_num_tachs" },
+                                                                    "children": 
+                                                                    { "Same Indices": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Array",
+                                                                    "tactic": "Wp.array",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 30,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "let a_0 =\n    (havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n      (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8) in\nlet a_1 = (shift_A2_sint16 minmax_1 i_0) in\na_0[stat1_out_0->v_7][tach_skip_0->v_3][tach_ratio_0->v_2]\n  [(shiftfield_F7_num_tachs entry_0)->a_0[(shift_sint16 a_1 0)]]\n  [(shift_sint16 a_1 1)]",
+                                                                    "pattern": "[][=]shift_sint16[=]shiftfield_F7_num_tachs" },
+                                                                    "children": 
+                                                                    { "Same Indices": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 2.5801,
+                                                                    "steps": 1540 } ],
+                                                                    "Diff Indices": 
+                                                                    [ { "header": "Split",
+                                                                    "tactic": "Wp.split",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 22,
+                                                                    "kind": "branch",
+                                                                    "target": "0<\n(havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n  (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)\n  [(shift_sint16 (shift_A2_sint16 minmax_1 i_0) 0)]",
+                                                                    "pattern": "<0[]havocshift_sint16$Mint_undef" },
+                                                                    "children": 
+                                                                    { "Then": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 1.0086,
+                                                                    "steps": 869 } ],
+                                                                    "Else": 
+                                                                    [ { "header": "Split",
+                                                                    "tactic": "Wp.split",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-goal",
+                                                                    "target": "let a_0 =\n    (havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n      (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7]\n      [tach_skip_0->v_3][tach_ratio_0->v_2][(shiftfield_F7_num_tachs entry_0)\n      ->0][discard_0->max_frames_0] in\nlet a_1 = (shift_A2_sint16 minmax_1 i_0) in\nlet a_2 = (shift_sint16 a_1 0) in\nlet a_3 = (shift_sint16 a_1 1) in\n(a_0[a_2]<=Mint_31[a_2]) /\\ (Mint_31[a_3]<=a_0[a_3])",
+                                                                    "pattern": "&<=<=[][][][][=]shift_sint16$Mint" },
+                                                                    "children": 
+                                                                    { "Goal 1/2": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 2.9861,
+                                                                    "steps": 1108 } ],
+                                                                    "Goal 2/2": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Havoc",
+                                                                    "tactic": "Wp.havoc",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 8,
+                                                                    "kind": "have",
+                                                                    "occur": 1,
+                                                                    "target": "(havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n  (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)\n  [(shift_sint16 (shift_A2_sint16 minmax_1 i_0) 1)]",
+                                                                    "pattern": "[]havocshift_sint16$Mint_undef[=]" },
+                                                                    "children": 
+                                                                    { "Unassigned": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Assigned": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Array",
+                                                                    "tactic": "Wp.array",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-goal",
+                                                                    "occur": 0,
+                                                                    "target": "(havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n  (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7]\n  [tach_skip_0->v_3][tach_ratio_0->v_2][(shiftfield_F7_num_tachs entry_0)->0]\n  [discard_0->max_frames_0][(shift_sint16 (shift_A2_sint16 minmax_1 i_0) 1)]",
+                                                                    "pattern": "[][=]shift_sint16[=]$discard$max_frames" },
+                                                                    "children": 
+                                                                    { "Same Indices": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Diff Indices": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.1891,
+                                                                    "steps": 279 } ] } } ] } } ] } } ] } } ] } } ],
+                                                                    "Diff Indices": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Split",
+                                                                    "tactic": "Wp.split",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-goal",
+                                                                    "target": "let a_0 = (shift_A2_sint16 minmax_1 i_0) in\nlet a_1 = (shift_sint16 a_0 1) in\nlet a_2 = (shift_sint16 a_0 0) in\n(Mint_31[a_1]<=Mint_2[a_1]) /\\ (Mint_2[a_2]<=Mint_31[a_2])",
+                                                                    "pattern": "&<=<=[][][][]$Mintshift_sint16$Mint" },
+                                                                    "children": 
+                                                                    { "Goal 1/2": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Havoc",
+                                                                    "tactic": "Wp.havoc",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 8,
+                                                                    "kind": "have",
+                                                                    "occur": 1,
+                                                                    "target": "(havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n  (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)\n  [(shift_sint16 (shift_A2_sint16 minmax_1 i_0) 1)]",
+                                                                    "pattern": "[]havocshift_sint16$Mint_undef[=]" },
+                                                                    "children": 
+                                                                    { "Unassigned": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Assigned": 
+                                                                    [ { "header": "Split",
+                                                                    "tactic": "Wp.split",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 22,
+                                                                    "kind": "branch",
+                                                                    "target": "0<v_6",
+                                                                    "pattern": "<0$v" },
+                                                                    "children": 
+                                                                    { "Then": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 2.9041,
+                                                                    "steps": 2053 } ],
+                                                                    "Else": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 2.249,
+                                                                    "steps": 1123 } ] } } ] } } ],
+                                                                    "Goal 2/2": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Split",
+                                                                    "tactic": "Wp.split",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 22,
+                                                                    "kind": "branch",
+                                                                    "target": "0<v_6",
+                                                                    "pattern": "<0$v" },
+                                                                    "children": 
+                                                                    { "Then": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Array",
+                                                                    "tactic": "Wp.array",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 16,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "(havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n  (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7]\n  [tach_skip_0->v_3][tach_ratio_0->v_2]\n  [(shift_sint16 (shift_A2_sint16 minmax_1 i_0) 0)]",
+                                                                    "pattern": "[][=]shift_sint16[=]$tach_ratio$v" },
+                                                                    "children": 
+                                                                    { "Same Indices": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Diff Indices": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 2.7631,
+                                                                    "steps": 2007 } ] } } ],
+                                                                    "Else": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 2.6031,
+                                                                    "steps": 1126 } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ]
