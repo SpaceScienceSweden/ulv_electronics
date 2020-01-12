@@ -390,9 +390,7 @@ sample_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr_in) {
   }
 
   //@ assert k: k == num_frames;
-  accu_t ret = sum / num_frames;
-  //@ assert mean_ok: INT16_MIN <= ret <= INT16_MAX;
-  return ret;
+  return sum / num_frames;
 }
 
 void adc2volts(const uint16_t *adc_codes, float *volts) {
@@ -759,6 +757,7 @@ before:
 }
 #endif
 
+// PROVEME
 void accumulate_square_interval_2(
   uint16_t p0,
   uint16_t p12,
@@ -1461,8 +1460,6 @@ after3:
   return 0;
 }
 
-// only re-proven up to here
-#ifndef FRAMA_C
 uint16_t compute_max_frames(uint16_t max_frames_max,
                             uint32_t cycles_per_sample,
                             uint32_t frames_per_second)
@@ -1654,10 +1651,11 @@ void init_cb_cbc(uint8_t fm_mask, uint16_t max_frames) {
     requires 0 <= fm_mask <= 7;
     requires 0 <= stop_mask <= 7;
     requires valid_adc_configuration_part2(fm_mask);
-    ensures valid_adc_configuration_part2(fm_mask);
-    assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2], OCR1A, OCR1B, OCR1C;
+    ensures 0 <= \result <= 1;
+    ensures \result == 0 ==> valid_adc_configuration_part2(fm_mask);
+    assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2], OCR1A, OCR1B, OCR1C, adc_fake_regs[0][CLK2], adc_fake_regs[1][CLK2], adc_fake_regs[2][CLK2];
  */
-static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t stop_mask, uint16_t ocr_lo, uint16_t ocr_hi) {
+static uint8_t set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t stop_mask, uint16_t ocr_lo, uint16_t ocr_hi) {
   //alternate OCR1*
   //set ADC sample rates while we're at it
   uint16_t ocr = (block_idx & 1) ? ocr_hi : ocr_lo;
@@ -1667,7 +1665,9 @@ static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t st
       if (stop_mask & 1) {
         OCR1A = ocr;
       }
-      wreg(0, CLK2, clk2);
+      if (wreg(0, CLK2, clk2)) {
+        return 1;
+      }
     }
     if (!(stop_mask & 1)) {
       OCR1A = 0;
@@ -1677,7 +1677,9 @@ static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t st
       if (stop_mask & 2) {
         OCR1B = ocr;
       }
-      wreg(1, CLK2, clk2);
+      if (wreg(1, CLK2, clk2)) {
+        return 1;
+      }
     }
     if (!(stop_mask & 2)) {
       OCR1B = 0;
@@ -1687,12 +1689,15 @@ static void set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t st
       if (stop_mask & 4) {
         OCR1C = ocr;
       }
-      wreg(2, CLK2, clk2);
+      if (wreg(2, CLK2, clk2)) {
+        return 1;
+      }
     }
     if (!(stop_mask & 4)) {
       OCR1C = 0;
     }
   }
+  return 0;
 }
 
 uint8_t setup_inner(uint8_t fm_mask) {
@@ -1724,4 +1729,3 @@ uint8_t setup_inner(uint8_t fm_mask) {
     //@ assert final_valid: adc_connected_and_valid_by_mask(fm_mask);
     return 0;
 }
-#endif

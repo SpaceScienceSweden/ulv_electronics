@@ -120,10 +120,10 @@ extern uint8_t adc_fake_regs[3][ADC_REG_MAX+1];
     // Second stage of ADC setup -> all enabled ADCs have the same sample rate
     predicate valid_adc_configuration_part2(integer fm_mask) =
         valid_adc_configuration_part1(fm_mask) &&
-            !\exists integer x, y;
-                0 <= x < y <= 2 && (fm_mask & (1<<x)) && (fm_mask & (1<<y)) &&
-                    (adc_fake_regs[x][CLK1] != adc_fake_regs[y][CLK1] ||
-                     adc_fake_regs[x][CLK2] != adc_fake_regs[y][CLK2]);
+            \forall integer x, y;
+                0 <= x < y <= 2 && (fm_mask & (1<<x)) && (fm_mask & (1<<y)) ==>
+                    adc_fake_regs[x][CLK1] == adc_fake_regs[y][CLK1] &&
+                    adc_fake_regs[x][CLK2] == adc_fake_regs[y][CLK2];
 
     // Same as before but between part 1 and part 2
     lemma valid_adc_configuration_part2_subset:
@@ -131,6 +131,12 @@ extern uint8_t adc_fake_regs[3][ADC_REG_MAX+1];
             1 <= fm_mask <= 7 ==>
                 (valid_adc_configuration_part2(fm_mask) ==>
                     valid_adc_configuration_part1(fm_mask));
+
+    lemma valid_adc_configuration_part2_reverse:
+        \forall integer fm_mask, id;
+            1 <= fm_mask <= 7 && 0 <= id <= 2 && (fm_mask & (1<<id)) ==>
+                (valid_adc_configuration_part2(fm_mask) ==>
+                    adc_connected_and_valid(id));
 
     // A part 3 could be that all ADCs have some specific sample rate configured
     // At the moment the code only requires that they are identical
