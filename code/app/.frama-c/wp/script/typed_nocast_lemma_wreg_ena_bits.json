@@ -1,0 +1,18 @@
+[ { "prover": "script", "verdict": "valid" },
+  { "header": "Definition", "tactic": "Wp.unfold", "params": {},
+    "select": { "select": "inside-goal", "occur": 0,
+                "target": "(L_wreg_reserved_bits 15 x_0)",
+                "pattern": "L_wreg_reserved_bits15$x" },
+    "children": { "Unfold 'L_wreg_reserved_bits'": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                       "verdict": "timeout",
+                                                       "time": 3. },
+                                                     { "header": "Bit Range",
+                                                       "tactic": "Wp.bitrange",
+                                                       "params": { "positive-land": true,
+                                                                   "positive-lor": true },
+                                                       "select": { "select": "clause-goal",
+                                                                   "target": "0<=(land 15 x_0)",
+                                                                   "pattern": "<=0land15$x" },
+                                                       "children": { "bit-range": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ] } } ] } } ]

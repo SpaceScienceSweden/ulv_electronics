@@ -1700,32 +1700,66 @@ static uint8_t set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t
   return 0;
 }
 
-uint8_t setup_inner(uint8_t fm_mask) {
-    //@ assert pc: 1 <= popcount(fm_mask) <= 3;
-    if ((fm_mask & 1) && wreg(0, ADC_ENA, 0x0F)) {
-        //@ assert valid_return1: adc_connected_and_valid_by_mask(fm_mask);
-        return 1;
+/*@ requires 0 <= id <= 2;
+    requires 0 <= a <= ADC_REG_MAX;
+
+    requires \separated(
+        &SPDR,
+        &PORTF,
+        &adc_ena[id],
+        &adc_popcount[id],
+        &adc_connected[id],
+        &adc_fake_regs[id][a]
+    );
+
+    requires adc_connected_and_valid(id);
+    ensures \result == 0 ==> adc_connected_and_valid(id);
+    ensures 0 <= \result <= 1;
+    ensures \result == 0 ==> adc_fake_regs[id][a] == wreg_reserved_bits(a, d);
+    ensures \result == 0 && a == ADC_ENA ==>
+        adc_ena[id] == (d & 0x0F) &&
+        adc_popcount[id] == popcount(d & 0x0F) &&
+        adc_connected[id] == 1;
+
+    assigns SPDR, PORTF, adc_ena[id], adc_popcount[id], adc_connected[id], adc_fake_regs[id][a];
+ */
+static uint8_t wreg_checked(uint8_t id, uint8_t a, uint8_t d) {
+  uint8_t d2 = wreg_reserved_bits(a, d);
+  if (wreg(id, a, d)) {
+    return 1;
+  }
+  if (a == ADC_ENA) {
+    if (rreg_ena(id) != d2) {
+      return 1;
     }
-    //@ assert valid1: valid_adc_configuration_part1(fm_mask & 1);
-    if (fm_mask & 2) {
-        if (wreg(1, ADC_ENA, 0x0F)) {
-            //@ assert valid_return2: adc_connected_and_valid_by_mask(fm_mask);
-            return 1;
-        }
-        //@ assert valid20: valid_adc_configuration_part1(fm_mask & 2);
+    return adc_connected[id] != 1;
+  } else if (rreg_not_ena(id, a) != d2) {
+    return 1;
+  }
+  return 0;
+}
+
+uint8_t setup_inner(uint8_t fm_mask, uint8_t clk1, uint8_t clk2) {
+  //@ assert pc: 1 <= popcount(fm_mask) <= 3;
+  if (fm_mask & 1) {
+    if (wreg_checked(0, ADC_ENA, 0x0F) || wreg_checked(0, CLK1, clk1) || wreg_checked(0, CLK2, clk2)) {
+      return 1;
     }
-    //@ assert valid21: valid_adc_configuration_part1(fm_mask & 1);
-    //@ assert valid23: valid_adc_configuration_part1(fm_mask & 3);
-    if (fm_mask & 4) {
-        if (wreg(2, ADC_ENA, 0x0F)) {
-            //@ assert valid_return3: adc_connected_and_valid_by_mask(fm_mask);
-            return 1;
-        }
-        //@ assert valid30: valid_adc_configuration_part1(fm_mask & 4);
+  }
+  //@ assert mask1: valid_adc_configuration_part2(fm_mask & 1);
+  if (fm_mask & 2) {
+    if (wreg_checked(1, ADC_ENA, 0x0F) || wreg_checked(1, CLK1, clk1) || wreg_checked(1, CLK2, clk2)) {
+      return 1;
     }
-    //@ assert valid31: valid_adc_configuration_part1(fm_mask & 1);
-    //@ assert valid32: valid_adc_configuration_part1(fm_mask & 2);
-    //@ assert valid37: valid_adc_configuration_part1(fm_mask & 7);
-    //@ assert final_valid: adc_connected_and_valid_by_mask(fm_mask);
-    return 0;
+  }
+  //@ assert mask2: valid_adc_configuration_part2(fm_mask & 2);
+  //@ assert mask3: valid_adc_configuration_part2(fm_mask & 3);
+  if (fm_mask & 4) {
+    if (wreg_checked(2, ADC_ENA, 0x0F) || wreg_checked(2, CLK1, clk1) || wreg_checked(2, CLK2, clk2)) {
+      return 1;
+    }
+  }
+  //@ assert mask4: valid_adc_configuration_part2(fm_mask & 4);
+  //@ assert mask7: valid_adc_configuration_part2(fm_mask & 7);
+  return 0;
 }

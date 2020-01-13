@@ -73,6 +73,9 @@ FRAMA_C_BOILER=-wp-model Typed+nocast+int -wp-prover script,alt-ergo -load-scrip
 
 verify:
 	time frama-c $(FRAMA_C_BOILER) verified.c
+	# Do another round of proving but with weaker wreg simulation
+	# In other words, without assuming wreg always succeeds
+	time frama-c $(FRAMA_C_BOILER) -cpp-extra-args=-DWEAK_WREG verified.c
 
 verify-gui:
 	frama-c-gui  $(FRAMA_C_BOILER) verified.c

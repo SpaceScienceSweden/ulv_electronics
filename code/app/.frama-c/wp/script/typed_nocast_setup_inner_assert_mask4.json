@@ -1,0 +1,22 @@
+[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
+  { "prover": "script", "verdict": "valid" },
+  { "header": "Definition", "tactic": "Wp.unfold", "params": {},
+    "select": { "select": "clause-goal",
+                "target": "(P_valid_adc_configuration_part2 adc_fake_regs_2 adc_connected_2 adc_ena_2\n  adc_popcount_2 (land 4 fm_mask_1))",
+                "pattern": "P_valid_adc_configuration_part2$adc_fake_regs" },
+    "children": { "Unfold 'P_valid_adc_configuration_part2'": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                  "verdict": "timeout",
+                                                                  "time": 3. },
+                                                                { "header": "Definition",
+                                                                  "tactic": "Wp.unfold",
+                                                                  "params": {},
+                                                                  "select": 
+                                                                    { "select": "clause-goal",
+                                                                    "target": "(P_valid_adc_configuration_part1 adc_fake_regs_2 adc_connected_2 adc_ena_2\n  adc_popcount_2 (land 4 fm_mask_1))",
+                                                                    "pattern": "P_valid_adc_configuration_part1$adc_fake_regs" },
+                                                                  "children": 
+                                                                    { "Unfold 'P_valid_adc_configuration_part1'": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.141,
+                                                                    "steps": 339 } ] } } ] } } ]

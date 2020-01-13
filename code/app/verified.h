@@ -645,40 +645,11 @@ inline uint16_t WREGS(uint8_t a, uint8_t n) {
     return ret << (WORDSZ-16);
 }
 
-/*@ requires 0 <= id <= 2;
-    requires 0 <= a <= ADC_REG_MAX;
-
-    requires \separated(
-        &SPDR,
-        &PORTF,
-        &adc_ena[id],
-        &adc_popcount[id],
-        &adc_connected[id],
-        &adc_fake_regs[id][a]
-    );
-
-    requires adc_connected_and_valid(id);
-    ensures adc_connected_and_valid(id);
-    ensures 0 <= \result <= 1;
-    ensures \result == 0 ==> adc_fake_regs[id][a] == (
-        a == A_SYS_CFG ? (d | 0x20) :
-        a == CLK1 ? (d & 0x8E) :
-        a == CLK2 ? (d & 0xEF) :
-        a == ADC_ENA ? (d & 0x0F) :
-        a == 0x10 ? 0x00 :
-        a >= ADC1 && a <= ADC4 ? (d & 0x03) :
-        d
-    );
-    ensures \result == 0 && a == ADC_ENA ==>
-        adc_ena[id] == (d & 0x0F) &&
-        adc_popcount[id] == popcount(d & 0x0F) &&
-        adc_connected[id] == 1;
-
-    assigns SPDR, PORTF, adc_ena[id], adc_popcount[id], adc_connected[id], adc_fake_regs[id][a];
+/*@ requires 0 <= a <= ADC_REG_MAX;
+    ensures \result == wreg_reserved_bits(a, d);
+    assigns \nothing;
  */
-static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
-  adc_word_t word;
-
+static uint8_t wreg_reserved_bits(uint8_t a, uint8_t d) {
   //deal with reserved bits, in case the users is careless
   if (a == A_SYS_CFG) {
     d |= 0x20;
@@ -693,7 +664,49 @@ static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
   } else if (a >= ADC1 && a <= ADC4) {
     d &= 0x03;
   }
+  return d;
+}
 
+/*@ requires 0 <= id <= 2;
+    requires 0 <= a <= ADC_REG_MAX;
+
+    requires \separated(
+        &SPDR,
+        &PORTF,
+        &adc_ena[id],
+        &adc_popcount[id],
+        &adc_connected[id],
+        &adc_fake_regs[id][a]
+    );
+
+    requires adc_connected_and_valid(id);
+    ensures adc_connected: adc_connected_and_valid(id);
+    ensures result_range: 0 <= \result <= 1;
+#ifdef WEAK_WREG
+    // Fake the ADCs misbehaving by storing the opposite of what we expect
+    ensures weak_result: adc_fake_regs[id][a] == wreg_reserved_bits(a, 255 - d);
+#else
+    ensures \result == 0 ==> adc_fake_regs[id][a] == wreg_reserved_bits(a, d);
+    ensures ena_result: \result == 0 && a == ADC_ENA ==>
+        adc_ena[id] == (d & 0x0F) &&
+        adc_popcount[id] == popcount(d & 0x0F) &&
+        adc_connected[id] == 1;
+#endif
+
+    assigns SPDR, PORTF, adc_ena[id], adc_popcount[id], adc_connected[id], adc_fake_regs[id][a];
+ */
+static int8_t wreg(uint8_t id, uint8_t a, uint8_t d)
+#ifdef WEAK_WREG
+// don't bother proving wreg in weak mode
+// this also saves us having to juggle scripts around, since typed_nocast_wreg_assert_rte_signed_overflow.json
+// does not allow to the weak version of wreg()
+;
+#else
+{
+  adc_word_t word;
+before:
+  d = wreg_reserved_bits(a, d);
+  //@ assert reserved_bits: d == wreg_reserved_bits(a, \at(d,before));
   adc_comm(id, WREG(a,d));
 
 #ifdef FRAMA_C
@@ -721,6 +734,7 @@ static int8_t wreg(uint8_t id, uint8_t a, uint8_t d) {
   }
   return 0;
 }
+#endif
 
 /*@ requires 0 <= id <= 2;
     requires 0 <= a <= ADC_REG_MAX && a != ADC_ENA;
@@ -808,17 +822,23 @@ uint8_t rreg_ena(uint8_t id) {
     );
 
     requires adc_connected_and_valid_by_mask(fm_mask);
-    ensures adc_connected_and_valid_by_mask(fm_mask);
+    ensures \result == 0 ==> adc_connected_and_valid_by_mask(fm_mask);
 
     ensures 0 <= \result <= 1;
-    ensures \result == 0 ==> valid_adc_configuration_part1(fm_mask);
+    ensures \result == 0 ==> valid_adc_configuration_part2(fm_mask);
 
     assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2],
         adc_fake_regs[0][ADC_ENA],
         adc_fake_regs[1][ADC_ENA],
-        adc_fake_regs[2][ADC_ENA];
+        adc_fake_regs[2][ADC_ENA],
+        adc_fake_regs[0][CLK1],
+        adc_fake_regs[1][CLK1],
+        adc_fake_regs[2][CLK1],
+        adc_fake_regs[0][CLK2],
+        adc_fake_regs[1][CLK2],
+        adc_fake_regs[2][CLK2];
  */
-uint8_t setup_inner(uint8_t fm_mask);
+uint8_t setup_inner(uint8_t fm_mask, uint8_t clk1, uint8_t clk2);
 
 
 /*@ requires 0 <= x <= 2;

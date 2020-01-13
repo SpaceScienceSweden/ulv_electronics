@@ -164,6 +164,23 @@ extern uint8_t adc_fake_regs[3][ADC_REG_MAX+1];
             (fm_mask == 7 ==> fm_map[0] == 0 && fm_map[1] == 1 && fm_map[2] == 2);
  */
 
+/*@ // Gives data bytes with reserved bits set/cleared depending on address
+    logic integer wreg_reserved_bits(integer a, integer d) =
+      (
+          a == A_SYS_CFG ? (d | 0x20) :
+          a == CLK1 ? (d & 0x8E) :
+          a == CLK2 ? (d & 0xEF) :
+          a == ADC_ENA ? (d & 0x0F) :
+          a == 0x10 ? 0x00 :
+          a >= ADC1 && a <= ADC4 ? (d & 0x03) :
+          d
+      );
+
+      lemma wreg_ena_bits:
+        \forall integer x; 0 <= x <= 255 ==>
+          0 <= wreg_reserved_bits(ADC_ENA, x) <= 15;
+ */
+
 #define PE7 7
 #define TOV1 2
 #define SPIF 7
