@@ -2,7 +2,7 @@
 // ocr_lo, ocr_hi: if non-zero, OCR1* low/high setting, alternated between capture blocks
 void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_lo, uint16_t ocr_hi) {
   fm_mask &= 7;
-  uint8_t num_fms = popcount(fm_mask);
+  uint8_t num_fms = popcount4(fm_mask);
 
 #if WORDSZ > 16
   start_section("ERROR");
@@ -22,38 +22,14 @@ void square_demod_analog(uint8_t fm_mask, uint16_t max_frames_max, uint16_t ocr_
     return;
   }
 
-  //for each desired FM, enable all channels
-  if ((/*adc_connected[0]*/(fm_mask & 1) && wreg(0, ADC_ENA, (fm_mask & 1) ? 0x0F : 0x00)) ||
-      (/*adc_connected[1]*/(fm_mask & 2) && wreg(1, ADC_ENA, (fm_mask & 2) ? 0x0F : 0x00)) ||
-      (/*adc_connected[2]*/(fm_mask & 4) && wreg(2, ADC_ENA, (fm_mask & 4) ? 0x0F : 0x00))) {
-    return;
-  }
-
   //maps FM order to FM id
   uint8_t fm_map[3] = {0};
   fm_mask2map(fm_mask, fm_map);
 
-  if (!adc_connected[fm_map[0]]) {
+  if (setup_inner(fm_mask, 0x02, 0x20 | ocr2osr(ocr_lo))) {
     start_section("ERROR");
-    printf_P(PSTR("ADCs %hhu not connected\r\n"), fm_map[0]);
+    printf_P(PSTR("setup_inner() failed\r\n"));
     return;
-  }
-
-  //make sure they're all configured the same way
-  for (uint8_t i = fm_map[0] + 1; i < 3; i++) {
-    if (fm_mask & (1<<i)) {
-      if (!adc_connected[i]) {
-        start_section("ERROR");
-        printf_P(PSTR("ADCs %hhu not connected\r\n"), fm_map[0]);
-        return;
-      }
-      if (rreg(fm_map[0], CLK1) != rreg(i, CLK1) ||
-          rreg(fm_map[0], CLK2) != rreg(i, CLK2)) {
-        start_section("ERROR");
-        printf_P(PSTR("ADCs %hhu and %hhu don't seem to be configured for the same samplerate\r\n"), fm_map[0], i);
-        return;
-      }
-    }
   }
 
   //FIXME: necessary?

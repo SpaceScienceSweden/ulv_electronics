@@ -63,23 +63,6 @@ extern uint8_t adc_fake_regs[3][ADC_REG_MAX+1];
         logic integer popcount(integer x);
         axiom pop0: popcount(0) == 0;
         axiom popn: \forall integer x; x > 0 ==> popcount(x) == (x%2) + popcount(x/2);
-
-        lemma pc0: popcount(0) == 0;
-        lemma pc1: popcount(1) == 1;
-        lemma pc2: popcount(2) == 1;
-        lemma pc3: popcount(3) == 2;
-        lemma pc4: popcount(4) == 1;
-        lemma pc5: popcount(5) == 2;
-        lemma pc6: popcount(6) == 2;
-        lemma pc7: popcount(7) == 3;
-        lemma pc8: popcount(8) == 1;
-        lemma pc9: popcount(9) == 2;
-        lemma pc10: popcount(10) == 2;
-        lemma pc11: popcount(11) == 3;
-        lemma pc12: popcount(12) == 2;
-        lemma pc13: popcount(13) == 3;
-        lemma pc14: popcount(14) == 3;
-        lemma pc15: popcount(15) == 4;
     }
  */
 
@@ -162,6 +145,23 @@ extern uint8_t adc_fake_regs[3][ADC_REG_MAX+1];
             (fm_mask == 5 ==> fm_map[0] == 0 && fm_map[1] == 2) &&
             (fm_mask == 6 ==> fm_map[0] == 1 && fm_map[1] == 2) &&
             (fm_mask == 7 ==> fm_map[0] == 0 && fm_map[1] == 1 && fm_map[2] == 2);
+ */
+
+/*@ // Gives data bytes with reserved bits set/cleared depending on address
+    logic integer wreg_reserved_bits(integer a, integer d) =
+      (
+          a == A_SYS_CFG ? (d | 0x20) :
+          a == CLK1 ? (d & 0x8E) :
+          a == CLK2 ? (d & 0xEF) :
+          a == ADC_ENA ? (d & 0x0F) :
+          a == 0x10 ? 0x00 :
+          a >= ADC1 && a <= ADC4 ? (d & 0x03) :
+          d
+      );
+
+      lemma wreg_ena_bits:
+        \forall integer x; 0 <= x <= 255 ==>
+          0 <= wreg_reserved_bits(ADC_ENA, x) <= 15;
  */
 
 #define PE7 7
