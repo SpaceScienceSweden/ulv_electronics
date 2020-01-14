@@ -1,23 +1,16 @@
-[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
-  { "prover": "script", "verdict": "valid" },
+[ { "prover": "script", "verdict": "valid" },
   { "header": "Definition", "tactic": "Wp.unfold", "params": {},
     "select": { "select": "clause-step", "at": 60, "kind": "have",
                 "target": "(P_valid_adc_configuration_part2 adc_fake_regs_1 adc_connected_1 adc_ena_1\n  adc_popcount_1 (land 4 fm_mask_1))",
                 "pattern": "P_valid_adc_configuration_part2$adc_fake_regs" },
-    "children": { "Unfold 'P_valid_adc_configuration_part2'": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                  "verdict": "timeout",
-                                                                  "time": 3. },
-                                                                { "header": "Filter",
+    "children": { "Unfold 'P_valid_adc_configuration_part2'": [ { "header": "Filter",
                                                                   "tactic": "Wp.filter",
                                                                   "params": 
                                                                     { "anti": false },
                                                                   "select": null,
                                                                   "children": 
                                                                     { "Filter": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -26,10 +19,7 @@
                                                                     "pattern": "P_valid_adc_configuration_part2$adc_fake_regs" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part2'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -39,7 +29,167 @@
                                                                     "pattern": "P_valid_adc_configuration_part1$adc_fake_regs" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part1'": 
+                                                                    [ { "header": "Definition",
+                                                                    "tactic": "Wp.unfold",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 59,
+                                                                    "kind": "have",
+                                                                    "target": "(P_valid_adc_configuration_part1 adc_fake_regs_1 adc_connected_1 adc_ena_1\n  adc_popcount_1 (land 4 fm_mask_1))",
+                                                                    "pattern": "P_valid_adc_configuration_part1$adc_fake_regs" },
+                                                                    "children": 
+                                                                    { "Unfold 'P_valid_adc_configuration_part1'": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Split",
+                                                                    "tactic": "Wp.split",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-goal",
+                                                                    "target": "(forall i_0:int.\n ((land 7 fm_mask_1 (lsl 1 i_0))!=0) -> (0<=i_0) -> (i_0<=2)\n -> ((adc_connected_1[i_0]=1) /\\ (adc_ena_1[i_0]=15)\n     /\\ (adc_popcount_1[i_0]=4) /\\ (adc_fake_regs_1[i_0][15]=15)))\n/\\ (forall i_0,i_1:int.\n    let m_0 = adc_fake_regs_1[i_0] in\n    let m_1 = adc_fake_regs_1[i_1] in\n    ((land 7 fm_mask_1 (lsl 1 i_0))!=0)\n    -> ((land 7 fm_mask_1 (lsl 1 i_1))!=0) -> (0<=i_0) -> (i_0<i_1)\n    -> (i_1<=2) -> ((m_0[13]=m_1[13]) /\\ (m_0[14]=m_1[14])))",
+                                                                    "pattern": "&\\F\\F>\\F~<=<=&>land00#0#02====~~" },
+                                                                    "children": 
+                                                                    { "Goal 1/2": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Range",
+                                                                    "tactic": "Wp.range",
+                                                                    "params": 
+                                                                    { "inf": 0,
+                                                                    "sup": 2 },
+                                                                    "select": 
+                                                                    { "select": "inside-goal",
+                                                                    "occur": 0,
+                                                                    "target": "i_0",
+                                                                    "pattern": "$i" },
+                                                                    "children": 
+                                                                    { "Lower 0": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 0": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 2.9916,
-                                                                    "steps": 4097 } ] } } ] } } ] } } ] } } ]
+                                                                    "time": 0.9293,
+                                                                    "steps": 1023 } ],
+                                                                    "Value 1": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Range",
+                                                                    "tactic": "Wp.range",
+                                                                    "params": 
+                                                                    { "inf": 0,
+                                                                    "sup": 7 },
+                                                                    "select": 
+                                                                    { "select": "inside-step",
+                                                                    "at": 0,
+                                                                    "kind": "have",
+                                                                    "occur": 0,
+                                                                    "target": "fm_mask_1",
+                                                                    "pattern": "$fm_mask" },
+                                                                    "children": 
+                                                                    { "Lower 0": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 0": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 1": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 2": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Split",
+                                                                    "tactic": "Wp.split",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-goal",
+                                                                    "target": "(v_24=15) /\\ (v_25=4) /\\ (v_26=1) /\\ ((L_wreg_reserved_bits 15 15)=15)",
+                                                                    "pattern": "&====$v15$v4$v1L_wreg_reserved_bits" },
+                                                                    "children": 
+                                                                    { "Goal 1/4": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.0589,
+                                                                    "steps": 46 } ],
+                                                                    "Goal 2/4": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Definition",
+                                                                    "tactic": "Wp.unfold",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 21,
+                                                                    "kind": "have",
+                                                                    "target": "(P_valid_adc_configuration_part2\n  adc_fake_regs_26[1\n    ->adc_fake_regs_26[1][15->(L_wreg_reserved_bits 15 15)][13\n        ->(L_wreg_reserved_bits 13 clk1_1)][14\n        ->(L_wreg_reserved_bits 14 clk2_1)]] adc_connected_36[1->v_26]\n  adc_ena_36[1->v_24] adc_popcount_36[1->v_25] 2)",
+                                                                    "pattern": "P_valid_adc_configuration_part2[=]" },
+                                                                    "children": 
+                                                                    { "Unfold 'P_valid_adc_configuration_part2'": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "timeout",
+                                                                    "time": 3. },
+                                                                    { "header": "Definition",
+                                                                    "tactic": "Wp.unfold",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 21,
+                                                                    "kind": "have",
+                                                                    "target": "(P_valid_adc_configuration_part1\n  adc_fake_regs_26[1\n    ->adc_fake_regs_26[1][15->(L_wreg_reserved_bits 15 15)][13\n        ->(L_wreg_reserved_bits 13 clk1_1)][14\n        ->(L_wreg_reserved_bits 14 clk2_1)]] adc_connected_36[1->v_26]\n  adc_ena_36[1->v_24] adc_popcount_36[1->v_25] 2)",
+                                                                    "pattern": "P_valid_adc_configuration_part1[=]" },
+                                                                    "children": 
+                                                                    { "Unfold 'P_valid_adc_configuration_part1'": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ] } } ] } } ],
+                                                                    "Goal 3/4": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.0442,
+                                                                    "steps": 46 } ],
+                                                                    "Goal 4/4": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.0403,
+                                                                    "steps": 46 } ] } } ],
+                                                                    "Value 3": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.4824,
+                                                                    "steps": 454 } ],
+                                                                    "Value 4": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 5": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 6": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.1517,
+                                                                    "steps": 183 } ],
+                                                                    "Value 7": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.293,
+                                                                    "steps": 250 } ],
+                                                                    "Upper 7": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ] } } ],
+                                                                    "Value 2": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Upper 2": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ] } } ],
+                                                                    "Goal 2/2": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.6158,
+                                                                    "steps": 1368 } ] } } ] } } ] } } ] } } ] } } ] } } ]

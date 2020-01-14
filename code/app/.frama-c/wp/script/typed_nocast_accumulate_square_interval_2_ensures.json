@@ -1,4 +1,4 @@
-[ { "prover": "script", "verdict": "timeout", "time": 10. },
+[ { "prover": "script", "verdict": "valid", "time": 1.0404, "steps": 48 },
   { "header": "Instance", "tactic": "Wp.instance",
     "params": { "P1": { "select": "inside-step", "at": 1, "kind": "have",
                         "occur": 0, "target": "i_0", "pattern": "$i" },
@@ -167,11 +167,7 @@
                                                                     "pattern": "\\F><=<=&0#0#02<=<=<=<=<=<=<=<=.98304" },
                                                                     "children": 
                                                                     { "Instance": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "valid",
-                                                                    "time": 9.2373,
-                                                                    "steps": 501 },
-                                                                    { "header": "Split",
+                                                                    [ { "header": "Split",
                                                                     "tactic": "Wp.split",
                                                                     "params": {},
                                                                     "select": 
@@ -180,34 +176,42 @@
                                                                     "pattern": "&<=<=<=<=<=<=<=<=++++[]+[]+[]+[]" },
                                                                     "children": 
                                                                     { "Goal 1/8": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 10. } ],
+                                                                    [ { "prover": "alt-ergo",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.7753,
+                                                                    "steps": 48 } ],
                                                                     "Goal 2/8": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 10. } ],
+                                                                    [ { "prover": "alt-ergo",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.7283,
+                                                                    "steps": 48 } ],
                                                                     "Goal 3/8": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 10. } ],
+                                                                    [ { "prover": "alt-ergo",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.9638,
+                                                                    "steps": 48 } ],
                                                                     "Goal 4/8": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 10. } ],
+                                                                    [ { "prover": "alt-ergo",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.9993,
+                                                                    "steps": 48 } ],
                                                                     "Goal 5/8": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 10. } ],
+                                                                    [ { "prover": "alt-ergo",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.9836,
+                                                                    "steps": 48 } ],
                                                                     "Goal 6/8": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 10. } ],
+                                                                    [ { "prover": "alt-ergo",
+                                                                    "verdict": "valid",
+                                                                    "time": 1.0404,
+                                                                    "steps": 48 } ],
                                                                     "Goal 7/8": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 10. } ],
+                                                                    [ { "prover": "alt-ergo",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.9603,
+                                                                    "steps": 48 } ],
                                                                     "Goal 8/8": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 10. } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ]
+                                                                    [ { "prover": "alt-ergo",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.9223,
+                                                                    "steps": 48 } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ]
