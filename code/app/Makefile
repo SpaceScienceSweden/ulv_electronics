@@ -71,8 +71,12 @@ print-%: ; @echo $*=$($*)
 
 FRAMA_C_BOILER=-wp-model Typed+nocast+int -wp-prover script,alt-ergo -load-script gcc_avr_16_machdep.ml -cpp-extra-args="-DF_CPU=$(F_CPU) -DFRAMA_C -D__FC_MACHDEP_GCC_AVR_16" -wp -wp-timeout 10 -machdep gcc_avr_16 -wp-rte -warn-unsigned-overflow
 
-verify:
+verify: verify-strong verify-weak
+
+verify-strong:
 	time frama-c $(FRAMA_C_BOILER) verified.c
+
+verify-weak:
 	# Do another round of proving but with weaker wreg simulation
 	# In other words, without assuming wreg always succeeds
 	time frama-c $(FRAMA_C_BOILER) -cpp-extra-args=-DWEAK_WREG verified.c
