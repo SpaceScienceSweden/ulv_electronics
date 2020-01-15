@@ -1763,3 +1763,46 @@ uint8_t setup_inner(uint8_t fm_mask, uint8_t clk1, uint8_t clk2) {
   //@ assert mask7: valid_adc_configuration_part2(fm_mask & 7);
   return 0;
 }
+
+static const uint16_t osrtab[16] = {
+  4096, 2048, 1024, 800, 768, 512, 400, 384, 256, 200, 192, 128, 96, 64, 48, 32
+};
+
+/*@ requires 0 <= id <= 2;
+    requires adc_connected_and_valid(id);
+    requires \separated(
+        &SPDR,
+        &PORTF,
+        &adc_ena[id],
+        &adc_popcount[id],
+        &adc_connected[id],
+        &adc_fake_regs[id][0] + (0..(ADC_REG_MAX))
+    );
+
+    ensures 0 <= \result <= 802816;
+
+    assigns
+      SPDR,
+      PORTF,
+      adc_ena[id],
+      adc_popcount[id],
+      adc_connected[id],
+      adc_fake_regs[id][ADC_ENA];
+ */
+static uint32_t adc_cycles_per_sample_id(uint8_t id) {
+  uint8_t clk1 = rreg_not_ena(id, CLK1);
+  uint8_t clk2 = rreg_not_ena(id, CLK2);
+  uint8_t clk2hi = clk2 / 16;
+  //@ assert clk2hi: 0 <= clk2hi <= 15;
+  clk1 &= 0x0E;
+  //@ assert clk1range: 0 <= clk1 <= 14;
+  //@ assert clk1even: clk1 % 2 == 0;
+  clk2hi &= 0x0E;
+  //@ assert clk2hirange: 0 <= clk2hi <= 14;
+  //@ assert clk2hieven: clk2hi % 2 == 0;
+  uint8_t clk12 = clk1 * clk2hi;
+  //@ assert clk12range: 0 <= clk12 <= 196;
+  //@ assert clk12mod4: clk12 % 4 == 0;
+  uint32_t cycles_per_sample = clk12 * (uint32_t)osrtab[clk2 & 0x0F];
+  return cycles_per_sample;
+}

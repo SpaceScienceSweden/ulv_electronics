@@ -1,0 +1,12 @@
+[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 1. },
+  { "prover": "script", "verdict": "valid" },
+  { "header": "Range", "tactic": "Wp.range",
+    "params": { "inf": 0, "sup": 0 },
+    "select": { "select": "inside-goal", "occur": 0,
+                "target": "let m_0 = adc_fake_regs_0[id_0] in\n(to_uint8 ((land 14 m_0[13])*(land 14 (to_uint8 (m_0[14] div 16)))))",
+                "pattern": "to_uint8*landland14[]14to_uint8[]" },
+    "children": { "Lower 0": [ { "prover": "qed", "verdict": "valid" } ],
+                  "Value 0": [ { "prover": "qed", "verdict": "valid" } ],
+                  "Upper 0": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                 "verdict": "valid", "time": 0.0855,
+                                 "steps": 99 } ] } } ]

@@ -71,7 +71,9 @@ extern uint8_t adc_fake_regs[3][ADC_REG_MAX+1];
         0 <= adc_ena[id] <= 15 &&
         adc_ena[id] == adc_fake_regs[id][ADC_ENA] &&
         0 <= adc_popcount[id] <= 4 &&
-        adc_popcount[id] == popcount(adc_ena[id]);
+        adc_popcount[id] == popcount(adc_ena[id]) &&
+        adc_fake_regs[id][ID_MSB] == 4 &&
+        adc_fake_regs[id][ID_LSB] == 3;
 
     predicate adc_disconnected_xor_valid(integer id) =
         (adc_connected[id] == 0 &&
@@ -89,7 +91,9 @@ extern uint8_t adc_fake_regs[3][ADC_REG_MAX+1];
                     ((fm_mask & (1<<x)) ==>
                         adc_fake_regs[x][ADC_ENA] == 0x0F == adc_ena[x] &&
                         adc_popcount[x] == 4 &&
-                        adc_connected[x] == 1
+                        adc_connected[x] == 1 &&
+                        adc_fake_regs[x][ID_MSB] == 4 &&
+                        adc_fake_regs[x][ID_LSB] == 3
                     );
 
     // Ensures that part 1 of configuration that we want (all channels enabled)
