@@ -536,10 +536,6 @@ static inline uint8_t have_esc(void) {
 #error Illegal GAIN
 #endif
 
-static const uint16_t osrtab[16] = {
-  4096, 2048, 1024, 800, 768, 512, 400, 384, 256, 200, 192, 128, 96, 64, 48, 32
-};
-
 static inline void adc_deselect(void) {
   //PF0..4 = ADC (must be zero)
   //PF5..7 = /CS_ADCn
