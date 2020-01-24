@@ -841,6 +841,11 @@ uint8_t rreg_ena(uint8_t id) {
 uint8_t setup_inner(uint8_t fm_mask, uint8_t clk1, uint8_t clk2);
 
 
+/*@ lemma shift_adc_code:
+      \forall integer x; 0 <= x <= 16383 ==>
+        0 <= (x<<2) <= 65535;
+ */
+
 /*@ requires 0 <= x <= 2;
     requires 0 <= codein <= 1023;
     assigns vgnds[x], DDRE, PORTE, SPDR;
