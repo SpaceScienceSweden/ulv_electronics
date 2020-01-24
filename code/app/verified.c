@@ -1768,6 +1768,18 @@ static const uint16_t osrtab[16] = {
   4096, 2048, 1024, 800, 768, 512, 400, 384, 256, 200, 192, 128, 96, 64, 48, 32
 };
 
+#ifdef FRAMA_C
+/*@ requires 0 <= clk1 <= 14 && clk1 % 2 == 0;
+    requires 0 <= clk2 <= 14 && clk2 % 2 == 0;
+    ensures \result == clk1*clk2;
+    ensures 0 <= \result <= 196;
+    assigns \nothing;
+ */
+static uint8_t ghost_clk12prod(uint8_t clk1, uint8_t clk2) {
+  return clk1*clk2;
+}
+#endif
+
 /*@ requires 0 <= id <= 2;
     requires adc_connected_and_valid(id);
     requires \separated(
@@ -1801,6 +1813,8 @@ static uint32_t adc_cycles_per_sample_id(uint8_t id) {
   //@ assert clk2hirange: 0 <= clk2hi <= 14;
   //@ assert clk2hieven: clk2hi % 2 == 0;
   uint8_t clk12 = clk1 * clk2hi;
+  //@ ghost uint8_t clk122 = ghost_clk12prod(clk1, clk2hi);
+  //@ assert clk12122: clk12 == clk122;
   //@ assert clk12range: 0 <= clk12 <= 196;
   //@ assert clk12mod4: clk12 % 4 == 0;
   uint32_t cycles_per_sample = clk12 * (uint32_t)osrtab[clk2 & 0x0F];
