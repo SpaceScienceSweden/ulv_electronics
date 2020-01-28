@@ -66,7 +66,13 @@ extern uint8_t adc_fake_regs[3][ADC_REG_MAX+1];
     }
  */
 
-/*@ predicate adc_connected_and_valid(integer id) =
+/*@ predicate adc_disconnected(integer id) =
+        adc_connected[id] == 0 &&
+        adc_ena[id] == 0 &&
+        adc_fake_regs[id][ADC_ENA] == 0 &&
+        adc_popcount[id] == 0;
+
+    predicate adc_connected_and_valid(integer id) =
         adc_connected[id] == 1 &&
         0 <= adc_ena[id] <= 15 &&
         adc_ena[id] == adc_fake_regs[id][ADC_ENA] &&
@@ -75,13 +81,8 @@ extern uint8_t adc_fake_regs[3][ADC_REG_MAX+1];
         adc_fake_regs[id][ID_MSB] == 4 &&
         adc_fake_regs[id][ID_LSB] == 3;
 
-    predicate adc_disconnected_xor_valid(integer id) =
-        (adc_connected[id] == 0 &&
-         adc_ena[id] == 0 &&
-         adc_fake_regs[id][ADC_ENA] == 0 &&
-         adc_popcount[id] == 0
-        ) ^^
-         adc_connected_and_valid(id);
+    predicate adc_disconnected_or_valid(integer id) =
+        0 <= adc_connected[id] <= 1 && (adc_disconnected(id) || adc_connected_and_valid(id));
 
     predicate adc_connected_and_valid_by_mask(integer fm_mask) =
         \forall integer x; 0 <= x <= 2 ==> ((fm_mask & (1<<x)) ==> adc_connected_and_valid(x));
