@@ -668,7 +668,7 @@ static uint8_t wreg_reserved_bits(uint8_t a, uint8_t d) {
 }
 
 /*@ requires 0 <= id <= 2;
-    requires 0 <= a <= ADC_REG_MAX;
+    requires A_SYS_CFG <= a <= ADC_REG_MAX;
 
     requires \separated(
         &SPDR,
