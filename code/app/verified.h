@@ -833,6 +833,12 @@ uint8_t rreg_ena(uint8_t id) {
     ensures \result == 0 ==> valid_adc_configuration_part2(fm_mask);
 
     assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2],
+        adc_fake_regs[0][ID_MSB],
+        adc_fake_regs[1][ID_MSB],
+        adc_fake_regs[2][ID_MSB],
+        adc_fake_regs[0][ID_LSB],
+        adc_fake_regs[1][ID_LSB],
+        adc_fake_regs[2][ID_LSB],
         adc_fake_regs[0][ADC_ENA],
         adc_fake_regs[1][ADC_ENA],
         adc_fake_regs[2][ADC_ENA],
