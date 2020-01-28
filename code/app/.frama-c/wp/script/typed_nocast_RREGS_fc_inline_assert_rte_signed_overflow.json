@@ -1,7 +1,6 @@
-[ { "prover": "script", "verdict": "valid" },
-  { "header": "Logical Shift", "tactic": "Wp.shift", "params": {},
+[ { "header": "Logical Shift", "tactic": "Wp.shift", "params": {},
     "select": { "select": "inside-goal", "occur": 0, "target": "(lsl a_0 8)",
                 "pattern": "lsl$a8" },
     "children": { "shift": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                               "verdict": "valid", "time": 0.0292,
-                               "steps": 66 } ] } } ]
+                               "verdict": "valid", "time": 0.0407,
+                               "steps": 36 } ] } } ]

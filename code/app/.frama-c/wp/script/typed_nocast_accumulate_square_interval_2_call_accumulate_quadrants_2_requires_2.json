@@ -1,10 +1,7 @@
-[ { "prover": "why3:Z3,4.8.7,counterexamples", "verdict": "failed" },
-  { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
-  { "prover": "script", "verdict": "valid" },
-  { "header": "Validity Range", "tactic": "Wp.valid", "params": {},
+[ { "header": "Validity Range", "tactic": "Wp.valid", "params": {},
     "select": { "select": "clause-goal",
                 "target": "let x_0 = ((rounding_0+(4*psize_0)) div 12) in\n(valid_rd Malloc_1\n  (shift_sint16 (global G_sample_data_938) ((-4*psize_0)+(4*p12_1)+(4*x_0)))\n  ((-4*x_0)+(4*((rounding_0+(8*psize_0)) div 12))))",
                 "pattern": "valid_rd$Mallocshift_sint16+global" },
     "children": { "Valid (Read)": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                      "verdict": "valid", "time": 1.1322,
-                                      "steps": 340 } ] } } ]
+                                      "verdict": "valid", "time": 1.9302,
+                                      "steps": 310 } ] } } ]

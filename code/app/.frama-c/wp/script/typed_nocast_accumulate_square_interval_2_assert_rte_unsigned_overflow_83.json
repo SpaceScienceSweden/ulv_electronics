@@ -1,5 +1,4 @@
-[ { "prover": "script", "verdict": "valid" },
-  { "header": "Range", "tactic": "Wp.range",
+[ { "header": "Range", "tactic": "Wp.range",
     "params": { "inf": 0, "sup": 0 },
     "select": { "select": "inside-goal", "occur": 0,
                 "target": "(rounding_0+(10*psize_0)) div 12",
@@ -7,5 +6,5 @@
     "children": { "Lower 0": [ { "prover": "qed", "verdict": "valid" } ],
                   "Value 0": [ { "prover": "qed", "verdict": "valid" } ],
                   "Upper 0": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                 "verdict": "valid", "time": 2.9609,
-                                 "steps": 852 } ] } } ]
+                                 "verdict": "valid", "time": 5.0933,
+                                 "steps": 822 } ] } } ]

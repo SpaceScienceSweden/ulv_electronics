@@ -1,19 +1,11 @@
-[ { "prover": "script", "verdict": "valid" },
-  { "header": "Filter", "tactic": "Wp.filter", "params": { "anti": false },
+[ { "header": "Filter", "tactic": "Wp.filter", "params": { "anti": false },
     "select": null,
-    "children": { "Filter": [ { "prover": "why3:Z3,4.8.7,counterexamples",
-                                "verdict": "failed" },
-                              { "prover": "why3:Alt-Ergo,2.3.0",
-                                "verdict": "timeout", "time": 3. },
-                              { "header": "Split", "tactic": "Wp.split",
+    "children": { "Filter": [ { "header": "Split", "tactic": "Wp.split",
                                 "params": {},
                                 "select": { "select": "clause-goal",
                                             "target": "let x_0 = edge_pos_0[k_2] in\nlet x_1 = Q1_1[i_0] in\nlet x_2 = NQ_4[0] in\nlet x_3 = edge_pos_0[1+k_2] in\nlet x_4 = Q1_13[0->0][1->0][2->0][i_0] in\n(((32767*nsum2_0)+(32767*nsum3_0)+(32767*nsum4_0)+(32767*x_0)+x_1)<=\n ((32767*x_2)+(32767*x_3)+x_4))\n/\\ (((32768*nsum2_0)+(32768*nsum3_0)+(32768*nsum4_0)+(32768*x_0)+x_4)<=\n    ((32768*x_2)+(32768*x_3)+x_1))",
                                             "pattern": "&<=<=++++.32767.32767.32767.32767" },
-                                "children": { "Goal 1/2": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                              "verdict": "timeout",
-                                                              "time": 3. },
-                                                            { "header": "Range",
+                                "children": { "Goal 1/2": [ { "header": "Range",
                                                               "tactic": "Wp.range",
                                                               "params": 
                                                                 { "inf": 0,
@@ -27,18 +19,15 @@
                                                                 { "Lower 0": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.1728,
-                                                                    "steps": 134 } ],
+                                                                    "time": 0.2122,
+                                                                    "steps": 104 } ],
                                                                   "Value 0": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.2006,
-                                                                    "steps": 134 } ],
+                                                                    "time": 0.1878,
+                                                                    "steps": 104 } ],
                                                                   "Upper 0": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Range",
+                                                                    [ { "header": "Range",
                                                                     "tactic": "Wp.range",
                                                                     "params": 
                                                                     { "inf": 0,
@@ -52,18 +41,15 @@
                                                                     { "Lower 0": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.0701,
-                                                                    "steps": 100 } ],
+                                                                    "time": 0.0689,
+                                                                    "steps": 70 } ],
                                                                     "Value 0": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.0957,
-                                                                    "steps": 100 } ],
+                                                                    "time": 0.1009,
+                                                                    "steps": 70 } ],
                                                                     "Upper 0": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Instance",
+                                                                    [ { "header": "Instance",
                                                                     "tactic": "Wp.instance",
                                                                     "params": 
                                                                     { "P1": 
@@ -93,12 +79,9 @@
                                                                     { "Call 'accumulate_square_interval_2'": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.2668,
-                                                                    "steps": 154 } ] } } ] } } ] } } ],
-                                              "Goal 2/2": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                              "verdict": "timeout",
-                                                              "time": 3. },
-                                                            { "header": "Instance",
+                                                                    "time": 0.2833,
+                                                                    "steps": 124 } ] } } ] } } ] } } ],
+                                              "Goal 2/2": [ { "header": "Instance",
                                                               "tactic": "Wp.instance",
                                                               "params": 
                                                                 { "P1": 
@@ -128,5 +111,5 @@
                                                                 { "Call 'accumulate_square_interval_2'": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.2396,
-                                                                    "steps": 150 } ] } } ] } } ] } } ]
+                                                                    "time": 0.3498,
+                                                                    "steps": 120 } ] } } ] } } ] } } ]

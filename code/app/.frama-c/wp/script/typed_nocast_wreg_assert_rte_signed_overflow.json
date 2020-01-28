@@ -1,5 +1,4 @@
-[ { "prover": "script", "verdict": "valid" },
-  { "header": "Range", "tactic": "Wp.range",
+[ { "header": "Range", "tactic": "Wp.range",
     "params": { "inf": 0, "sup": 20 },
     "select": { "select": "inside-goal", "occur": 0, "target": "a_1",
                 "pattern": "$a" },
