@@ -1,5 +1,5 @@
 [ { "header": "Filter", "tactic": "Wp.filter", "params": { "anti": false },
     "select": null,
     "children": { "Filter": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                "verdict": "valid", "time": 3.3858,
+                                "verdict": "valid", "time": 3.3555,
                                 "steps": 245 } ] } } ]

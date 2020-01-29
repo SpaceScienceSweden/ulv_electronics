@@ -204,7 +204,7 @@
                                                                     "Gt": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.3294,
+                                                                    "time": 0.2326,
                                                                     "steps": 205 } ] } } ],
                                                                     "Goal 2/8": 
                                                                     [ { "header": "Split",
@@ -236,7 +236,7 @@
                                                                     "Gt": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.3495,
+                                                                    "time": 0.2473,
                                                                     "steps": 205 } ] } } ],
                                                                     "Goal 3/8": 
                                                                     [ { "header": "Split",
@@ -268,7 +268,7 @@
                                                                     "Gt": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.2601,
+                                                                    "time": 0.3116,
                                                                     "steps": 213 } ] } } ],
                                                                     "Goal 4/8": 
                                                                     [ { "header": "Split",
@@ -300,7 +300,7 @@
                                                                     "Gt": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.2629,
+                                                                    "time": 0.2876,
                                                                     "steps": 213 } ] } } ],
                                                                     "Goal 5/8": 
                                                                     [ { "header": "Split",
@@ -332,7 +332,7 @@
                                                                     "Gt": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.2662,
+                                                                    "time": 0.2769,
                                                                     "steps": 213 } ] } } ],
                                                                     "Goal 6/8": 
                                                                     [ { "header": "Split",
@@ -364,7 +364,7 @@
                                                                     "Gt": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.275,
+                                                                    "time": 0.273,
                                                                     "steps": 213 } ] } } ],
                                                                     "Goal 7/8": 
                                                                     [ { "header": "Split",
@@ -396,7 +396,7 @@
                                                                     "Gt": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.2529,
+                                                                    "time": 0.3749,
                                                                     "steps": 213 } ] } } ],
                                                                     "Goal 8/8": 
                                                                     [ { "header": "Split",
@@ -428,5 +428,5 @@
                                                                     "Gt": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.2529,
+                                                                    "time": 0.2706,
                                                                     "steps": 213 } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ]

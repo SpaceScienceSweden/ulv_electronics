@@ -90,5 +90,5 @@
                                                                     { "Call 'accumulate_quadrants'": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 1.2251,
+                                                                    "time": 0.9564,
                                                                     "steps": 381 } ] } } ] } } ] } } ] } } ]

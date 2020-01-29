@@ -20,9 +20,8 @@
                 "target": "(P_adc_connected_and_valid adc_fake_regs_3 adc_connected_3 adc_ena_3\n  adc_popcount_3 2)",
                 "pattern": "P_adc_connected_and_valid$adc_fake_regs" },
     "children": { "valid_adc_configuration_part2_subset": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                              "verdict": "valid",
-                                                              "time": 2.0683,
-                                                              "steps": 1805 },
+                                                              "verdict": "timeout",
+                                                              "time": 10. },
                                                             { "header": "Split",
                                                               "tactic": "Wp.split",
                                                               "params": {},
@@ -39,7 +38,7 @@
                                                                     "params": {},
                                                                     "select": 
                                                                     { "select": "clause-goal",
-                                                                    "target": "(P_adc_connected_and_valid\n  adc_fake_regs_6[1->adc_fake_regs_6[1][14->(land 239 (lor 32 ocr2osr_0))]]\n  adc_connected_8[1->v_10] adc_ena_8[1->v_8] adc_popcount_8[1->v_9] 2)",
+                                                                    "target": "(P_adc_connected_and_valid\n  adc_fake_regs_6[1\n    ->adc_fake_regs_6[1][14\n        ->(L_wreg_reserved_bits 14 (255-(lor 32 ocr2osr_0)))]]\n  adc_connected_8[1->v_10] adc_ena_8[1->v_8] adc_popcount_8[1->v_9] 2)",
                                                                     "pattern": "P_adc_connected_and_valid[=][=][=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_adc_connected_and_valid'": 
@@ -56,14 +55,15 @@
                                                                     { "Then": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.4953,
-                                                                    "steps": 551 } ],
+                                                                    "time": 0.8361,
+                                                                    "steps": 985 } ],
                                                                     "Else": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.2475,
-                                                                    "steps": 431 } ] } } ] } } ],
+                                                                    "time": 0.2904,
+                                                                    "steps": 503 } ] } } ] } } ],
                                                                   "Else": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 6. } ] } } ] } } ]
+                                                                    "verdict": "valid",
+                                                                    "time": 1.1533,
+                                                                    "steps": 1159 } ] } } ] } } ]

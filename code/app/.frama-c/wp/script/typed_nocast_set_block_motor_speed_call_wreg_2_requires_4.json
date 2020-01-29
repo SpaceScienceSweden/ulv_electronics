@@ -41,10 +41,10 @@
                                                                     { "Then": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.3933,
-                                                                    "steps": 483 } ],
+                                                                    "time": 0.2978,
+                                                                    "steps": 484 } ],
                                                                     "Else": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.2615,
+                                                                    "time": 0.1913,
                                                                     "steps": 397 } ] } } ] } } ] } } ]

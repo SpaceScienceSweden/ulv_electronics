@@ -7,9 +7,9 @@
                                             "pattern": "&<=<=[]+[]+[=]$i.32768.32768[]$Q2" },
                                 "children": { "Goal 1/2": [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                               "verdict": "valid",
-                                                              "time": 2.6846,
+                                                              "time": 2.9156,
                                                               "steps": 282 } ],
                                               "Goal 2/2": [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                               "verdict": "valid",
-                                                              "time": 2.1233,
+                                                              "time": 2.9256,
                                                               "steps": 282 } ] } } ] } } ]

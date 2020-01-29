@@ -2,5 +2,5 @@
     "select": { "select": "inside-goal", "occur": 0, "target": "(lsl a_0 8)",
                 "pattern": "lsl$a8" },
     "children": { "shift": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                               "verdict": "valid", "time": 0.0404,
+                               "verdict": "valid", "time": 0.0259,
                                "steps": 32 } ] } } ]

@@ -6,5 +6,5 @@
     "children": { "Lower 0": [ { "prover": "qed", "verdict": "valid" } ],
                   "Value 0": [ { "prover": "qed", "verdict": "valid" } ],
                   "Upper 0": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                 "verdict": "valid", "time": 5.0933,
+                                 "verdict": "valid", "time": 4.4622,
                                  "steps": 822 } ] } } ]

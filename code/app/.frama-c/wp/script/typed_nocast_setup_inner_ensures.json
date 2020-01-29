@@ -4,5 +4,5 @@
                 "pattern": "P_adc_connected_and_valid_by_mask" },
     "children": { "Unfold 'P_adc_connected_and_valid_by_mask'": [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 1.4562,
+                                                                    "time": 1.661,
                                                                     "steps": 1056 } ] } } ]

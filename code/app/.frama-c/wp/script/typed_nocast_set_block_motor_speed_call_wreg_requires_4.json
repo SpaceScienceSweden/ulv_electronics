@@ -21,5 +21,5 @@
                 "pattern": "P_adc_connected_and_valid$adc_fake_regs" },
     "children": { "valid_adc_configuration_part2_subset": [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                               "verdict": "valid",
-                                                              "time": 0.4877,
+                                                              "time": 0.4739,
                                                               "steps": 456 } ] } } ]

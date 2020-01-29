@@ -159,7 +159,7 @@
                                                                     { "Same Indices": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 2.7877,
+                                                                    "time": 3.4277,
                                                                     "steps": 1701 } ],
                                                                     "Diff Indices": 
                                                                     [ { "header": "Split",
@@ -175,7 +175,7 @@
                                                                     { "Then": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 1.5404,
+                                                                    "time": 1.5483,
                                                                     "steps": 843 } ],
                                                                     "Else": 
                                                                     [ { "header": "Split",
@@ -189,7 +189,7 @@
                                                                     { "Goal 1/2": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 4.1648,
+                                                                    "time": 4.3182,
                                                                     "steps": 1080 } ],
                                                                     "Goal 2/2": 
                                                                     [ { "header": "Havoc",
@@ -222,7 +222,7 @@
                                                                     "Diff Indices": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.3041,
+                                                                    "time": 0.2289,
                                                                     "steps": 249 } ] } } ] } } ] } } ] } } ] } } ],
                                                                     "Diff Indices": 
                                                                     [ { "header": "Split",
@@ -262,12 +262,12 @@
                                                                     { "Then": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 4.6487,
+                                                                    "time": 4.4946,
                                                                     "steps": 2093 } ],
                                                                     "Else": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 3.3738,
+                                                                    "time": 3.4071,
                                                                     "steps": 1100 } ] } } ] } } ],
                                                                     "Goal 2/2": 
                                                                     [ { "header": "Split",
@@ -298,10 +298,10 @@
                                                                     "Diff Indices": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 2.8627,
+                                                                    "time": 3.4522,
                                                                     "steps": 1942 } ] } } ],
                                                                     "Else": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 3.7913,
+                                                                    "time": 3.8635,
                                                                     "steps": 1100 } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ]

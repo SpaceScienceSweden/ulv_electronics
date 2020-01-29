@@ -11,10 +11,10 @@
                                              "pattern": "lsl$tmp8" },
                                  "children": { "shift": [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                             "verdict": "valid",
-                                                            "time": 0.028,
+                                                            "time": 0.0266,
                                                             "steps": 30 } ] } } ],
                   "Value 1": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                 "verdict": "valid", "time": 0.0285,
+                                 "verdict": "valid", "time": 0.0327,
                                  "steps": 30 } ],
                   "Value 2": [ { "prover": "qed", "verdict": "valid" } ],
                   "Upper 2": [ { "prover": "qed", "verdict": "valid" } ] } } ]

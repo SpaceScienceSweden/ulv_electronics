@@ -7,5 +7,5 @@
                 "target": "let a_0 =\n    (havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n      (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7] in\nlet a_1 =\n    a_0[tach_skip_0->v_3][tach_ratio_0->v_2]\n      [(shiftfield_F7_num_tachs entry_0)->v_6] in\nforall i_0:int.\nlet a_2 = (shift_A2_sint16 minmax_1 i_0) in\nlet a_3 = (shift_sint16 a_2 0) in\nlet a_4 = (shift_sint16 a_2 1) in\n(0<=i_0) -> (i_0<=3) -> ((a_1[a_3]=a_0[a_3]) /\\ (a_1[a_4]=a_0[a_4]))",
                 "pattern": "\\F><=<=&0#0#03==[][][][][=]shift_sint16" },
     "children": { "Instance": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                  "verdict": "valid", "time": 2.649,
+                                  "verdict": "valid", "time": 2.6952,
                                   "steps": 1222 } ] } } ]

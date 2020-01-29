@@ -49,5 +49,5 @@
                                                                     { "Instance": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.7623,
+                                                                    "time": 0.99,
                                                                     "steps": 1061 } ] } } ] } } ] } } ] } } ]

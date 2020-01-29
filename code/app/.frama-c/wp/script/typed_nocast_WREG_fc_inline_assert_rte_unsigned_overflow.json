@@ -4,5 +4,5 @@
                 "target": "(lor 16384 d_0 (to_uint16 (lsl a_0 8)))<=65535",
                 "pattern": "<=lor6553516384$dto_uint16lsl$a8" },
     "children": { "bit-range": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                   "verdict": "valid", "time": 0.0503,
+                                   "verdict": "valid", "time": 0.0292,
                                    "steps": 52 } ] } } ]

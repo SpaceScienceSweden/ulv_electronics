@@ -1,13 +1,8 @@
-[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 1. },
-  { "prover": "script", "verdict": "valid" },
-  { "header": "Definition", "tactic": "Wp.unfold", "params": {},
+[ { "header": "Definition", "tactic": "Wp.unfold", "params": {},
     "select": { "select": "clause-step", "at": 40, "kind": "have",
                 "target": "(P_valid_adc_configuration_part2 adc_fake_regs_27 adc_connected_21 adc_ena_21\n  adc_popcount_21 (land 2 fm_mask_1))",
                 "pattern": "P_valid_adc_configuration_part2$adc_fake_regs" },
-    "children": { "Unfold 'P_valid_adc_configuration_part2'": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                  "verdict": "timeout",
-                                                                  "time": 1. },
-                                                                { "header": "Definition",
+    "children": { "Unfold 'P_valid_adc_configuration_part2'": [ { "header": "Definition",
                                                                   "tactic": "Wp.unfold",
                                                                   "params": {},
                                                                   "select": 
@@ -18,10 +13,7 @@
                                                                     "pattern": "P_valid_adc_configuration_part1$adc_fake_regs" },
                                                                   "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part1'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -32,10 +24,7 @@
                                                                     "pattern": "P_valid_adc_configuration_part2$adc_fake_regs" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part2'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -46,10 +35,7 @@
                                                                     "pattern": "P_valid_adc_configuration_part1$adc_fake_regs" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part1'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -61,10 +47,7 @@
                                                                     "pattern": "P_adc_connected_and_valid$adc_fake_regs" },
                                                                     "children": 
                                                                     { "Unfold 'P_adc_connected_and_valid'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -76,10 +59,7 @@
                                                                     "pattern": "P_adc_connected_and_valid[=][=][=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_adc_connected_and_valid'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -91,10 +71,7 @@
                                                                     "pattern": "P_adc_connected_and_valid[=][=][=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_adc_connected_and_valid'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -106,10 +83,7 @@
                                                                     "pattern": "P_adc_connected_and_valid[=][=][=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_adc_connected_and_valid'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -121,10 +95,7 @@
                                                                     "pattern": "P_adc_connected_and_valid[=][=][=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_adc_connected_and_valid'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -136,10 +107,7 @@
                                                                     "pattern": "P_adc_connected_and_valid[=][=][=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_adc_connected_and_valid'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Range",
+                                                                    [ { "header": "Range",
                                                                     "tactic": "Wp.range",
                                                                     "params": 
                                                                     { "inf": 0,
@@ -162,10 +130,7 @@
                                                                     "time": 0.2095,
                                                                     "steps": 243 } ],
                                                                     "Value 2": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -174,10 +139,7 @@
                                                                     "pattern": "P_valid_adc_configuration_part2[=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part2'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -191,10 +153,7 @@
                                                                     "time": 0.0818,
                                                                     "steps": 146 } ] } } ] } } ],
                                                                     "Value 3": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -203,10 +162,7 @@
                                                                     "pattern": "P_valid_adc_configuration_part2[=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part2'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -216,10 +172,7 @@
                                                                     "pattern": "P_valid_adc_configuration_part1[=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part1'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Range",
+                                                                    [ { "header": "Range",
                                                                     "tactic": "Wp.range",
                                                                     "params": 
                                                                     { "inf": 0,
@@ -234,10 +187,7 @@
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ],
                                                                     "Value 0": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Range",
+                                                                    [ { "header": "Range",
                                                                     "tactic": "Wp.range",
                                                                     "params": 
                                                                     { "inf": 0,
@@ -266,10 +216,7 @@
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ] } } ],
                                                                     "Value 1": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Range",
+                                                                    [ { "header": "Range",
                                                                     "tactic": "Wp.range",
                                                                     "params": 
                                                                     { "inf": 0,
@@ -316,10 +263,7 @@
                                                                     "time": 0.215,
                                                                     "steps": 192 } ],
                                                                     "Value 6": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -328,10 +272,7 @@
                                                                     "pattern": "P_valid_adc_configuration_part2[=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part2'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -345,10 +286,7 @@
                                                                     "time": 0.082,
                                                                     "steps": 146 } ] } } ] } } ],
                                                                     "Value 7": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -357,10 +295,7 @@
                                                                     "pattern": "P_valid_adc_configuration_part2[=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part2'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
@@ -370,10 +305,7 @@
                                                                     "pattern": "P_valid_adc_configuration_part1[=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part1'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Range",
+                                                                    [ { "header": "Range",
                                                                     "tactic": "Wp.range",
                                                                     "params": 
                                                                     { "inf": 0,
@@ -388,10 +320,7 @@
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ],
                                                                     "Value 0": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Range",
+                                                                    [ { "header": "Range",
                                                                     "tactic": "Wp.range",
                                                                     "params": 
                                                                     { "inf": 0,
@@ -420,10 +349,7 @@
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ] } } ],
                                                                     "Value 1": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 1. },
-                                                                    { "header": "Range",
+                                                                    [ { "header": "Range",
                                                                     "tactic": "Wp.range",
                                                                     "params": 
                                                                     { "inf": 0,

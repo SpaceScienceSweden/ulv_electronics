@@ -4,5 +4,5 @@
                 "pattern": "P_valid_adc_configuration_part2$adc_fake_regs" },
     "children": { "Unfold 'P_valid_adc_configuration_part2'": [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                   "verdict": "valid",
-                                                                  "time": 0.0425,
+                                                                  "time": 0.0639,
                                                                   "steps": 86 } ] } } ]
