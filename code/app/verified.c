@@ -395,15 +395,16 @@ sample_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr_in) {
 
 void adc2volts(const uint16_t *adc_codes, float *volts) {
   float v33 = 0;
+#define F256 (256.f / 100.f)
   /*@ loop assigns x, v33, volts[0..4];
    */
   for (uint8_t x = 0; x < 5; x++) {
     //values taken from schematic
     static const float scale[4] = {
-       (18.0+18.0)/18.0 * 2.56 / 1024,
-      (150.0+10.0)/10.0 * 2.56 / 1024,
-      (150.0+10.0)/10.0 * 2.56 / 1024,
-       (18.0+10.0)/10.0 * 2.56 / 1024,
+       (18.0+18.0)/18.0 * F256 / 1024,
+      (150.0+10.0)/10.0 * F256 / 1024,
+      (150.0+10.0)/10.0 * F256 / 1024,
+       (18.0+10.0)/10.0 * F256 / 1024,
     };
     float v;
     if (x < 4) {
@@ -412,7 +413,7 @@ void adc2volts(const uint16_t *adc_codes, float *volts) {
       if (x == 0) v33 = v;
     } else {
       //this calculation is a bit more convoluted
-      float temp = adc_codes[x] * 2.56/1024;
+      float temp = adc_codes[x] * F256/1024;
       v = temp * (10.0+22.0)/10.0 - /*3.3*/ v33 * 22.0/10.0;
     }
     volts[x] = v;
