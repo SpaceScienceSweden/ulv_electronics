@@ -1710,7 +1710,9 @@ static uint8_t set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t
         &adc_ena[id],
         &adc_popcount[id],
         &adc_connected[id],
-        &adc_fake_regs[id][a]
+        &adc_fake_regs[id][a],
+        &adc_fake_regs[id][ID_MSB],
+        &adc_fake_regs[id][ID_LSB]
     );
 
     requires adc_connected_and_valid(id);
@@ -1722,16 +1724,15 @@ static uint8_t set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t
         adc_popcount[id] == popcount(d & 0x0F) &&
         adc_connected[id] == 1;
 
-    behavior is_ena:
-      assumes a == ADC_ENA;
-      assigns SPDR, PORTF, adc_ena[id], adc_popcount[id], adc_connected[id], adc_fake_regs[id][ADC_ENA], adc_fake_regs[id][ID_MSB], adc_fake_regs[id][ID_LSB];
-
-    behavior not_ena:
-      assumes a != ADC_ENA;
-      assigns SPDR, PORTF, adc_ena[id], adc_popcount[id], adc_connected[id], adc_fake_regs[id][a];
-
-    complete behaviors;
-    disjoint behaviors;
+    assigns
+      SPDR,
+      PORTF,
+      adc_ena[id],
+      adc_popcount[id],
+      adc_connected[id],
+      adc_fake_regs[id][a],
+      adc_fake_regs[id][ID_MSB],
+      adc_fake_regs[id][ID_LSB];
  */
 static uint8_t wreg_checked(uint8_t id, uint8_t a, uint8_t d) {
   uint8_t d2 = wreg_reserved_bits(a, d);
