@@ -668,7 +668,7 @@ static uint8_t wreg_reserved_bits(uint8_t a, uint8_t d) {
 }
 
 /*@ requires 0 <= id <= 2;
-    requires 0 <= a <= ADC_REG_MAX;
+    requires A_SYS_CFG <= a <= ADC_REG_MAX;
 
     requires \separated(
         &SPDR,
@@ -773,14 +773,14 @@ uint8_t rreg_not_ena(uint8_t id, uint8_t a) {
         &adc_connected[0] + (0..2),
         &adc_fake_regs[id][ADC_ENA]
     );
-    requires adc_disconnected_xor_valid(id);
-    ensures adc_disconnected_xor_valid(id);
+    requires adc_disconnected_or_valid(id);
+    ensures adc_disconnected_or_valid(id);
     ensures \result == adc_fake_regs[id][ADC_ENA];
 
-    assigns SPDR, PORTF, adc_ena[id], adc_popcount[id], adc_connected[id], adc_fake_regs[id][ADC_ENA];
+    assigns SPDR, PORTF, adc_ena[id], adc_popcount[id], adc_connected[id], adc_fake_regs[id][ID_MSB], adc_fake_regs[id][ID_LSB], adc_fake_regs[id][ADC_ENA];
  */
 uint8_t rreg_ena(uint8_t id) {
-    /* By adc_disconnected_xor_valid(),
+    /* By adc_disconnected_or_valid(),
        if adc_connected[id] == 0 then we will attempt
        communication with adc_popcount[id] == 0;
      */
@@ -794,6 +794,11 @@ uint8_t rreg_ena(uint8_t id) {
         uint8_t pc = popcount4(d);
         //@ assert pc_range: 0 <= pc <= 4 && pc == popcount(d);
 
+#ifdef FRAMA_C
+        adc_fake_regs[id][ID_MSB] = 4;
+        adc_fake_regs[id][ID_LSB] = 3;
+        adc_fake_regs[id][ADC_ENA] = d;
+#endif
         adc_ena[id]      = d;
         adc_popcount[id] = pc;
         adc_connected[id]= 1;
@@ -817,8 +822,20 @@ uint8_t rreg_ena(uint8_t id) {
         &adc_ena[0] + (0..2),
         &adc_connected[0] + (0..2),
         &adc_fake_regs[0][ADC_ENA],
+        &adc_fake_regs[0][ID_MSB],
+        &adc_fake_regs[0][ID_LSB],
+        &adc_fake_regs[0][CLK1],
+        &adc_fake_regs[0][CLK2],
         &adc_fake_regs[1][ADC_ENA],
-        &adc_fake_regs[2][ADC_ENA]
+        &adc_fake_regs[1][ID_MSB],
+        &adc_fake_regs[1][ID_LSB],
+        &adc_fake_regs[1][CLK1],
+        &adc_fake_regs[1][CLK2],
+        &adc_fake_regs[2][ADC_ENA],
+        &adc_fake_regs[2][ID_MSB],
+        &adc_fake_regs[2][ID_LSB],
+        &adc_fake_regs[2][CLK1],
+        &adc_fake_regs[2][CLK2]
     );
 
     requires adc_connected_and_valid_by_mask(fm_mask);
@@ -827,7 +844,18 @@ uint8_t rreg_ena(uint8_t id) {
     ensures 0 <= \result <= 1;
     ensures \result == 0 ==> valid_adc_configuration_part2(fm_mask);
 
-    assigns SPDR, PORTF, adc_ena[0..2], adc_popcount[0..2], adc_connected[0..2],
+    assigns
+        SPDR,
+        PORTF,
+        adc_ena[0..2],
+        adc_popcount[0..2],
+        adc_connected[0..2],
+        adc_fake_regs[0][ID_MSB],
+        adc_fake_regs[1][ID_MSB],
+        adc_fake_regs[2][ID_MSB],
+        adc_fake_regs[0][ID_LSB],
+        adc_fake_regs[1][ID_LSB],
+        adc_fake_regs[2][ID_LSB],
         adc_fake_regs[0][ADC_ENA],
         adc_fake_regs[1][ADC_ENA],
         adc_fake_regs[2][ADC_ENA],

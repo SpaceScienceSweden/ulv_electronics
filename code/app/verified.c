@@ -395,15 +395,16 @@ sample_t bootstrap_tach_mean(uint16_t num_frames, const sample_t *data_ptr_in) {
 
 void adc2volts(const uint16_t *adc_codes, float *volts) {
   float v33 = 0;
+#define F256 (256.f / 100.f)
   /*@ loop assigns x, v33, volts[0..4];
    */
   for (uint8_t x = 0; x < 5; x++) {
     //values taken from schematic
     static const float scale[4] = {
-       (18.0+18.0)/18.0 * 2.56 / 1024,
-      (150.0+10.0)/10.0 * 2.56 / 1024,
-      (150.0+10.0)/10.0 * 2.56 / 1024,
-       (18.0+10.0)/10.0 * 2.56 / 1024,
+       (18.0+18.0)/18.0 * F256 / 1024,
+      (150.0+10.0)/10.0 * F256 / 1024,
+      (150.0+10.0)/10.0 * F256 / 1024,
+       (18.0+10.0)/10.0 * F256 / 1024,
     };
     float v;
     if (x < 4) {
@@ -412,7 +413,7 @@ void adc2volts(const uint16_t *adc_codes, float *volts) {
       if (x == 0) v33 = v;
     } else {
       //this calculation is a bit more convoluted
-      float temp = adc_codes[x] * 2.56/1024;
+      float temp = adc_codes[x] * F256/1024;
       v = temp * (10.0+22.0)/10.0 - /*3.3*/ v33 * 22.0/10.0;
     }
     volts[x] = v;
@@ -1701,7 +1702,7 @@ static uint8_t set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t
 }
 
 /*@ requires 0 <= id <= 2;
-    requires 0 <= a <= ADC_REG_MAX;
+    requires A_SYS_CFG <= a <= ADC_REG_MAX;
 
     requires \separated(
         &SPDR,
@@ -1709,7 +1710,9 @@ static uint8_t set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t
         &adc_ena[id],
         &adc_popcount[id],
         &adc_connected[id],
-        &adc_fake_regs[id][a]
+        &adc_fake_regs[id][a],
+        &adc_fake_regs[id][ID_MSB],
+        &adc_fake_regs[id][ID_LSB]
     );
 
     requires adc_connected_and_valid(id);
@@ -1721,7 +1724,15 @@ static uint8_t set_block_motor_speed(uint8_t block_idx, uint8_t fm_mask, uint8_t
         adc_popcount[id] == popcount(d & 0x0F) &&
         adc_connected[id] == 1;
 
-    assigns SPDR, PORTF, adc_ena[id], adc_popcount[id], adc_connected[id], adc_fake_regs[id][a];
+    assigns
+      SPDR,
+      PORTF,
+      adc_ena[id],
+      adc_popcount[id],
+      adc_connected[id],
+      adc_fake_regs[id][a],
+      adc_fake_regs[id][ID_MSB],
+      adc_fake_regs[id][ID_LSB];
  */
 static uint8_t wreg_checked(uint8_t id, uint8_t a, uint8_t d) {
   uint8_t d2 = wreg_reserved_bits(a, d);

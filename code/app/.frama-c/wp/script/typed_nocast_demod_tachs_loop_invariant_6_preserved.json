@@ -1,10 +1,5 @@
-[ { "prover": "why3:Z3,4.8.7,counterexamples", "verdict": "failed" },
-  { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
-  { "prover": "script", "verdict": "valid" },
-  { "header": "Filter", "tactic": "Wp.filter", "params": { "anti": false },
+[ { "header": "Filter", "tactic": "Wp.filter", "params": { "anti": false },
     "select": null,
-    "children": { "Filter": [ { "prover": "why3:Z3,4.8.7,counterexamples",
-                                "verdict": "failed" },
-                              { "prover": "why3:Alt-Ergo,2.3.0",
-                                "verdict": "valid", "time": 0.4086,
-                                "steps": 365 } ] } } ]
+    "children": { "Filter": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                "verdict": "valid", "time": 0.5753,
+                                "steps": 335 } ] } } ]

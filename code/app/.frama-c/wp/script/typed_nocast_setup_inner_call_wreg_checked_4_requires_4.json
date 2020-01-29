@@ -1,10 +1,8 @@
-[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
-  { "prover": "script", "verdict": "valid" },
-  { "header": "Definition", "tactic": "Wp.unfold", "params": {},
+[ { "header": "Definition", "tactic": "Wp.unfold", "params": {},
     "select": { "select": "clause-goal",
-                "target": "(P_adc_connected_and_valid adc_fake_regs_28 adc_connected_38 adc_ena_38\n  adc_popcount_38 1)",
+                "target": "(P_adc_connected_and_valid adc_fake_regs_48 adc_connected_38 adc_ena_38\n  adc_popcount_38 1)",
                 "pattern": "P_adc_connected_and_valid$adc_fake_regs" },
     "children": { "Unfold 'P_adc_connected_and_valid'": [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                             "verdict": "valid",
-                                                            "time": 2.926,
-                                                            "steps": 3984 } ] } } ]
+                                                            "time": 4.0862,
+                                                            "steps": 3213 } ] } } ]

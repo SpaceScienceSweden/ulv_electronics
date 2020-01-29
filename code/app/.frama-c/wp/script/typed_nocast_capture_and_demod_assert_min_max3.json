@@ -1,5 +1,4 @@
-[ { "prover": "script", "verdict": "valid" },
-  { "header": "Instance", "tactic": "Wp.instance",
+[ { "header": "Instance", "tactic": "Wp.instance",
     "params": { "P1": { "select": "inside-goal", "occur": 0, "target": "i_9",
                         "pattern": "$i" }, "P2": null, "P3": null,
                 "P4": null, "P5": null, "P6": null, "P7": null, "P8": null,
@@ -7,10 +6,7 @@
     "select": { "select": "inside-step", "at": 6, "kind": "have", "occur": 0,
                 "target": "let a_0 =\n    (havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n      (shift_sint16 (shift_A2_sint16 minmax_2 0) 0) 8)[stat1_out_0->v_7] in\nforall i_0:int.\nlet a_1 = (shift_A2_sint16 minmax_2 i_0) in\nlet a_2 = (shift_sint16 a_1 0) in\nlet a_3 = (shift_sint16 a_1 1) in\n(0<=i_0) -> (i_0<=3)\n-> ((a_0[a_2]<=Mint_31[a_2]) /\\ (Mint_31[a_3]<=a_0[a_3]))",
                 "pattern": "\\F><=<=&0#0#03<=<=[][][][][=]shift_sint16" },
-    "children": { "Call 'capture_and_demod_part0'": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                        "verdict": "timeout",
-                                                        "time": 3. },
-                                                      { "header": "Array",
+    "children": { "Call 'capture_and_demod_part0'": [ { "header": "Array",
                                                         "tactic": "Wp.array",
                                                         "params": {},
                                                         "select": { "select": "inside-goal",
@@ -20,13 +16,10 @@
                                                         "children": { "Same Indices": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.6226,
-                                                                    "steps": 706 } ],
+                                                                    "time": 0.8665,
+                                                                    "steps": 680 } ],
                                                                     "Diff Indices": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Array",
+                                                                    [ { "header": "Array",
                                                                     "tactic": "Wp.array",
                                                                     "params": {},
                                                                     "select": 
@@ -38,10 +31,10 @@
                                                                     { "Same Indices": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.7096,
-                                                                    "steps": 747 } ],
+                                                                    "time": 1.031,
+                                                                    "steps": 721 } ],
                                                                     "Diff Indices": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 1.6119,
-                                                                    "steps": 1750 } ] } } ] } } ] } } ]
+                                                                    "time": 2.5406,
+                                                                    "steps": 2212 } ] } } ] } } ] } } ]

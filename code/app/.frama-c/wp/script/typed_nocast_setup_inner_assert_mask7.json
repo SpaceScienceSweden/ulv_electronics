@@ -1,67 +1,91 @@
-[ { "prover": "script", "verdict": "valid" },
-  { "header": "Definition", "tactic": "Wp.unfold", "params": {},
-    "select": { "select": "clause-step", "at": 60, "kind": "have",
-                "target": "(P_valid_adc_configuration_part2 adc_fake_regs_1 adc_connected_1 adc_ena_1\n  adc_popcount_1 (land 4 fm_mask_1))",
-                "pattern": "P_valid_adc_configuration_part2$adc_fake_regs" },
-    "children": { "Unfold 'P_valid_adc_configuration_part2'": [ { "header": "Filter",
-                                                                  "tactic": "Wp.filter",
-                                                                  "params": 
-                                                                    { "anti": false },
-                                                                  "select": null,
-                                                                  "children": 
-                                                                    { "Filter": 
+[ { "header": "Range", "tactic": "Wp.range",
+    "params": { "inf": 0, "sup": 7 },
+    "select": { "select": "inside-goal", "occur": 0, "target": "fm_mask_1",
+                "pattern": "$fm_mask" },
+    "children": { "Lower 0": [ { "prover": "qed", "verdict": "valid" } ],
+                  "Value 0": [ { "prover": "qed", "verdict": "valid" } ],
+                  "Value 1": [ { "prover": "qed", "verdict": "valid" } ],
+                  "Value 2": [ { "prover": "qed", "verdict": "valid" } ],
+                  "Value 3": [ { "prover": "qed", "verdict": "valid" } ],
+                  "Value 4": [ { "prover": "qed", "verdict": "valid" } ],
+                  "Value 5": [ { "header": "Definition",
+                                 "tactic": "Wp.unfold", "params": {},
+                                 "select": { "select": "clause-goal",
+                                             "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part2\n  adc_fake_regs_72[0\n    ->adc_fake_regs_72[0][1->v_101][0->v_100][15->x_0][1->v_89][0->v_88][13\n        ->x_1][1->v_77][0->v_76][14->x_2]][2\n    ->adc_fake_regs_72[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]] adc_connected_56[0->v_74][2->v_2]\n  adc_ena_56[0->v_72][2->v_0] adc_popcount_56[0->v_73][2->v_1] 5)",
+                                             "pattern": "P_valid_adc_configuration_part2[=]" },
+                                 "children": { "Unfold 'P_valid_adc_configuration_part2'": 
+                                                 [ { "header": "Definition",
+                                                     "tactic": "Wp.unfold",
+                                                     "params": {},
+                                                     "select": { "select": "clause-goal",
+                                                                 "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part1\n  adc_fake_regs_72[0\n    ->adc_fake_regs_72[0][1->v_101][0->v_100][15->x_0][1->v_89][0->v_88][13\n        ->x_1][1->v_77][0->v_76][14->x_2]][2\n    ->adc_fake_regs_72[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]] adc_connected_56[0->v_74][2->v_2]\n  adc_ena_56[0->v_72][2->v_0] adc_popcount_56[0->v_73][2->v_1] 5)",
+                                                                 "pattern": "P_valid_adc_configuration_part1[=]" },
+                                                     "children": { "Unfold 'P_valid_adc_configuration_part1'": 
                                                                     [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
-                                                                    { "select": "clause-goal",
-                                                                    "target": "(P_valid_adc_configuration_part2 adc_fake_regs_1 adc_connected_1 adc_ena_1\n  adc_popcount_1 (land 7 fm_mask_1))",
-                                                                    "pattern": "P_valid_adc_configuration_part2$adc_fake_regs" },
+                                                                    { "select": "clause-step",
+                                                                    "at": 38,
+                                                                    "kind": "have",
+                                                                    "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part2\n  adc_fake_regs_72[0\n    ->adc_fake_regs_72[0][1->v_101][0->v_100][15->x_0][1->v_89][0->v_88][13\n        ->x_1][1->v_77][0->v_76][14->x_2]][2\n    ->adc_fake_regs_72[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]] adc_connected_56[0->v_74][2->v_2]\n  adc_ena_56[0->v_72][2->v_0] adc_popcount_56[0->v_73][2->v_1] 4)",
+                                                                    "pattern": "P_valid_adc_configuration_part2[=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part2'": 
                                                                     [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
-                                                                    { "select": "inside-goal",
-                                                                    "occur": 0,
-                                                                    "target": "(P_valid_adc_configuration_part1 adc_fake_regs_1 adc_connected_1 adc_ena_1\n  adc_popcount_1 (land 7 fm_mask_1))",
-                                                                    "pattern": "P_valid_adc_configuration_part1$adc_fake_regs" },
+                                                                    { "select": "clause-step",
+                                                                    "at": 38,
+                                                                    "kind": "have",
+                                                                    "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part1\n  adc_fake_regs_72[0\n    ->adc_fake_regs_72[0][1->v_101][0->v_100][15->x_0][1->v_89][0->v_88][13\n        ->x_1][1->v_77][0->v_76][14->x_2]][2\n    ->adc_fake_regs_72[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]] adc_connected_56[0->v_74][2->v_2]\n  adc_ena_56[0->v_72][2->v_0] adc_popcount_56[0->v_73][2->v_1] 4)",
+                                                                    "pattern": "P_valid_adc_configuration_part1[=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part1'": 
                                                                     [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
-                                                                    { "select": "clause-step",
-                                                                    "at": 59,
+                                                                    { "select": "inside-step",
+                                                                    "at": 38,
                                                                     "kind": "have",
-                                                                    "target": "(P_valid_adc_configuration_part1 adc_fake_regs_1 adc_connected_1 adc_ena_1\n  adc_popcount_1 (land 4 fm_mask_1))",
-                                                                    "pattern": "P_valid_adc_configuration_part1$adc_fake_regs" },
+                                                                    "occur": 0,
+                                                                    "target": "(L_wreg_reserved_bits 15 15)",
+                                                                    "pattern": "L_wreg_reserved_bits1515" },
                                                                     "children": 
-                                                                    { "Unfold 'P_valid_adc_configuration_part1'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Split",
-                                                                    "tactic": "Wp.split",
+                                                                    { "Unfold 'L_wreg_reserved_bits'": 
+                                                                    [ { "header": "Definition",
+                                                                    "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
-                                                                    { "select": "clause-goal",
-                                                                    "target": "(forall i_0:int.\n ((land 7 fm_mask_1 (lsl 1 i_0))!=0) -> (0<=i_0) -> (i_0<=2)\n -> ((adc_connected_1[i_0]=1) /\\ (adc_ena_1[i_0]=15)\n     /\\ (adc_popcount_1[i_0]=4) /\\ (adc_fake_regs_1[i_0][15]=15)))\n/\\ (forall i_0,i_1:int.\n    let m_0 = adc_fake_regs_1[i_0] in\n    let m_1 = adc_fake_regs_1[i_1] in\n    ((land 7 fm_mask_1 (lsl 1 i_0))!=0)\n    -> ((land 7 fm_mask_1 (lsl 1 i_1))!=0) -> (0<=i_0) -> (i_0<i_1)\n    -> (i_1<=2) -> ((m_0[13]=m_1[13]) /\\ (m_0[14]=m_1[14])))",
-                                                                    "pattern": "&\\F\\F>\\F~<=<=&>land00#0#02====~~" },
+                                                                    { "select": "clause-step",
+                                                                    "at": 34,
+                                                                    "kind": "have",
+                                                                    "target": "let x_0 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_1 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_adc_connected_and_valid\n  adc_fake_regs_72[0\n    ->adc_fake_regs_72[0][1->v_101][0->v_100][15->15][1->v_89][0->v_88][13\n        ->x_0][1->v_77][0->v_76][14->x_1]][2\n    ->adc_fake_regs_72[2][1->v_29][0->v_28][15->15][1->v_17][0->v_16][13\n        ->x_0][1->3][0->4][14->x_1]] adc_connected_56[0->v_74][2->1]\n  adc_ena_56[0->v_72][2->15] adc_popcount_56[0->v_73][2->4] 2)",
+                                                                    "pattern": "P_adc_connected_and_valid[=][=][=]" },
                                                                     "children": 
-                                                                    { "Goal 1/2": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Range",
+                                                                    { "Unfold 'P_adc_connected_and_valid'": 
+                                                                    [ { "header": "Definition",
+                                                                    "tactic": "Wp.unfold",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 31,
+                                                                    "kind": "have",
+                                                                    "target": "let x_0 = (L_wreg_reserved_bits 13 clk1_1) in\n(P_adc_connected_and_valid\n  adc_fake_regs_72[0\n    ->adc_fake_regs_72[0][1->v_101][0->v_100][15->15][1->v_89][0->v_88][13\n        ->x_0][1->v_77][0->v_76][14->(L_wreg_reserved_bits 14 clk2_1)]][2\n    ->adc_fake_regs_72[2][1->v_29][0->v_28][15->15][1->v_17][0->v_16][13\n        ->x_0]] adc_connected_56[0->v_74][2->v_14]\n  adc_ena_56[0->v_72][2->v_12] adc_popcount_56[0->v_73][2->v_13] 2)",
+                                                                    "pattern": "P_adc_connected_and_valid[=][=][=]" },
+                                                                    "children": 
+                                                                    { "Unfold 'P_adc_connected_and_valid'": 
+                                                                    [ { "header": "Range",
                                                                     "tactic": "Wp.range",
                                                                     "params": 
                                                                     { "inf": 0,
                                                                     "sup": 2 },
                                                                     "select": 
-                                                                    { "select": "inside-goal",
+                                                                    { "select": "inside-step",
+                                                                    "at": 0,
+                                                                    "kind": "have",
                                                                     "occur": 0,
                                                                     "target": "i_0",
                                                                     "pattern": "$i" },
@@ -72,24 +96,42 @@
                                                                     "Value 0": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.9293,
-                                                                    "steps": 1023 } ],
+                                                                    "time": 0.3101,
+                                                                    "steps": 312 } ],
                                                                     "Value 1": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Range",
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Value 2": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                    "Upper 2": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ],
+                  "Value 6": [ { "header": "Definition",
+                                 "tactic": "Wp.unfold", "params": {},
+                                 "select": { "select": "clause-goal",
+                                             "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part2\n  adc_fake_regs_46[1\n    ->adc_fake_regs_46[1][1->v_65][0->v_64][15->x_0][1->v_53][0->v_52][13\n        ->x_1][1->v_41][0->v_40][14->x_2]][2\n    ->adc_fake_regs_46[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]] adc_connected_36[1->v_38][2->v_2]\n  adc_ena_36[1->v_36][2->v_0] adc_popcount_36[1->v_37][2->v_1] 6)",
+                                             "pattern": "P_valid_adc_configuration_part2[=]" },
+                                 "children": { "Unfold 'P_valid_adc_configuration_part2'": 
+                                                 [ { "header": "Definition",
+                                                     "tactic": "Wp.unfold",
+                                                     "params": {},
+                                                     "select": { "select": "clause-goal",
+                                                                 "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part1\n  adc_fake_regs_46[1\n    ->adc_fake_regs_46[1][1->v_65][0->v_64][15->x_0][1->v_53][0->v_52][13\n        ->x_1][1->v_41][0->v_40][14->x_2]][2\n    ->adc_fake_regs_46[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]] adc_connected_36[1->v_38][2->v_2]\n  adc_ena_36[1->v_36][2->v_0] adc_popcount_36[1->v_37][2->v_1] 6)",
+                                                                 "pattern": "P_valid_adc_configuration_part1[=]" },
+                                                     "children": { "Unfold 'P_valid_adc_configuration_part1'": 
+                                                                    [ { "header": "Range",
                                                                     "tactic": "Wp.range",
                                                                     "params": 
                                                                     { "inf": 0,
-                                                                    "sup": 7 },
+                                                                    "sup": 2 },
                                                                     "select": 
                                                                     { "select": "inside-step",
-                                                                    "at": 0,
+                                                                    "at": 1,
                                                                     "kind": "have",
                                                                     "occur": 0,
-                                                                    "target": "fm_mask_1",
-                                                                    "pattern": "$fm_mask" },
+                                                                    "target": "i_0",
+                                                                    "pattern": "$i" },
                                                                     "children": 
                                                                     { "Lower 0": 
                                                                     [ { "prover": "qed",
@@ -98,98 +140,87 @@
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ],
                                                                     "Value 1": 
-                                                                    [ { "prover": "qed",
-                                                                    "verdict": "valid" } ],
-                                                                    "Value 2": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Split",
-                                                                    "tactic": "Wp.split",
-                                                                    "params": {},
-                                                                    "select": 
-                                                                    { "select": "clause-goal",
-                                                                    "target": "(v_24=15) /\\ (v_25=4) /\\ (v_26=1) /\\ ((L_wreg_reserved_bits 15 15)=15)",
-                                                                    "pattern": "&====$v15$v4$v1L_wreg_reserved_bits" },
-                                                                    "children": 
-                                                                    { "Goal 1/4": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "valid",
-                                                                    "time": 0.0589,
-                                                                    "steps": 46 } ],
-                                                                    "Goal 2/4": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
                                                                     { "select": "clause-step",
-                                                                    "at": 21,
+                                                                    "at": 35,
                                                                     "kind": "have",
-                                                                    "target": "(P_valid_adc_configuration_part2\n  adc_fake_regs_26[1\n    ->adc_fake_regs_26[1][15->(L_wreg_reserved_bits 15 15)][13\n        ->(L_wreg_reserved_bits 13 clk1_1)][14\n        ->(L_wreg_reserved_bits 14 clk2_1)]] adc_connected_36[1->v_26]\n  adc_ena_36[1->v_24] adc_popcount_36[1->v_25] 2)",
+                                                                    "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part2\n  adc_fake_regs_46[1\n    ->adc_fake_regs_46[1][1->v_65][0->v_64][15->x_0][1->v_53][0->v_52][13\n        ->x_1][1->v_41][0->v_40][14->x_2]][2\n    ->adc_fake_regs_46[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]] adc_connected_36[1->v_38][2->v_2]\n  adc_ena_36[1->v_36][2->v_0] adc_popcount_36[1->v_37][2->v_1] 4)",
                                                                     "pattern": "P_valid_adc_configuration_part2[=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part2'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Definition",
+                                                                    [ { "header": "Definition",
                                                                     "tactic": "Wp.unfold",
                                                                     "params": {},
                                                                     "select": 
                                                                     { "select": "clause-step",
-                                                                    "at": 21,
+                                                                    "at": 35,
                                                                     "kind": "have",
-                                                                    "target": "(P_valid_adc_configuration_part1\n  adc_fake_regs_26[1\n    ->adc_fake_regs_26[1][15->(L_wreg_reserved_bits 15 15)][13\n        ->(L_wreg_reserved_bits 13 clk1_1)][14\n        ->(L_wreg_reserved_bits 14 clk2_1)]] adc_connected_36[1->v_26]\n  adc_ena_36[1->v_24] adc_popcount_36[1->v_25] 2)",
+                                                                    "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part1\n  adc_fake_regs_46[1\n    ->adc_fake_regs_46[1][1->v_65][0->v_64][15->x_0][1->v_53][0->v_52][13\n        ->x_1][1->v_41][0->v_40][14->x_2]][2\n    ->adc_fake_regs_46[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]] adc_connected_36[1->v_38][2->v_2]\n  adc_ena_36[1->v_36][2->v_0] adc_popcount_36[1->v_37][2->v_1] 4)",
+                                                                    "pattern": "P_valid_adc_configuration_part1[=]" },
+                                                                    "children": 
+                                                                    { "Unfold 'P_valid_adc_configuration_part1'": 
+                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                                    "verdict": "valid",
+                                                                    "time": 0.4675,
+                                                                    "steps": 379 } ] } } ] } } ],
+                                                                    "Value 2": 
+                                                                    [ { "header": "Definition",
+                                                                    "tactic": "Wp.unfold",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 35,
+                                                                    "kind": "have",
+                                                                    "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part2\n  adc_fake_regs_46[1\n    ->adc_fake_regs_46[1][1->v_65][0->v_64][15->x_0][1->v_53][0->v_52][13\n        ->x_1][1->v_41][0->v_40][14->x_2]][2\n    ->adc_fake_regs_46[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]] adc_connected_36[1->v_38][2->v_2]\n  adc_ena_36[1->v_36][2->v_0] adc_popcount_36[1->v_37][2->v_1] 4)",
+                                                                    "pattern": "P_valid_adc_configuration_part2[=]" },
+                                                                    "children": 
+                                                                    { "Unfold 'P_valid_adc_configuration_part2'": 
+                                                                    [ { "header": "Definition",
+                                                                    "tactic": "Wp.unfold",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 35,
+                                                                    "kind": "have",
+                                                                    "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part1\n  adc_fake_regs_46[1\n    ->adc_fake_regs_46[1][1->v_65][0->v_64][15->x_0][1->v_53][0->v_52][13\n        ->x_1][1->v_41][0->v_40][14->x_2]][2\n    ->adc_fake_regs_46[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]] adc_connected_36[1->v_38][2->v_2]\n  adc_ena_36[1->v_36][2->v_0] adc_popcount_36[1->v_37][2->v_1] 4)",
                                                                     "pattern": "P_valid_adc_configuration_part1[=]" },
                                                                     "children": 
                                                                     { "Unfold 'P_valid_adc_configuration_part1'": 
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ] } } ] } } ],
-                                                                    "Goal 3/4": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "valid",
-                                                                    "time": 0.0442,
-                                                                    "steps": 46 } ],
-                                                                    "Goal 4/4": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "valid",
-                                                                    "time": 0.0403,
-                                                                    "steps": 46 } ] } } ],
-                                                                    "Value 3": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "valid",
-                                                                    "time": 0.4824,
-                                                                    "steps": 454 } ],
-                                                                    "Value 4": 
-                                                                    [ { "prover": "qed",
-                                                                    "verdict": "valid" } ],
-                                                                    "Value 5": 
-                                                                    [ { "prover": "qed",
-                                                                    "verdict": "valid" } ],
-                                                                    "Value 6": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "valid",
-                                                                    "time": 0.1517,
-                                                                    "steps": 183 } ],
-                                                                    "Value 7": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "valid",
-                                                                    "time": 0.293,
-                                                                    "steps": 250 } ],
-                                                                    "Upper 7": 
-                                                                    [ { "prover": "qed",
-                                                                    "verdict": "valid" } ] } } ],
-                                                                    "Value 2": 
-                                                                    [ { "prover": "qed",
-                                                                    "verdict": "valid" } ],
                                                                     "Upper 2": 
                                                                     [ { "prover": "qed",
-                                                                    "verdict": "valid" } ] } } ],
-                                                                    "Goal 2/2": 
+                                                                    "verdict": "valid" } ] } } ] } } ] } } ],
+                  "Value 7": [ { "header": "Definition",
+                                 "tactic": "Wp.unfold", "params": {},
+                                 "select": { "select": "clause-goal",
+                                             "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part2\n  adc_fake_regs_72[0\n    ->adc_fake_regs_72[0][1->v_101][0->v_100][15->x_0][1->v_89][0->v_88][13\n        ->x_1][1->v_77][0->v_76][14->x_2]][1\n    ->adc_fake_regs_72[1][1->v_65][0->v_64][15->x_0][1->v_53][0->v_52][13\n        ->x_1][1->v_41][0->v_40][14->x_2]][2\n    ->adc_fake_regs_72[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]]\n  adc_connected_56[0->v_74][1->v_38][2->v_2]\n  adc_ena_56[0->v_72][1->v_36][2->v_0]\n  adc_popcount_56[0->v_73][1->v_37][2->v_1] 7)",
+                                             "pattern": "P_valid_adc_configuration_part2[=]" },
+                                 "children": { "Unfold 'P_valid_adc_configuration_part2'": 
+                                                 [ { "header": "Definition",
+                                                     "tactic": "Wp.unfold",
+                                                     "params": {},
+                                                     "select": { "select": "inside-goal",
+                                                                 "occur": 0,
+                                                                 "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part1\n  adc_fake_regs_72[0\n    ->adc_fake_regs_72[0][1->v_101][0->v_100][15->x_0][1->v_89][0->v_88][13\n        ->x_1][1->v_77][0->v_76][14->x_2]][1\n    ->adc_fake_regs_72[1][1->v_65][0->v_64][15->x_0][1->v_53][0->v_52][13\n        ->x_1][1->v_41][0->v_40][14->x_2]][2\n    ->adc_fake_regs_72[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]]\n  adc_connected_56[0->v_74][1->v_38][2->v_2]\n  adc_ena_56[0->v_72][1->v_36][2->v_0]\n  adc_popcount_56[0->v_73][1->v_37][2->v_1] 7)",
+                                                                 "pattern": "P_valid_adc_configuration_part1[=]" },
+                                                     "children": { "Unfold 'P_valid_adc_configuration_part1'": 
+                                                                    [ { "header": "Definition",
+                                                                    "tactic": "Wp.unfold",
+                                                                    "params": {},
+                                                                    "select": 
+                                                                    { "select": "clause-step",
+                                                                    "at": 45,
+                                                                    "kind": "have",
+                                                                    "target": "let x_0 = (L_wreg_reserved_bits 15 15) in\nlet x_1 = (L_wreg_reserved_bits 13 clk1_1) in\nlet x_2 = (L_wreg_reserved_bits 14 clk2_1) in\n(P_valid_adc_configuration_part2\n  adc_fake_regs_72[0\n    ->adc_fake_regs_72[0][1->v_101][0->v_100][15->x_0][1->v_89][0->v_88][13\n        ->x_1][1->v_77][0->v_76][14->x_2]][1\n    ->adc_fake_regs_72[1][1->v_65][0->v_64][15->x_0][1->v_53][0->v_52][13\n        ->x_1][1->v_41][0->v_40][14->x_2]][2\n    ->adc_fake_regs_72[2][1->v_29][0->v_28][15->x_0][1->v_17][0->v_16][13\n        ->x_1][1->v_5][0->v_4][14->x_2]]\n  adc_connected_56[0->v_74][1->v_38][2->v_2]\n  adc_ena_56[0->v_72][1->v_36][2->v_0]\n  adc_popcount_56[0->v_73][1->v_37][2->v_1] 4)",
+                                                                    "pattern": "P_valid_adc_configuration_part2[=]" },
+                                                                    "children": 
+                                                                    { "Unfold 'P_valid_adc_configuration_part2'": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.6158,
-                                                                    "steps": 1368 } ] } } ] } } ] } } ] } } ] } } ] } } ]
+                                                                    "time": 2.0868,
+                                                                    "steps": 664 } ] } } ] } } ] } } ],
+                  "Upper 7": [ { "prover": "qed", "verdict": "valid" } ] } } ]

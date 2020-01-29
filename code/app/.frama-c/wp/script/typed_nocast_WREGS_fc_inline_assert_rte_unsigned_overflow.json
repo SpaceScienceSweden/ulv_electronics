@@ -1,6 +1,4 @@
-[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
-  { "prover": "script", "verdict": "valid" },
-  { "header": "Bit Range", "tactic": "Wp.bitrange",
+[ { "header": "Bit Range", "tactic": "Wp.bitrange",
     "params": { "positive-land": true, "positive-lor": true },
     "select": { "select": "clause-goal",
                 "target": "(lor 24576 (to_uint16 (lsl a_0 8)) (to_uint16 (n_0-1)))<=65535",

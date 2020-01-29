@@ -1,7 +1,4 @@
-[ { "prover": "why3:Z3,4.8.7,counterexamples", "verdict": "failed" },
-  { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
-  { "prover": "script", "verdict": "valid" },
-  { "header": "Instance", "tactic": "Wp.instance",
+[ { "header": "Instance", "tactic": "Wp.instance",
     "params": { "P1": { "select": "inside-step", "at": 1, "kind": "have",
                         "occur": 0, "target": "i_2", "pattern": "$i" },
                 "P2": null, "P3": null, "P4": null, "P5": null, "P6": null,
@@ -10,10 +7,7 @@
                 "occur": 1,
                 "target": "let x_0 = ((rounding_0+(5*psize_0)) div 12) in\nlet x_1 = (32767*x_0) in\nlet x_2 = ((rounding_0+(4*psize_0)) div 12) in\nlet x_3 = ((rounding_0+(6*psize_0)) div 12) in\nlet x_4 = (32767*x_3) in\nlet x_5 = ((rounding_0+(7*psize_0)) div 12) in\nlet x_6 = (32767*x_5) in\nlet x_7 = ((rounding_0+(8*psize_0)) div 12) in\nlet x_8 = (32768*x_0) in\nlet x_9 = (32768*x_3) in\nlet x_10 = (32768*x_5) in\nforall i_0:int.\nlet x_11 = Q1_9[i_0] in\nlet x_12 = Q2_9[i_0] in\nlet x_13 = Q3_9[i_0] in\nlet x_14 = Q4_7[i_0] in\n(0<=i_0) -> (i_0<=2)\n-> (((x_1+x_11)<=(2147483647+(32767*x_2))) /\\ ((x_4+x_12)<=(2147483647+x_1))\n    /\\ ((x_6+x_13)<=(2147483647+x_4))\n    /\\ (((32767*x_7)+x_14)<=(2147483647+x_6))\n    /\\ (x_8<=(2147483648+(32768*x_2)+x_11)) /\\ (x_9<=(2147483648+x_8+x_12))\n    /\\ (x_10<=(2147483648+x_9+x_13))\n    /\\ ((32768*x_7)<=(2147483648+x_10+x_14)))",
                 "pattern": "\\F><=<=&0#0#02<=<=<=<=<=<=<=<=++" },
-    "children": { "Call 'accumulate_quadrants'": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                     "verdict": "timeout",
-                                                     "time": 3. },
-                                                   { "header": "Instance",
+    "children": { "Call 'accumulate_quadrants'": [ { "header": "Instance",
                                                      "tactic": "Wp.instance",
                                                      "params": { "P1": 
                                                                    { "select": "inside-step",
@@ -38,10 +32,7 @@
                                                                  "target": "let x_0 = ((rounding_0+(4*psize_0)) div 12) in\nlet x_1 = ((rounding_0+(5*psize_0)) div 12) in\nlet x_2 = (32767*x_1) in\nlet x_3 = ((rounding_0+(6*psize_0)) div 12) in\nlet x_4 = (32767*x_3) in\nlet x_5 = ((rounding_0+(7*psize_0)) div 12) in\nlet x_6 = (32767*x_5) in\nlet x_7 = ((rounding_0+(8*psize_0)) div 12) in\nlet x_8 = (32768*x_1) in\nlet x_9 = (32768*x_3) in\nlet x_10 = (32768*x_5) in\nforall i_0:int.\nlet x_11 = Q1_5[i_0] in\nlet x_12 = Q1_9[i_0] in\nlet x_13 = Q2_5[i_0] in\nlet x_14 = Q2_9[i_0] in\nlet x_15 = Q3_5[i_0] in\nlet x_16 = Q3_9[i_0] in\nlet x_17 = Q4_5[i_0] in\nlet x_18 = Q4_7[i_0] in\n(0<=i_0) -> (i_0<=2)\n-> ((((32767*x_0)+x_11)<=(x_2+x_12)) /\\ ((x_2+x_13)<=(x_4+x_14))\n    /\\ ((x_4+x_15)<=(x_6+x_16)) /\\ ((x_6+x_17)<=((32767*x_7)+x_18))\n    /\\ (((32768*x_0)+x_12)<=(x_8+x_11)) /\\ ((x_8+x_14)<=(x_9+x_13))\n    /\\ ((x_9+x_16)<=(x_10+x_15)) /\\ ((x_10+x_18)<=((32768*x_7)+x_17)))",
                                                                  "pattern": "\\F><=<=&0#0#02<=<=<=<=<=<=<=<=++" },
                                                      "children": { "Call 'accumulate_quadrants'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Instance",
+                                                                    [ { "header": "Instance",
                                                                     "tactic": "Wp.instance",
                                                                     "params": 
                                                                     { "P1": 
@@ -69,10 +60,7 @@
                                                                     "pattern": "\\F><=<=&0#0#02<=<=<=<=<=<=<=<=.98304" },
                                                                     "children": 
                                                                     { "Instance": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Instance",
+                                                                    [ { "header": "Instance",
                                                                     "tactic": "Wp.instance",
                                                                     "params": 
                                                                     { "P1": 
@@ -102,5 +90,5 @@
                                                                     { "Call 'accumulate_quadrants'": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.8224,
-                                                                    "steps": 411 } ] } } ] } } ] } } ] } } ]
+                                                                    "time": 0.9564,
+                                                                    "steps": 381 } ] } } ] } } ] } } ] } } ]

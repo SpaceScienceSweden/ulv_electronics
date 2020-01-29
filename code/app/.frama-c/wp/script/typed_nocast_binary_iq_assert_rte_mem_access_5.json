@@ -1,7 +1,5 @@
-[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
-  { "prover": "script", "verdict": "valid" },
-  { "header": "Filter", "tactic": "Wp.filter", "params": { "anti": false },
+[ { "header": "Filter", "tactic": "Wp.filter", "params": { "anti": false },
     "select": null,
     "children": { "Filter": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                "verdict": "valid", "time": 0.1364,
-                                "steps": 213 } ] } } ]
+                                "verdict": "valid", "time": 3.2236,
+                                "steps": 220 } ] } } ]

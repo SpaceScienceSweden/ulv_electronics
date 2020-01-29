@@ -1,6 +1,4 @@
-[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
-  { "prover": "script", "verdict": "valid" },
-  { "header": "Range", "tactic": "Wp.range",
+[ { "header": "Range", "tactic": "Wp.range",
     "params": { "inf": 0, "sup": 7 },
     "select": { "select": "inside-goal", "occur": 0, "target": "fm_mask_0",
                 "pattern": "$fm_mask" },

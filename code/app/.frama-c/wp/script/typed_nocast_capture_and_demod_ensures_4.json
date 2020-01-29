@@ -1,6 +1,4 @@
-[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 3. },
-  { "prover": "script", "verdict": "valid" },
-  { "header": "Instance", "tactic": "Wp.instance",
+[ { "header": "Instance", "tactic": "Wp.instance",
     "params": { "P1": { "select": "inside-goal", "occur": 0, "target": "i_0",
                         "pattern": "$i" }, "P2": null, "P3": null,
                 "P4": null, "P5": null, "P6": null, "P7": null, "P8": null,
@@ -8,9 +6,7 @@
     "select": { "select": "clause-step", "at": 13, "kind": "have",
                 "target": "let a_0 =\n    (havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n      (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7] in\nlet a_1 =\n    a_0[tach_skip_0->v_3][tach_ratio_0->v_2]\n      [(shiftfield_F7_num_tachs entry_0)->v_6] in\nforall i_0:int.\nlet a_2 = (shift_A2_sint16 minmax_1 i_0) in\nlet a_3 = (shift_sint16 a_2 0) in\nlet a_4 = (shift_sint16 a_2 1) in\n(0<=i_0) -> (i_0<=3) -> ((a_1[a_3]=a_0[a_3]) /\\ (a_1[a_4]=a_0[a_4]))",
                 "pattern": "\\F><=<=&0#0#03==[][][][][=]shift_sint16" },
-    "children": { "Instance": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                  "verdict": "timeout", "time": 3. },
-                                { "header": "Instance",
+    "children": { "Instance": [ { "header": "Instance",
                                   "tactic": "Wp.instance",
                                   "params": { "P1": { "select": "inside-goal",
                                                       "occur": 0,
@@ -25,10 +21,7 @@
                                               "at": 26, "kind": "have",
                                               "target": "let a_0 =\n    (havoc Mint_undef_6 Mint_31[tach_mean_0->v_8]\n      (shift_sint16 (shift_A2_sint16 minmax_1 0) 0) 8)[stat1_out_0->v_7]\n      [tach_skip_0->v_3][tach_ratio_0->v_2][(shiftfield_F7_num_tachs entry_0)\n      ->v_6] in\nlet a_1 = a_0[discard_0->edge_pos_0[0]][rounding_inout_0->v_0] in\nforall i_0:int.\nlet a_2 = (shift_A2_sint16 minmax_1 i_0) in\nlet a_3 = (shift_sint16 a_2 0) in\nlet a_4 = (shift_sint16 a_2 1) in\n(0<=i_0) -> (i_0<=3) -> ((a_1[a_3]=a_0[a_3]) /\\ (a_1[a_4]=a_0[a_4]))",
                                               "pattern": "\\F><=<=&0#0#03==[][][][][=]shift_sint16" },
-                                  "children": { "Instance": [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                "verdict": "timeout",
-                                                                "time": 3. },
-                                                              { "header": "Instance",
+                                  "children": { "Instance": [ { "header": "Instance",
                                                                 "tactic": "Wp.instance",
                                                                 "params": 
                                                                   { "P1": 
@@ -54,10 +47,7 @@
                                                                     "pattern": "\\F><=<=&0#0#03<=<=[][][][][=]shift_sint16" },
                                                                 "children": 
                                                                   { "Call 'capture_and_demod_part0'": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Array",
+                                                                    [ { "header": "Array",
                                                                     "tactic": "Wp.array",
                                                                     "params": {},
                                                                     "select": 
@@ -70,10 +60,7 @@
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ],
                                                                     "Diff Indices": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Array",
+                                                                    [ { "header": "Array",
                                                                     "tactic": "Wp.array",
                                                                     "params": {},
                                                                     "select": 
@@ -101,10 +88,7 @@
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ],
                                                                     "Diff Indices": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Array",
+                                                                    [ { "header": "Array",
                                                                     "tactic": "Wp.array",
                                                                     "params": {},
                                                                     "select": 
@@ -119,10 +103,7 @@
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ],
                                                                     "Diff Indices": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Array",
+                                                                    [ { "header": "Array",
                                                                     "tactic": "Wp.array",
                                                                     "params": {},
                                                                     "select": 
@@ -137,10 +118,7 @@
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ],
                                                                     "Diff Indices": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Array",
+                                                                    [ { "header": "Array",
                                                                     "tactic": "Wp.array",
                                                                     "params": {},
                                                                     "select": 
@@ -155,10 +133,7 @@
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ],
                                                                     "Diff Indices": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Array",
+                                                                    [ { "header": "Array",
                                                                     "tactic": "Wp.array",
                                                                     "params": {},
                                                                     "select": 
@@ -170,10 +145,7 @@
                                                                     "pattern": "[][=]shift_sint16[=]shiftfield_F7_num_tachs" },
                                                                     "children": 
                                                                     { "Same Indices": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Array",
+                                                                    [ { "header": "Array",
                                                                     "tactic": "Wp.array",
                                                                     "params": {},
                                                                     "select": 
@@ -187,8 +159,8 @@
                                                                     { "Same Indices": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 2.5801,
-                                                                    "steps": 1540 } ],
+                                                                    "time": 3.4277,
+                                                                    "steps": 1701 } ],
                                                                     "Diff Indices": 
                                                                     [ { "header": "Split",
                                                                     "tactic": "Wp.split",
@@ -203,8 +175,8 @@
                                                                     { "Then": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 1.0086,
-                                                                    "steps": 869 } ],
+                                                                    "time": 1.5483,
+                                                                    "steps": 843 } ],
                                                                     "Else": 
                                                                     [ { "header": "Split",
                                                                     "tactic": "Wp.split",
@@ -217,13 +189,10 @@
                                                                     { "Goal 1/2": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 2.9861,
-                                                                    "steps": 1108 } ],
+                                                                    "time": 4.3182,
+                                                                    "steps": 1080 } ],
                                                                     "Goal 2/2": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Havoc",
+                                                                    [ { "header": "Havoc",
                                                                     "tactic": "Wp.havoc",
                                                                     "params": {},
                                                                     "select": 
@@ -238,10 +207,7 @@
                                                                     [ { "prover": "qed",
                                                                     "verdict": "valid" } ],
                                                                     "Assigned": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Array",
+                                                                    [ { "header": "Array",
                                                                     "tactic": "Wp.array",
                                                                     "params": {},
                                                                     "select": 
@@ -256,13 +222,10 @@
                                                                     "Diff Indices": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 0.1891,
-                                                                    "steps": 279 } ] } } ] } } ] } } ] } } ] } } ],
+                                                                    "time": 0.2289,
+                                                                    "steps": 249 } ] } } ] } } ] } } ] } } ] } } ],
                                                                     "Diff Indices": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Split",
+                                                                    [ { "header": "Split",
                                                                     "tactic": "Wp.split",
                                                                     "params": {},
                                                                     "select": 
@@ -271,10 +234,7 @@
                                                                     "pattern": "&<=<=[][][][]$Mintshift_sint16$Mint" },
                                                                     "children": 
                                                                     { "Goal 1/2": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Havoc",
+                                                                    [ { "header": "Havoc",
                                                                     "tactic": "Wp.havoc",
                                                                     "params": {},
                                                                     "select": 
@@ -302,18 +262,15 @@
                                                                     { "Then": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 2.9041,
-                                                                    "steps": 2053 } ],
+                                                                    "time": 4.4946,
+                                                                    "steps": 2093 } ],
                                                                     "Else": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 2.249,
-                                                                    "steps": 1123 } ] } } ] } } ],
+                                                                    "time": 3.4071,
+                                                                    "steps": 1100 } ] } } ] } } ],
                                                                     "Goal 2/2": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Split",
+                                                                    [ { "header": "Split",
                                                                     "tactic": "Wp.split",
                                                                     "params": {},
                                                                     "select": 
@@ -324,10 +281,7 @@
                                                                     "pattern": "<0$v" },
                                                                     "children": 
                                                                     { "Then": 
-                                                                    [ { "prover": "why3:Alt-Ergo,2.3.0",
-                                                                    "verdict": "timeout",
-                                                                    "time": 3. },
-                                                                    { "header": "Array",
+                                                                    [ { "header": "Array",
                                                                     "tactic": "Wp.array",
                                                                     "params": {},
                                                                     "select": 
@@ -344,10 +298,10 @@
                                                                     "Diff Indices": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 2.7631,
-                                                                    "steps": 2007 } ] } } ],
+                                                                    "time": 3.4522,
+                                                                    "steps": 1942 } ] } } ],
                                                                     "Else": 
                                                                     [ { "prover": "why3:Alt-Ergo,2.3.0",
                                                                     "verdict": "valid",
-                                                                    "time": 2.6031,
-                                                                    "steps": 1126 } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ]
+                                                                    "time": 3.8635,
+                                                                    "steps": 1100 } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ] } } ]
