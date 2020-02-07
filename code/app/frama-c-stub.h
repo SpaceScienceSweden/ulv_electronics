@@ -3,34 +3,7 @@
 
 #ifdef FRAMA_C
 
-typedef uint32_t __uint24;
-/*@ // Type invariants are not supported in Silicon,
-    // especially not strong type invariants (parse error).
-    // Frama-C ignores regular type invariants however, so leave them in for now.
-    // They should be upgraded to strong once a newer version of Frama-C
-    // makes it into Debian testing.
-    //type invariant uint24_min(__uint24 a) = a >= 0;
-    //type invariant uint24_max(__uint24 a) = a <= 16777215;
-
-    // Poor man's type invariant
-    predicate valid_uint24(integer a) = 0 <= a <= 16777215;
-*/
-
-volatile uint8_t PINE;
-volatile uint8_t SPDR;
-volatile uint8_t TIFR;
-volatile uint8_t SPSR;
-volatile uint8_t PORTF;
-uint64_t timer1_base = 0;
-volatile uint8_t DDRD;
-volatile uint8_t PORTD;
-volatile uint8_t DDRE;
-volatile uint8_t PORTE;
-volatile uint8_t DDRF;
-volatile uint8_t PORTF;
-volatile uint8_t OCR1A;
-volatile uint8_t OCR1B;
-volatile uint8_t OCR1C;
+#include "../frama-c-avr-stub.h"
 
 #include "wire_structs.h"
 

@@ -1,6 +1,7 @@
 #ifndef CHIPDEF_H
 #define CHIPDEF_H
 
+#ifndef FRAMA_C
 #include <avr/io.h>
 
 #if defined (SPMCSR)
@@ -9,6 +10,7 @@
 #define SPM_REG SPMCR
 #else
 #error "AVR processor does not provide bootloader support!"
+#endif
 #endif
 
 #define APP_END (FLASHEND - (BOOTSIZE * 2))

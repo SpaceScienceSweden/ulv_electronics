@@ -216,6 +216,9 @@
 #endif
 
 
+#ifdef FRAMA_C
+#include "../frama-c-avr-stub.h"
+#else
 #include <stdint.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -224,6 +227,7 @@
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#endif
 
 #include "chipdef.h"
 #include "../eeprom.h"
@@ -237,6 +241,8 @@ uint8_t gBuffer[SPM_PAGESIZE];
 void __vector_default(void) { ; }
 #endif
 
+/*@ assigns UART_CTRL, RS485_DE_PORT;
+ */
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
   RS485_DE_PORT |= RS485_DE_BIT;
@@ -244,8 +250,11 @@ static void enable_tx(void) {
   _delay_us(100);
 }
 
+/*@ assigns UART_CTRL, RS485_DE_PORT;
+ */
 static void disable_tx(void) {
   //wait for tx to finish
+  //@ loop assigns \nothing;
   while (!(UART_STATUS & (1<<UART_TXCOMPLETE)));
   RS485_DE_PORT &= ~RS485_DE_BIT;
   //wait for ringing to die down a bit before switching to RX mode
@@ -255,25 +264,36 @@ static void disable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_RX;
 }
 
+/*@ assigns UART_STATUS, UART_DATA;
+ */
 static void sendchar(uint8_t data)
 {
   //don't enable_tx() here, that is dangerous
+  //@ loop assigns \nothing;
 	while (!(UART_STATUS & (1<<UART_TXREADY)));
   //clear TXC so we can detect it being set later, by writing a one to it
   UART_STATUS |= (1<<UART_TXCOMPLETE);
 	UART_DATA = data;
 }
 
+/*@ assigns \nothing;
+ */
 static uint8_t recvchar(void)
 {
+  //@ loop assigns \nothing;
 	while (!(UART_STATUS & (1<<UART_RXREADY)));
 	return UART_DATA;
 }
 
+/*@ assigns flash;
+ */
 static inline void eraseFlash(void)
 {
 	// erase only main section (bootloader protection)
 	uint32_t addr = 0;
+  /*@ loop assigns addr, flash;
+      loop variant APP_END - addr;
+   */
 	while (APP_END > addr) {
 		boot_page_erase(addr);		// Perform page erase
 		boot_spm_busy_wait();		// Wait until the memory is erased.
@@ -284,30 +304,55 @@ static inline void eraseFlash(void)
 	boot_rww_enable();
 }
 
+/*@ requires 0 <= size <= sizeof(gBuffer);
+    requires \valid(&gBuffer[0] + (0..sizeof(gBuffer)-1));
+    assigns gBuffer[0..sizeof(gBuffer)-1];
+ */
 static inline void recvBuffer(pagebuf_t size)
 {
 	pagebuf_t cnt;
 	uint8_t *tmp = gBuffer;
 
+  /*@ loop invariant tmp == &gBuffer[cnt];
+      loop assigns cnt, tmp, gBuffer[0..sizeof(gBuffer)-1];
+      loop variant sizeof(gBuffer) - cnt;
+   */
 	for (cnt = 0; cnt < sizeof(gBuffer); cnt++) {
 		*tmp++ = (cnt < size) ? recvchar() : 0xFF;
 	}
 }
 
+/*@ requires 2 <= size <= sizeof(gBuffer);
+    requires size % 2 == 0;
+    requires \valid_read(&gBuffer[0] + (0..size-1));
+    assigns flash;
+ */
 static inline uint16_t writeFlashPage(uint16_t waddr, pagebuf_t size)
 {
 	uint32_t pagestart = (uint32_t)waddr<<1;
+  //@ assert pagestart_even: 0 <= pagestart <= 2*UINT16_MAX && pagestart % 2 == 0;
 	uint32_t baddr = pagestart;
 	uint16_t data;
 	uint8_t *tmp = gBuffer;
+  //@ ghost pagebuf_t i = 0;
 
+  /*@ loop invariant size_range: 0 <= size <= \at(size,LoopEntry) && size % 2 == 0;
+      loop invariant i_range: i == (\at(size,LoopEntry) - size) / 2;
+      loop invariant tmp_eq: tmp == &gBuffer[i*2] && &gBuffer[0] <= tmp <= &gBuffer[\at(size,LoopEntry)-1];
+      loop invariant baddr_range: baddr == pagestart + i*2 && baddr <= 2*UINT16_MAX + \at(size,LoopEntry);
+      loop assigns tmp, size, baddr, data, i, flash;
+      loop variant size;
+   */
 	do {
+    //@ assert tmp_eq_inside1: tmp == &gBuffer[i*2+0] && tmp < &gBuffer[\at(size,LoopEntry)];
 		data = *tmp++;
-		data |= *tmp++ << 8;
+    //@ assert tmp_eq_inside2: tmp == &gBuffer[i*2+1] && tmp < &gBuffer[\at(size,LoopEntry)];
+		data |= (uint16_t)*tmp++ << 8;
 		boot_page_fill(baddr, data);	// call asm routine.
 
 		baddr += 2;			// Select next word in memory
 		size -= 2;			// Reduce number of bytes to write by two
+    //@ ghost i++;
 	} while (size);				// Loop until all bytes written
 
 	boot_page_write(pagestart);
@@ -409,7 +454,7 @@ static void send_string_internal(PGM_P str) {
   int i = 0;
   enable_tx();
   for (;;) {
-    char c = pgm_read_word_far(&str[i]);
+    char c = pgm_read_word_far((uint32_t)&str[i]);
     if (c == 0) {
       break;
     }

@@ -1,0 +1,9 @@
+[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 1. },
+  { "prover": "script", "verdict": "valid" },
+  { "header": "Logical Shift", "tactic": "Wp.shift", "params": {},
+    "select": { "select": "inside-goal", "occur": 0,
+                "target": "(lsl\n  Mint_0\n    [(shift_uint8 (global G_gBuffer_144) (1+(2*((size_0-size_2) div 2))))] 8)",
+                "pattern": "lsl[]8$Mintshift_uint8global+G_gBuffer_144" },
+    "children": { "shift": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                               "verdict": "valid", "time": 0.0563,
+                               "steps": 75 } ] } } ]
