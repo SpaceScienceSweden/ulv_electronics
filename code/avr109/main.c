@@ -438,9 +438,20 @@ static inline uint16_t readFlashPage(uint16_t waddr, pagebuf_t size)
 	return baddr>>1;
 }
 
+/*@ requires 1 <= size <= 4096;
+    requires 0 <= address < 4096 - size;
+    assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
+ */
 static inline uint16_t readEEpromPage(uint16_t address, pagebuf_t size)
 {
   enable_tx();
+  /*@ loop invariant size_range: 1 <= size <= \at(size,LoopEntry);
+      loop invariant address_range:
+        address == \at(address,LoopEntry) + (\at(size,LoopEntry) - size) &&
+        0 <= address < 4096;
+      loop assigns address, size, UART_STATUS, UART_DATA;
+      loop variant size;
+   */
 	do {
 		sendchar( eeprom_read_byte( (uint8_t*)address ) );
 		address++;
