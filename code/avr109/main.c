@@ -216,6 +216,10 @@
 #endif
 
 
+#ifdef FRAMA_C
+#include "../frama-c-avr-stub.h"
+#include <string.h>
+#else
 #include <stdint.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -224,6 +228,7 @@
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#endif
 
 #include "chipdef.h"
 #include "../eeprom.h"
@@ -237,6 +242,8 @@ uint8_t gBuffer[SPM_PAGESIZE];
 void __vector_default(void) { ; }
 #endif
 
+/*@ assigns UART_CTRL, RS485_DE_PORT;
+ */
 static void enable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_TX;
   RS485_DE_PORT |= RS485_DE_BIT;
@@ -244,8 +251,11 @@ static void enable_tx(void) {
   _delay_us(100);
 }
 
+/*@ assigns UART_CTRL, RS485_DE_PORT;
+ */
 static void disable_tx(void) {
   //wait for tx to finish
+  //@ loop assigns \nothing;
   while (!(UART_STATUS & (1<<UART_TXCOMPLETE)));
   RS485_DE_PORT &= ~RS485_DE_BIT;
   //wait for ringing to die down a bit before switching to RX mode
@@ -255,25 +265,37 @@ static void disable_tx(void) {
   UART_CTRL = UART_CTRL_DATA_RX;
 }
 
+/*@ assigns UART_STATUS, UART_DATA;
+ */
 static void sendchar(uint8_t data)
 {
   //don't enable_tx() here, that is dangerous
+  //@ loop assigns \nothing;
 	while (!(UART_STATUS & (1<<UART_TXREADY)));
   //clear TXC so we can detect it being set later, by writing a one to it
   UART_STATUS |= (1<<UART_TXCOMPLETE);
 	UART_DATA = data;
 }
 
+/*@ ensures 0 <= \result <= 255;
+    assigns \nothing;
+ */
 static uint8_t recvchar(void)
 {
+  //@ loop assigns \nothing;
 	while (!(UART_STATUS & (1<<UART_RXREADY)));
 	return UART_DATA;
 }
 
+/*@ assigns flash, wdt;
+ */
 static inline void eraseFlash(void)
 {
 	// erase only main section (bootloader protection)
 	uint32_t addr = 0;
+  /*@ loop assigns addr, flash, wdt;
+      loop variant APP_END - addr;
+   */
 	while (APP_END > addr) {
 		boot_page_erase(addr);		// Perform page erase
 		boot_spm_busy_wait();		// Wait until the memory is erased.
@@ -284,30 +306,53 @@ static inline void eraseFlash(void)
 	boot_rww_enable();
 }
 
+/*@ requires 0 <= size <= sizeof(gBuffer);
+    requires \valid(&gBuffer[0] + (0..sizeof(gBuffer)-1));
+    assigns gBuffer[0..sizeof(gBuffer)-1];
+ */
 static inline void recvBuffer(pagebuf_t size)
 {
 	pagebuf_t cnt;
 	uint8_t *tmp = gBuffer;
 
+  /*@ loop invariant tmp == &gBuffer[cnt];
+      loop assigns cnt, tmp, gBuffer[0..sizeof(gBuffer)-1];
+      loop variant sizeof(gBuffer) - cnt;
+   */
 	for (cnt = 0; cnt < sizeof(gBuffer); cnt++) {
 		*tmp++ = (cnt < size) ? recvchar() : 0xFF;
 	}
 }
 
+/*@ requires 2 <= size <= sizeof(gBuffer);
+    requires size % 2 == 0;
+    requires \valid_read(&gBuffer[0] + (0..size-1));
+    assigns flash;
+ */
 static inline uint16_t writeFlashPage(uint16_t waddr, pagebuf_t size)
 {
 	uint32_t pagestart = (uint32_t)waddr<<1;
+  //@ assert pagestart_even: 0 <= pagestart <= 2*UINT16_MAX && pagestart % 2 == 0;
 	uint32_t baddr = pagestart;
 	uint16_t data;
 	uint8_t *tmp = gBuffer;
+  //@ ghost pagebuf_t i = 0;
 
+  /*@ loop invariant size_range: 0 <= size <= \at(size,LoopEntry) && size % 2 == 0;
+      loop invariant i_range: i == (\at(size,LoopEntry) - size) / 2;
+      loop invariant tmp_eq: tmp == &gBuffer[i*2] && &gBuffer[0] <= tmp <= &gBuffer[\at(size,LoopEntry)-1];
+      loop invariant baddr_range: baddr == pagestart + i*2 && baddr <= 2*UINT16_MAX + \at(size,LoopEntry);
+      loop assigns tmp, size, baddr, data, i, flash;
+      loop variant size;
+   */
 	do {
 		data = *tmp++;
-		data |= *tmp++ << 8;
+		data |= (uint16_t)*tmp++ << 8;
 		boot_page_fill(baddr, data);	// call asm routine.
 
 		baddr += 2;			// Select next word in memory
 		size -= 2;			// Reduce number of bytes to write by two
+    //@ ghost i++;
 	} while (size);				// Loop until all bytes written
 
 	boot_page_write(pagestart);
@@ -317,14 +362,27 @@ static inline uint16_t writeFlashPage(uint16_t waddr, pagebuf_t size)
 	return baddr>>1;
 }
 
+/*@ requires 1 <= size <= sizeof(gBuffer);
+    requires 0 <= address <= 4096 - size;
+    requires \valid_read(&gBuffer[0] + (0..size-1));
+    assigns eeprom;
+ */
 static inline uint16_t writeEEpromPage(uint16_t address, pagebuf_t size)
 {
 	uint8_t *tmp = gBuffer;
+  //@ ghost uint16_t i = 0;
 
+  /*@ loop invariant i_range: 0 <= i <= \at(size,LoopEntry) && i == \at(size,LoopEntry) - size;
+      loop invariant tmp_eq: tmp == &gBuffer[i] && &gBuffer[0] <= tmp < &gBuffer[\at(size,LoopEntry)];
+      loop invariant address_range: 0 <= address <= 4096 && address == \at(address,LoopEntry) + i;
+      loop assigns tmp, address, size, i, eeprom;
+      loop variant size;
+   */
 	do {
 		eeprom_write_byte( (uint8_t*)address, *tmp++ );
 		address++;			// Select next byte
 		size--;				// Decreas number of bytes to write
+    //@ ghost i++;
 	} while (size);				// Loop until all bytes written
 
 	// eeprom_busy_wait();
@@ -332,12 +390,24 @@ static inline uint16_t writeEEpromPage(uint16_t address, pagebuf_t size)
 	return address;
 }
 
+/*@ requires 2 <= size && size % 2 == 0;
+    assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
+ */
 static inline uint16_t readFlashPage(uint16_t waddr, pagebuf_t size)
 {
 	uint32_t baddr = (uint32_t)waddr<<1;
+  //@ assert baddr_even: 0 <= baddr <= 2*UINT16_MAX && baddr % 2 == 0;
 	uint16_t data;
 
   enable_tx();
+  //@ ghost pagebuf_t i = 0;
+
+  /*@ loop invariant size_range: 2 <= size <= \at(size,LoopEntry) && size % 2 == 0;
+      loop invariant i_range: i == (\at(size,LoopEntry) - size) / 2;
+      loop invariant baddr_range: baddr == \at(baddr,LoopEntry) + i*2 && baddr <= 2*UINT16_MAX + \at(size,LoopEntry);
+      loop assigns size, baddr, data, UART_STATUS, UART_DATA, i;
+      loop variant size;
+   */
 	do {
 #ifndef READ_PROTECT_BOOTLOADER
 #warning "Bootloader not read-protected"
@@ -363,15 +433,27 @@ static inline uint16_t readFlashPage(uint16_t waddr, pagebuf_t size)
 		sendchar((data >> 8));		// send MSB
 		baddr += 2;			// Select next word in memory
 		size -= 2;			// Subtract two bytes from number of bytes to read
+    //@ ghost i++;
 	} while (size);				// Repeat until block has been read
   disable_tx();
 
 	return baddr>>1;
 }
 
+/*@ requires 1 <= size <= 4096;
+    requires 0 <= address <= 4096 - size;
+    assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
+ */
 static inline uint16_t readEEpromPage(uint16_t address, pagebuf_t size)
 {
   enable_tx();
+  /*@ loop invariant size_range: 1 <= size <= \at(size,LoopEntry);
+      loop invariant address_range:
+        address == \at(address,LoopEntry) + (\at(size,LoopEntry) - size) &&
+        0 <= address < 4096;
+      loop assigns address, size, UART_STATUS, UART_DATA;
+      loop variant size;
+   */
 	do {
 		sendchar( eeprom_read_byte( (uint8_t*)address ) );
 		address++;
@@ -404,10 +486,32 @@ static uint8_t read_fuse_lock(uint16_t addr)
 }
 #endif
 
+#ifdef FRAMA_C
+#define send_string(s)
+#else
 #define send_string(s) send_string_internal(PSTR(s))
+#endif
+
+/*@ requires valid_read_string(str) && strlen(str) < INT_MAX-1;
+    requires \separated(
+      \union(
+        &UART_CTRL,
+        &RS485_DE_PORT,
+        &UART_STATUS,
+        &UART_DATA
+      ),
+      str + (0..strlen(str))
+    );
+    assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
+ */
 static void send_string_internal(PGM_P str) {
   int i = 0;
   enable_tx();
+  /*@ loop invariant i_range: 0 <= i <= strlen(str);
+      loop invariant \forall integer x; 0 <= x < i ==> str[x] != 0;
+      loop assigns UART_STATUS, UART_DATA, i;
+      loop variant strlen(str) + 1 - i;
+   */
   for (;;) {
     char c = pgm_read_word_far(&str[i]);
     if (c == 0) {
@@ -420,22 +524,60 @@ static void send_string_internal(PGM_P str) {
 }
 
 /* for telling the user that the bootloader started */
+// frama-c isn't very good at proving things involving string constants..
+/*@ assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
+ */
 static void send_hello(void)
+#ifdef FRAMA_C
+;
+#else
 {
   send_string("hi!\r\n");
 #if WAIT_VALUE < 300
   send_string("** DO NOT FLY **\r\n");
 #endif
 }
+#endif
 
-
+/*@ assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
+ */
 static void send_boot(void)
+#ifdef FRAMA_C
+;
+#else
 {
   send_string("AVRBOOT");
 }
+#endif
 
+#ifdef FRAMA_C
+#define jump_to_app() return 0;
+#else
 #define jump_to_app() asm volatile("jmp 0");
+#endif
 
+/*@ requires \valid(&gBuffer[0] + (0..sizeof(gBuffer)-1));
+    requires \separated(
+      &gBuffer[0] + (0..sizeof(gBuffer)-1),
+      &UART_BAUD_HIGH, &UART_BAUD_LOW,
+      &UART_CTRL, &UART_CTRL2, &RS485_DE_PORT,
+      &UART_STATUS, &UART_DATA,
+      &flash, &eeprom, &wdt
+    );
+    assigns
+      gBuffer[0..sizeof(gBuffer)-1],
+      UART_BAUD_HIGH, UART_BAUD_LOW,
+      UART_CTRL, UART_CTRL2, RS485_DE_PORT,
+      UART_STATUS, UART_DATA,
+      DDRA, PORTA,
+      DDRB, PORTB,
+      DDRC, PORTC,
+      DDRD, PORTD,
+      DDRE, PORTE,
+      DDRF, PORTF,
+      DDRG, PORTG,
+      flash, eeprom, wdt;
+ */
 int main(void)
 {
 	uint16_t address = 0;
@@ -481,6 +623,7 @@ int main(void)
   RS485_DE_PORT &= ~RS485_DE_BIT;
 
 #if defined(START_POWERSAVE)
+#error "START_POWERSAVE not verified"
 	/*
 		This is an adoption of the Butterfly Bootloader startup-sequence.
 		It may look a little strange but separating the login-loop from
@@ -516,6 +659,7 @@ int main(void)
 	}
 
 #elif defined(START_SIMPLE)
+#error "START_SIMPLE not verified"
 
 	if ((BLPIN & (1<<BLPNUM))) {
 		// jump to main app if pin is not grounded
@@ -532,6 +676,9 @@ int main(void)
 
   //send_hello();
 
+  /*@ loop invariant cnt_range: 0 <= cnt <= WAIT_VALUE;
+      loop assigns cnt;
+   */
 	while (1) {
 		if (UART_STATUS & (1<<UART_RXREADY))
 			if (UART_DATA == START_WAIT_UARTCHAR)
@@ -557,6 +704,12 @@ int main(void)
 
   wdt_enable(EXIT_WDT_TIME);
 
+  /*@ loop assigns
+        address, device, val,
+        flash, eeprom, wdt,
+        UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA,
+        gBuffer[0..sizeof(gBuffer)-1];
+   */
 	for(;;) {
 		val = recvchar();
     wdt_reset();
@@ -581,9 +734,18 @@ int main(void)
 		// Start buffer load
 		} else if (val == 'B') {
 			pagebuf_t size;
-			size = recvchar() << 8;				// Load high byte of buffersize
+			size = (pagebuf_t)recvchar() << 8;				// Load high byte of buffersize
 			size |= recvchar();				// Load low byte of buffersize
 			val = recvchar();				// Load memory type ('E' or 'F')
+
+      if (size == 0 || size > sizeof(gBuffer) ||
+          // we could be even stricter with size and address for flash
+          (val == 'F' && size % 2 != 0) ||
+          (val == 'E' && (size > 4096 || address > 4096 - size))) {
+        send_string("?");
+        continue;
+      }
+
 			recvBuffer(size);
 
 			if (device == DEVTYPE) {
@@ -602,9 +764,18 @@ int main(void)
 		// Block read
 		} else if (val == 'g') {
 			pagebuf_t size;
-			size = recvchar() << 8;				// Load high byte of buffersize
+			size = (pagebuf_t)recvchar() << 8;				// Load high byte of buffersize
 			size |= recvchar();				// Load low byte of buffersize
 			val = recvchar();				// Get memtype
+
+      //@ assert size_pos: size >= 0;
+      if (size == 0 || size > sizeof(gBuffer) ||
+          // we could be even stricter with size and address for flash
+          (val == 'F' && (size < 2 || size % 2 != 0)) ||
+          (val == 'E' && (size > 4096 || address > 4096 - size))) {
+        send_string("?");
+        continue;
+      }
 
 			if (val == 'F') {
 				address = readFlashPage(address, size);

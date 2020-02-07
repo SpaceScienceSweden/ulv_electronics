@@ -1,0 +1,6 @@
+[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 1. },
+  { "prover": "script", "verdict": "valid" },
+  { "header": "Logical Shift", "tactic": "Wp.shift", "params": {},
+    "select": { "select": "inside-goal", "occur": 0,
+                "target": "(lsl tmp_4_0 8)", "pattern": "lsl$tmp_48" },
+    "children": { "shift": [ { "prover": "qed", "verdict": "valid" } ] } } ]

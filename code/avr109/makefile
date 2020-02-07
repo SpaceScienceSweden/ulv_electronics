@@ -668,3 +668,23 @@ clean_list :
 build elf hex eep lss sym coff extcoff \
 clean clean_list program
 
+FRAMA_C_BOILER=-wp-model Typed+nocast+int -wp-prover script,alt-ergo -load-script ../gcc_avr_16_machdep.ml -cpp-extra-args="-D__AVR_ATmega128__ -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) -DWAIT_VALUE=300 -DFRAMA_C -D__FC_MACHDEP_GCC_AVR_16" -wp -machdep gcc_avr_16 -wp-rte -warn-unsigned-overflow
+FRAMA_C_TIMEOUT=1
+
+verify:
+	time frama-c $(FRAMA_C_BOILER) -wp-timeout $(FRAMA_C_TIMEOUT) main.c
+
+verify-gui:
+	# Have much shorter timeout in the GUI so we make faster proof scripts and don't have to wait so long for steps that usually time out
+	frama-c-gui  $(FRAMA_C_BOILER) -wp-timeout 1 main.c
+
+# For verifying specific functions, for example:
+#
+#  make verify-compute_sum_abs
+#
+verify-%:
+	time frama-c $(FRAMA_C_BOILER) -wp-timeout $(FRAMA_C_TIMEOUT) -wp-fct $* main.c
+
+# Same as above but with GUI
+verify-gui-%:
+	frama-c-gui  $(FRAMA_C_BOILER) -wp-timeout 1 -wp-fct $* main.c
