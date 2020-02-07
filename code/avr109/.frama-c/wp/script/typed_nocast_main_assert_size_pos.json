@@ -1,0 +1,50 @@
+[ { "prover": "why3:Alt-Ergo,2.3.0", "verdict": "timeout", "time": 1. },
+  { "prover": "script", "verdict": "valid" },
+  { "header": "Range", "tactic": "Wp.range",
+    "params": { "inf": 0, "sup": 0 },
+    "select": { "select": "inside-goal", "occur": 0, "target": "recvchar_6",
+                "pattern": "$recvchar" },
+    "children": { "Lower 0": [ { "prover": "qed", "verdict": "valid" } ],
+                  "Value 0": [ { "prover": "qed", "verdict": "valid" } ],
+                  "Upper 0": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                 "verdict": "timeout", "time": 1. },
+                               { "header": "Logical Shift",
+                                 "tactic": "Wp.shift", "params": {},
+                                 "select": { "select": "inside-goal",
+                                             "occur": 0,
+                                             "target": "(lsl recvchar_7 8)",
+                                             "pattern": "lsl$recvchar8" },
+                                 "children": { "shift": [ { "prover": "why3:Alt-Ergo,2.3.0",
+                                                            "verdict": "timeout",
+                                                            "time": 1. },
+                                                          { "header": "Range",
+                                                            "tactic": "Wp.range",
+                                                            "params": 
+                                                              { "inf": 0,
+                                                                "sup": 0 },
+                                                            "select": 
+                                                              { "select": "inside-goal",
+                                                                "occur": 1,
+                                                                "target": "recvchar_7",
+                                                                "pattern": "$recvchar" },
+                                                            "children": 
+                                                              { "Lower 0": 
+                                                                  [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                "Value 0": 
+                                                                  [ { "prover": "qed",
+                                                                    "verdict": "valid" } ],
+                                                                "Upper 0": 
+                                                                  [ { "header": "Bit Range",
+                                                                    "tactic": "Wp.bitrange",
+                                                                    "params": 
+                                                                    { "positive-land": true,
+                                                                    "positive-lor": true },
+                                                                    "select": 
+                                                                    { "select": "clause-goal",
+                                                                    "target": "0<=(lor recvchar_6 (256*recvchar_7))",
+                                                                    "pattern": "<=0lor$recvchar.256$recvchar" },
+                                                                    "children": 
+                                                                    { "bit-range": 
+                                                                    [ { "prover": "qed",
+                                                                    "verdict": "valid" } ] } } ] } } ] } } ] } } ]

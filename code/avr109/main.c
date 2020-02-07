@@ -277,7 +277,8 @@ static void sendchar(uint8_t data)
 	UART_DATA = data;
 }
 
-/*@ assigns \nothing;
+/*@ ensures 0 <= \result <= 255;
+    assigns \nothing;
  */
 static uint8_t recvchar(void)
 {
@@ -286,13 +287,13 @@ static uint8_t recvchar(void)
 	return UART_DATA;
 }
 
-/*@ assigns flash;
+/*@ assigns flash, wdt;
  */
 static inline void eraseFlash(void)
 {
 	// erase only main section (bootloader protection)
 	uint32_t addr = 0;
-  /*@ loop assigns addr, flash;
+  /*@ loop assigns addr, flash, wdt;
       loop variant APP_END - addr;
    */
 	while (APP_END > addr) {
@@ -362,7 +363,7 @@ static inline uint16_t writeFlashPage(uint16_t waddr, pagebuf_t size)
 }
 
 /*@ requires 1 <= size <= sizeof(gBuffer);
-    requires 0 <= address < 4096 - size;
+    requires 0 <= address <= 4096 - size;
     requires \valid_read(&gBuffer[0] + (0..size-1));
     assigns eeprom;
  */
@@ -440,7 +441,7 @@ static inline uint16_t readFlashPage(uint16_t waddr, pagebuf_t size)
 }
 
 /*@ requires 1 <= size <= 4096;
-    requires 0 <= address < 4096 - size;
+    requires 0 <= address <= 4096 - size;
     assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
  */
 static inline uint16_t readEEpromPage(uint16_t address, pagebuf_t size)
@@ -485,7 +486,11 @@ static uint8_t read_fuse_lock(uint16_t addr)
 }
 #endif
 
+#ifdef FRAMA_C
+#define send_string(s)
+#else
 #define send_string(s) send_string_internal(PSTR(s))
+#endif
 
 /*@ requires valid_read_string(str) && strlen(str) < INT_MAX-1;
     assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
@@ -510,22 +515,60 @@ static void send_string_internal(PGM_P str) {
 }
 
 /* for telling the user that the bootloader started */
+// frama-c isn't very good at proving things involving string constants..
+/*@ assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
+ */
 static void send_hello(void)
+#ifdef FRAMA_C
+;
+#else
 {
   send_string("hi!\r\n");
 #if WAIT_VALUE < 300
   send_string("** DO NOT FLY **\r\n");
 #endif
 }
+#endif
 
-
+/*@ assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
+ */
 static void send_boot(void)
+#ifdef FRAMA_C
+;
+#else
 {
   send_string("AVRBOOT");
 }
+#endif
 
+#ifdef FRAMA_C
+#define jump_to_app() return 0;
+#else
 #define jump_to_app() asm volatile("jmp 0");
+#endif
 
+/*@ requires \valid(&gBuffer[0] + (0..sizeof(gBuffer)-1));
+    requires \separated(
+      &gBuffer[0] + (0..sizeof(gBuffer)-1),
+      &UART_BAUD_HIGH, &UART_BAUD_LOW,
+      &UART_CTRL, &UART_CTRL2, &RS485_DE_PORT,
+      &UART_STATUS, &UART_DATA,
+      &flash, &eeprom, &wdt
+    );
+    assigns
+      gBuffer[0..sizeof(gBuffer)-1],
+      UART_BAUD_HIGH, UART_BAUD_LOW,
+      UART_CTRL, UART_CTRL2, RS485_DE_PORT,
+      UART_STATUS, UART_DATA,
+      DDRA, PORTA,
+      DDRB, PORTB,
+      DDRC, PORTC,
+      DDRD, PORTD,
+      DDRE, PORTE,
+      DDRF, PORTF,
+      DDRG, PORTG,
+      flash, eeprom, wdt;
+ */
 int main(void)
 {
 	uint16_t address = 0;
@@ -571,6 +614,7 @@ int main(void)
   RS485_DE_PORT &= ~RS485_DE_BIT;
 
 #if defined(START_POWERSAVE)
+#error "START_POWERSAVE not verified"
 	/*
 		This is an adoption of the Butterfly Bootloader startup-sequence.
 		It may look a little strange but separating the login-loop from
@@ -606,6 +650,7 @@ int main(void)
 	}
 
 #elif defined(START_SIMPLE)
+#error "START_SIMPLE not verified"
 
 	if ((BLPIN & (1<<BLPNUM))) {
 		// jump to main app if pin is not grounded
@@ -622,6 +667,9 @@ int main(void)
 
   //send_hello();
 
+  /*@ loop invariant cnt_range: 0 <= cnt <= WAIT_VALUE;
+      loop assigns cnt;
+   */
 	while (1) {
 		if (UART_STATUS & (1<<UART_RXREADY))
 			if (UART_DATA == START_WAIT_UARTCHAR)
@@ -647,6 +695,12 @@ int main(void)
 
   wdt_enable(EXIT_WDT_TIME);
 
+  /*@ loop assigns
+        address, device, val,
+        flash, eeprom, wdt,
+        UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA,
+        gBuffer[0..sizeof(gBuffer)-1];
+   */
 	for(;;) {
 		val = recvchar();
     wdt_reset();
@@ -671,9 +725,18 @@ int main(void)
 		// Start buffer load
 		} else if (val == 'B') {
 			pagebuf_t size;
-			size = recvchar() << 8;				// Load high byte of buffersize
+			size = (pagebuf_t)recvchar() << 8;				// Load high byte of buffersize
 			size |= recvchar();				// Load low byte of buffersize
 			val = recvchar();				// Load memory type ('E' or 'F')
+
+      if (size == 0 || size > sizeof(gBuffer) ||
+          // we could be even stricter with size and address for flash
+          (val == 'F' && size % 2 != 0) ||
+          (val == 'E' && (size > 4096 || address > 4096 - size))) {
+        send_string("?");
+        continue;
+      }
+
 			recvBuffer(size);
 
 			if (device == DEVTYPE) {
@@ -692,9 +755,18 @@ int main(void)
 		// Block read
 		} else if (val == 'g') {
 			pagebuf_t size;
-			size = recvchar() << 8;				// Load high byte of buffersize
+			size = (pagebuf_t)recvchar() << 8;				// Load high byte of buffersize
 			size |= recvchar();				// Load low byte of buffersize
 			val = recvchar();				// Get memtype
+
+      //@ assert size_pos: size >= 0;
+      if (size == 0 || size > sizeof(gBuffer) ||
+          // we could be even stricter with size and address for flash
+          (val == 'F' && (size < 2 || size % 2 != 0)) ||
+          (val == 'E' && (size > 4096 || address > 4096 - size))) {
+        send_string("?");
+        continue;
+      }
 
 			if (val == 'F') {
 				address = readFlashPage(address, size);

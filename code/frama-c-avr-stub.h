@@ -53,7 +53,7 @@ volatile uint8_t UBRR1L;
 volatile uint8_t UBRR1H;
 
 // used for assigns clauses in functions below
-uint8_t flash, eeprom;
+uint8_t flash, eeprom, wdt;
 
 #define TXEN1 3
 #define TXC1 6
@@ -92,15 +92,15 @@ static void boot_page_erase(uint32_t);
  */
 static void boot_spm_busy_wait(void);
 
-/*@ assigns \nothing;
+/*@ assigns wdt;
  */
 static void wdt_reset(void);
 
-/*@ assigns \nothing;
+/*@ assigns wdt;
  */
 static void wdt_enable(int t);
 
-/*@ assigns \nothing;
+/*@ assigns wdt;
  */
 static void wdt_disable(void);
 
@@ -134,7 +134,8 @@ static uint8_t eeprom_read_byte(uint8_t *address);
  */
 static uint16_t pgm_read_word_far(char *baddr);
 
-/*@ assigns \nothing;
+/*@ ensures \result == s;
+    assigns \nothing;
  */
 static PGM_P PSTR(char *s);
 
