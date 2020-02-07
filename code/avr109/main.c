@@ -218,6 +218,7 @@
 
 #ifdef FRAMA_C
 #include "../frama-c-avr-stub.h"
+#include <string.h>
 #else
 #include <stdint.h>
 #include <avr/io.h>
@@ -485,11 +486,20 @@ static uint8_t read_fuse_lock(uint16_t addr)
 #endif
 
 #define send_string(s) send_string_internal(PSTR(s))
+
+/*@ requires valid_read_string(str) && strlen(str) < INT_MAX-1;
+    assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
+ */
 static void send_string_internal(PGM_P str) {
   int i = 0;
   enable_tx();
+  /*@ loop invariant i_range: 0 <= i <= strlen(str);
+      loop invariant \forall integer x; 0 <= x < i ==> str[x] != 0;
+      loop assigns UART_STATUS, UART_DATA, i;
+      loop variant strlen(str) + 1 - i;
+   */
   for (;;) {
-    char c = pgm_read_word_far((uint32_t)&str[i]);
+    char c = pgm_read_word_far(&str[i]);
     if (c == 0) {
       break;
     }

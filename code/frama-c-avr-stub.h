@@ -128,9 +128,11 @@ static uint16_t pgm_read_word_near(uint32_t baddr);
  */
 static uint8_t eeprom_read_byte(uint8_t *address);
 
-/*@ assigns \nothing;
+/*@ requires \valid_read(baddr);
+    ensures \result == *baddr;
+    assigns \nothing;
  */
-static uint16_t pgm_read_word_far(uint32_t baddr);
+static uint16_t pgm_read_word_far(char *baddr);
 
 /*@ assigns \nothing;
  */
