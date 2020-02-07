@@ -344,9 +344,7 @@ static inline uint16_t writeFlashPage(uint16_t waddr, pagebuf_t size)
       loop variant size;
    */
 	do {
-    //@ assert tmp_eq_inside1: tmp == &gBuffer[i*2+0] && tmp < &gBuffer[\at(size,LoopEntry)];
 		data = *tmp++;
-    //@ assert tmp_eq_inside2: tmp == &gBuffer[i*2+1] && tmp < &gBuffer[\at(size,LoopEntry)];
 		data |= (uint16_t)*tmp++ << 8;
 		boot_page_fill(baddr, data);	// call asm routine.
 
@@ -362,14 +360,27 @@ static inline uint16_t writeFlashPage(uint16_t waddr, pagebuf_t size)
 	return baddr>>1;
 }
 
+/*@ requires 1 <= size <= sizeof(gBuffer);
+    requires 0 <= address < 4096 - size;
+    requires \valid_read(&gBuffer[0] + (0..size-1));
+    assigns eeprom;
+ */
 static inline uint16_t writeEEpromPage(uint16_t address, pagebuf_t size)
 {
 	uint8_t *tmp = gBuffer;
+  //@ ghost uint16_t i = 0;
 
+  /*@ loop invariant i_range: 0 <= i <= \at(size,LoopEntry) && i == \at(size,LoopEntry) - size;
+      loop invariant tmp_eq: tmp == &gBuffer[i] && &gBuffer[0] <= tmp < &gBuffer[\at(size,LoopEntry)];
+      loop invariant address_range: 0 <= address <= 4096 && address == \at(address,LoopEntry) + i;
+      loop assigns tmp, address, size, i, eeprom;
+      loop variant size;
+   */
 	do {
 		eeprom_write_byte( (uint8_t*)address, *tmp++ );
 		address++;			// Select next byte
 		size--;				// Decreas number of bytes to write
+    //@ ghost i++;
 	} while (size);				// Loop until all bytes written
 
 	// eeprom_busy_wait();
@@ -377,12 +388,24 @@ static inline uint16_t writeEEpromPage(uint16_t address, pagebuf_t size)
 	return address;
 }
 
+/*@ requires 2 <= size && size % 2 == 0;
+    assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
+ */
 static inline uint16_t readFlashPage(uint16_t waddr, pagebuf_t size)
 {
 	uint32_t baddr = (uint32_t)waddr<<1;
+  //@ assert baddr_even: 0 <= baddr <= 2*UINT16_MAX && baddr % 2 == 0;
 	uint16_t data;
 
   enable_tx();
+  //@ ghost pagebuf_t i = 0;
+
+  /*@ loop invariant size_range: 2 <= size <= \at(size,LoopEntry) && size % 2 == 0;
+      loop invariant i_range: i == (\at(size,LoopEntry) - size) / 2;
+      loop invariant baddr_range: baddr == \at(baddr,LoopEntry) + i*2 && baddr <= 2*UINT16_MAX + \at(size,LoopEntry);
+      loop assigns size, baddr, data, UART_STATUS, UART_DATA, i;
+      loop variant size;
+   */
 	do {
 #ifndef READ_PROTECT_BOOTLOADER
 #warning "Bootloader not read-protected"
@@ -408,6 +431,7 @@ static inline uint16_t readFlashPage(uint16_t waddr, pagebuf_t size)
 		sendchar((data >> 8));		// send MSB
 		baddr += 2;			// Select next word in memory
 		size -= 2;			// Subtract two bytes from number of bytes to read
+    //@ ghost i++;
 	} while (size);				// Repeat until block has been read
   disable_tx();
 
