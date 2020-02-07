@@ -493,6 +493,15 @@ static uint8_t read_fuse_lock(uint16_t addr)
 #endif
 
 /*@ requires valid_read_string(str) && strlen(str) < INT_MAX-1;
+    requires \separated(
+      \union(
+        &UART_CTRL,
+        &RS485_DE_PORT,
+        &UART_STATUS,
+        &UART_DATA
+      ),
+      str + (0..strlen(str))
+    );
     assigns UART_CTRL, RS485_DE_PORT, UART_STATUS, UART_DATA;
  */
 static void send_string_internal(PGM_P str) {
